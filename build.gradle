@@ -1,6 +1,8 @@
 plugins {
     id "java"
+    id "com.diffplug.spotless" version "6.20.0"
     id "edu.wpi.first.GradleRIO" version "2025.1.1"
+    id "net.ltgt.errorprone" version "3.1.0"
 }
 
 java {
@@ -8,7 +10,16 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-def ROBOT_MAIN_CLASS = "frc.robot.Main"
+def getProjectBooleanProperty(String name, boolean defaultValue = false) {
+    if (!project.hasProperty(name)) {
+        return defaultValue
+    }
+    // Note that this is equivalent to 'true'.equalsIgnoreCase(project.getProperty(name))
+    // Values that are not "true" or "false" (including null) are treated as false
+    return Boolean.parseBoolean(project.getProperty(name))
+}
+
+def ROBOT_MAIN_CLASS = getProjectBooleanProperty('automatedTest') ? "frc.robot.test.AutomatedTestMain" : "frc.robot.Main"
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
@@ -52,6 +63,8 @@ def includeDesktopSupport = true
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 5.
 dependencies {
+    compileOnly group: "com.google.errorprone", name: "error_prone_annotations", version: "2.24.1"
+
     annotationProcessor wpi.java.deps.wpilibAnnotations()
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
@@ -72,6 +85,8 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    errorprone group: "com.google.errorprone", name: "error_prone_core", version: "2.24.1"
 }
 
 test {
@@ -80,8 +95,10 @@ test {
 }
 
 // Simulation configuration (e.g. environment variables).
-wpi.sim.addGui().defaultEnabled = true
-wpi.sim.addDriverstation()
+if (!getProjectBooleanProperty('automatedTest')) {
+    wpi.sim.addGui().defaultEnabled = true
+    wpi.sim.addDriverstation()
+}
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
 // in order to make them all available at runtime. Also adding the manifest so WPILib
@@ -101,4 +118,32 @@ wpi.java.configureTestTasks(test)
 // Configure string concat to always inline compile
 tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
+}
+
+// Spotless
+spotless {
+    format "misc", {
+        target "*"
+        targetExclude "simgui*.json", "**/build/**", "**/build-*/**", "**/bin/**", "/.*", "WPILib-License.md", "gradlew", "networktables.json", "networktables.json.bck"
+        toggleOffOn()
+        endWithNewline()
+        trimTrailingWhitespace()
+    }
+
+    java {
+        importOrder()
+        googleJavaFormat()
+        toggleOffOn()
+        indentWithSpaces(2)
+        endWithNewline()
+        trimTrailingWhitespace()
+    }
+}
+
+tasks.named("build") { finalizedBy("spotlessApply") }
+tasks.named("deploy") { finalizedBy("spotlessApply") }
+spotlessCheck.mustRunAfter(compileJava);
+
+javadoc {
+    options.links("https://github.wpilib.org/allwpilib/docs/release/java/")
 }

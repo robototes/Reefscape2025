@@ -4,17 +4,76 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.MACAddress;
 
 public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
+  /** Singleton Stuff */
+  private static Robot instance = null;
 
-  private final RobotContainer m_robotContainer;
+  public enum RobotType {
+    COMPETITION,
+    CRANE,
+    BONK;
+  }
 
-  public Robot() {
-    m_robotContainer = new RobotContainer();
+  public static Robot getInstance() {
+    if (instance == null) instance = new Robot();
+    return instance;
+  }
+
+  private final RobotType robotType;
+  public final Controls controls;
+  public final Subsystems subsystems;
+
+  public static final MACAddress COMPETITION_ADDRESS = MACAddress.of(0x38, 0xd9, 0x9e);
+  public static final MACAddress BONK_ADDRESS = MACAddress.of(0x33, 0x9D, 0xE7);
+  public static final MACAddress CRANE_ADDRESS = MACAddress.of(0x22, 0xB0, 0x92);
+
+  private static RobotType getTypeFromAddress() {
+    if (CRANE_ADDRESS.exists()) return RobotType.CRANE;
+    if (BONK_ADDRESS.exists()) return RobotType.BONK;
+    if (!COMPETITION_ADDRESS.exists())
+      DriverStation.reportWarning(
+          "Code running on unknown MAC Address! Running competition code anyways", false);
+    return RobotType.COMPETITION;
+  }
+
+  protected Robot() {
+    // non public for singleton. Protected so test class can subclass
+    instance = this;
+    robotType = getTypeFromAddress();
+
+    LiveWindow.disableAllTelemetry();
+
+    subsystems = new Subsystems();
+    controls = new Controls(subsystems);
+
+    SmartDashboard.putString("current bot", robotType.toString());
+
+    if (RobotBase.isReal()) {
+      DataLogManager.start();
+      DriverStation.startDataLog(DataLogManager.getLog(), true);
+    }
+
+    CommandScheduler.getInstance()
+        .onCommandInitialize(
+            command -> System.out.println("Command initialized: " + command.getName()));
+    CommandScheduler.getInstance()
+        .onCommandInterrupt(
+            command -> System.out.println("Command interrupted: " + command.getName()));
+    CommandScheduler.getInstance()
+        .onCommandFinish(command -> System.out.println("Command finished: " + command.getName()));
+
+    SmartDashboard.putData(CommandScheduler.getInstance());
+
+    DriverStation.silenceJoystickConnectionWarning(true);
   }
 
   @Override
@@ -32,32 +91,28 @@ public class Robot extends TimedRobot {
   public void disabledExit() {}
 
   @Override
-  public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
-    }
-  }
+  public void autonomousInit() {}
 
   @Override
   public void autonomousPeriodic() {}
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+    CommandScheduler.getInstance().cancelAll();
+  }
 
   @Override
   public void teleopInit() {
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
-    }
+    CommandScheduler.getInstance().cancelAll();
   }
 
   @Override
   public void teleopPeriodic() {}
 
   @Override
-  public void teleopExit() {}
+  public void teleopExit() {
+    CommandScheduler.getInstance().cancelAll();
+  }
 
   @Override
   public void testInit() {
@@ -69,4 +124,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testExit() {}
+
+  public RobotType getRobotType() {
+    return robotType;
+  }
+
+  public boolean isCompetition() {
+    return getRobotType() == RobotType.COMPETITION;
+  }
 }
