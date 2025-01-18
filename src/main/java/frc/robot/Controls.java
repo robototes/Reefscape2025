@@ -71,13 +71,6 @@ public class Controls {
     // -driveController.getLeftX()))
     // ));
 
-    // Run SysId routines when holding back/start and X/Y.
-    // Note that each routine should be run exactly once in a single log.
-    // driveController.back().and(driveController.y()).whileTrue(s.drivebaseSubsystem.sysIdDynamic(Direction.kForward));
-    // driveController.back().and(driveController.x()).whileTrue(s.drivebaseSubsystem.sysIdDynamic(Direction.kReverse));
-    // driveController.start().and(driveController.y()).whileTrue(s.drivebaseSubsystem.sysIdQuasistatic(Direction.kForward));
-    // driveController.start().and(driveController.x()).whileTrue(s.drivebaseSubsystem.sysIdQuasistatic(Direction.kReverse));
-
     // reset the field-centric heading on left bumper press
     driverController
         .back()
