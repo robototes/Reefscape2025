@@ -47,6 +47,10 @@ public class Controls {
   }
 
   private void configureDrivebaseBindings() {
+    if (s.drivebaseSubsystem == null) {
+      // Stop running this method
+      return;
+    }
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
     s.drivebaseSubsystem.setDefaultCommand(
