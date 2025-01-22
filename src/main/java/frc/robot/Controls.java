@@ -44,6 +44,7 @@ public class Controls {
     operatorController = new CommandXboxController(OPERATOR_CONTROLLER_PORT);
     this.s = s;
     configureDrivebaseBindings();
+    configureArmPivotBindings();
   }
 
   private void configureDrivebaseBindings() {
@@ -80,5 +81,11 @@ public class Controls {
         .back()
         .onTrue(s.drivebaseSubsystem.runOnce(() -> s.drivebaseSubsystem.seedFieldCentric()));
     s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
+  }
+
+  private void configureArmPivotBindings() {
+    if (s.armPivotSubsystem == null) {
+      return;
+    }
   }
 }
