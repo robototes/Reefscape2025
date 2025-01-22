@@ -3,6 +3,7 @@ package frc.robot;
 import static frc.robot.Subsystems.SubsystemConstants.*;
 
 import frc.robot.generated.BonkTunerConstants;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 
 public class Subsystems {
@@ -10,11 +11,13 @@ public class Subsystems {
     // <SUBSYSTEM>_ENABLED constants go here
 
     public static final boolean DRIVEBASE_ENABLED = true;
+    public static final boolean ELEVATOR_ENABLED = true;
   }
 
   // Subsystems go here
 
   public final CommandSwerveDrivetrain drivebaseSubsystem;
+  public final ElevatorSubsystem elevatorSubsystem;
 
   public Subsystems() {
     // Initialize subsystems here (don't forget to check if they're enabled!)
@@ -23,6 +26,11 @@ public class Subsystems {
       drivebaseSubsystem = BonkTunerConstants.createDrivetrain();
     } else {
       drivebaseSubsystem = null;
+    }
+    if (ELEVATOR_ENABLED) {
+      elevatorSubsystem = new ElevatorSubsystem();
+    } else {
+      elevatorSubsystem = null;
     }
   }
 }
