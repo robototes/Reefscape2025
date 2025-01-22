@@ -87,5 +87,6 @@ public class Controls {
     if (s.armPivotSubsystem == null) {
       return;
     }
+    // Controls binding goes here
   }
 }
