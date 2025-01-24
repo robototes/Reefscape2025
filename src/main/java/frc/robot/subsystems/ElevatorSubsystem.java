@@ -57,31 +57,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   public ElevatorSubsystem() {
     // m_encoder.setDistancePerPulse(Constants.kElevatorEncoderDistPerPulse);
     m_motor = new TalonFX(40);
-    var talonFXConfigurator = m_motor.getConfigurator();
     m_motor2 = new TalonFX(41);
-    var talonFXConfigurator2 = m_motor2.getConfigurator();
-    var currentLimits = new CurrentLimitsConfigs();
-    var softLimits = new SoftwareLimitSwitchConfigs();
-    // soft limits
-    softLimits.ForwardSoftLimitEnable = true;
-    softLimits.ReverseSoftLimitEnable = true;
-    softLimits.ForwardSoftLimitThreshold = forwardSoftLimit;
-    softLimits.ReverseSoftLimitThreshold = reverseSoftLimit;
-    talonFXConfigurator.apply(softLimits);
-    talonFXConfigurator2.apply(softLimits);
-    // enable stator current limit
-    currentLimits.StatorCurrentLimit = 5; // starting low for testing
-    currentLimits.StatorCurrentLimitEnable = true;
-    currentLimits.SupplyCurrentLimit = 5; // starting low for testing
-    currentLimits.SupplyCurrentLimitEnable = true;
-    talonFXConfigurator.apply(currentLimits);
-    talonFXConfigurator2.apply(currentLimits);
-    // create brake mode for motors
-    var outputConfigs = new MotorOutputConfigs();
-    outputConfigs.NeutralMode = NeutralModeValue.Brake;
-    talonFXConfigurator.apply(outputConfigs);
-    talonFXConfigurator2.apply(outputConfigs);
-    // enable stator current limit
+    motorConfigs();
     m_motor2.setControl(new Follower(m_motor.getDeviceID(), false));
     // Publish Mechanism2d to SmartDashboard
     // To view the Elevator visualization, select Network Tables -> SmartDashboard -> Elevator Sim
@@ -124,6 +101,32 @@ public class ElevatorSubsystem extends SubsystemBase {
         0; // m_feedforward.calculate(m_controller.getSetpoint().velocity); can be used later to
     // calculate with correct values
     m_motor.setVoltage(pidOutput + feedforwardOutput);
+  }
+
+  public void motorConfigs(){
+    var talonFXConfigurator = m_motor.getConfigurator();
+    var talonFXConfigurator2 = m_motor2.getConfigurator();
+    var currentLimits = new CurrentLimitsConfigs();
+    var softLimits = new SoftwareLimitSwitchConfigs();
+    // soft limits
+    softLimits.ForwardSoftLimitEnable = true;
+    softLimits.ReverseSoftLimitEnable = true;
+    softLimits.ForwardSoftLimitThreshold = forwardSoftLimit;
+    softLimits.ReverseSoftLimitThreshold = reverseSoftLimit;
+    talonFXConfigurator.apply(softLimits);
+    talonFXConfigurator2.apply(softLimits);
+    // enable stator current limit
+    currentLimits.StatorCurrentLimit = 5; // starting low for testing
+    currentLimits.StatorCurrentLimitEnable = true;
+    currentLimits.SupplyCurrentLimit = 5; // starting low for testing
+    currentLimits.SupplyCurrentLimitEnable = true;
+    talonFXConfigurator.apply(currentLimits);
+    talonFXConfigurator2.apply(currentLimits);
+    // create brake mode for motors
+    var outputConfigs = new MotorOutputConfigs();
+    outputConfigs.NeutralMode = NeutralModeValue.Brake;
+    talonFXConfigurator.apply(outputConfigs);
+    talonFXConfigurator2.apply(outputConfigs);
   }
 
   public Command goUp() {
