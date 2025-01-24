@@ -103,7 +103,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_motor.setVoltage(pidOutput + feedforwardOutput);
   }
 
-  public void motorConfigs(){
+  public void motorConfigs() {
     var talonFXConfigurator = m_motor.getConfigurator();
     var talonFXConfigurator2 = m_motor2.getConfigurator();
     var currentLimits = new CurrentLimitsConfigs();
