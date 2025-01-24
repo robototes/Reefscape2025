@@ -3,8 +3,8 @@ package frc.robot;
 import static frc.robot.Subsystems.SubsystemConstants.*;
 
 import frc.robot.generated.BonkTunerConstants;
-import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ArmPivot;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 
 public class Subsystems {
@@ -34,7 +34,7 @@ public class Subsystems {
       elevatorSubsystem = new ElevatorSubsystem();
     } else {
       elevatorSubsystem = null;
-
+    }
     if (ARMPIVOT_ENABLED) {
       armPivotSubsystem = new ArmPivot();
     } else {
