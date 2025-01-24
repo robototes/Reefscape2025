@@ -1,9 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
@@ -20,22 +18,26 @@ public class ClimbPivot extends SubsystemBase {
     configureMotor();
   }
 
-  public void configureMotor(){
+  public void configureMotor() {
     var talonFXConfigurator = climbPivotMotorOne.getConfigurator();
     var talonFXConfigurator2 = climbPivotMotorTwo.getConfigurator();
 
     var currentLimits = new CurrentLimitsConfigs();
 
     // enable stator current limit
-    currentLimits.StatorCurrentLimit = 5; 
+    currentLimits.StatorCurrentLimit = 5;
     currentLimits.StatorCurrentLimitEnable = true;
-    currentLimits.SupplyCurrentLimit = 5; 
+    currentLimits.SupplyCurrentLimit = 5;
     currentLimits.SupplyCurrentLimitEnable = true;
     talonFXConfigurator.apply(currentLimits);
     talonFXConfigurator2.apply(currentLimits);
   }
-  
-    public Command MoveClimbMotor(double speed){
-            return runOnce(() -> {climbPivotMotorOne.set(speed); climbPivotMotorTwo.set(-speed);});
-    }   
+
+  public Command MoveClimbMotor(double speed) {
+    return runOnce(
+        () -> {
+          climbPivotMotorOne.set(speed);
+          climbPivotMotorTwo.set(-speed);
+        });
+  }
 }
