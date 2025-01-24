@@ -92,6 +92,7 @@ public class Controls {
     operatorController.leftTrigger().whileTrue(s.elevatorSubsystem.goUp());
     operatorController.rightTrigger().whileTrue(s.elevatorSubsystem.goDown());
   }
+
   private void configureArmPivotBindings() {
     if (s.armPivotSubsystem == null) {
       return;
