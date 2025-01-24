@@ -10,8 +10,6 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.MutAngle;
-import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
@@ -130,12 +128,14 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public Command goUp() {
     return startEnd(
-        () -> m_motor.set(UP_VOLTAGE), () -> m_motor.set(HOLD_VOLTAGE)); // test values from dev model bot
+        () -> m_motor.set(UP_VOLTAGE),
+        () -> m_motor.set(HOLD_VOLTAGE)); // test values from dev model bot
   }
 
   public Command goDown() {
     return startEnd(
-        () -> m_motor.set(DOWN_VOLTAGE), () -> m_motor.set(HOLD_VOLTAGE)); // test values from dev model bot
+        () -> m_motor.set(DOWN_VOLTAGE),
+        () -> m_motor.set(HOLD_VOLTAGE)); // test values from dev model bot
   }
 
   /** Stop the control loop and motor output. */
