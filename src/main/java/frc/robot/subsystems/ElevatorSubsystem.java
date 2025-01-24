@@ -29,8 +29,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   private final double ELEVATOR_KV = 0;
   private final double ELEVATOR_KG = 0;
   private final double ELEVATOR_KA = 0;
-  private final double reverseSoftLimit = -67;
-  private final double forwardSoftLimit = -1;
+  private final double REVERSE_SOFT_LIMIT = -67;
+  private final double FORWARD_SOFT_LIMIT = -1;
+  private final double UP_VOLTAGE = -0.25;
+  private final double DOWN_VOLTAGE = 0.04;
+  private final double HOLD_VOLTAGE = -0.02;
 
   // Standard classes for controlling our elevator
   private final ProfiledPIDController m_controller =
@@ -43,10 +46,6 @@ public class ElevatorSubsystem extends SubsystemBase {
   private TalonFX m_motor2;
 
   private final MutVoltage m_appliedVoltage = Units.Volts.mutable(0);
-  // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
-  private final MutAngle m_angle = Units.Radians.mutable(0);
-  // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
-  private final MutAngularVelocity m_velocity = Units.RadiansPerSecond.mutable(0);
   // Creates a SysIdRoutine
   SysIdRoutine routine =
       new SysIdRoutine(
@@ -111,8 +110,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     // soft limits
     softLimits.ForwardSoftLimitEnable = true;
     softLimits.ReverseSoftLimitEnable = true;
-    softLimits.ForwardSoftLimitThreshold = forwardSoftLimit;
-    softLimits.ReverseSoftLimitThreshold = reverseSoftLimit;
+    softLimits.ForwardSoftLimitThreshold = FORWARD_SOFT_LIMIT;
+    softLimits.ReverseSoftLimitThreshold = REVERSE_SOFT_LIMIT;
     talonFXConfigurator.apply(softLimits);
     talonFXConfigurator2.apply(softLimits);
     // enable stator current limit
@@ -131,12 +130,12 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public Command goUp() {
     return startEnd(
-        () -> m_motor.set(-0.25), () -> m_motor.set(-0.02)); // test values from dev model bot
+        () -> m_motor.set(UP_VOLTAGE), () -> m_motor.set(HOLD_VOLTAGE)); // test values from dev model bot
   }
 
   public Command goDown() {
     return startEnd(
-        () -> m_motor.set(0.04), () -> m_motor.set(-0.02)); // test values from dev model bot
+        () -> m_motor.set(DOWN_VOLTAGE), () -> m_motor.set(HOLD_VOLTAGE)); // test values from dev model bot
   }
 
   /** Stop the control loop and motor output. */
