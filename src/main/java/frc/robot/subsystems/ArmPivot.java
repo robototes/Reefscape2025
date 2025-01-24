@@ -4,8 +4,10 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
+import java.util.function.DoubleSupplier;
 
 public class ArmPivot extends SubsystemBase {
   // Presets
@@ -21,12 +23,16 @@ public class ArmPivot extends SubsystemBase {
   public static int placeholderPIDSpeed;
 
   // TalonFX
-  private final TalonFX ring1;
+  private final TalonFX rings;
   private TalonFXConfiguration configuration = new TalonFXConfiguration();
 
   public ArmPivot() {
-    ring1 = new TalonFX(Hardware.ARM_PIVOT_MOTOR_ID);
+    rings = new TalonFX(Hardware.ARM_PIVOT_MOTOR_ID);
     factoryDefaults();
+  }
+
+  public Command gottaGo(DoubleSupplier iAmSpeed) {
+    return run(() -> rings.set(iAmSpeed.getAsDouble()));
   }
 
   public void moveArmCoral(int preset) {}
@@ -35,7 +41,7 @@ public class ArmPivot extends SubsystemBase {
 
   // TalonFX config
   public void factoryDefaults() {
-    TalonFXConfigurator cfg = motor.getConfigurator();
+    TalonFXConfigurator cfg = rings.getConfigurator();
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     configuration.ClosedLoopGeneral.ContinuousWrap = true;
     cfg.apply(configuration);
