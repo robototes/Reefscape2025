@@ -3,13 +3,10 @@ package frc.robot;
 import static frc.robot.Subsystems.SubsystemConstants.*;
 
 import frc.robot.generated.BonkTunerConstants;
-
-import frc.robot.subsystems.DrivebaseWrapper;
-import frc.robot.subsystems.VisionSubsystem;
-
 import frc.robot.subsystems.ArmPivot;
+import frc.robot.subsystems.DrivebaseWrapper;
 import frc.robot.subsystems.ElevatorSubsystem;
-
+import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 
 public class Subsystems {
@@ -22,7 +19,6 @@ public class Subsystems {
 
     public static final boolean ELEVATOR_ENABLED = true;
     public static final boolean ARMPIVOT_ENABLED = true;
-
   }
 
   // Subsystems go here
@@ -30,11 +26,9 @@ public class Subsystems {
   public final CommandSwerveDrivetrain drivebaseSubsystem;
 
   public final VisionSubsystem visionSubsystem;
-  
+
   public final ElevatorSubsystem elevatorSubsystem;
   public final ArmPivot armPivotSubsystem;
-
-  
 
   public Subsystems() {
     // Initialize subsystems here (don't forget to check if they're enabled!)
