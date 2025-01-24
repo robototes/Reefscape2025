@@ -26,7 +26,6 @@ import org.photonvision.targeting.PhotonPipelineResult;
 
 import java.util.EnumSet;
 import java.util.Optional;
-
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -56,8 +55,8 @@ public class VisionSubsystem extends SubsystemBase {
     private final PhotonCamera photonCamera2;
     private final PhotonPoseEstimator photonPoseEstimator;
     private final Field2d d2f;
-    // private final DrivebaseWrapper aprilTagsHelper;
     private final FieldObject2d rawVisionFieldObject;
+    private final DrivebaseWrapper aprilTagsHelper;
 
     // These are always set with every pipeline result
     private PhotonPipelineResult latestResult = null;
@@ -65,12 +64,15 @@ public class VisionSubsystem extends SubsystemBase {
 
     // These are only set when there's a valid pose
     private double lastTimestampSeconds = 0;
+    private double lastRawTimestampSeconds = 0;
     private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
 
+    // this field is from last year, so it needs to be updated
     private static final AprilTagFieldLayout fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
-    public VisionSubsystem(/* DrivebaseWrapper aprilTagsHelper */) {
+    public VisionSubsystem(DrivebaseWrapper aprilTagsHelper) {
         d2f = new Field2d();
+        this.aprilTagsHelper = aprilTagsHelper;
         rawVisionFieldObject = d2f.getObject("RawVision");
         var networkTables = NetworkTableInstance.getDefault();
         if (Robot.isSimulation()) {
@@ -101,6 +103,11 @@ public class VisionSubsystem extends SubsystemBase {
                 event -> update());
 
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("AprilTags");
+
+        shuffleboardTab
+                .addDouble("Last raw timestamp", this::getLastRawTimestampSeconds)
+                .withPosition(0, 0)
+                .withSize(1, 1);
         shuffleboardTab.addBoolean("Has targets", this::hasTargets).withPosition(0, 0).withSize(1, 1);
         shuffleboardTab
                 .addInteger("Num targets", this::getNumTargets)
@@ -116,17 +123,17 @@ public class VisionSubsystem extends SubsystemBase {
     public void update() {
         latestResult = photonCamera.getLatestResult();
         latestPose = photonPoseEstimator.update(latestResult);
+        lastRawTimestampSeconds = latestResult.getTimestampSeconds();
+
         if (latestPose.isPresent()) {
             lastTimestampSeconds = latestPose.get().timestampSeconds;
             lastFieldPose = latestPose.get().estimatedPose.toPose2d();
             rawVisionFieldObject.setPose(lastFieldPose);
             // gonna fix this later
-            /*
-             * aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastTimestampSeconds,
-             * STANDARD_DEVS);
-             * aprilTagsHelper.getField().setRobotPose(aprilTagsHelper.getEstimatedPosition(
-             * ));
-             */
+
+            aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastTimestampSeconds,
+                    STANDARD_DEVS);
+            d2f.setRobotPose(aprilTagsHelper.getEstimatedPosition());
         }
     }
 
@@ -158,5 +165,9 @@ public class VisionSubsystem extends SubsystemBase {
      */
     public double getLastTimestampSeconds() {
         return lastTimestampSeconds;
+    }
+
+    public double getLastRawTimestampSeconds() {
+        return lastRawTimestampSeconds;
     }
 }
