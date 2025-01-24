@@ -88,15 +88,16 @@ public class Controls {
       return;
     }
     // Controls binding goes here
-    s.armPivotSubsystem.setDefaultCommand(s.armPivotSubsystem.gottaGo(() -> operatorController.getLeftY()));
+    s.armPivotSubsystem.setDefaultCommand(
+        s.armPivotSubsystem.gottaGo(() -> operatorController.getLeftY()));
 
     /*
      * Controls plans:
-     * 
+     *
      * target operator controller for keybinds
-     * 
+     *
      * Map raise and lower to left Joystick.
-     * 
+     *
      */
   }
 }
