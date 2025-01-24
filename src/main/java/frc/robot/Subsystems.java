@@ -3,6 +3,7 @@ package frc.robot;
 import static frc.robot.Subsystems.SubsystemConstants.*;
 
 import frc.robot.generated.BonkTunerConstants;
+import frc.robot.subsystems.DrivebaseWrapper;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 
@@ -11,11 +12,11 @@ public class Subsystems {
     // <SUBSYSTEM>_ENABLED constants go here
 
     public static final boolean DRIVEBASE_ENABLED = true;
-    public static final boolean VISION_ENABLED = false;
+    public static final boolean VISION_ENABLED = true;
   }
 
   // Subsystems go here
-
+  public final DrivebaseWrapper DrivebaseWrapper;
   public final CommandSwerveDrivetrain drivebaseSubsystem;
   public final VisionSubsystem visionSubsystem;
 
@@ -24,11 +25,13 @@ public class Subsystems {
     // Add specification for bonk, Enum? get team number?
     if (DRIVEBASE_ENABLED) {
       drivebaseSubsystem = BonkTunerConstants.createDrivetrain();
+      DrivebaseWrapper = new DrivebaseWrapper(drivebaseSubsystem);
     } else {
       drivebaseSubsystem = null;
+      DrivebaseWrapper = new DrivebaseWrapper();
     }
     if (VISION_ENABLED) {
-      visionSubsystem = new VisionSubsystem();
+      visionSubsystem = new VisionSubsystem(DrivebaseWrapper);
     } else {
       visionSubsystem = null;
     }

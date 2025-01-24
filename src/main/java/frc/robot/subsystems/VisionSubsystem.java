@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
@@ -12,8 +11,8 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEvent;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -21,17 +20,15 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 import frc.robot.Robot;
-
-import org.photonvision.targeting.PhotonPipelineResult;
-
 import java.util.EnumSet;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
 
-/* 
+/*
  * All 3D poses and transforms use the NWU (North-West-Up) coordinate system, where +X is
  * north/forward, +Y is west/left, and +Z is up. On the field, this is based on the blue driver
  * station (+X is forward from blue driver station, +Y is left, +Z is up).
@@ -42,132 +39,126 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
  * means that from the (red) driver's perspective +X is away and +Y is to the right.
  */
 public class VisionSubsystem extends SubsystemBase {
-    public static final Transform3d ROBOT_TO_CAM = new Transform3d(
-            Units.inchesToMeters(27.0 / 2.0 - 0.94996),
-            0,
-            Units.inchesToMeters(8.12331),
-            new Rotation3d(0, Units.degreesToRadians(-30), 0));
+  public static final Transform3d ROBOT_TO_CAM =
+      new Transform3d(
+          Units.inchesToMeters(27.0 / 2.0 - 0.94996),
+          0,
+          Units.inchesToMeters(8.12331),
+          new Rotation3d(0, Units.degreesToRadians(-30), 0));
 
-    // TODO Measure these
-    private static final Vector<N3> STANDARD_DEVS = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5));
+  // TODO Measure these
+  private static final Vector<N3> STANDARD_DEVS =
+      VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5));
 
-    private final PhotonCamera photonCamera;
-    private final PhotonCamera photonCamera2;
-    private final PhotonPoseEstimator photonPoseEstimator;
-    private final Field2d d2f;
-    private final FieldObject2d rawVisionFieldObject;
-    private final DrivebaseWrapper aprilTagsHelper;
+  private final PhotonCamera photonCamera;
+  private final PhotonCamera photonCamera2;
+  private final PhotonPoseEstimator photonPoseEstimator;
+  private final Field2d d2f;
+  private final FieldObject2d rawVisionFieldObject;
+  private final DrivebaseWrapper aprilTagsHelper;
 
-    // These are always set with every pipeline result
-    private PhotonPipelineResult latestResult = null;
-    private Optional<EstimatedRobotPose> latestPose = Optional.empty();
+  // These are always set with every pipeline result
+  private PhotonPipelineResult latestResult = null;
+  private Optional<EstimatedRobotPose> latestPose = Optional.empty();
 
-    // These are only set when there's a valid pose
-    private double lastTimestampSeconds = 0;
-    private double lastRawTimestampSeconds = 0;
-    private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
+  // These are only set when there's a valid pose
+  private double lastTimestampSeconds = 0;
+  private double lastRawTimestampSeconds = 0;
+  private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
 
-    // this field is from last year, so it needs to be updated
-    private static final AprilTagFieldLayout fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+  private static final AprilTagFieldLayout fieldLayout =
+      AprilTagFields.k2025Reefscape.loadAprilTagLayoutField();
 
-    public VisionSubsystem(DrivebaseWrapper aprilTagsHelper) {
-        d2f = new Field2d();
-        this.aprilTagsHelper = aprilTagsHelper;
-        rawVisionFieldObject = d2f.getObject("RawVision");
-        var networkTables = NetworkTableInstance.getDefault();
-        if (Robot.isSimulation()) {
-            networkTables.stopServer();
-            networkTables.setServer(Hardware.PHOTON_IP);
-            networkTables.startClient4("Photonvision");
-        }
-
-        photonCamera = new PhotonCamera(Hardware.FRONT_CAM);
-        photonCamera2 = new PhotonCamera(Hardware.BACK_CAM);
-        photonPoseEstimator = new PhotonPoseEstimator(
-                fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM);
-
-        networkTables.addListener(
-                networkTables
-                        .getTable("photonvision")
-                        .getSubTable(Hardware.FRONT_CAM)
-                        .getEntry("rawBytes"),
-                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                event -> update());
-
-        networkTables.addListener(
-                networkTables
-                        .getTable("photonvision")
-                        .getSubTable(Hardware.BACK_CAM)
-                        .getEntry("rawBytes"),
-                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                event -> update());
-
-        ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("AprilTags");
-
-        shuffleboardTab
-                .addDouble("Last raw timestamp", this::getLastRawTimestampSeconds)
-                .withPosition(0, 0)
-                .withSize(1, 1);
-        shuffleboardTab.addBoolean("Has targets", this::hasTargets).withPosition(0, 0).withSize(1, 1);
-        shuffleboardTab
-                .addInteger("Num targets", this::getNumTargets)
-                .withPosition(0, 1)
-                .withSize(1, 1);
-        shuffleboardTab
-                .addDouble("Last timestamp", this::getLastTimestampSeconds)
-                .withPosition(1, 0)
-                .withSize(1, 1);
-
+  public VisionSubsystem(DrivebaseWrapper aprilTagsHelper) {
+    d2f = new Field2d();
+    this.aprilTagsHelper = aprilTagsHelper;
+    rawVisionFieldObject = d2f.getObject("RawVision");
+    var networkTables = NetworkTableInstance.getDefault();
+    if (Robot.isSimulation()) {
+      networkTables.stopServer();
+      networkTables.setServer(Hardware.PHOTON_IP);
+      networkTables.startClient4("Photonvision");
     }
 
-    public void update() {
-        latestResult = photonCamera.getLatestResult();
-        latestPose = photonPoseEstimator.update(latestResult);
-        lastRawTimestampSeconds = latestResult.getTimestampSeconds();
+    photonCamera = new PhotonCamera(Hardware.FRONT_CAM);
+    photonCamera2 = new PhotonCamera(Hardware.BACK_CAM);
+    photonPoseEstimator =
+        new PhotonPoseEstimator(
+            fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM);
 
-        if (latestPose.isPresent()) {
-            lastTimestampSeconds = latestPose.get().timestampSeconds;
-            lastFieldPose = latestPose.get().estimatedPose.toPose2d();
-            rawVisionFieldObject.setPose(lastFieldPose);
-            // gonna fix this later
+    networkTables.addListener(
+        networkTables.getTable("photonvision").getSubTable(Hardware.FRONT_CAM).getEntry("rawBytes"),
+        EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+        event -> update());
 
-            aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastTimestampSeconds,
-                    STANDARD_DEVS);
-            d2f.setRobotPose(aprilTagsHelper.getEstimatedPosition());
-        }
+    networkTables.addListener(
+        networkTables.getTable("photonvision").getSubTable(Hardware.BACK_CAM).getEntry("rawBytes"),
+        EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+        event -> update());
+
+    ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("AprilTags");
+
+    shuffleboardTab
+        .addDouble("Last raw timestamp", this::getLastRawTimestampSeconds)
+        .withPosition(0, 0)
+        .withSize(1, 1);
+    shuffleboardTab.addBoolean("Has targets", this::hasTargets).withPosition(0, 0).withSize(1, 1);
+    shuffleboardTab
+        .addInteger("Num targets", this::getNumTargets)
+        .withPosition(0, 1)
+        .withSize(1, 1);
+    shuffleboardTab
+        .addDouble("Last timestamp", this::getLastTimestampSeconds)
+        .withPosition(1, 0)
+        .withSize(1, 1);
+  }
+
+  public void update() {
+    latestResult = photonCamera.getLatestResult();
+    latestPose = photonPoseEstimator.update(latestResult);
+    lastRawTimestampSeconds = latestResult.getTimestampSeconds();
+
+    if (latestPose.isPresent()) {
+      lastTimestampSeconds = latestPose.get().timestampSeconds;
+      lastFieldPose = latestPose.get().estimatedPose.toPose2d();
+      rawVisionFieldObject.setPose(lastFieldPose);
+      // gonna fix this later
+
+      aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastTimestampSeconds, STANDARD_DEVS);
+      d2f.setRobotPose(aprilTagsHelper.getEstimatedPosition());
     }
+  }
 
-    public boolean hasTargets() {
-        return latestPose.isPresent();
-    }
+  public boolean hasTargets() {
+    return latestPose.isPresent();
+  }
 
-    public int getNumTargets() {
-        return latestResult == null ? -1 : latestResult.getTargets().size();
-    }
+  public int getNumTargets() {
+    return latestResult == null ? -1 : latestResult.getTargets().size();
+  }
 
-    /**
-     * Calculates the robot pose using the best target. Returns null if there is no
-     * known robot pose.
-     *
-     * @return The calculated robot pose in meters.
-     */
-    public Pose3d getRobotPose() {
-        if (latestPose.isPresent()) {
-            return latestPose.get().estimatedPose;
-        }
-        return null;
+  /**
+   * Calculates the robot pose using the best target. Returns null if there is no known robot pose.
+   *
+   * @return The calculated robot pose in meters.
+   */
+  public Pose3d getRobotPose() {
+    if (latestPose.isPresent()) {
+      return latestPose.get().estimatedPose;
     }
+    return null;
+  }
 
-    /**
-     * Returns the last time we saw an AprilTag.
-     *
-     * @return The time we last saw an AprilTag in seconds since FPGA startup.
-     */
-    public double getLastTimestampSeconds() {
-        return lastTimestampSeconds;
-    }
+  /**
+   * Returns the last time we saw an AprilTag.
+   *
+   * @return The time we last saw an AprilTag in seconds since FPGA startup.
+   */
+  public double getLastTimestampSeconds() {
+    return lastTimestampSeconds;
+  }
 
-    public double getLastRawTimestampSeconds() {
-        return lastRawTimestampSeconds;
-    }
+  public double getLastRawTimestampSeconds() {
+    return lastRawTimestampSeconds;
+  }
 }

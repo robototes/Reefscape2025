@@ -15,5 +15,4 @@ public class Hardware {
   public static final String PHOTON_IP = "10.24.12.51";
   public static final String FRONT_CAM = "front";
   public static final String BACK_CAM = "back";
-
 }
