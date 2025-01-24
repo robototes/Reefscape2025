@@ -36,7 +36,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private final ProfiledPIDController m_controller =
       new ProfiledPIDController(
           ELEVATOR_KP, ELEVATOR_KI, ELEVATOR_KD, new TrapezoidProfile.Constraints(2.45, 2.45));
-  ElevatorFeedforward m_feedforward =
+  private final ElevatorFeedforward m_feedforward =
       new ElevatorFeedforward(ELEVATOR_KS, ELEVATOR_KG, ELEVATOR_KV, ELEVATOR_KA);
 
   private TalonFX m_motor;
