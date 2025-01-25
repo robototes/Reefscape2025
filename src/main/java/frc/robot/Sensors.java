@@ -5,13 +5,13 @@ import static frc.robot.Sensors.SensorConstants.*;
 import frc.robot.sensors.ArmSensor;
 
 public class Sensors {
-     public static class SensorConstants {
+  public static class SensorConstants {
     // <SENSOR>_ENABLED constants go here
     public static final boolean ARMSENSOR_ENABLED = true;
   }
 
   // Sensors go here
-    public final ArmSensor armSensor;
+  public final ArmSensor armSensor;
 
   public Sensors() {
     // Initialize subsystems here (don't forget to check if they're enabled!)
