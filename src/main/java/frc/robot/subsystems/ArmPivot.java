@@ -15,20 +15,19 @@ import java.util.function.Supplier;
 
 public class ArmPivot extends SubsystemBase {
   // Presets
-  public final int PRESET_L1 = 0;
-  public final int PRESET_L2_L3 = 35;
-  public final int PRESET_L4 = 90;
-  public final int HARDSTOP_HIGH = 90;
-  public final int HARDSTOP_LOW = 0;
-  public final double PLACEHOLDER_CORAL_WEIGHT_KG = 0.8;
-  public final double PLACEHOLDER_ALGAE_WEIGHT_KG = 1.5;
+  public static final int PRESET_L1 = 0;
+  public static final int PRESET_L2_L3 = 35;
+  public static final int PRESET_L4 = 90;
+  public static final int HARDSTOP_HIGH = 90;
+  public static final int HARDSTOP_LOW = 0;
+  public static final double PLACEHOLDER_CORAL_WEIGHT_KG = 0.8;
+  public static final double PLACEHOLDER_ALGAE_WEIGHT_KG = 1.5;
 
   // Remove once we implement PID speed
   public static int placeholderPIDSpeed;
 
   // TalonFX
   private final TalonFX motor;
-  private TalonFXConfiguration configuration = new TalonFXConfiguration();
 
   public ArmPivot() {
     motor = new TalonFX(Hardware.ARM_PIVOT_MOTOR_ID);
@@ -46,6 +45,7 @@ public class ArmPivot extends SubsystemBase {
 
   // TalonFX config
   public void factoryDefaults() {
+    TalonFXConfiguration configuration = new TalonFXConfiguration();
     TalonFXConfigurator cfg = motor.getConfigurator();
     var currentLimits = new CurrentLimitsConfigs();
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
