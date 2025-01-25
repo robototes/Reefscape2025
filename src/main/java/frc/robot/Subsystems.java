@@ -22,11 +22,9 @@ public class Subsystems {
   }
 
   // Subsystems go here
-  public final DrivebaseWrapper DrivebaseWrapper;
+  public final DrivebaseWrapper drivebaseWrapper;
   public final CommandSwerveDrivetrain drivebaseSubsystem;
-
   public final VisionSubsystem visionSubsystem;
-
   public final ElevatorSubsystem elevatorSubsystem;
   public final ArmPivot armPivotSubsystem;
 
@@ -35,13 +33,13 @@ public class Subsystems {
     // Add specification for bonk, Enum? get team number?
     if (DRIVEBASE_ENABLED) {
       drivebaseSubsystem = BonkTunerConstants.createDrivetrain();
-      DrivebaseWrapper = new DrivebaseWrapper(drivebaseSubsystem);
+      drivebaseWrapper = new DrivebaseWrapper(drivebaseSubsystem);
     } else {
       drivebaseSubsystem = null;
-      DrivebaseWrapper = new DrivebaseWrapper();
+      drivebaseWrapper = new DrivebaseWrapper();
     }
     if (VISION_ENABLED) {
-      visionSubsystem = new VisionSubsystem(DrivebaseWrapper);
+      visionSubsystem = new VisionSubsystem(drivebaseWrapper);
     } else {
       visionSubsystem = null;
     }

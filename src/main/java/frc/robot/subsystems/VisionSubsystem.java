@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 import frc.robot.Robot;
@@ -39,12 +40,19 @@ import org.photonvision.targeting.PhotonPipelineResult;
  * means that from the (red) driver's perspective +X is away and +Y is to the right.
  */
 public class VisionSubsystem extends SubsystemBase {
+  private static final double CAMERA_X_POS_METERS = Units.inchesToMeters(27.0 / 2.0 - 0.94996);
+  private static final double CAMERA_Y_POS_METERS = 0;
+  private static final double CAMERA_Z_POS_METERS = Units.inchesToMeters(8.12331);
+  private static final double CAMERA_ROLL = 0;
+  private static final double CAMERA_PITCH = Units.degreesToRadians(-30);
+  private static final double CAMERA_YAW = 0;
+
   public static final Transform3d ROBOT_TO_CAM =
       new Transform3d(
-          Units.inchesToMeters(27.0 / 2.0 - 0.94996),
-          0,
-          Units.inchesToMeters(8.12331),
-          new Rotation3d(0, Units.degreesToRadians(-30), 0));
+          CAMERA_X_POS_METERS,
+          CAMERA_Y_POS_METERS,
+          CAMERA_Z_POS_METERS,
+          new Rotation3d(CAMERA_ROLL, CAMERA_PITCH, CAMERA_YAW));
 
   // TODO Measure these
   private static final Vector<N3> STANDARD_DEVS =
@@ -71,6 +79,7 @@ public class VisionSubsystem extends SubsystemBase {
 
   public VisionSubsystem(DrivebaseWrapper aprilTagsHelper) {
     d2f = new Field2d();
+    SmartDashboard.putData(d2f);
     this.aprilTagsHelper = aprilTagsHelper;
     rawVisionFieldObject = d2f.getObject("RawVision");
     var networkTables = NetworkTableInstance.getDefault();
