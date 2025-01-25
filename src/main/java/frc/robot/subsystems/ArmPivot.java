@@ -1,19 +1,16 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
-
-import static edu.wpi.first.units.Units.Volts;
-
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class ArmPivot extends SubsystemBase {
@@ -38,10 +35,9 @@ public class ArmPivot extends SubsystemBase {
     factoryDefaults();
   }
 
-  // (+) is to move arm up, and (-) is down 
+  // (+) is to move arm up, and (-) is down
   public Command startMovingVoltage(Supplier<Voltage> speedControl) {
     return run(() -> motor.setVoltage(speedControl.get().in(Volts)));
-
   }
 
   public void moveArmCoral(int preset) {}
@@ -55,7 +51,7 @@ public class ArmPivot extends SubsystemBase {
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     configuration.ClosedLoopGeneral.ContinuousWrap = true;
     cfg.apply(configuration);
-    // enabling stator current limits 
+    // enabling stator current limits
     currentLimits.StatorCurrentLimit = 5; // starting low for testing
     currentLimits.StatorCurrentLimitEnable = true;
     currentLimits.SupplyCurrentLimit = 5; // starting low for testing
