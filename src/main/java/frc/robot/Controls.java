@@ -97,9 +97,8 @@ public class Controls {
     if (s.armPivotSubsystem == null) {
       return;
     }
-
     // Arm Controls binding goes here
-    s.armPivotSubsystem.setDefaultCommand(s.armPivotSubsystem.startMoving(() -> operatorController.getLeftY()));
-
+    s.armPivotSubsystem.setDefaultCommand(
+        s.armPivotSubsystem.startMovingVoltage(() -> Volts.of(6 * operatorController.getLeftY())));
   }
 }
