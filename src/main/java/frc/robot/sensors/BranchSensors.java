@@ -29,7 +29,7 @@ public class BranchSensors {
     }
   }
 
-  public Distance getSensorDistance(LaserCan sensor) {
+  private Distance getSensorDistance(LaserCan sensor) {
     LaserCan.Measurement measurement = sensor.getMeasurement();
     if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
       return Millimeter.of(measurement.distance_mm);
