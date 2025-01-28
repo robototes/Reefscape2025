@@ -45,6 +45,7 @@ public class Controls {
     this.s = s;
     configureDrivebaseBindings();
     configureArmPivotBindings();
+    configureClimbPivotBindings();
   }
 
   private void configureDrivebaseBindings() {
@@ -87,6 +88,11 @@ public class Controls {
     if (s.armPivotSubsystem == null) {
       return;
     }
-    // Controls binding goes here
   }
+  private void configureClimbPivotBindings() {
+    if (s.climbPivotSubsystem == null){
+      return;
+    }
+  }
+    // Controls binding goes here
 }
