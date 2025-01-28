@@ -29,21 +29,20 @@ public class BranchSensors {
     }
   }
 
-  public Distance getLeftSensorDistance() {
-    LaserCan.Measurement measurement = leftSensor.getMeasurement();
+  public Distance getSensorDistance(LaserCan sensor) {
+    LaserCan.Measurement measurement = sensor.getMeasurement();
     if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
       return Millimeter.of(measurement.distance_mm);
     } else {
-      return Millimeter.of(-1);
+      return Millimeter.of(10000);
     }
   }
 
+  public Distance getLeftSensorDistance() {
+    return getSensorDistance(leftSensor);
+  }
+
   public Distance getRightSensorDistance() {
-    LaserCan.Measurement measurement = rightSensor.getMeasurement();
-    if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
-      return Millimeter.of(measurement.distance_mm);
-    } else {
-      return Millimeter.of(-1);
-    }
+    return getSensorDistance(rightSensor);
   }
 }
