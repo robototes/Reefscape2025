@@ -25,6 +25,7 @@ public class Robot extends TimedRobot {
   private final RobotType robotType;
   public final Controls controls;
   public final Subsystems subsystems;
+  public final Sensors sensors;
 
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
@@ -35,6 +36,7 @@ public class Robot extends TimedRobot {
 
     subsystems = new Subsystems();
     controls = new Controls(subsystems);
+    sensors = new Sensors();
 
     SmartDashboard.putString("current bot", robotType.toString());
 
