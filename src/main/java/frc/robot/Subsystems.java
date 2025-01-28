@@ -35,10 +35,12 @@ public class Subsystems {
     // Add specification for bonk, Enum? get team number?
     if (DRIVEBASE_ENABLED) {
       drivebaseSubsystem = BonkTunerConstants.createDrivetrain();
+      DrivebaseWrapper = new DrivebaseWrapper(drivebaseSubsystem);
     } else {
       drivebaseSubsystem = null;
+      DrivebaseWrapper = new DrivebaseWrapper();
     }
-    DrivebaseWrapper = new DrivebaseWrapper(drivebaseSubsystem);
+
     if (VISION_ENABLED) {
       visionSubsystem = new VisionSubsystem(DrivebaseWrapper);
     } else {
