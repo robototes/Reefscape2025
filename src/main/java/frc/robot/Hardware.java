@@ -19,5 +19,4 @@ public class Hardware {
 
   // arm Sensors [35-39]
   public static final int MAIN_ARM_SENSOR = 35;
-
 }
