@@ -49,6 +49,4 @@ public class SpinnyClaw extends SubsystemBase {
     currentLimits.SupplyCurrentLimitEnable = true;
     cfg.apply(currentLimits);
   }
-
-
 }
