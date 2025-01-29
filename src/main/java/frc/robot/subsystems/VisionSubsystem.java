@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
-import frc.robot.Robot;
 import java.util.EnumSet;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
@@ -61,7 +60,7 @@ public class VisionSubsystem extends SubsystemBase {
   private final PhotonCamera photonCamera;
   private final PhotonCamera photonCamera2;
   private final PhotonPoseEstimator photonPoseEstimator;
-  private final Field2d d2f;
+  private final Field2d robotField;
   private final FieldObject2d rawVisionFieldObject;
   private final DrivebaseWrapper aprilTagsHelper;
 
@@ -78,23 +77,17 @@ public class VisionSubsystem extends SubsystemBase {
       AprilTagFields.k2025Reefscape.loadAprilTagLayoutField();
 
   public VisionSubsystem(DrivebaseWrapper aprilTagsHelper) {
-    d2f = new Field2d();
-    SmartDashboard.putData(d2f);
+    robotField = new Field2d();
+    SmartDashboard.putData(robotField);
     this.aprilTagsHelper = aprilTagsHelper;
-    rawVisionFieldObject = d2f.getObject("RawVision");
-    var networkTables = NetworkTableInstance.getDefault();
-    if (Robot.isSimulation()) {
-      networkTables.stopServer();
-      networkTables.setServer(Hardware.PHOTON_IP);
-      networkTables.startClient4("Photonvision");
-    }
-
+    rawVisionFieldObject = robotField.getObject("RawVision");
     photonCamera = new PhotonCamera(Hardware.FRONT_CAM);
     photonCamera2 = new PhotonCamera(Hardware.BACK_CAM);
     photonPoseEstimator =
         new PhotonPoseEstimator(
             fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM);
 
+    var networkTables = NetworkTableInstance.getDefault();
     networkTables.addListener(
         networkTables.getTable("photonvision").getSubTable(Hardware.FRONT_CAM).getEntry("rawBytes"),
         EnumSet.of(NetworkTableEvent.Kind.kValueAll),
@@ -131,10 +124,8 @@ public class VisionSubsystem extends SubsystemBase {
       lastTimestampSeconds = latestPose.get().timestampSeconds;
       lastFieldPose = latestPose.get().estimatedPose.toPose2d();
       rawVisionFieldObject.setPose(lastFieldPose);
-      // gonna fix this later
-
       aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastTimestampSeconds, STANDARD_DEVS);
-      d2f.setRobotPose(aprilTagsHelper.getEstimatedPosition());
+      robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
     }
   }
 
