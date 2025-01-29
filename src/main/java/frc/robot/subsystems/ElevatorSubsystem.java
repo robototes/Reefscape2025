@@ -8,9 +8,6 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
@@ -41,7 +38,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   // create a Motion Magic request, voltage output
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
 
-  //motors
+  // motors
   private TalonFX m_motor;
   private TalonFX m_motor2;
 
@@ -132,26 +129,25 @@ public class ElevatorSubsystem extends SubsystemBase {
     // set Motion Magic settings
     var motionMagicConfigs = talonFXConfigs.MotionMagic;
     motionMagicConfigs.MotionMagicCruiseVelocity = 80; // Target cruise velocity of 80 rps
-    motionMagicConfigs.MotionMagicAcceleration = 160; // Target acceleration of 160 rps/s (0.5 seconds)
+    motionMagicConfigs.MotionMagicAcceleration =
+        160; // Target acceleration of 160 rps/s (0.5 seconds)
     motionMagicConfigs.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
     m_motor.getConfigurator().apply(talonFXConfigs);
   }
 
-  private Command setTargetPosition(double pos){
+  private Command setTargetPosition(double pos) {
     // set target position to 100 rotations
-    return runOnce(
-      () -> m_motor.setControl(m_request.withPosition(pos)));
+    return runOnce(() -> m_motor.setControl(m_request.withPosition(pos)));
   }
 
-  private double getCurrentPosition(){
+  private double getCurrentPosition() {
     var curPos = m_motor.getPosition();
     return curPos.getValueAsDouble();
   }
 
-  public Command setLevel(double pos){
-    return setTargetPosition(pos)
-    .until( () -> Math.abs(getCurrentPosition() - pos) < POS_TOLERANCE);
+  public Command setLevel(double pos) {
+    return setTargetPosition(pos).until(() -> Math.abs(getCurrentPosition() - pos) < POS_TOLERANCE);
   }
 
   public Command goUp() {
