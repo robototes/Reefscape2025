@@ -6,6 +6,8 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.BonkTunerConstants;
+import frc.robot.generated.CompTunerConstants;
+import frc.robot.util.RobotType;
 
 public class Controls {
   private static final int DRIVER_CONTROLLER_PORT = 0;
@@ -22,7 +24,10 @@ public class Controls {
 
   // Swerve stuff
   private double MaxSpeed =
-      BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+      RobotType.getCurrent() == RobotType.BONK
+          ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
+          : CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+  // kSpeedAt12Volts desired top speed
   private double MaxAngularRate =
       RotationsPerSecond.of(0.75)
           .in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -70,6 +75,7 @@ public class Controls {
                         -driverController.getRightX()
                             * MaxAngularRate) // Drive counterclockwise with negative X (left)
             ));
+    s.drivebaseSubsystem.applyRequest(() -> brake).ignoringDisable(true).schedule();
 
     // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() -> brake));
     // driveController.b().whileTrue(s.drivebaseSubsystem.applyRequest(() ->

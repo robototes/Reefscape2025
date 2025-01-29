@@ -25,7 +25,7 @@ public class CompTunerConstants {
       new Slot0Configs()
           .withKP(100)
           .withKI(0)
-          .withKD(0.5)
+          .withKD(1)
           .withKS(0.1)
           .withKV(2.33)
           .withKA(0)
