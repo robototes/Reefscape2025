@@ -3,7 +3,6 @@ package frc.robot;
 import static frc.robot.Sensors.SensorConstants.*;
 
 import frc.robot.sensors.ArmSensor;
-
 import frc.robot.sensors.BranchSensors;
 
 public class Sensors {
@@ -31,4 +30,5 @@ public class Sensors {
     } else {
       branchSensors = null;
     }
+  }
 }

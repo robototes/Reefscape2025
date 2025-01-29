@@ -21,18 +21,15 @@ public class SpinnyClaw extends SubsystemBase {
   private final TalonFX motor;
 
   public SpinnyClaw() {
-    motor = new TalonFX(Hardware.SPINNY_LAW_MOTOR_ID);
+    motor = new TalonFX(Hardware.SPINNY_CLAW_MOTOR_ID);
     factoryDefaults();
   }
 
   // (+) is to move arm up, and (-) is down
-  public Command startMovingVoltage(Supplier<Voltage> speedControl) {
-    return run(() -> motor.setVoltage(speedControl.get().in(Volts)));
+  public Command movingVoltage(Supplier<Voltage> speedControl) {
+    return run(() -> motor.setVoltage(speedControl.get().in(Volts)))
+        .finallyDo(() -> motor.setVoltage(0));
   }
-
-  public void moveArmCoral(int preset) {}
-
-  public void moveArmAlgae(int preset) {}
 
   // TalonFX config
   public void factoryDefaults() {
