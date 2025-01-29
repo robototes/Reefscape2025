@@ -3,7 +3,9 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -19,27 +21,27 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 public class ElevatorSubsystem extends SubsystemBase {
+  public static final double LEVEL_FOUR_POS = 4;
+  public static final double LEVEL_THREE_POS = 3;
+  public static final double LEVEL_TWO_POS = 2;
+  public static final double LEVEL_ONE_POS = 1;
+  private static final double POS_TOLERANCE = 0.1;
   // This gearbox represents a gearbox containing 4 Vex 775pro motors.
   private final double ELEVATOR_KP = 0.1;
   private final double ELEVATOR_KI = 0;
   private final double ELEVATOR_KD = 0;
   private final double ELEVATOR_KS = 0;
   private final double ELEVATOR_KV = 0;
-  private final double ELEVATOR_KG = 0;
   private final double ELEVATOR_KA = 0;
   private final double REVERSE_SOFT_LIMIT = -67;
   private final double FORWARD_SOFT_LIMIT = -1;
   private final double UP_VOLTAGE = -0.25;
   private final double DOWN_VOLTAGE = 0.04;
   private final double HOLD_VOLTAGE = -0.02;
+  // create a Motion Magic request, voltage output
+  private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
 
-  // Standard classes for controlling our elevator
-  private final ProfiledPIDController m_controller =
-      new ProfiledPIDController(
-          ELEVATOR_KP, ELEVATOR_KI, ELEVATOR_KD, new TrapezoidProfile.Constraints(2.45, 2.45));
-  private final ElevatorFeedforward m_feedforward =
-      new ElevatorFeedforward(ELEVATOR_KS, ELEVATOR_KG, ELEVATOR_KV, ELEVATOR_KA);
-
+  //motors
   private TalonFX m_motor;
   private TalonFX m_motor2;
 
@@ -90,16 +92,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         .angularVelocity(m_motor2.getVelocity().getValue());
   }
 
-  public void reachGoal(double goal) {
-    m_controller.setGoal(goal);
-    // With the setpoint value we run PID control like normal
-    double pidOutput = m_controller.calculate(m_motor.getPosition().getValueAsDouble());
-    double feedforwardOutput =
-        0; // m_feedforward.calculate(m_controller.getSetpoint().velocity); can be used later to
-    // calculate with correct values
-    m_motor.setVoltage(pidOutput + feedforwardOutput);
-  }
-
   public void motorConfigs() {
     var talonFXConfigurator = m_motor.getConfigurator();
     var talonFXConfigurator2 = m_motor2.getConfigurator();
@@ -124,6 +116,42 @@ public class ElevatorSubsystem extends SubsystemBase {
     outputConfigs.NeutralMode = NeutralModeValue.Brake;
     talonFXConfigurator.apply(outputConfigs);
     talonFXConfigurator2.apply(outputConfigs);
+
+    // in init function
+    var talonFXConfigs = new TalonFXConfiguration();
+
+    // set slot 0 gains
+    var slot0Configs = talonFXConfigs.Slot0;
+    slot0Configs.kS = ELEVATOR_KS; // Add 0.25 V output to overcome static friction
+    slot0Configs.kV = ELEVATOR_KV; // A velocity target of 1 rps results in 0.12 V output
+    slot0Configs.kA = ELEVATOR_KA; // An acceleration of 1 rps/s requires 0.01 V output
+    slot0Configs.kP = ELEVATOR_KP; // A position error of 2.5 rotations results in 12 V output
+    slot0Configs.kI = ELEVATOR_KI; // no output for integrated error
+    slot0Configs.kD = ELEVATOR_KD; // A velocity error of 1 rps results in 0.1 V output
+
+    // set Motion Magic settings
+    var motionMagicConfigs = talonFXConfigs.MotionMagic;
+    motionMagicConfigs.MotionMagicCruiseVelocity = 80; // Target cruise velocity of 80 rps
+    motionMagicConfigs.MotionMagicAcceleration = 160; // Target acceleration of 160 rps/s (0.5 seconds)
+    motionMagicConfigs.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
+
+    m_motor.getConfigurator().apply(talonFXConfigs);
+  }
+
+  private Command setTargetPosition(double pos){
+    // set target position to 100 rotations
+    return runOnce(
+      () -> m_motor.setControl(m_request.withPosition(pos)));
+  }
+
+  private double getCurrentPosition(){
+    var curPos = m_motor.getPosition();
+    return curPos.getValueAsDouble();
+  }
+
+  public Command setLevel(double pos){
+    return setTargetPosition(pos)
+    .until( () -> Math.abs(getCurrentPosition() - pos) < POS_TOLERANCE);
   }
 
   public Command goUp() {

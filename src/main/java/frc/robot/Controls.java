@@ -6,6 +6,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.BonkTunerConstants;
+import frc.robot.subsystems.ElevatorSubsystem;
 
 public class Controls {
   private static final int DRIVER_CONTROLLER_PORT = 0;
@@ -91,6 +92,10 @@ public class Controls {
     // Controls binding goes here
     operatorController.leftTrigger().whileTrue(s.elevatorSubsystem.goUp());
     operatorController.rightTrigger().whileTrue(s.elevatorSubsystem.goDown());
+    operatorController.y().whileTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS));
+    operatorController.x().whileTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_THREE_POS));
+    operatorController.b().whileTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_TWO_POS));
+    operatorController.a().whileTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_ONE_POS));
   }
 
   private void configureArmPivotBindings() {
