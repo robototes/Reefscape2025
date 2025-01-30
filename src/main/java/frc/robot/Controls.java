@@ -44,6 +44,7 @@ public class Controls {
     operatorController = new CommandXboxController(OPERATOR_CONTROLLER_PORT);
     this.s = s;
     configureDrivebaseBindings();
+    configureElevatorBindings();
     configureArmPivotBindings();
     configureClimbPivotBindings();
   }
@@ -84,10 +85,24 @@ public class Controls {
     s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
   }
 
+  private void configureElevatorBindings() {
+    if (s.elevatorSubsystem == null) {
+      return;
+    }
+    // Controls binding goes here
+    operatorController.leftTrigger().whileTrue(s.elevatorSubsystem.goUp());
+    operatorController.rightTrigger().whileTrue(s.elevatorSubsystem.goDown());
+  }
+
   private void configureArmPivotBindings() {
     if (s.armPivotSubsystem == null) {
       return;
     }
+
+    // Arm Controls binding goes here
+    s.armPivotSubsystem.setDefaultCommand(
+        s.armPivotSubsystem.startMovingVoltage(() -> Volts.of(6 * operatorController.getLeftY())));
+
   }
   private void configureClimbPivotBindings() {
     if (s.climbPivotSubsystem == null){

@@ -1,8 +1,9 @@
 plugins {
     id "java"
     id "com.diffplug.spotless" version "6.20.0"
-    id "edu.wpi.first.GradleRIO" version "2025.1.1"
-    id "net.ltgt.errorprone" version "3.1.0"
+    id "edu.wpi.first.GradleRIO" version "2025.2.1"
+    id "net.ltgt.errorprone" version "4.0.0"
+
 }
 
 java {
@@ -63,7 +64,7 @@ def includeDesktopSupport = true
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 5.
 dependencies {
-    compileOnly group: "com.google.errorprone", name: "error_prone_annotations", version: "2.24.1"
+    compileOnly group: "com.google.errorprone", name: "error_prone_annotations", version: "2.28.0"
 
     annotationProcessor wpi.java.deps.wpilibAnnotations()
     implementation wpi.java.deps.wpilib()
@@ -86,7 +87,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    errorprone group: "com.google.errorprone", name: "error_prone_core", version: "2.24.1"
+    errorprone group: "com.google.errorprone", name: "error_prone_core", version: "2.28.0"
 }
 
 test {
