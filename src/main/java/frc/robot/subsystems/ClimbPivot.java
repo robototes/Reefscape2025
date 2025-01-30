@@ -33,7 +33,7 @@ public class ClimbPivot extends SubsystemBase {
     talonFXConfigurator2.apply(currentLimits);
   }
 
-  public Command MoveClimbMotor(double speed) {
+  public Command moveClimbMotor(double speed) {
     return runOnce(
         () -> {
           climbPivotMotorOne.set(speed);
