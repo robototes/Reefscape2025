@@ -102,12 +102,12 @@ public class Controls {
     // Arm Controls binding goes here
     s.armPivotSubsystem.setDefaultCommand(
         s.armPivotSubsystem.startMovingVoltage(() -> Volts.of(6 * operatorController.getLeftY())));
-
   }
+
   private void configureClimbPivotBindings() {
-    if (s.climbPivotSubsystem == null){
+    if (s.climbPivotSubsystem == null) {
       return;
     }
   }
-    // Controls binding goes here
+  // Controls binding goes here
 }
