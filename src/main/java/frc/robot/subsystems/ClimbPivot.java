@@ -18,7 +18,7 @@ public class ClimbPivot extends SubsystemBase {
     configureMotor();
   }
 
-  private void configureMotor() {
+  private void configureMotors() {
     var talonFXConfigurator = climbPivotMotorOne.getConfigurator();
     var talonFXConfigurator2 = climbPivotMotorTwo.getConfigurator();
 
