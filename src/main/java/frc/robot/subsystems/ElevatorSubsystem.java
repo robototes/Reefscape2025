@@ -12,10 +12,12 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Hardware;
 
 public class ElevatorSubsystem extends SubsystemBase {
   public static final double LEVEL_FOUR_POS = 4;
@@ -24,17 +26,17 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double LEVEL_ONE_POS = 1;
   private static final double POS_TOLERANCE = 0.1;
   // This gearbox represents a gearbox containing 4 Vex 775pro motors.
-  private final double ELEVATOR_KP = 0.1;
+  private final double ELEVATOR_KP = 0.5;
   private final double ELEVATOR_KI = 0;
   private final double ELEVATOR_KD = 0;
   private final double ELEVATOR_KS = 0;
   private final double ELEVATOR_KV = 0;
   private final double ELEVATOR_KA = 0;
-  private final double REVERSE_SOFT_LIMIT = -67;
-  private final double FORWARD_SOFT_LIMIT = -1;
-  private final double UP_VOLTAGE = -0.25;
-  private final double DOWN_VOLTAGE = 0.04;
-  private final double HOLD_VOLTAGE = -0.02;
+  private final double REVERSE_SOFT_LIMIT = -10;
+  private final double FORWARD_SOFT_LIMIT = 10;
+  private final double UP_VOLTAGE = -3;
+  private final double DOWN_VOLTAGE = 3;
+  private final double HOLD_VOLTAGE = 0;
   // create a Motion Magic request, voltage output
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
 
@@ -52,13 +54,14 @@ public class ElevatorSubsystem extends SubsystemBase {
   /** Subsystem constructor. */
   public ElevatorSubsystem() {
     // m_encoder.setDistancePerPulse(Constants.kElevatorEncoderDistPerPulse);
-    m_motor = new TalonFX(40);
-    m_motor2 = new TalonFX(41);
+    m_motor = new TalonFX(Hardware.ELEVATOR_MOTOR_ONE);
+    m_motor2 = new TalonFX(Hardware.ELEVATOR_MOTOR_TWO);
     motorConfigs();
     m_motor2.setControl(new Follower(m_motor.getDeviceID(), false));
     // Publish Mechanism2d to SmartDashboard
     // To view the Elevator visualization, select Network Tables -> SmartDashboard -> Elevator Sim
     // SmartDashboard.putData("Elevator Sim", m_mech2d);
+    Shuffleboard.getTab("Elevator").addDouble("Current Position", () -> getCurrentPosition());
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
@@ -102,9 +105,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     talonFXConfigurator.apply(softLimits);
     talonFXConfigurator2.apply(softLimits);
     // enable stator current limit
-    currentLimits.StatorCurrentLimit = 5; // starting low for testing
+    currentLimits.StatorCurrentLimit = 10; // starting low for testing
     currentLimits.StatorCurrentLimitEnable = true;
-    currentLimits.SupplyCurrentLimit = 5; // starting low for testing
+    currentLimits.SupplyCurrentLimit = 10; // starting low for testing
     currentLimits.SupplyCurrentLimitEnable = true;
     talonFXConfigurator.apply(currentLimits);
     talonFXConfigurator2.apply(currentLimits);
@@ -152,14 +155,14 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public Command goUp() {
     return startEnd(
-        () -> m_motor.set(UP_VOLTAGE),
-        () -> m_motor.set(HOLD_VOLTAGE)); // test values from dev model bot
+        () -> m_motor.setVoltage(UP_VOLTAGE),
+        () -> m_motor.setVoltage(HOLD_VOLTAGE)); // test values from dev model bot
   }
 
   public Command goDown() {
     return startEnd(
-        () -> m_motor.set(DOWN_VOLTAGE),
-        () -> m_motor.set(HOLD_VOLTAGE)); // test values from dev model bot
+        () -> m_motor.setVoltage(DOWN_VOLTAGE),
+        () -> m_motor.setVoltage(HOLD_VOLTAGE)); // test values from dev model bot
   }
 
   /** Stop the control loop and motor output. */
