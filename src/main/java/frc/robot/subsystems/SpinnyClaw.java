@@ -37,7 +37,6 @@ public class SpinnyClaw extends SubsystemBase {
     TalonFXConfigurator cfg = motor.getConfigurator();
     var currentLimits = new CurrentLimitsConfigs();
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    configuration.ClosedLoopGeneral.ContinuousWrap = true;
     cfg.apply(configuration);
     // enabling stator current limits
     currentLimits.StatorCurrentLimit = 5; // starting low for testing
