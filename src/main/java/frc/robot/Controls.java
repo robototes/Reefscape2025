@@ -47,6 +47,8 @@ public class Controls {
     configureElevatorBindings();
     configureArmPivotBindings();
     configureClimbPivotBindings();
+    configureSpinnyClawBindings();
+
   }
 
   private void configureDrivebaseBindings() {
@@ -109,5 +111,17 @@ public class Controls {
       return;
     }
   }
-  // Controls binding goes here
+
+  private void configureSpinnyClawBindings() {
+    if (s.spinnyClawSubsytem == null) {
+      return;
+    }
+    // Claw controls bindings go here
+    operatorController
+        .rightBumper()
+        .whileTrue(s.spinnyClawSubsytem.movingVoltage(() -> Volts.of(3)));
+    operatorController
+        .leftBumper()
+        .whileTrue(s.spinnyClawSubsytem.movingVoltage(() -> Volts.of(-3)));
+  }
 }
