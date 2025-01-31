@@ -47,6 +47,7 @@ public class Controls {
     configureDrivebaseBindings();
     configureElevatorBindings();
     configureArmPivotBindings();
+    configureSpinnyClawBindings();
   }
 
   private void configureDrivebaseBindings() {
@@ -109,5 +110,18 @@ public class Controls {
     // Arm Controls binding goes here
     s.armPivotSubsystem.setDefaultCommand(
         s.armPivotSubsystem.startMovingVoltage(() -> Volts.of(6 * operatorController.getLeftY())));
+  }
+
+  private void configureSpinnyClawBindings() {
+    if (s.spinnyClawSubsytem == null) {
+      return;
+    }
+    // Claw controls bindings go here
+    operatorController
+        .rightBumper()
+        .whileTrue(s.spinnyClawSubsytem.movingVoltage(() -> Volts.of(3)));
+    operatorController
+        .leftBumper()
+        .whileTrue(s.spinnyClawSubsytem.movingVoltage(() -> Volts.of(-3)));
   }
 }

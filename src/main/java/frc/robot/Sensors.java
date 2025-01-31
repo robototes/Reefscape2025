@@ -24,6 +24,7 @@ public class Sensors {
     } else {
       armSensor = null;
     }
+
     if (BRANCHSENSORS_ENABLED) {
       branchSensors = new BranchSensors();
     } else {
