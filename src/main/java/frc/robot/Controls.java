@@ -91,8 +91,8 @@ public class Controls {
       return;
     }
     // Controls binding goes here
-    operatorController.leftTrigger().whileTrue(s.elevatorSubsystem.goUp());
-    operatorController.rightTrigger().whileTrue(s.elevatorSubsystem.goDown());
+    operatorController.leftTrigger().whileTrue(s.elevatorSubsystem.goUpPower());
+    operatorController.rightTrigger().whileTrue(s.elevatorSubsystem.goDownPower());
     operatorController
         .y()
         .whileTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS));
@@ -101,6 +101,8 @@ public class Controls {
         .whileTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_THREE_POS));
     operatorController.b().whileTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_TWO_POS));
     operatorController.a().whileTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_ONE_POS));
+    operatorController.povUp().whileTrue(s.elevatorSubsystem.goUp());
+    operatorController.povDown().whileTrue(s.elevatorSubsystem.goDown());
   }
 
   private void configureArmPivotBindings() {
