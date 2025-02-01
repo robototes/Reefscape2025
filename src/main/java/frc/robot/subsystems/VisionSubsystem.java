@@ -134,12 +134,12 @@ public class VisionSubsystem extends SubsystemBase {
           robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
         }
       }
-    }  
+    }
     for (PhotonPipelineResult result2 : photonCamera2.getAllUnreadResults()) {
-        latestResult = result2;
-        latestPose = photonPoseEstimator.update(latestResult);
-        lastRawTimestampSeconds = latestResult.getTimestampSeconds();
-        System.out.println(latestResult);
+      latestResult = result2;
+      latestPose = photonPoseEstimator.update(latestResult);
+      lastRawTimestampSeconds = latestResult.getTimestampSeconds();
+      System.out.println(latestResult);
 
       if (latestPose.isPresent()) {
         if (lastRawTimestampSeconds > lastTimestampSeconds) {
@@ -147,14 +147,13 @@ public class VisionSubsystem extends SubsystemBase {
           lastFieldPose = latestPose.get().estimatedPose.toPose2d();
           rawVisionFieldObject.setPose(lastFieldPose);
 
-          aprilTagsHelper.addVisionMeasurement(
-              lastFieldPose, lastTimestampSeconds, STANDARD_DEVS);
+          aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastTimestampSeconds, STANDARD_DEVS);
           robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
         }
       }
     }
   }
-  
+
   public boolean hasTargets() {
     return latestPose.isPresent();
   }
