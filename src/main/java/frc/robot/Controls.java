@@ -48,6 +48,7 @@ public class Controls {
     configureElevatorBindings();
     configureArmPivotBindings();
     configureSpinnyClawBindings();
+    configureElevatorLEDBindings();
   }
 
   private void configureDrivebaseBindings() {
@@ -123,5 +124,14 @@ public class Controls {
     operatorController
         .leftBumper()
         .whileTrue(s.spinnyClawSubsytem.movingVoltage(() -> Volts.of(-3)));
+  }
+
+  private void configureElevatorLEDBindings() {
+    if (s.elevatorLEDSubsystem == null) {
+      return;
+    }
+
+    s.elevatorLEDSubsystem.setDefaultCommand(
+        s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.rainbowAnim));
   }
 }
