@@ -4,13 +4,18 @@
 
 package frc.robot;
 
+import static frc.robot.util.AutoLogic.initShuffleBoard;
+
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Subsystems.SubsystemConstants;
+import frc.robot.util.AutoLogic;
 import frc.robot.util.RobotType;
 
 public class Robot extends TimedRobot {
@@ -55,11 +60,30 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(CommandScheduler.getInstance());
 
     DriverStation.silenceJoystickConnectionWarning(true);
-  }
+  
 
+  
+      
+  
+    
+      
+      
+
+      
+      }
+  
+     
+  
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+
+ 
+			
+		
+
+    //System.out.println("Trajectory Path: " + (AutoLogic.getPath()));
+   // System.out.println("Trajectory Path: " + (AutoLogic.getPath()));
   }
 
   @Override
@@ -72,7 +96,20 @@ public class Robot extends TimedRobot {
   public void disabledExit() {}
 
   @Override
-  public void autonomousInit() {}
+	public void autonomousInit() {
+    
+      
+
+      
+AutoLogic.initShuffleBoard();
+    
+
+
+		// Checks if FMS is attatched and enables joystick warning if true
+
+		// System.out.println(AutoLogic.getSelected() != null);
+		
+	}
 
   @Override
   public void autonomousPeriodic() {}
@@ -113,4 +150,6 @@ public class Robot extends TimedRobot {
   public boolean isCompetition() {
     return getRobotType() == RobotType.COMPETITION;
   }
+
 }
+
