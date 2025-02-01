@@ -48,7 +48,6 @@ public class Controls {
     configureArmPivotBindings();
     configureClimbPivotBindings();
     configureSpinnyClawBindings();
-
   }
 
   private void configureDrivebaseBindings() {
