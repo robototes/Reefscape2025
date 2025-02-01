@@ -18,7 +18,9 @@ public class ArmPivot extends SubsystemBase {
   public static final int PRESET_L1 = 0;
   public static final int PRESET_L2_L3 = 35;
   public static final int PRESET_L4 = 90;
-  public static final int HARDSTOP_HIGH = 90;
+  public static final int PRESET_UP = 180;
+  public static final int PRESET_DOWN = 0;
+  public static final int HARDSTOP_HIGH = 181;
   public static final int HARDSTOP_LOW = 0;
   public static final double PLACEHOLDER_CORAL_WEIGHT_KG = 0.8;
   public static final double PLACEHOLDER_ALGAE_WEIGHT_KG = 1.5;
