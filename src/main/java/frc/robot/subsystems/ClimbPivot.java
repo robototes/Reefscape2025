@@ -5,6 +5,8 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
@@ -13,11 +15,15 @@ public class ClimbPivot extends SubsystemBase {
 
   private final TalonFX climbPivotMotorOne;
   private final TalonFX climbPivotMotorTwo;
+  private final DigitalInput climbSensor;
+
+
+  public static boolean IS_CLIMBED = false;
 
   public ClimbPivot() {
     climbPivotMotorOne = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_ONE_ID);
     climbPivotMotorTwo = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_TWO_ID);
-
+    climbSensor = new DigitalInput(Hardware.CLIMB_SENSOR);
     configureMotors();
   }
 
@@ -51,5 +57,9 @@ public class ClimbPivot extends SubsystemBase {
             () -> {
               climbPivotMotorOne.stopMotor();
             });
+  }
+
+  public boolean checkClimbSensor(){
+    return climbSensor.get();
   }
 }
