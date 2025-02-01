@@ -32,7 +32,8 @@ public class ClimbPivot extends SubsystemBase {
     currentLimits.StatorCurrentLimitEnable = true;
     currentLimits.SupplyCurrentLimit = 5;
     currentLimits.SupplyCurrentLimitEnable = true;
-    talonFXMotorOutput.withNeutralMode(NeutralModeValue.Brake);
+    // Enable brake mode
+    talonFXMotorOutput.NeutralMode = NeutralModeValue.Brake;
     talonFXConfigurator.apply(currentLimits);
     talonFXConfigurator2.apply(currentLimits);
     talonFXConfigurator.apply(talonFXMotorOutput);
