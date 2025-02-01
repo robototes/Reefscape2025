@@ -35,8 +35,10 @@ public class SpinnyClaw extends SubsystemBase {
 
   // Log tabs to shuffleboard, temperature, and motor speed
   public void logTabs() {
-    Shuffleboard.getTab("claw-info").addDouble("claw_speed", () -> motor.getVelocity().getValueAsDouble());
-    Shuffleboard.getTab("claw-info").addDouble("claw_motor_temp", () -> motor.getDeviceTemp().getValueAsDouble());
+    Shuffleboard.getTab("claw-info")
+        .addDouble("claw_speed", () -> motor.getVelocity().getValueAsDouble());
+    Shuffleboard.getTab("claw-info")
+        .addDouble("claw_motor_temp", () -> motor.getDeviceTemp().getValueAsDouble());
   }
 
   // TalonFX config
