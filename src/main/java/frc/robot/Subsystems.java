@@ -67,6 +67,7 @@ public class Subsystems {
       climbPivotSubsystem = new ClimbPivot();
     } else {
       climbPivotSubsystem = null;
+    }
 
     if (SPINNYCLAW_ENABLED) {
       spinnyClawSubsytem = new SpinnyClaw();
