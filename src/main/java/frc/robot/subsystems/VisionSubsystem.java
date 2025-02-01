@@ -135,25 +135,26 @@ public class VisionSubsystem extends SubsystemBase {
         }
       }
 
-    for (PhotonPipelineResult result2 : photonCamera2.getAllUnreadResults()) {
-      latestResult = result2;
-      latestPose = photonPoseEstimator.update(latestResult);
-      lastRawTimestampSeconds = latestResult.getTimestampSeconds();
-      System.out.println(latestResult);
+      for (PhotonPipelineResult result2 : photonCamera2.getAllUnreadResults()) {
+        latestResult = result2;
+        latestPose = photonPoseEstimator.update(latestResult);
+        lastRawTimestampSeconds = latestResult.getTimestampSeconds();
+        System.out.println(latestResult);
 
-      if (latestPose.isPresent()) {
-        if (lastRawTimestampSeconds > lastTimestampSeconds) {
-        lastTimestampSeconds = latestPose.get().timestampSeconds;
-        lastFieldPose = latestPose.get().estimatedPose.toPose2d();
-        rawVisionFieldObject.setPose(lastFieldPose);
-        
-        aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastTimestampSeconds, STANDARD_DEVS);
-        robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
-      }
+        if (latestPose.isPresent()) {
+          if (lastRawTimestampSeconds > lastTimestampSeconds) {
+            lastTimestampSeconds = latestPose.get().timestampSeconds;
+            lastFieldPose = latestPose.get().estimatedPose.toPose2d();
+            rawVisionFieldObject.setPose(lastFieldPose);
+
+            aprilTagsHelper.addVisionMeasurement(
+                lastFieldPose, lastTimestampSeconds, STANDARD_DEVS);
+            robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
+          }
+        }
       }
     }
   }
-}
 
   public boolean hasTargets() {
     return latestPose.isPresent();
@@ -162,7 +163,6 @@ public class VisionSubsystem extends SubsystemBase {
   public int getNumTargets() {
     return latestResult == null ? -1 : latestResult.getTargets().size();
   }
-
 
   /**
    * Calculates the robot pose using the best target. Returns null if there is no known robot pose.
