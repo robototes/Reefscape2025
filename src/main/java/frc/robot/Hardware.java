@@ -18,8 +18,8 @@ public class Hardware {
 
   // vision
   public static final String PHOTON_IP = "10.24.12.3";
-  public static final String FRONT_CAM = "Arducam_OV9281";
-  public static final String BACK_CAM = "Arducam_OV9281";
+  public static final String FRONT_CAM = "Arducam_OV9281B";
+  public static final String BACK_CAM = "Arducam_OV9281A";
 
   // arm Sensors [35-39]
   public static final int MAIN_ARM_SENSOR = 35;
