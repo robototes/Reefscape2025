@@ -16,8 +16,6 @@ public class ClimbPivot extends SubsystemBase {
   private final TalonFX climbPivotMotorTwo;
   private final DigitalInput climbSensor;
 
-  public static boolean IS_CLIMBED = false;
-
   public ClimbPivot() {
     climbPivotMotorOne = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_ONE_ID);
     climbPivotMotorTwo = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_TWO_ID);
