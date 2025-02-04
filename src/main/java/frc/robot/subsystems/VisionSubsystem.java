@@ -69,7 +69,6 @@ public class VisionSubsystem extends SubsystemBase {
 
   // These are only set when there's a valid pose
   private double lastTimestampSeconds = 0;
-  private double llastTimestampSeconds = 0;
   private double lastRawTimestampSeconds = 0;
   private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
 
@@ -126,15 +125,13 @@ public class VisionSubsystem extends SubsystemBase {
   private void process(PhotonPipelineResult result) {
     latestResult = result;
     latestPose = photonPoseEstimator.update(latestResult);
-    lastRawTimestampSeconds = latestResult.getTimestampSeconds();
-    System.out.println(latestResult);
-
     if (latestPose.isPresent()) {
+      lastRawTimestampSeconds = latestResult.getTimestampSeconds();
+      rawVisionFieldObject.setPose(lastFieldPose);
+      aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastTimestampSeconds, STANDARD_DEVS);
       if (lastRawTimestampSeconds > lastTimestampSeconds) {
         lastTimestampSeconds = latestPose.get().timestampSeconds;
         lastFieldPose = latestPose.get().estimatedPose.toPose2d();
-        rawVisionFieldObject.setPose(lastFieldPose);
-        aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastTimestampSeconds, STANDARD_DEVS);
         robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       }
     }
