@@ -116,9 +116,9 @@ public class Controls {
     // Claw controls bindings go here
     operatorController
         .rightBumper()
-        .whileTrue(s.spinnyClawSubsytem.movingVoltage(() -> Volts.of(3)));
+        .whileTrue(s.spinnyClawSubsytem.movingVoltage(() -> Volts.of(9)));
     operatorController
         .leftBumper()
-        .whileTrue(s.spinnyClawSubsytem.movingVoltage(() -> Volts.of(-3)));
+        .whileTrue(s.spinnyClawSubsytem.movingVoltage(() -> Volts.of(-9)));
   }
 }

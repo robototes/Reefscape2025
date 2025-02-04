@@ -3,12 +3,17 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 import java.util.function.Supplier;
@@ -36,6 +41,12 @@ public class ArmPivot extends SubsystemBase {
     factoryDefaults();
   }
 
+  // commands
+  // preset command placeholder
+  public Command moveToPosition(double position) {
+    return Commands.none();
+  }
+
   // (+) is to move arm up, and (-) is down
   public Command startMovingVoltage(Supplier<Voltage> speedControl) {
     return run(() -> motor.setVoltage(speedControl.get().in(Volts)));
@@ -45,6 +56,16 @@ public class ArmPivot extends SubsystemBase {
 
   public void moveArmAlgae(int preset) {}
 
+  // logging
+  public void logTabs() {
+    Shuffleboard.getTab("pivot-info")
+        .addDouble("pivot_speed", () -> motor.getVelocity().getValueAsDouble());
+    Shuffleboard.getTab("pivot-info")
+        .addDouble("pivot_motor_temp", () -> motor.getDeviceTemp().getValueAsDouble());
+    Shuffleboard.getTab("pivot-position")
+        .addDouble("pivot_position", () -> motor.getPosition().getValueAsDouble());
+  }
+
   // TalonFX config
   public void factoryDefaults() {
     TalonFXConfiguration configuration = new TalonFXConfiguration();
@@ -53,11 +74,23 @@ public class ArmPivot extends SubsystemBase {
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     configuration.ClosedLoopGeneral.ContinuousWrap = true;
     cfg.apply(configuration);
-    // enabling stator current limits
+    // enabling current limits
     currentLimits.StatorCurrentLimit = 5; // starting low for testing
     currentLimits.StatorCurrentLimitEnable = true;
     currentLimits.SupplyCurrentLimit = 5; // starting low for testing
     currentLimits.SupplyCurrentLimitEnable = true;
     cfg.apply(currentLimits);
+    // PID
+    var slot0Configs = new Slot0Configs();
+    // untuned values
+    slot0Configs.kP = 0.01;
+    slot0Configs.kI = 0;
+    slot0Configs.kD = 0.001;
+    slot0Configs.kG = 1;
+    slot0Configs.GravityType = GravityTypeValue.Arm_Cosine;
+    slot0Configs.kS = 1;
+    slot0Configs.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
+
+    cfg.apply(slot0Configs);
   }
 }
