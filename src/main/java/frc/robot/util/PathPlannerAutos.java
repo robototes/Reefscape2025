@@ -94,8 +94,6 @@ public class PathPlannerAutos {
     return paths;
   }
 
-
-
   /*private static ChassisSpeeds speedsFromState(SwerveModuleTrajectoryState state) {
       return new ChassisSpeeds(
           state.heading.getCos() * state.linearVelocity,

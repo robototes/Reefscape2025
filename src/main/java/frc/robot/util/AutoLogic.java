@@ -2,16 +2,13 @@ package frc.robot.util;
 
 import static frc.robot.Subsystems.SubsystemConstants.*;
 
-import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.None;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.Waypoint;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 import com.pathplanner.lib.util.FileVersionException;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,8 +17,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -31,18 +28,9 @@ import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
-import frc.robot.util.PathPlannerAutos.Auto;
-
 import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
-
 import org.json.simple.parser.ParseException;
 
 public class AutoLogic {
@@ -50,6 +38,7 @@ public class AutoLogic {
   public static final Subsystems s = r.subsystems;
   public static final Controls controls = r.controls;
 
+  public static SendableChooser<String> autoPicker = new SendableChooser<String>();
   public static final double FEEDER_DELAY = 0.4;
 
   // rpm to rev up launcher before launching
@@ -73,14 +62,11 @@ public class AutoLogic {
       this.title = title;
       this.startPose = startPose;
     }
-    
   };
 
-  //private static AutoPath defaultPath = new AutoPath("do nothing", "nothing");
-
+  // private static AutoPath defaultPath = new AutoPath("do nothing", "nothing");
 
   // shuffleboard
-
 
   private static GenericEntry autoDelayEntry;
 
@@ -101,7 +87,6 @@ public class AutoLogic {
    * @throws org.json.simple.parser.ParseException
    * @throws FileVersionException
    */
- 
 
   /*
   startPositionChooser.setDefaultOption(StartPosition.MISC.title, StartPosition.MISC);
@@ -119,7 +104,6 @@ public class AutoLogic {
   // autoDelayEntry = tab.add("Auto Delay", 0).withPosition(4, 3).withSize(1, 1).getEntry();
 
   /** Takes the auto filtering entries in shuffleboard to provide a list of suitable autos */
-
 
   // * Takes all of the trajectories of an auto to find the total estimated duration of an auto
   // *
@@ -152,8 +136,9 @@ public class AutoLogic {
     return 0;
 
   */
-  public static ShuffleboardTab tab =  Shuffleboard.getTab("Autos");
-  public static void  RunAuto(CommandSwerveDrivetrain drivebase) {
+  public static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
+
+  public static void RunAuto(CommandSwerveDrivetrain drivebase) {
 
     try {
       AutoBuilder.configure(
@@ -186,148 +171,129 @@ public class AutoLogic {
             }
             return false;
           },
-          s.drivebaseSubsystem// Reference to this subsystem to set requirements
+          s.drivebaseSubsystem // Reference to this subsystem to set requirements
           );
-        
+
     } catch (IOException | ParseException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
 
- 
-
- 
-  
   public static Command getAutoCommand(String pathName) {
-    System.out.println("Path name: " +  pathName);
+    // System.out.println("Path name: " + pathName);
     // Load the path you want to follow using its name in the GUI
     try {
-       PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-      
-     
+      PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
       return AutoBuilder.followPath(path);
-    
-    
+
     } catch (IOException | ParseException | FileVersionException e) {
       // TODO: handle exception
-  
+
       DriverStation.reportError("Ooofs: " + e.getMessage(), e.getStackTrace());
     }
 
     // Create a path following command using AutoBuilder. This will also trigger event markers.
-   
-    return Commands.none();
 
-      
-    
-   
+    return Commands.none();
   }
-  
+
   public static PathPlannerPath getAutoData(String pathName) {
-    System.out.println("Path name: " +  pathName);
+    // System.out.println("Path name: " + pathName);
     // Load the path you want to follow using its name in the GUI
     try {
-       PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-      
-     
+      PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
+
       return path;
-    
-    
+
     } catch (IOException | ParseException | FileVersionException e) {
       // TODO: handle exception
-  
+
       DriverStation.reportError("Ooofs: " + e.getMessage(), e.getStackTrace());
     }
 
     // Create a path following command using AutoBuilder. This will also trigger event markers.
-   
+
     return null;
-      
-    
-   
   }
- 
+
   private static DynamicSendableChooser<PathPlannerPath> availableAutos =
-			new DynamicSendableChooser<PathPlannerPath>();
+      new DynamicSendableChooser<PathPlannerPath>();
+
   public static Optional<String> getSelectedAutoName() {
-		if (availableAutos.getSelected() == null) {
-			return Optional.empty();
-		}
-		return Optional.of(availableAutos.getSelected().name);
-	}
-
-	public static boolean chooserHasAutoSelected() {
-		return availableAutos.getSelected() != null;
-	}
-
-	public static Command getSelectedAuto() {
-
-		double waitTimer = autoDelayEntry.getDouble(0);
-
-		return Commands.waitSeconds(waitTimer)
-				.andThen(AutoBuilder.buildAuto(availableAutos.getSelected().name));
-	}
-
-  
-
-	
-
-  
-  
-  public static void initShuffleBoard() {
-  RunAuto(s.drivebaseSubsystem);
-  
-  if (RobotState.isAutonomous()) {
-    getAutoCommand("HighRed");
-  
+    if (availableAutos.getSelected() == null) {
+      return Optional.empty();
+    }
+    return Optional.of(availableAutos.getSelected().name);
   }
-  PathPlannerPath plannerPath = getAutoData("MidRed");
 
-    tab.add("Path Data: " ,plannerPath.name);
-   
+  public static boolean chooserHasAutoSelected() {
+    return availableAutos.getSelected() != null;
+  }
+
+  public static Command getSelectedAuto() {
+
+    double waitTimer = autoDelayEntry.getDouble(0);
+
+    return Commands.waitSeconds(waitTimer)
+        .andThen(AutoBuilder.buildAuto(availableAutos.getSelected().name));
+  }
+
+  public static void initShuffleBoard() {
+    RunAuto(s.drivebaseSubsystem);
+
+    addAutoOptions();
+
+    tab.add("Auto Selector", autoPicker)
+        .withWidget(BuiltInWidgets.kComboBoxChooser)
+        .withPosition(0, 0)
+        .withSize(2, 1);
+
+    tab.addString("Current Selected path", () -> autoPicker.getSelected());
+    if (RobotState.isAutonomous()) {
+      getAutoCommand(autoPicker.getSelected());
+    }
+    PathPlannerPath plannerPath = getAutoData(autoPicker.getSelected());
+
+    tab.add("Path Data: ", plannerPath.name);
 
     tab.addStringArray("Path Poses: ", () -> toStringArray(plannerPath.getPathPoses()));
 
-
     tab.addStringArray("Path Waypoints: ", () -> toStringArray(plannerPath.getWaypoints()));
-    
-  
-
-
-    
   }
 
   public static <T> String[] toStringArray(List<T> dataList) {
     System.out.println("SIZE" + dataList.size());
-    String[] data = new String[dataList.size()]; //TODO FIX INFINTELY REPEATING LIST
-    
-    for (int i = 0; i< dataList.size(); i++) {
-     
-     String addedData = dataList.get(i).toString();
-     
-     data[i] =  "\n" + addedData;
-    
-  
-     
+    String[] data = new String[dataList.size()]; // TODO FIX INFINTELY REPEATING LIST
+
+    for (int i = 0; i < dataList.size(); i++) {
+
+      String addedData = dataList.get(i).toString();
+
+      data[i] = "\n" + addedData;
     }
-  
-    return  data;
-    
+
+    return data;
   }
-  
 
+  public static PathPlannerTrajectory makeTrajectory(
+      PathPlannerPath path,
+      ChassisSpeeds startingSpeeds,
+      Rotation2d startingRotation,
+      RobotConfig config) {
 
-  public static PathPlannerTrajectory makeTrajectory(PathPlannerPath path, ChassisSpeeds startingSpeeds, Rotation2d startingRotation, RobotConfig config) {
+    PathPlannerTrajectory trajectory =
+        new PathPlannerTrajectory(path, startingSpeeds, startingRotation, config);
 
-
-    PathPlannerTrajectory trajectory = new PathPlannerTrajectory(path,startingSpeeds,startingRotation,config);
     return trajectory;
   }
 
+  public static void addAutoOptions() {
+    autoPicker.setDefaultOption("DEFAULT PATH", "Test Auto");
 
+    autoPicker.addOption("PATH MID RED", "MidRed");
+    autoPicker.addOption("PATH LOW RED", "LowRed");
 
-
-
-  
+    autoPicker.addOption("Triple L4", "Triple7");
+  }
 }
