@@ -131,7 +131,13 @@ public class Controls {
       return;
     }
 
-    s.elevatorLEDSubsystem.setDefaultCommand(
-        s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.rainbowAnim));
+    // s.elevatorLEDSubsystem.setDefaultCommand(
+    // s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.rainbowAnim));
+    operatorController
+        .back()
+        .onTrue(s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.larsonAnim));
+    operatorController
+        .start()
+        .onTrue(s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.rainbowAnim));
   }
 }
