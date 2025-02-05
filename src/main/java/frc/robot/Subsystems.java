@@ -14,8 +14,8 @@ public class Subsystems {
     // <SUBSYSTEM>_ENABLED constants go here
 
     public static final boolean DRIVEBASE_ENABLED = true;
-    public static final boolean ELEVATOR_ENABLED = true;
-    public static final boolean ARMPIVOT_ENABLED = true;
+    public static final boolean ELEVATOR_ENABLED = false;
+    public static final boolean ARMPIVOT_ENABLED = false;
   }
 
   // Subsystems go here
@@ -30,8 +30,10 @@ public class Subsystems {
     if (DRIVEBASE_ENABLED) {
       if (RobotType.getCurrent() == RobotType.BONK) {
         drivebaseSubsystem = BonkTunerConstants.createDrivetrain();
+        System.out.println("Beta");
       } else {
         drivebaseSubsystem = CompTunerConstants.createDrivetrain();
+        System.out.println("comp");
       }
     } else {
       drivebaseSubsystem = null;
