@@ -6,8 +6,8 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.BonkTunerConstants;
-import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.generated.CompTunerConstants;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.util.RobotType;
 
 public class Controls {
