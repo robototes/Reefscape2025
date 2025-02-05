@@ -71,14 +71,14 @@ public class VisionSubsystem extends SubsystemBase {
 
   private final PhotonCamera photonCamera;
   private final PhotonCamera photonCamera2;
-  private final PhotonPoseEstimator photonPoseEstimator;
+  private final PhotonPoseEstimator photonPoseEstimatorFrontCamera;
   private final PhotonPoseEstimator photonPoseEstimatorBackCamera;
   private final Field2d robotField;
   private final FieldObject2d rawVisionFieldObject;
   private final DrivebaseWrapper aprilTagsHelper;
 
   // These are always set with every pipeline result
-  private PhotonPipelineResult latestResult = null;
+  private PhotonPipelineResult result = null;
 
   private Optional<EstimatedRobotPose> latestPose = Optional.empty();
 
@@ -97,7 +97,7 @@ public class VisionSubsystem extends SubsystemBase {
     rawVisionFieldObject = robotField.getObject("RawVision");
     photonCamera = new PhotonCamera(Hardware.FRONT_CAM);
     photonCamera2 = new PhotonCamera(Hardware.BACK_CAM);
-    photonPoseEstimator =
+    photonPoseEstimatorFrontCamera =
         new PhotonPoseEstimator(
             fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM);
     photonPoseEstimatorBackCamera =
@@ -135,40 +135,25 @@ public class VisionSubsystem extends SubsystemBase {
   private void update() {
 
     for (PhotonPipelineResult result : photonCamera.getAllUnreadResults()) {
-      process(result, false);
+      PhotonPoseEstimator b = photonPoseEstimatorFrontCamera;
+      process(result, b);
     }
     for (PhotonPipelineResult result : photonCamera2.getAllUnreadResults()) {
-      process(result, true);
+      PhotonPoseEstimator b = photonPoseEstimatorBackCamera;
+      process(result, b);
     }
   }
 
-  private void process(PhotonPipelineResult result, boolean isBackCamera) {
-    latestResult = result;
-    if (isBackCamera == false) {
-      latestPose = photonPoseEstimator.update(latestResult);
-      if (latestPose.isPresent()) {
-        lastRawTimestampSeconds = latestResult.getTimestampSeconds();
-        rawVisionFieldObject.setPose(lastFieldPose);
-        aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastTimestampSeconds, STANDARD_DEVS);
-        if (lastRawTimestampSeconds > lastTimestampSeconds) {
-          lastTimestampSeconds = latestPose.get().timestampSeconds;
-          lastFieldPose = latestPose.get().estimatedPose.toPose2d();
-          robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
-        }
-      }
-    }
-
-    if (isBackCamera == true) {
-      latestPose = photonPoseEstimatorBackCamera.update(latestResult);
-      if (latestPose.isPresent()) {
-        lastRawTimestampSeconds = latestResult.getTimestampSeconds();
-        rawVisionFieldObject.setPose(lastFieldPose);
-        aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastTimestampSeconds, STANDARD_DEVS);
-        if (lastRawTimestampSeconds > lastTimestampSeconds) {
-          lastTimestampSeconds = latestPose.get().timestampSeconds;
-          lastFieldPose = latestPose.get().estimatedPose.toPose2d();
-          robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
-        }
+  private void process(PhotonPipelineResult result, PhotonPoseEstimator b) {
+    latestPose = b.update(result);
+    if (latestPose.isPresent()) {
+      lastRawTimestampSeconds = result.getTimestampSeconds();
+      rawVisionFieldObject.setPose(lastFieldPose);
+      aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastTimestampSeconds, STANDARD_DEVS);
+      robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
+      if (lastRawTimestampSeconds > lastTimestampSeconds) {
+        lastTimestampSeconds = latestPose.get().timestampSeconds;
+        lastFieldPose = latestPose.get().estimatedPose.toPose2d();
       }
     }
   }
@@ -178,7 +163,7 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public int getNumTargets() {
-    return latestResult == null ? -1 : latestResult.getTargets().size();
+    return result == null ? -1 : result.getTargets().size();
   }
 
   /**
