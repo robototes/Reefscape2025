@@ -20,13 +20,13 @@ import java.util.function.Supplier;
 
 public class ArmPivot extends SubsystemBase {
   // Presets
-  public static final int PRESET_L1 = 0;
-  public static final int PRESET_L2_L3 = 35;
-  public static final int PRESET_L4 = 90;
-  public static final int PRESET_UP = 180;
-  public static final int PRESET_DOWN = 0;
-  public static final int HARDSTOP_HIGH = 181;
-  public static final int HARDSTOP_LOW = 0;
+  public static final double PRESET_L1 = 0;
+  public static final double PRESET_L2_L3 = 35;
+  public static final double PRESET_L4 = 90;
+  public static final double PRESET_UP = 180;
+  public static final double PRESET_DOWN = 0;
+  public static final double HARDSTOP_HIGH = 181;
+  public static final double HARDSTOP_LOW = 0;
   public static final double PLACEHOLDER_CORAL_WEIGHT_KG = 0.8;
   public static final double PLACEHOLDER_ALGAE_WEIGHT_KG = 1.5;
 
@@ -36,12 +36,37 @@ public class ArmPivot extends SubsystemBase {
   // TalonFX
   private final TalonFX motor;
 
+  private double targetPos;
+  
+
   public ArmPivot() {
     motor = new TalonFX(Hardware.ARM_PIVOT_MOTOR_ID);
     factoryDefaults();
   }
 
   // commands
+  private Command setTargetPosition(double pos) {
+    // set target position to 100 rotations
+    return runOnce(
+        () -> {
+          motor.setControl(m_request.withPosition(pos));
+          targetPos = pos;
+        });
+  }
+
+  private double getTargetPosition() {
+    return targetPos;
+  }
+
+  private double getCurrentPosition() {
+    var curPos = motor.getPosition();
+    return curPos.getValueAsDouble();
+  }
+
+  public Command setLevel(double pos) {
+    return setTargetPosition(pos).until(() -> Math.abs(getCurrentPosition() - pos) < POS_TOLERANCE);
+  }
+
   // preset command placeholder
   public Command moveToPosition(double position) {
     return Commands.none();
@@ -51,10 +76,6 @@ public class ArmPivot extends SubsystemBase {
   public Command startMovingVoltage(Supplier<Voltage> speedControl) {
     return run(() -> motor.setVoltage(speedControl.get().in(Volts)));
   }
-
-  public void moveArmCoral(int preset) {}
-
-  public void moveArmAlgae(int preset) {}
 
   // logging
   public void logTabs() {
