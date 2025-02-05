@@ -39,27 +39,28 @@ import org.photonvision.targeting.PhotonPipelineResult;
  * means that from the (red) driver's perspective +X is away and +Y is to the right.
  */
 public class VisionSubsystem extends SubsystemBase {
-  private static final double CAMERA_X_POS_METERS = Units.inchesToMeters(27.0 / 2.0 - 0.94996);
-  private static final double CAMERA_Y_POS_METERS = 0;
-  private static final double CAMERA_Z_POS_METERS = Units.inchesToMeters(8.12331);
-  private static final double CAMERA_ROLL = 0;
-  private static final double CAMERA_PITCH = Units.degreesToRadians(-30);
-  private static final double CAMERA_YAW = 0;
-  private static final double CAMERA_YAW_BACK = Units.degreesToRadians(180);
+  // don't mind the value is never used part it is used
+  private static double CAMERA_X_POS_METERS;
+  private static double CAMERA_Y_POS_METERS = 0;
+  private static double CAMERA_Z_POS_METERS;
+  private static double CAMERA_ROLL = 0;
+  private static double CAMERA_PITCH;
+  private static double CAMERA_YAW = 0;
+  private static double CAMERA_YAW_BACK;
 
   public static final Transform3d ROBOT_TO_CAM =
       new Transform3d(
-          CAMERA_X_POS_METERS,
+          CAMERA_X_POS_METERS = Units.inchesToMeters(27.0 / 2.0 - 0.94996),
           CAMERA_Y_POS_METERS,
-          CAMERA_Z_POS_METERS,
-          new Rotation3d(CAMERA_ROLL, CAMERA_PITCH, CAMERA_YAW));
+          CAMERA_Z_POS_METERS = Units.inchesToMeters(8.12331),
+          new Rotation3d(CAMERA_ROLL, CAMERA_PITCH = Units.degreesToRadians(-30), CAMERA_YAW));
 
   public static final Transform3d ROBOT_TO_CAM_BACK =
       new Transform3d(
-          CAMERA_X_POS_METERS,
-          CAMERA_Y_POS_METERS,
-          CAMERA_Z_POS_METERS,
-          new Rotation3d(CAMERA_ROLL, CAMERA_PITCH, CAMERA_YAW_BACK));
+        CAMERA_X_POS_METERS = Units.inchesToMeters(27.0 / 2.0 - 0.94996) - 0.62,
+        CAMERA_Y_POS_METERS,
+        CAMERA_Z_POS_METERS = Units.inchesToMeters(8.12331),
+        new Rotation3d(CAMERA_ROLL, CAMERA_PITCH = Units.degreesToRadians(-30), CAMERA_YAW_BACK = Units.degreesToRadians(180)));
 
   // TODO Measure these
   private static final Vector<N3> STANDARD_DEVS =
