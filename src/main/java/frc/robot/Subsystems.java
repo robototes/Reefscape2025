@@ -25,6 +25,8 @@ public class Subsystems {
 
     public static final boolean ARMPIVOT_ENABLED = false;
 
+    public static final boolean CLIMBPIVOT_ENABLED = false;
+
     public static final boolean SPINNYCLAW_ENABLED = false;
   }
 
