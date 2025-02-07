@@ -56,7 +56,6 @@ public class ArmPivot extends SubsystemBase {
 
   // commands
   private Command setTargetPosition(double pos) {
-    // set target position to 100 rotations
     return runOnce(
         () -> {
           motor.setControl(m_request.withPosition(pos));
