@@ -5,6 +5,7 @@ import static frc.robot.Subsystems.SubsystemConstants.*;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.ArmPivot;
+import frc.robot.subsystems.ClimbPivot;
 import frc.robot.subsystems.DrivebaseWrapper;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.SpinnyClaw;
@@ -17,12 +18,11 @@ public class Subsystems {
     // <SUBSYSTEM>_ENABLED constants go here
 
     public static final boolean DRIVEBASE_ENABLED = false;
-
     public static final boolean VISION_ENABLED = false;
-
     public static final boolean ELEVATOR_ENABLED = false;
     public static final boolean ARMPIVOT_ENABLED = false;
     public static final boolean SPINNYCLAW_ENABLED = true;
+    public static final boolean CLIMBPIVOT_ENABLED = false;
   }
 
   // Subsystems go here
@@ -31,6 +31,7 @@ public class Subsystems {
   public final VisionSubsystem visionSubsystem;
   public final ElevatorSubsystem elevatorSubsystem;
   public final ArmPivot armPivotSubsystem;
+  public final ClimbPivot climbPivotSubsystem;
   public final SpinnyClaw spinnyClawSubsytem;
 
   public Subsystems() {
@@ -53,16 +54,25 @@ public class Subsystems {
     } else {
       visionSubsystem = null;
     }
+
     if (ELEVATOR_ENABLED) {
       elevatorSubsystem = new ElevatorSubsystem();
     } else {
       elevatorSubsystem = null;
     }
+
     if (ARMPIVOT_ENABLED) {
       armPivotSubsystem = new ArmPivot();
     } else {
       armPivotSubsystem = null;
     }
+
+    if (CLIMBPIVOT_ENABLED) {
+      climbPivotSubsystem = new ClimbPivot();
+    } else {
+      climbPivotSubsystem = null;
+    }
+
     if (SPINNYCLAW_ENABLED) {
       spinnyClawSubsytem = new SpinnyClaw();
     } else {
