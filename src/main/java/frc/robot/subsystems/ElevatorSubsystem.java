@@ -21,16 +21,16 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Hardware;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  public static final double LEVEL_FOUR_POS = 12;
-  public static final double LEVEL_THREE_POS = 3;
-  public static final double LEVEL_TWO_POS = 2;
+  public static final double LEVEL_FOUR_POS = 8;
+  public static final double LEVEL_THREE_POS = 6;
+  public static final double LEVEL_TWO_POS = 4;
   public static final double LEVEL_ONE_POS = 1;
   public static final double STOWED = 1;
   public static final double INTAKE = 1;
   public static final double MANUAL = 1;
   private static final double POS_TOLERANCE = 0.02;
   // This gearbox represents a gearbox containing 4 Vex 775pro motors.
-  private final double ELEVATOR_KP = 0.5; // add feedfwds for each stage?
+  private final double ELEVATOR_KP = 3; // add feedfwds for each stage?
   private final double ELEVATOR_KI = 0;
   private final double ELEVATOR_KD = 0;
   private final double ELEVATOR_KS = 0;
