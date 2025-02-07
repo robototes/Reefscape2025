@@ -4,18 +4,14 @@ import static frc.robot.Subsystems.SubsystemConstants.*;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 import com.pathplanner.lib.util.FileVersionException;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -30,7 +26,6 @@ import frc.robot.Subsystems;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import org.json.simple.parser.ParseException;
 
 public class AutoLogic {
@@ -45,97 +40,6 @@ public class AutoLogic {
   public static final double REV_RPM = 2500;
   public static final double STAGE_ANGLE = 262;
 
-  public static enum StartPosition {
-    AMP_SIDE_SUBWOOFER(
-        "Amp Side Subwoofer", new Pose2d(0.73, 6.62, new Rotation2d(Units.degreesToRadians(-120)))),
-    MID_SIDE_SUBWOOFER(
-        "Mid Side Subwoofer", new Pose2d(1.33, 5.55, new Rotation2d(Units.degreesToRadians(180)))),
-    SOURCE_SIDE_SUBWOOFER(
-        "Source Side Subwoofer",
-        new Pose2d(0.73, 4.47, new Rotation2d(Units.degreesToRadians(120)))),
-    MISC("Misc", null);
-
-    final String title; // for shuffleboard display
-    final Pose2d startPose; // for identifying path's starting positions for filtering
-
-    StartPosition(String title, Pose2d startPose) {
-      this.title = title;
-      this.startPose = startPose;
-    }
-  };
-
-  // private static AutoPath defaultPath = new AutoPath("do nothing", "nothing");
-
-  // shuffleboard
-
-  private static GenericEntry autoDelayEntry;
-
-  // methods
-
-  public static void registerCommands(String commandName, Command command) {
-
-    NamedCommands.registerCommand(commandName, command);
-  }
-
-  // public Command getConditionalCommand(){}
-
-  /**
-   * Takes a PathPlanner path and returns it as a command.
-   *
-   * @param pathName
-   * @return follow path command
-   * @throws org.json.simple.parser.ParseException
-   * @throws FileVersionException
-   */
-
-  /*
-  startPositionChooser.setDefaultOption(StartPosition.MISC.title, StartPosition.MISC);
-  for (StartPosition startPosition : StartPosition.values()) {
-    startPositionChooser.addOption(startPosition.title, startPosition);
-  }
-  isVision.setDefaultOption("Presets", false);
-  isVision.addOption("Vision", true);
-  */
-
-  // tab.add("Starting Position", startPositionChooser).withPosition(4, 0).withSize(2, 1);
-  // tab.add("Launch Type", isVision).withPosition(4, 1);
-  // tab.add("Game Objects", gameObjects).withPosition(5, 1);
-  // tab.add("Available Auto Variants", availableAutos).withPosition(4, 2).withSize(2, 1);
-  // autoDelayEntry = tab.add("Auto Delay", 0).withPosition(4, 3).withSize(1, 1).getEntry();
-
-  /** Takes the auto filtering entries in shuffleboard to provide a list of suitable autos */
-
-  // * Takes all of the trajectories of an auto to find the total estimated duration of an auto
-  // *
-  // * @return auto duration in seconds;
-  // CHANGE LATER MAYBE????
-  /* public static double getEstimatedAutoDuration() {
-    if (getSelectedAutoName().isPresent()) {
-
-
-      Auto auto = PathPlannerAuto.getPathPlannerPath((getSelectedAutoName().get()));
-
-      double autoTime = 0;
-
-      for (PathPlannerTrajectory trajectory : auto.trajectories) {
-        autoTime += trajectory.getTotalTimeSeconds();
-      }
-
-      // TODO: more accurate estimating by viewing named commands involved
-
-      // rounds time to two decimals
-      autoTime *= 100;
-      autoTime = ((double) ((int) autoTime)) / 100;
-
-      // add autoDelay to estimation as well
-      autoTime += autoDelayEntry.getDouble(0);
-
-      return autoTime;
-    }
-
-    return 0;
-
-  */
   public static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
 
   public static void RunAuto(CommandSwerveDrivetrain drivebase) {
@@ -180,14 +84,14 @@ public class AutoLogic {
     }
   }
 
-  public static Command getAutoCommand(String pathName) {
+  public static Command getAutoCommand(String autoName) {
     // System.out.println("Path name: " + pathName);
     // Load the path you want to follow using its name in the GUI
     try {
-      PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-      return AutoBuilder.followPath(path);
 
-    } catch (IOException | ParseException | FileVersionException e) {
+      return AutoBuilder.buildAuto(autoName);
+
+    } catch (FileVersionException e) {
       // TODO: handle exception
 
       DriverStation.reportError("Ooofs: " + e.getMessage(), e.getStackTrace());
@@ -198,7 +102,7 @@ public class AutoLogic {
     return Commands.none();
   }
 
-  public static PathPlannerPath getAutoData(String pathName) {
+  public static PathPlannerPath getPathData(String pathName) {
     // System.out.println("Path name: " + pathName);
     // Load the path you want to follow using its name in the GUI
     try {
@@ -217,29 +121,8 @@ public class AutoLogic {
     return null;
   }
 
-  private static DynamicSendableChooser<PathPlannerPath> availableAutos =
-      new DynamicSendableChooser<PathPlannerPath>();
-
-  public static Optional<String> getSelectedAutoName() {
-    if (availableAutos.getSelected() == null) {
-      return Optional.empty();
-    }
-    return Optional.of(availableAutos.getSelected().name);
-  }
-
-  public static boolean chooserHasAutoSelected() {
-    return availableAutos.getSelected() != null;
-  }
-
-  public static Command getSelectedAuto() {
-
-    double waitTimer = autoDelayEntry.getDouble(0);
-
-    return Commands.waitSeconds(waitTimer)
-        .andThen(AutoBuilder.buildAuto(availableAutos.getSelected().name));
-  }
-
   public static void initShuffleBoard() {
+
     RunAuto(s.drivebaseSubsystem);
 
     addAutoOptions();
@@ -253,9 +136,7 @@ public class AutoLogic {
     if (RobotState.isAutonomous()) {
       getAutoCommand(autoPicker.getSelected());
     }
-    PathPlannerPath plannerPath = getAutoData(autoPicker.getSelected());
-
-    tab.add("Path Data: ", plannerPath.name);
+    PathPlannerPath plannerPath = getPathData(autoPicker.getSelected());
 
     tab.addStringArray("Path Poses: ", () -> toStringArray(plannerPath.getPathPoses()));
 
@@ -289,11 +170,12 @@ public class AutoLogic {
   }
 
   public static void addAutoOptions() {
-    autoPicker.setDefaultOption("DEFAULT PATH", "Test Auto");
+    autoPicker.setDefaultOption("DEFAULT PATH", "Test Path");
 
     autoPicker.addOption("PATH MID RED", "MidRed");
     autoPicker.addOption("PATH LOW RED", "LowRed");
 
     autoPicker.addOption("Triple L4", "Triple7");
+    autoPicker.addOption("CHOREO triple L4", "New Choreo");
   }
 }

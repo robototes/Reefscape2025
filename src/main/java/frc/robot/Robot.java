@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.AutoLogic;
 import frc.robot.util.FieldDisplay;
@@ -85,8 +86,14 @@ public class Robot extends TimedRobot {
     // Checks if FMS is attatched and enables joystick warning if true
 
     AutoLogic.RunAuto(subsystems.drivebaseSubsystem);
-    AutoLogic.getAutoCommand("MidRed");
-    AutoLogic.getAutoCommand("HighRed");
+    Command autoCommand = AutoLogic.getAutoCommand(AutoLogic.autoPicker.getSelected());
+
+    if (autoCommand != null) {
+      autoCommand.schedule();
+
+    } else {
+      DriverStation.reportError("Auto command not found!", false);
+    }
   }
 
   @Override
