@@ -7,17 +7,21 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
+import frc.robot.subsystems.ArmPivot;
 import frc.robot.util.RobotType;
 
 public class Controls {
   private static final int DRIVER_CONTROLLER_PORT = 0;
   private static final int OPERATOR_CONTROLLER_PORT = 1;
+  private static final int THIRD_CONTROLLER_PORT = 2;
 
   @SuppressWarnings("UnusedVariable")
   private final CommandXboxController driverController;
 
   @SuppressWarnings("UnusedVariable")
   private final CommandXboxController operatorController;
+
+  private final CommandXboxController secretThirdController;
 
   @SuppressWarnings("UnusedVariable")
   private final Subsystems s;
@@ -47,6 +51,7 @@ public class Controls {
   public Controls(Subsystems s) {
     driverController = new CommandXboxController(DRIVER_CONTROLLER_PORT);
     operatorController = new CommandXboxController(OPERATOR_CONTROLLER_PORT);
+    secretThirdController = new CommandXboxController(THIRD_CONTROLLER_PORT);
     this.s = s;
     configureDrivebaseBindings();
     configureElevatorBindings();
@@ -106,7 +111,16 @@ public class Controls {
     }
     // Arm Controls binding goes here
     s.armPivotSubsystem.setDefaultCommand(
-        s.armPivotSubsystem.startMovingVoltage(() -> Volts.of(6 * operatorController.getLeftY())));
+        s.armPivotSubsystem.startMovingVoltage(
+            () -> Volts.of(6 * secretThirdController.getLeftY())));
+    secretThirdController.povUp().onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L4));
+    secretThirdController
+        .povLeft()
+        .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L2_L3));
+    secretThirdController.povDown().onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L1));
+    secretThirdController
+        .povRight()
+        .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_DOWN));
   }
 
   private void configureSpinnyClawBindings() {

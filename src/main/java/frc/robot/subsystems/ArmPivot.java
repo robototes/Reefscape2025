@@ -73,13 +73,14 @@ public class ArmPivot extends SubsystemBase {
     return curPos.getValueAsDouble();
   }
 
-  public Command setAngle(double pos) {
-    return setTargetPosition(pos).until(() -> Math.abs(getCurrentPosition() - pos) < POS_TOLERANCE);
-  }
-
   // preset command placeholder
   public Command moveToPosition(double position) {
-    return Commands.none();
+    if (HARDSTOP_LOW < position && position < HARDSTOP_HIGH) {
+      return setTargetPosition(position)
+          .until(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE);
+    } else {
+      return Commands.none();
+    }
   }
 
   // (+) is to move arm up, and (-) is down
