@@ -47,6 +47,7 @@ public class VisionSubsystem extends SubsystemBase {
   private static final double CAMERA_Y_POS_METERS = 0;
   private static final double CAMERA_Z_POS_METERS = Units.inchesToMeters(8.12331);
   private static final double CAMERA_ROLL = 0;
+  // don't know the exact pitch for the cameras but know its around here
   private static final double CAMERA_PITCH_FRONT = Units.degreesToRadians(90);
   private static final double CAMERA_PITCH_BACK = Units.degreesToRadians(45);
   private static final double CAMERA_YAW_FRONT = 0;
@@ -80,8 +81,6 @@ public class VisionSubsystem extends SubsystemBase {
 
   // These are always set with every pipeline result
   private PhotonPipelineResult latestResult = null;
-
-  private Optional<EstimatedRobotPose> estimatedPose = Optional.empty();
 
   // These are only set when there's a valid pose
   private double lastTimestampSeconds = 0;
@@ -122,7 +121,6 @@ public class VisionSubsystem extends SubsystemBase {
         .addDouble("Last raw timestamp", this::getLastRawTimestampSeconds)
         .withPosition(0, 0)
         .withSize(1, 1);
-    shuffleboardTab.addBoolean("Has targets", this::hasTargets).withPosition(0, 0).withSize(1, 1);
     shuffleboardTab
         .addInteger("Num targets", this::getNumTargets)
         .withPosition(0, 1)
@@ -151,7 +149,7 @@ public class VisionSubsystem extends SubsystemBase {
       var FieldPose = estimatedPose.get().estimatedPose.toPose2d();
       aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastTimestampSeconds, STANDARD_DEVS);
       robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
-      if (lastRawTimestampSeconds > lastTimestampSeconds) {
+      if (RawTimestampSeconds > lastRawTimestampSeconds) {
         lastRawTimestampSeconds = RawTimestampSeconds;
         lastTimestampSeconds = TimestampSeconds;
         lastFieldPose = FieldPose;
@@ -160,26 +158,13 @@ public class VisionSubsystem extends SubsystemBase {
     }
   }
 
-  public boolean hasTargets() {
-    return estimatedPose.isPresent();
-  }
+
 
   public int getNumTargets() {
     return latestResult == null ? -1 : latestResult.getTargets().size();
   }
 
-  /**
-   * Calculates the robot pose using the best target. Returns null if there is no known robot pose.
-   *
-   * @return The calculated robot pose in meters.
-   */
-  public Pose3d getRobotPose() {
-    if (estimatedPose.isPresent()) {
-      return estimatedPose.get().estimatedPose;
-    }
-    return null;
-  }
-
+  
   /**
    * Returns the last time we saw an AprilTag.
    *
