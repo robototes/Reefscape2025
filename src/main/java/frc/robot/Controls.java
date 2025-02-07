@@ -111,16 +111,23 @@ public class Controls {
     }
     // Arm Controls binding goes here
     s.armPivotSubsystem.setDefaultCommand(
-        s.armPivotSubsystem.startMovingVoltage(
-            () -> Volts.of(6 * secretThirdController.getLeftY())));
-    secretThirdController.povUp().onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L4));
+        s.armPivotSubsystem
+            .startMovingVoltage(() -> Volts.of(6 * secretThirdController.getLeftY()))
+            .withName("ManuallyMoveArm"));
+    secretThirdController
+        .povUp()
+        .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L4).withName("SetArmPresetL4"));
     secretThirdController
         .povLeft()
-        .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L2_L3));
-    secretThirdController.povDown().onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L1));
+        .onTrue(
+            s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L2_L3).withName("SetArmPresetL2_3"));
+    secretThirdController
+        .povDown()
+        .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L1).withName("SetArmPresetL1"));
     secretThirdController
         .povRight()
-        .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_DOWN));
+        .onTrue(
+            s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_DOWN).withName("SetArmPresetDown"));
   }
 
   private void configureSpinnyClawBindings() {
