@@ -45,8 +45,8 @@ public class VisionSubsystem extends SubsystemBase {
   private static final double CAMERA_Z_POS_METERS = Units.inchesToMeters(8.12331);
   private static final double CAMERA_ROLL = 0;
   // don't know the exact pitch for the cameras but know its around here
-  private static final double CAMERA_PITCH_FRONT = Units.degreesToRadians(90);
-  private static final double CAMERA_PITCH_BACK = Units.degreesToRadians(45);
+  private static final double CAMERA_PITCH_FRONT = Units.degreesToRadians(0);
+  private static final double CAMERA_PITCH_BACK = Units.degreesToRadians(-45);
   private static final double CAMERA_YAW_FRONT = 0;
   private static final double CAMERA_YAW_BACK = Units.degreesToRadians(180);
 
