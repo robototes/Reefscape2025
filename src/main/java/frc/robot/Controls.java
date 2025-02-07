@@ -7,6 +7,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.util.RobotType;
 
 public class Controls {
@@ -97,8 +98,14 @@ public class Controls {
       return;
     }
     // Controls binding goes here
-    operatorController.leftTrigger().whileTrue(s.elevatorSubsystem.goUp());
-    operatorController.rightTrigger().whileTrue(s.elevatorSubsystem.goDown());
+    operatorController.leftTrigger().whileTrue(s.elevatorSubsystem.goUpPower());
+    operatorController.rightTrigger().whileTrue(s.elevatorSubsystem.goDownPower());
+    operatorController.y().onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS));
+    operatorController.x().onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_THREE_POS));
+    operatorController.b().onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_TWO_POS));
+    operatorController.a().onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_ONE_POS));
+    operatorController.povUp().whileTrue(s.elevatorSubsystem.goUp());
+    operatorController.povDown().whileTrue(s.elevatorSubsystem.goDown());
   }
 
   private void configureArmPivotBindings() {
