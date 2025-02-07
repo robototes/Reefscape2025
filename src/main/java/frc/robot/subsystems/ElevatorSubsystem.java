@@ -68,8 +68,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     // To view the Elevator visualization, select Network Tables -> SmartDashboard -> Elevator Sim
     // SmartDashboard.putData("Elevator Sim", m_mech2d);
     Shuffleboard.getTab("Elevator").addDouble("Motor Current Position", () -> getCurrentPosition());
-    Shuffleboard.getTab("Elevator")
-        .addDouble("Motor Two Current Position", () -> getCurrentPositionMotorTwo());
     Shuffleboard.getTab("Elevator").addDouble("Target Position", () -> getTargetPosition());
   }
 
@@ -148,7 +146,6 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   private Command setTargetPosition(double pos) {
-    // set target position to 100 rotations
     return runOnce(
         () -> {
           m_motor.setControl(m_request.withPosition(pos));
@@ -163,14 +160,6 @@ public class ElevatorSubsystem extends SubsystemBase {
   private double getCurrentPosition() {
     var curPos = m_motor.getPosition();
     return curPos.getValueAsDouble();
-  }
-
-  private double getCurrentPositionMotorTwo() {
-    var curPosMotorTwo = m_motor2.getPosition();
-    if (curPosMotorTwo != m_motor.getPosition()) {
-      curPosMotorTwo = m_motor.getPosition();
-    }
-    return curPosMotorTwo.getValueAsDouble();
   }
 
   public Command setLevel(double pos) {

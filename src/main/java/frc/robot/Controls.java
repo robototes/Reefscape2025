@@ -100,14 +100,10 @@ public class Controls {
     // Controls binding goes here
     operatorController.leftTrigger().whileTrue(s.elevatorSubsystem.goUpPower());
     operatorController.rightTrigger().whileTrue(s.elevatorSubsystem.goDownPower());
-    operatorController
-        .y()
-        .whileTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS));
-    operatorController
-        .x()
-        .whileTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_THREE_POS));
-    operatorController.b().whileTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_TWO_POS));
-    operatorController.a().whileTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_ONE_POS));
+    operatorController.y().onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS));
+    operatorController.x().onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_THREE_POS));
+    operatorController.b().onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_TWO_POS));
+    operatorController.a().onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_ONE_POS));
     operatorController.povUp().whileTrue(s.elevatorSubsystem.goUp());
     operatorController.povDown().whileTrue(s.elevatorSubsystem.goDown());
   }
