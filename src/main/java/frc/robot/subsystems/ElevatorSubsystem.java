@@ -29,14 +29,13 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double INTAKE = 0;
   public static final double MANUAL = 1;
   private static final double POS_TOLERANCE = 0.02;
-  // This gearbox represents a gearbox containing 4 Vex 775pro motors.
   private final double ELEVATOR_KP = 3; // add feedfwds for each stage?
   private final double ELEVATOR_KI = 0;
   private final double ELEVATOR_KD = 0;
   private final double ELEVATOR_KS = 0;
   private final double ELEVATOR_KV = 0;
   private final double ELEVATOR_KA = 0;
-  private final double REVERSE_SOFT_LIMIT = INTAKE - 0.05; // soft limits arent currently working
+  private final double REVERSE_SOFT_LIMIT = INTAKE - 0.05;
   private final double FORWARD_SOFT_LIMIT = LEVEL_FOUR_POS + 1;
   private final double UP_VOLTAGE = -3;
   private final double DOWN_VOLTAGE = 3;
@@ -115,9 +114,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     talonFXConfigurator.apply(softLimits);
     talonFXConfigurator2.apply(softLimits);
     // enable stator current limit
-    currentLimits.StatorCurrentLimit = 10; // starting low for testing
+    currentLimits.StatorCurrentLimit = 10;
     currentLimits.StatorCurrentLimitEnable = true;
-    currentLimits.SupplyCurrentLimit = 10; // starting low for testing
+    currentLimits.SupplyCurrentLimit = 10;
     currentLimits.SupplyCurrentLimitEnable = true;
     talonFXConfigurator.apply(currentLimits);
     talonFXConfigurator2.apply(currentLimits);
