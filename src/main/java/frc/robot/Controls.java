@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.ArmPivot;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.util.RobotType;
 
 public class Controls {
@@ -56,6 +57,7 @@ public class Controls {
     configureDrivebaseBindings();
     configureElevatorBindings();
     configureArmPivotBindings();
+    configureClimbPivotBindings();
     configureSpinnyClawBindings();
   }
 
@@ -101,14 +103,21 @@ public class Controls {
       return;
     }
     // Controls binding goes here
-    operatorController.leftTrigger().whileTrue(s.elevatorSubsystem.goUp());
-    operatorController.rightTrigger().whileTrue(s.elevatorSubsystem.goDown());
+    operatorController.leftTrigger().whileTrue(s.elevatorSubsystem.goUpPower());
+    operatorController.rightTrigger().whileTrue(s.elevatorSubsystem.goDownPower());
+    operatorController.y().onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS));
+    operatorController.x().onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_THREE_POS));
+    operatorController.b().onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_TWO_POS));
+    operatorController.a().onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_ONE_POS));
+    operatorController.povUp().whileTrue(s.elevatorSubsystem.goUp());
+    operatorController.povDown().whileTrue(s.elevatorSubsystem.goDown());
   }
 
   private void configureArmPivotBindings() {
     if (s.armPivotSubsystem == null) {
       return;
     }
+
     // Arm Controls binding goes here
     s.armPivotSubsystem.setDefaultCommand(
         s.armPivotSubsystem
@@ -128,6 +137,21 @@ public class Controls {
         .povRight()
         .onTrue(
             s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_DOWN).withName("SetArmPresetDown"));
+  }
+
+  private void configureClimbPivotBindings() {
+    if (s.climbPivotSubsystem == null) {
+      return;
+    }
+
+    operatorController
+        .start()
+        .onTrue(
+            s.climbPivotSubsystem
+                .moveClimbMotor(0.1)
+                .withTimeout(0.5)
+                .andThen(s.climbPivotSubsystem.moveClimbMotor(-0.1))
+                .withTimeout(0.5));
   }
 
   private void configureSpinnyClawBindings() {

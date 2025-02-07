@@ -16,6 +16,13 @@ public class Hardware {
   // arm pivot [30-34]
   public static final int ARM_PIVOT_MOTOR_ID = 30;
 
+  // climb [50-59]
+  public static final int CLIMB_PIVOT_MOTOR_ONE_ID = 50;
+  public static final int CLIMB_PIVOT_MOTOR_TWO_ID = 51;
+
+  // climb DIO
+  public static final int CLIMB_SENSOR = 1;
+
   // arm Sensors [35-39]
   public static final int MAIN_ARM_SENSOR = 35;
 
