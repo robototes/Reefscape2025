@@ -1,6 +1,9 @@
 package frc.robot;
 
 public class Hardware {
+  // digital input
+  public static final int ELEVATOR_LIMIT_SWITCH = 0;
+
   // Add motor IDs here
 
   // Swerve: 1-12

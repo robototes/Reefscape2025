@@ -124,7 +124,7 @@ public class Controls {
             s.elevatorSubsystem.setLevel(ElevatorSubsystem.INTAKE).withName("Elevator IntakePos"));
     operatorController.povUp().whileTrue(s.elevatorSubsystem.goUp());
     operatorController.povDown().whileTrue(s.elevatorSubsystem.goDown());
-    operatorController.leftBumper().onTrue(s.elevatorSubsystem.resetPosZero());
+    s.elevatorSubsystem.limitSwitchActive().onTrue(s.elevatorSubsystem.resetPosZero());
   }
 
   private void configureArmPivotBindings() {

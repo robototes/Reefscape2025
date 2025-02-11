@@ -12,11 +12,13 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Hardware;
 
@@ -44,8 +46,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
 
   // motors
-  private TalonFX m_motor;
-  private TalonFX m_motor2;
+  private final TalonFX m_motor;
+  private final TalonFX m_motor2;
+
+  //limit switch
+  private final DigitalInput input = new DigitalInput(Hardware.ELEVATOR_LIMIT_SWITCH);
 
   private double curPos;
   private double targetPos;
@@ -144,6 +149,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     motionMagicConfigs.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
     talonFXConfigurator.apply(motionMagicConfigs);
+  }
+
+  public Trigger limitSwitchActive() {
+    return new Trigger(() -> input.get());
   }
 
   private Command setTargetPosition(double pos) {
