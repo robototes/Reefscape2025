@@ -102,19 +102,19 @@ public class Controls {
     operatorController.rightTrigger().whileTrue(s.elevatorSubsystem.goDownPower());
     operatorController
         .y()
-        .onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS).withName("L4"));
+        .onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS).withName("Elevator L4"));
     operatorController
         .x()
-        .onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_THREE_POS).withName("L3"));
+        .onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_THREE_POS).withName("Elevator L3"));
     operatorController
         .b()
-        .onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_TWO_POS).withName("L2"));
+        .onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_TWO_POS).withName("Elevator L2"));
     operatorController
         .a()
-        .onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_ONE_POS).withName("L1"));
+        .onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_ONE_POS).withName("Elevator L1"));
     operatorController
         .rightBumper()
-        .onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.INTAKE).withName("IntakePos"));
+        .onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.INTAKE).withName("Elevator IntakePos"));
     operatorController.povUp().whileTrue(s.elevatorSubsystem.goUp());
     operatorController.povDown().whileTrue(s.elevatorSubsystem.goDown());
     operatorController.leftBumper().onTrue(s.elevatorSubsystem.resetPosZero());
