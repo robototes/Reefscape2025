@@ -14,7 +14,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 import java.util.function.Supplier;
@@ -37,6 +36,7 @@ public class ArmPivot extends SubsystemBase {
   public static final double HARDSTOP_LOW = -95.0;
   public static final double POS_TOLERANCE = 1.0;
   public static final double PLACEHOLDER_CORAL_WEIGHT_KG = 0.8;
+  // Constant for gear ratio (the power that one motor gives to gear)
   private static final double ARM_RATIO = (12.0 / 60.0) * (20.0 / 60.0) * (18.0 / 48.0);
   // create a Motion Magic request, voltage output
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
@@ -74,12 +74,16 @@ public class ArmPivot extends SubsystemBase {
 
   // preset command placeholder
   public Command moveToPosition(double position) {
-    if (HARDSTOP_LOW < position && position < HARDSTOP_HIGH) {
-      return setTargetPosition(position)
-          .until(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE);
-    } else {
-      return Commands.none();
+    if (position <= HARDSTOP_LOW) {
+      position = HARDSTOP_LOW + POS_TOLERANCE;
     }
+    if (position >= HARDSTOP_HIGH) {
+      position = HARDSTOP_HIGH - POS_TOLERANCE;
+    }
+    // Initilizing variable to use within following Lambda
+    double tempPosition = position;
+    return setTargetPosition(position)
+        .until(() -> Math.abs(getCurrentPosition() - tempPosition) < POS_TOLERANCE);
   }
 
   // (+) is to move arm up, and (-) is down
@@ -121,7 +125,7 @@ public class ArmPivot extends SubsystemBase {
     slot0Configs.kP = ARMPIVOT_KP; // A position error of 2.5 rotations results in 12 V output
     slot0Configs.kI = ARMPIVOT_KI; // no output for integrated error
     slot0Configs.kD = ARMPIVOT_KD; // A velocity error of 1 rps results in 0.1 V output
-    slot0Configs.kG = ARMPIVOT_KG;
+    slot0Configs.kG = ARMPIVOT_KG; // Gravity feedforward
     slot0Configs.GravityType = GravityTypeValue.Arm_Cosine;
     cfg.apply(slot0Configs);
 
