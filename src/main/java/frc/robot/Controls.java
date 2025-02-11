@@ -100,12 +100,31 @@ public class Controls {
     // Controls binding goes here
     operatorController.leftTrigger().whileTrue(s.elevatorSubsystem.goUpPower());
     operatorController.rightTrigger().whileTrue(s.elevatorSubsystem.goDownPower());
-    operatorController.y().onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS));
-    operatorController.x().onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_THREE_POS));
-    operatorController.b().onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_TWO_POS));
-    operatorController.a().onTrue(s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_ONE_POS));
+    operatorController
+        .y()
+        .onTrue(
+            s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS).withName("Elevator L4"));
+    operatorController
+        .x()
+        .onTrue(
+            s.elevatorSubsystem
+                .setLevel(ElevatorSubsystem.LEVEL_THREE_POS)
+                .withName("Elevator L3"));
+    operatorController
+        .b()
+        .onTrue(
+            s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_TWO_POS).withName("Elevator L2"));
+    operatorController
+        .a()
+        .onTrue(
+            s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_ONE_POS).withName("Elevator L1"));
+    operatorController
+        .rightBumper()
+        .onTrue(
+            s.elevatorSubsystem.setLevel(ElevatorSubsystem.INTAKE).withName("Elevator IntakePos"));
     operatorController.povUp().whileTrue(s.elevatorSubsystem.goUp());
     operatorController.povDown().whileTrue(s.elevatorSubsystem.goDown());
+    operatorController.leftBumper().onTrue(s.elevatorSubsystem.resetPosZero());
   }
 
   private void configureArmPivotBindings() {
