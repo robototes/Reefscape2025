@@ -5,7 +5,12 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -16,6 +21,11 @@ public class ClimbPivot extends SubsystemBase {
   private final TalonFX climbPivotMotorOne;
   private final TalonFX climbPivotMotorTwo;
   private final DigitalInput climbSensor;
+  // entry for isClimbIn/out
+  private GenericEntry climbstateEntry;
+  private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Climb");
+  
+  
 
   private final double CLIMB_OUT_PRESET = 90;
   private final double CLIMB_IN_PRESET = 0;
@@ -30,6 +40,7 @@ public class ClimbPivot extends SubsystemBase {
     climbPivotMotorTwo = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_TWO_ID);
     climbSensor = new DigitalInput(Hardware.CLIMB_SENSOR);
     configureMotors();
+    logging();
   }
 
   private void configureMotors() {
@@ -86,12 +97,25 @@ public class ClimbPivot extends SubsystemBase {
                   climbPivotMotorOne.stopMotor();
                 })
             .until(() -> !isClimbIn),
-        () -> nextMoveOut);
+        () -> nextMoveOut).withName("toggleClimb");
   }
 
   public boolean checkClimbSensor() {
     return climbSensor.get();
   }
+
+  public void logging() {
+    shuffleboardTab.addBoolean("Is Climb OUT?", () -> isClimbOut).withWidget(BuiltInWidgets.kBooleanBox);
+    shuffleboardTab.addBoolean("Is Climb IN?", () -> isClimbOut).withWidget(BuiltInWidgets.kBooleanBox);
+    shuffleboardTab.addString("Where Move next?", () -> {
+      if (nextMoveOut){
+        return "NEXT MOVE OUT";
+      }else{
+        return "NEXT MOVE IN";
+      }
+    }).withWidget(BuiltInWidgets.kTextView);
+    shuffleboardTab.addBoolean("Cage Detected", () -> checkClimbSensor()).withWidget(BuiltInWidgets.kBooleanBox);
+   }
 
   @Override
   public void periodic() {
@@ -106,4 +130,6 @@ public class ClimbPivot extends SubsystemBase {
       isClimbIn = false;
     }
   }
+
+  
 }
