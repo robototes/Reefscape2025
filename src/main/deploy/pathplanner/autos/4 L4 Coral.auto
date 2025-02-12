@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "MidRed"
+            "pathName": "Four L4 Coral"
           }
         }
       ]
@@ -15,5 +15,5 @@
   },
   "resetOdom": true,
   "folder": null,
-  "choreoAuto": false
+  "choreoAuto": true
 }

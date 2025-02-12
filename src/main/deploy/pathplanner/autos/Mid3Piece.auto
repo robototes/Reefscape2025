@@ -1,0 +1,56 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MidPreLoad"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Preload to far station"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FarRightCcoral"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CtoFarCoralStation"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FarStationtoD"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "RaiseElevator"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

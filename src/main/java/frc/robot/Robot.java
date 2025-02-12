@@ -4,14 +4,20 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.ArmPivot;
+import frc.robot.subsystems.SpinnyClaw;
 import frc.robot.util.AutoLogic;
 import frc.robot.util.FieldDisplay;
 import frc.robot.util.RobotType;
@@ -63,6 +69,7 @@ public class Robot extends TimedRobot {
     DriverStation.silenceJoystickConnectionWarning(true);
     AutoLogic.initShuffleBoard();
     FieldDisplay.initShuffleBoard();
+   
   }
 
   @Override
@@ -89,9 +96,11 @@ public class Robot extends TimedRobot {
 
     AutoLogic.RunAuto(subsystems.drivebaseSubsystem);
     Command autoCommand = AutoLogic.getAutoCommand(AutoLogic.autoPicker.getSelected());
-
+   
+    
     if (autoCommand != null) {
       autoCommand.schedule();
+     
 
     } else {
       DriverStation.reportError("Auto command not found!", false);

@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "MidRed"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "LowStationRed"
+            "pathName": "SideWallDrive"
           }
         }
       ]

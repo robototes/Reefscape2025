@@ -4,6 +4,7 @@ import static frc.robot.Subsystems.SubsystemConstants.*;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -20,12 +21,15 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import java.io.IOException;
 import java.util.List;
+import java.util.jar.Attributes.Name;
+
 import org.json.simple.parser.ParseException;
 
 public class AutoLogic {
@@ -133,18 +137,12 @@ public class AutoLogic {
         .withSize(2, 1);
 
     tab.addString("Current Selected path", () -> autoPicker.getSelected());
-    if (RobotState.isAutonomous()) {
-      getAutoCommand(autoPicker.getSelected());
-    }
-    PathPlannerPath plannerPath = getPathData(autoPicker.getSelected());
-
-    tab.addStringArray("Path Poses: ", () -> toStringArray(plannerPath.getPathPoses()));
-
-    tab.addStringArray("Path Waypoints: ", () -> toStringArray(plannerPath.getWaypoints()));
+  
+   
   }
 
   public static <T> String[] toStringArray(List<T> dataList) {
-    System.out.println("SIZE" + dataList.size());
+    
     String[] data = new String[dataList.size()]; // TODO FIX INFINTELY REPEATING LIST
 
     for (int i = 0; i < dataList.size(); i++) {
@@ -170,12 +168,24 @@ public class AutoLogic {
   }
 
   public static void addAutoOptions() {
-    autoPicker.setDefaultOption("DEFAULT PATH", "Test Path");
+    autoPicker.setDefaultOption("DEFAULT PATH", "PreloadAuto");
+    autoPicker.addOption("Mid 3 Piece", "Mid3Piece");
+    autoPicker.addOption("Low 3 Piece", "Low3Piece");
+    autoPicker.addOption("DRIVE ONLY", "SideWall");
+  
+    
+  }
+ 
+  
+  public static  Command lowerElevator() {
+    return Commands.none();
 
-    autoPicker.addOption("PATH MID RED", "MidRed");
-    autoPicker.addOption("PATH LOW RED", "LowRed");
+  } public static  Command raiseElevator() {
+    return Commands.none();
+  }
 
-    autoPicker.addOption("Triple L4", "Triple7");
-    autoPicker.addOption("CHOREO triple L4", "New Choreo");
+  public static void registerCommand() {
+   NamedCommands.registerCommand("RaiseElevator", raiseElevator());
+   NamedCommands.registerCommand("LowerElevator", lowerElevator());
   }
 }

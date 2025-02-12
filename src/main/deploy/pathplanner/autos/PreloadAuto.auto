@@ -7,7 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Test Path"
+            "pathName": "MidPreLoad"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RaiseElevatorandWait"
           }
         }
       ]

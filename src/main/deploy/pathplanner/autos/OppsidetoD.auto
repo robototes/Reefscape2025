@@ -5,16 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "LowRed"
-                }
-              }
-            ]
+            "pathName": "OppSideWalltoD"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RaiseElevatorandWait"
           }
         }
       ]
