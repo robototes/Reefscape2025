@@ -19,7 +19,7 @@ public class Subsystems {
 
     public static final boolean DRIVEBASE_ENABLED = true;
 
-    public static final boolean VISION_ENABLED = false;
+    public static final boolean VISION_ENABLED = true;
 
     public static final boolean ELEVATOR_ENABLED = false;
 
