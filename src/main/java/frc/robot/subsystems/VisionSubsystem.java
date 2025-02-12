@@ -121,6 +121,10 @@ public class VisionSubsystem extends SubsystemBase {
         .addDouble("Last timestamp", this::getLastTimestampSeconds)
         .withPosition(1, 0)
         .withSize(1, 1);
+    shuffleboardTab
+        .addDouble("april tag distance", this::getDistanceToTarget)
+        .withPosition(1, 1)
+        .withSize(1, 1);
   }
 
   private void update() {
@@ -149,6 +153,7 @@ public class VisionSubsystem extends SubsystemBase {
         lastFieldPose = FieldPose;
         rawVisionFieldObject.setPose(lastFieldPose);
       }
+      this.Distance = Distance;
     }
   }
 
