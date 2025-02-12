@@ -39,6 +39,7 @@ public class Robot extends TimedRobot {
     sensors = new Sensors();
 
     SmartDashboard.putString("current bot", robotType.toString());
+    SmartDashboard.putData("commandScheduler", CommandScheduler.getInstance());
 
     if (RobotBase.isReal()) {
       DataLogManager.start();

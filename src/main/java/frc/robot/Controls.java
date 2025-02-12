@@ -85,9 +85,10 @@ public class Controls {
             ));
     s.drivebaseSubsystem.applyRequest(() -> brake).ignoringDisable(true).schedule();
 
-    // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() -> brake));
+    // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
+    // brake));
     // driveController.b().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
-    //     point.withModuleDirection(new Rotation2d(-driveController.getLeftY(),
+    // point.withModuleDirection(new Rotation2d(-driveController.getLeftY(),
     // -driveController.getLeftX()))
     // ));
 
@@ -119,10 +120,10 @@ public class Controls {
     }
 
     // Arm Controls binding goes here
-    s.armPivotSubsystem.setDefaultCommand(
-        s.armPivotSubsystem
-            .startMovingVoltage(() -> Volts.of(6 * secretThirdController.getLeftY()))
-            .withName("ManuallyMoveArm"));
+    // s.armPivotSubsystem.setDefaultCommand(
+    // s.armPivotSubsystem
+    // .startMovingVoltage(() -> Volts.of(6 * secretThirdController.getLeftY()))
+    // .withName("ManuallyMoveArm"));
     secretThirdController
         .povUp()
         .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L4).withName("SetArmPresetL4"));
@@ -132,7 +133,7 @@ public class Controls {
             s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L2_L3).withName("SetArmPresetL2_3"));
     secretThirdController
         .povDown()
-        .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L1).withName("SetArmPresetL1"));
+        .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_UP).withName("SetArmPresetUp"));
     secretThirdController
         .povRight()
         .onTrue(

@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -14,19 +15,20 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 import java.util.function.Supplier;
 
 public class ArmPivot extends SubsystemBase {
   // Presets
-  private final double ARMPIVOT_KP = 0.1;
+  private final double ARMPIVOT_KP = 3;
   private final double ARMPIVOT_KI = 0;
   private final double ARMPIVOT_KD = 0;
   private final double ARMPIVOT_KS = 0;
-  private final double ARMPIVOT_KV = 0;
+  private final double ARMPIVOT_KV = 0.12;
   private final double ARMPIVOT_KG = 0;
-  private final double ARMPIVOT_KA = 0;
+  private final double ARMPIVOT_KA = 0.01;
   public static final double PRESET_L1 = 0.0; // This is at position perpendicular to elevator
   public static final double PRESET_L2_L3 = 45.0;
   public static final double PRESET_L4 = 0.0;
@@ -37,7 +39,7 @@ public class ArmPivot extends SubsystemBase {
   public static final double POS_TOLERANCE = 1.0;
   public static final double PLACEHOLDER_CORAL_WEIGHT_KG = 0.8;
   // Constant for gear ratio (the power that one motor gives to gear)
-  private static final double ARM_RATIO = (12.0 / 60.0) * (20.0 / 60.0) * (18.0 / 48.0);
+  private static final double ARM_RATIO = 360 * (12.0 / 60.0) * (20.0 / 60.0) * (18.0 / 48.0);
   // create a Motion Magic request, voltage output
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
 
@@ -52,6 +54,7 @@ public class ArmPivot extends SubsystemBase {
   public ArmPivot() {
     motor = new TalonFX(Hardware.ARM_PIVOT_MOTOR_ID);
     factoryDefaults();
+    logTabs();
   }
 
   // commands
@@ -74,16 +77,22 @@ public class ArmPivot extends SubsystemBase {
 
   // preset command placeholder
   public Command moveToPosition(double position) {
-    if (position <= HARDSTOP_LOW) {
-      position = HARDSTOP_LOW + POS_TOLERANCE;
-    }
-    if (position >= HARDSTOP_HIGH) {
-      position = HARDSTOP_HIGH - POS_TOLERANCE;
-    }
+    /*
+     * if (position <= HARDSTOP_LOW) {
+     * position = HARDSTOP_LOW + POS_TOLERANCE;
+     * } else if (position >= HARDSTOP_HIGH) {
+     * position = HARDSTOP_HIGH - POS_TOLERANCE;
+     * }
+     */
     // Initilizing variable to use within following Lambda
-    double tempPosition = position;
+    // double
     return setTargetPosition(position)
-        .until(() -> Math.abs(getCurrentPosition() - tempPosition) < POS_TOLERANCE);
+        .andThen(
+            Commands.waitUntil(
+                () -> {
+                  System.out.println("gotta go fast");
+                  return Math.abs(getCurrentPosition() - position) < POS_TOLERANCE;
+                }));
   }
 
   // (+) is to move arm up, and (-) is down
@@ -97,22 +106,31 @@ public class ArmPivot extends SubsystemBase {
         .addDouble("pivot_speed", () -> motor.getVelocity().getValueAsDouble());
     Shuffleboard.getTab("pivot-info")
         .addDouble("pivot_motor_temp", () -> motor.getDeviceTemp().getValueAsDouble());
-    Shuffleboard.getTab("pivot-position")
-        .addDouble("pivot_position", () -> motor.getPosition().getValueAsDouble());
+    Shuffleboard.getTab("pivot-info").addDouble("pivot_position", () -> getCurrentPosition());
+    Shuffleboard.getTab("pivot-info").addDouble("pivot_target_position", () -> getTargetPosition());
   }
 
   // TalonFX config
   public void factoryDefaults() {
+    var feedbackSettings = new FeedbackConfigs();
+    feedbackSettings.SensorToMechanismRatio = 1 / ARM_RATIO;
+
     TalonFXConfiguration configuration = new TalonFXConfiguration();
     TalonFXConfigurator cfg = motor.getConfigurator();
+
+    cfg.apply(feedbackSettings);
+
     var currentLimits = new CurrentLimitsConfigs();
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    configuration.ClosedLoopGeneral.ContinuousWrap = true;
+
+    // ContinousWrap only works if position is between 0 and 1
+
+    // configuration.ClosedLoopGeneral.ContinuousWrap = true;
     cfg.apply(configuration);
     // enabling current limits
-    currentLimits.StatorCurrentLimit = 5; // starting low for testing
+    currentLimits.StatorCurrentLimit = 20; // starting low for testing
     currentLimits.StatorCurrentLimitEnable = true;
-    currentLimits.SupplyCurrentLimit = 5; // starting low for testing
+    currentLimits.SupplyCurrentLimit = 10; // starting low for testing
     currentLimits.SupplyCurrentLimitEnable = true;
     cfg.apply(currentLimits);
 
@@ -129,15 +147,14 @@ public class ArmPivot extends SubsystemBase {
     slot0Configs.GravityType = GravityTypeValue.Arm_Cosine;
     cfg.apply(slot0Configs);
 
-    // set Motion Magic settings
+    // set Motion Magic settings in rps not mechanism units
     var motionMagicConfigs = new MotionMagicConfigs();
-    motionMagicConfigs.MotionMagicCruiseVelocity =
-        (0.5 / ARM_RATIO); // Target cruise velocity of 80 rps
+    motionMagicConfigs.MotionMagicCruiseVelocity = (80); // Target cruise velocity of 80 rps
     motionMagicConfigs.MotionMagicAcceleration =
-        1.0 / ARM_RATIO; // Target acceleration of 160 rps/s (0.5 seconds)
-    motionMagicConfigs.MotionMagicJerk =
-        5.0 / ARM_RATIO; // Target jerk of 1600 rps/s/s (0.1 seconds)
-
+        160; // Target acceleration of 160 rps/s (0.5 seconds)
+    motionMagicConfigs.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
     cfg.apply(motionMagicConfigs);
+
+    motor.setPosition(0);
   }
 }
