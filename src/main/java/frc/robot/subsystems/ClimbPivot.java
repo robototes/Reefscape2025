@@ -102,7 +102,7 @@ public class ClimbPivot extends SubsystemBase {
     return climbSensor.get();
   }
 
-  public double getClimbVelocity(){
+  public double getClimbVelocity() {
     return climbPivotMotorOne.getVelocity().getValueAsDouble();
   }
 
@@ -127,7 +127,9 @@ public class ClimbPivot extends SubsystemBase {
     shuffleboardTab
         .addBoolean("Cage Detected", () -> checkClimbSensor())
         .withWidget(BuiltInWidgets.kBooleanBox);
-    shuffleboardTab.addDouble("Motor Speed", () -> getClimbVelocity()).withWidget(BuiltInWidgets.kTextView);
+    shuffleboardTab
+        .addDouble("Motor Speed", () -> getClimbVelocity())
+        .withWidget(BuiltInWidgets.kTextView);
   }
 
   @Override
