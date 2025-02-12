@@ -5,6 +5,7 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -28,6 +29,7 @@ public class ClimbPivot extends SubsystemBase {
   private final double CLIMB_IN_PRESET = 0;
   private final double CLIMB_IN_SPEED = 0.5;
   private final double CLIMB_OUT_SPEED = -0.5;
+  private final double BOOLEAN_TOLERANCE = 2;
   private boolean isClimbOut = false;
   private boolean isClimbIn = true;
   private boolean nextMoveOut = true;
@@ -37,7 +39,7 @@ public class ClimbPivot extends SubsystemBase {
     climbPivotMotorTwo = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_TWO_ID);
     climbSensor = new DigitalInput(Hardware.CLIMB_SENSOR);
     configureMotors();
-    logging();
+    setupLogging();
   }
 
   private void configureMotors() {
@@ -106,7 +108,7 @@ public class ClimbPivot extends SubsystemBase {
     return climbPivotMotorOne.getVelocity().getValueAsDouble();
   }
 
-  public void logging() {
+  public void setupLogging() {
     shuffleboardTab
         .addBoolean("Is Climb OUT?", () -> isClimbOut)
         .withWidget(BuiltInWidgets.kBooleanBox);
@@ -134,12 +136,14 @@ public class ClimbPivot extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (climbPivotMotorOne.getPosition().getValueAsDouble() == CLIMB_OUT_PRESET) {
+    if (MathUtil.isNear(
+        climbPivotMotorOne.getPosition().getValueAsDouble(), CLIMB_OUT_PRESET, BOOLEAN_TOLERANCE)) {
       isClimbOut = true;
     } else {
       isClimbOut = false;
     }
-    if (climbPivotMotorOne.getPosition().getValueAsDouble() == CLIMB_IN_PRESET) {
+    if (MathUtil.isNear(
+        climbPivotMotorOne.getPosition().getValueAsDouble(), CLIMB_IN_PRESET, BOOLEAN_TOLERANCE)) {
       isClimbIn = true;
     } else {
       isClimbIn = false;
