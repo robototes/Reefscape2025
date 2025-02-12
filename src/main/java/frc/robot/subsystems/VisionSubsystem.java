@@ -22,8 +22,10 @@ import frc.robot.Hardware;
 import java.util.EnumSet;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonUtils;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 /*
  * All 3D poses and transforms use the NWU (North-West-Up) coordinate system, where +X is
@@ -78,6 +80,7 @@ public class VisionSubsystem extends SubsystemBase {
   private double lastTimestampSeconds = 0;
   private double lastRawTimestampSeconds = 0;
   private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
+  private double Distance = 0;
 
   private static final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
@@ -136,6 +139,8 @@ public class VisionSubsystem extends SubsystemBase {
       var RawTimestampSeconds = result.getTimestampSeconds();
       var TimestampSeconds = estimatedPose.get().timestampSeconds;
       var FieldPose = estimatedPose.get().estimatedPose.toPose2d();
+      var Distance = PhotonUtils.getDistanceToPose(FieldPose,
+          fieldLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d());
       aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastTimestampSeconds, STANDARD_DEVS);
       robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       if (RawTimestampSeconds > lastRawTimestampSeconds) {
@@ -163,4 +168,9 @@ public class VisionSubsystem extends SubsystemBase {
   public double getLastRawTimestampSeconds() {
     return lastRawTimestampSeconds;
   }
+
+  public double getDistanceToTarget() {
+    return Distance;
+  }
+
 }
