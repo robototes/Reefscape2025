@@ -163,15 +163,8 @@ public class Controls {
     if (s.climbPivotSubsystem == null) {
       return;
     }
-
-    operatorController
-        .start()
-        .onTrue(
-            s.climbPivotSubsystem
-                .moveClimbMotor(0.1)
-                .withTimeout(0.5)
-                .andThen(s.climbPivotSubsystem.moveClimbMotor(-0.1))
-                .withTimeout(0.5));
+    // Idk if this is great code or horrible code
+    operatorController.start().onTrue(s.climbPivotSubsystem.toggleClimb());
   }
 
   private void configureSpinnyClawBindings() {
