@@ -49,7 +49,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private final TalonFX m_motor;
   private final TalonFX m_motor2;
 
-  //limit switch
+  // limit switch
   private final DigitalInput input = new DigitalInput(Hardware.ELEVATOR_LIMIT_SWITCH);
 
   private double curPos;
