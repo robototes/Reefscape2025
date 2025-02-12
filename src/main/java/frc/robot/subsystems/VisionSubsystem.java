@@ -37,36 +37,31 @@ import org.photonvision.targeting.PhotonPipelineResult;
  */
 public class VisionSubsystem extends SubsystemBase {
   // don't mind the value is never used part it is used
-  private static final double CAMERA_X_POS_METERS_FRONT =
-      Units.inchesToMeters(27.0 / 2.0 - 0.94996);
-  private static final double CAMERA_X_POS_METERS_BACK =
-      Units.inchesToMeters(27.0 / 2.0 - 0.94996) - 0.62;
+  private static final double CAMERA_X_POS_METERS_FRONT = Units.inchesToMeters(0);
+  private static final double CAMERA_X_POS_METERS_BACK = Units.inchesToMeters(0);
   private static final double CAMERA_Y_POS_METERS = 0;
-  private static final double CAMERA_Z_POS_METERS = Units.inchesToMeters(8.12331);
+  private static final double CAMERA_Z_POS_METERS = Units.inchesToMeters(0);
   private static final double CAMERA_ROLL = 0;
   // don't know the exact pitch for the cameras but know its around here
   private static final double CAMERA_PITCH_FRONT = Units.degreesToRadians(0);
-  private static final double CAMERA_PITCH_BACK = Units.degreesToRadians(-45);
+  private static final double CAMERA_PITCH_BACK = Units.degreesToRadians(0);
   private static final double CAMERA_YAW_FRONT = 0;
   private static final double CAMERA_YAW_BACK = Units.degreesToRadians(180);
 
-  public static final Transform3d ROBOT_TO_CAM =
-      new Transform3d(
-          CAMERA_X_POS_METERS_FRONT,
-          CAMERA_Y_POS_METERS,
-          CAMERA_Z_POS_METERS,
-          new Rotation3d(CAMERA_ROLL, CAMERA_PITCH_FRONT, CAMERA_YAW_FRONT));
+  public static final Transform3d ROBOT_TO_CAM_FRONT = new Transform3d(
+      CAMERA_X_POS_METERS_FRONT,
+      CAMERA_Y_POS_METERS,
+      CAMERA_Z_POS_METERS,
+      new Rotation3d(CAMERA_ROLL, CAMERA_PITCH_FRONT, CAMERA_YAW_FRONT));
 
-  public static final Transform3d ROBOT_TO_CAM_BACK =
-      new Transform3d(
-          CAMERA_X_POS_METERS_BACK,
-          CAMERA_Y_POS_METERS,
-          CAMERA_Z_POS_METERS,
-          new Rotation3d(CAMERA_ROLL, CAMERA_PITCH_BACK, CAMERA_YAW_BACK));
+  public static final Transform3d ROBOT_TO_CAM_BACK = new Transform3d(
+      CAMERA_X_POS_METERS_BACK,
+      CAMERA_Y_POS_METERS,
+      CAMERA_Z_POS_METERS,
+      new Rotation3d(CAMERA_ROLL, CAMERA_PITCH_BACK, CAMERA_YAW_BACK));
 
   // TODO Measure these
-  private static final Vector<N3> STANDARD_DEVS =
-      VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5));
+  private static final Vector<N3> STANDARD_DEVS = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5));
 
   private final PhotonCamera photonCamera;
   private final PhotonCamera photonCamera2;
@@ -84,8 +79,7 @@ public class VisionSubsystem extends SubsystemBase {
   private double lastRawTimestampSeconds = 0;
   private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
 
-  private static final AprilTagFieldLayout fieldLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+  private static final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
   public VisionSubsystem(DrivebaseWrapper aprilTagsHelper) {
     robotField = new Field2d();
@@ -94,12 +88,10 @@ public class VisionSubsystem extends SubsystemBase {
     rawVisionFieldObject = robotField.getObject("RawVision");
     photonCamera = new PhotonCamera(Hardware.FRONT_CAM);
     photonCamera2 = new PhotonCamera(Hardware.BACK_CAM);
-    photonPoseEstimatorFrontCamera =
-        new PhotonPoseEstimator(
-            fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM);
-    photonPoseEstimatorBackCamera =
-        new PhotonPoseEstimator(
-            fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_BACK);
+    photonPoseEstimatorFrontCamera = new PhotonPoseEstimator(
+        fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_FRONT);
+    photonPoseEstimatorBackCamera = new PhotonPoseEstimator(
+        fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_BACK);
 
     var networkTables = NetworkTableInstance.getDefault();
     networkTables.addListener(
