@@ -69,12 +69,15 @@ public class Robot extends TimedRobot {
     DriverStation.silenceJoystickConnectionWarning(true);
     AutoLogic.initShuffleBoard();
     FieldDisplay.initShuffleBoard();
-   
+    AutoLogic.registerCommand();
+ 
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    AutoLogic.registerCommand();
+  
     // System.out.println("Configured: " + AutoBuilder.isConfigured());;
     // System.out.println("Trajectory Path: " + (AutoLogic.getPath()));
     // System.out.println("Trajectory Path: " + (AutoLogic.getPath()));

@@ -11,9 +11,21 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "raiseElevator"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Preload to far station"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "lowerElevator"
           }
         },
         {
@@ -23,9 +35,21 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "raiseElevator"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "CtoFarCoralStation"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "lowerElevator"
           }
         },
         {
@@ -35,16 +59,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "RaiseElevator"
-                }
-              }
-            ]
+            "name": "raiseElevator"
           }
         }
       ]

@@ -13,7 +13,7 @@
         {
           "type": "named",
           "data": {
-            "name": "RaiseElevatorandWait"
+            "name": "raiseElevator"
           }
         }
       ]

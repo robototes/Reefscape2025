@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "OppSideWalltoD"
+            "pathName": "UpperMidtoJ"
           }
         },
         {
@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "DtoFarCoralStation"
+            "pathName": "JtoUpperFarStation"
           }
         },
         {
@@ -31,7 +31,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "FarStationtoD"
+            "pathName": "UpperFarStationToK"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "raiseElevator"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "KToUpperFarStation"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "lowerElevator"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "UpperStationToL"
           }
         },
         {

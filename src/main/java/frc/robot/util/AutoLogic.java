@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
@@ -38,6 +39,7 @@ public class AutoLogic {
   public static final Controls controls = r.controls;
 
   public static SendableChooser<String> autoPicker = new SendableChooser<String>();
+  public static SendableChooser<String> autoAction = new SendableChooser<String>();
   public static final double FEEDER_DELAY = 0.4;
 
   // rpm to rev up launcher before launching
@@ -135,10 +137,19 @@ public class AutoLogic {
         .withWidget(BuiltInWidgets.kComboBoxChooser)
         .withPosition(0, 0)
         .withSize(2, 1);
+    
+        tab.add("Elevator Commands", autoAction)
+        .withWidget(BuiltInWidgets.kComboBoxChooser)
+        .withPosition(3, 0)
+        .withSize(2, 1);
 
-    tab.addString("Current Selected path", () -> autoPicker.getSelected());
-  
+    tab.addString("Current Selected path", () -> autoPicker.getSelected()).withPosition(0, 1).withSize(2, 1);
+    tab.addString("Current AutoElevatorCommand(s)", () -> autoAction.getSelected()).withPosition(3,1).withSize(2,1);
    
+    autoAction.setDefaultOption("EXTEND AND WAIT", "raiseElevatorandWait");
+    autoAction.addOption("EXTEND WHILE MOVING", "raiseElevator");
+    
+
   }
 
   public static <T> String[] toStringArray(List<T> dataList) {
@@ -172,20 +183,51 @@ public class AutoLogic {
     autoPicker.addOption("Mid 3 Piece", "Mid3Piece");
     autoPicker.addOption("Low 3 Piece", "Low3Piece");
     autoPicker.addOption("DRIVE ONLY", "SideWall");
-  
-    
+    autoPicker.addOption("Low Drive 1 L4", "OppsidetoD");
+    autoPicker.addOption("Upper 3 Piece", "Upper3Piece");
+    autoPicker.addOption("CHOREO CRAZY TEST?(IGNORE)", "4 L4 Coral");
+    autoPicker.addOption("CHOREO 3 PIECE?(IGNORE)", "New Choreo");
+    autoPicker.addOption("CHOREO 3 PIECE LESS CRAZY?(IGNORE)", "Triple7");
+
+
+
+
+
+
   }
  
   
   public static  Command lowerElevator() {
-    return Commands.none();
+    return Commands.none().withName("lowerElevator");
 
   } public static  Command raiseElevator() {
-    return Commands.none();
+    return Commands.none().withName("raiseElevator");
   }
-
+  public static Command lowerElevatorandWait() {
+    return Commands.sequence(lowerElevator(), new WaitCommand(0)).withName("lowerElevatorandWAIT");
+  }
+  public static Command raiseElevatorandWait() {
+    return Commands.sequence(raiseElevator(), new WaitCommand(0)).withName("raiseElevatorandWAIT");
+  }
+ 
   public static void registerCommand() {
-   NamedCommands.registerCommand("RaiseElevator", raiseElevator());
-   NamedCommands.registerCommand("LowerElevator", lowerElevator());
+
+if (RobotState.isDisabled()) {
+    if (autoAction.getSelected().equals("raiseElevatorandWait")) {
+      NamedCommands.registerCommand( "lowerElevator", lowerElevatorandWait());
+      NamedCommands.registerCommand( "raiseElevator", raiseElevatorandWait());
+    }
+    else if (autoAction.getSelected().equals("raiseElevator")) {
+      NamedCommands.registerCommand( "lowerElevator", lowerElevator());
+      NamedCommands.registerCommand( "raiseElevator", raiseElevator());
+     
+    
+    }
+    else {
+      System.out.println("FAILED?" + autoAction.getSelected());
+    }
+
   }
+}
+
 }
