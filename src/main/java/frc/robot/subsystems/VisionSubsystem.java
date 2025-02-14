@@ -175,7 +175,7 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public double getDistanceToTarget() {
-    return Distance;
+    return Distance / 100;
   }
 
 }
