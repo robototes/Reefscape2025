@@ -175,7 +175,7 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public double getDistanceToTarget() {
-    return Distance / 100;
+    return Units.metersToInches(Distance);
   }
 
 }
