@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -13,9 +14,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.AutoLogic;
+import frc.robot.util.AutonomousField;
 import frc.robot.util.BuildInfo;
-import frc.robot.util.FieldDisplay;
 import frc.robot.util.RobotType;
+import java.util.List;
 
 public class Robot extends TimedRobot {
   /** Singleton Stuff */
@@ -30,6 +32,7 @@ public class Robot extends TimedRobot {
   public final Controls controls;
   public final Subsystems subsystems;
   public final Sensors sensors;
+  public List<Pose2d> pathPoses;
 
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
@@ -66,7 +69,7 @@ public class Robot extends TimedRobot {
 
     DriverStation.silenceJoystickConnectionWarning(true);
     AutoLogic.initShuffleBoard();
-    FieldDisplay.initShuffleBoard();
+    AutonomousField.initShuffleBoard("Field", 0, 0, this::addPeriodic);
     AutoLogic.registerCommand();
   }
 
@@ -74,10 +77,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     AutoLogic.registerCommand();
-
-    // System.out.println("Configured: " + AutoBuilder.isConfigured());;
-    // System.out.println("Trajectory Path: " + (AutoLogic.getPath()));
-    // System.out.println("Trajectory Path: " + (AutoLogic.getPath()));
+    
   }
 
   @Override
@@ -95,7 +95,7 @@ public class Robot extends TimedRobot {
     // Checks if FMS is attatched and enables joystick warning if true
 
     AutoLogic.RunAuto(subsystems.drivebaseSubsystem);
-    Command autoCommand = AutoLogic.getAutoCommand(AutoLogic.autoPicker.getSelected());
+    Command autoCommand = AutoLogic.getAutoCommand(AutoLogic.getSelectedAutoName());
 
     if (autoCommand != null) {
       autoCommand.schedule();

@@ -110,7 +110,6 @@ public class AutoLogic {
     // Load the path you want to follow using its name in the GUI
     try {
       PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-
       return path;
 
     } catch (IOException | ParseException | FileVersionException e) {
@@ -140,9 +139,10 @@ public class AutoLogic {
         .withPosition(3, 0)
         .withSize(2, 1);
 
-    tab.addString("Current Selected path", () -> autoPicker.getSelected())
+    tab.addString("Current Selected path", () -> getSelectedAutoName())
         .withPosition(0, 1)
         .withSize(2, 1);
+
     tab.addString("Current AutoElevatorCommand(s)", () -> autoAction.getSelected())
         .withPosition(3, 1)
         .withSize(2, 1);
@@ -178,7 +178,7 @@ public class AutoLogic {
   }
 
   public static void addAutoOptions() {
-    autoPicker.setDefaultOption("DEFAULT PATH", "PreloadAuto");
+    autoPicker.setDefaultOption("DEFAULT PATH", "PreLoadAuto");
     autoPicker.addOption("Mid 3 Piece", "Mid3Piece");
     autoPicker.addOption("Low 3 Piece", "Low3Piece");
     autoPicker.addOption("DRIVE ONLY", "SideWall");
@@ -219,5 +219,9 @@ public class AutoLogic {
         System.out.println("FAILED?" + autoAction.getSelected());
       }
     }
+  }
+
+  public static String getSelectedAutoName() {
+    return autoPicker.getSelected();
   }
 }
