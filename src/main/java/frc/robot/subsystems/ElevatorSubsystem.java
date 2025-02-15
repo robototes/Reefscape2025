@@ -1,7 +1,9 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -20,20 +22,22 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Hardware;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  public static final double LEVEL_FOUR_POS = 4;
-  public static final double LEVEL_THREE_POS = 3;
-  public static final double LEVEL_TWO_POS = 2;
-  public static final double LEVEL_ONE_POS = 1;
-  private static final double POS_TOLERANCE = 0.1;
-  // This gearbox represents a gearbox containing 4 Vex 775pro motors.
-  private final double ELEVATOR_KP = 0.5;
+  public static final double LEVEL_FOUR_POS = 8;
+  public static final double LEVEL_THREE_POS = 6;
+  public static final double LEVEL_TWO_POS = 4;
+  public static final double LEVEL_ONE_POS = 2;
+  public static final double STOWED = 1;
+  public static final double INTAKE = 0;
+  public static final double MANUAL = 1;
+  private static final double POS_TOLERANCE = 0.02;
+  private final double ELEVATOR_KP = 3; // add feedfwds for each stage?
   private final double ELEVATOR_KI = 0;
   private final double ELEVATOR_KD = 0;
   private final double ELEVATOR_KS = 0;
   private final double ELEVATOR_KV = 0;
   private final double ELEVATOR_KA = 0;
-  private final double REVERSE_SOFT_LIMIT = -10;
-  private final double FORWARD_SOFT_LIMIT = 10;
+  private final double REVERSE_SOFT_LIMIT = INTAKE - 0.05;
+  private final double FORWARD_SOFT_LIMIT = LEVEL_FOUR_POS + 1;
   private final double UP_VOLTAGE = -3;
   private final double DOWN_VOLTAGE = 3;
   private final double HOLD_VOLTAGE = 0;
@@ -43,6 +47,10 @@ public class ElevatorSubsystem extends SubsystemBase {
   // motors
   private TalonFX m_motor;
   private TalonFX m_motor2;
+
+  private double curPos;
+  private double targetPos;
+  private double resetPos;
 
   private final MutVoltage m_appliedVoltage = Units.Volts.mutable(0);
   // Creates a SysIdRoutine
@@ -57,11 +65,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_motor = new TalonFX(Hardware.ELEVATOR_MOTOR_ONE);
     m_motor2 = new TalonFX(Hardware.ELEVATOR_MOTOR_TWO);
     motorConfigs();
-    m_motor2.setControl(new Follower(m_motor.getDeviceID(), false));
+    m_motor2.setControl(new Follower(m_motor.getDeviceID(), true));
     // Publish Mechanism2d to SmartDashboard
     // To view the Elevator visualization, select Network Tables -> SmartDashboard -> Elevator Sim
     // SmartDashboard.putData("Elevator Sim", m_mech2d);
-    Shuffleboard.getTab("Elevator").addDouble("Current Position", () -> getCurrentPosition());
+    Shuffleboard.getTab("Elevator").addDouble("Motor Current Position", () -> getCurrentPosition());
+    Shuffleboard.getTab("Elevator").addDouble("Target Position", () -> getTargetPosition());
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
@@ -93,6 +102,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void motorConfigs() {
+    // add FOC at some point please --gives more torque
     var talonFXConfigurator = m_motor.getConfigurator();
     var talonFXConfigurator2 = m_motor2.getConfigurator();
     var currentLimits = new CurrentLimitsConfigs();
@@ -105,9 +115,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     talonFXConfigurator.apply(softLimits);
     talonFXConfigurator2.apply(softLimits);
     // enable stator current limit
-    currentLimits.StatorCurrentLimit = 10; // starting low for testing
+    currentLimits.StatorCurrentLimit = 10;
     currentLimits.StatorCurrentLimitEnable = true;
-    currentLimits.SupplyCurrentLimit = 10; // starting low for testing
+    currentLimits.SupplyCurrentLimit = 10;
     currentLimits.SupplyCurrentLimitEnable = true;
     talonFXConfigurator.apply(currentLimits);
     talonFXConfigurator2.apply(currentLimits);
@@ -117,52 +127,74 @@ public class ElevatorSubsystem extends SubsystemBase {
     talonFXConfigurator.apply(outputConfigs);
     talonFXConfigurator2.apply(outputConfigs);
 
-    // in init function
-    var talonFXConfigs = new TalonFXConfiguration();
-
     // set slot 0 gains
-    var slot0Configs = talonFXConfigs.Slot0;
+    var slot0Configs = new Slot0Configs();
     slot0Configs.kS = ELEVATOR_KS; // Add 0.25 V output to overcome static friction
     slot0Configs.kV = ELEVATOR_KV; // A velocity target of 1 rps results in 0.12 V output
     slot0Configs.kA = ELEVATOR_KA; // An acceleration of 1 rps/s requires 0.01 V output
     slot0Configs.kP = ELEVATOR_KP; // A position error of 2.5 rotations results in 12 V output
     slot0Configs.kI = ELEVATOR_KI; // no output for integrated error
     slot0Configs.kD = ELEVATOR_KD; // A velocity error of 1 rps results in 0.1 V output
+    talonFXConfigurator.apply(slot0Configs);
 
     // set Motion Magic settings
-    var motionMagicConfigs = talonFXConfigs.MotionMagic;
+    var motionMagicConfigs = new MotionMagicConfigs();
     motionMagicConfigs.MotionMagicCruiseVelocity = 80; // Target cruise velocity of 80 rps
     motionMagicConfigs.MotionMagicAcceleration =
         160; // Target acceleration of 160 rps/s (0.5 seconds)
     motionMagicConfigs.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
-    m_motor.getConfigurator().apply(talonFXConfigs);
+    talonFXConfigurator.apply(motionMagicConfigs);
   }
 
   private Command setTargetPosition(double pos) {
-    // set target position to 100 rotations
-    return runOnce(() -> m_motor.setControl(m_request.withPosition(pos)));
+    return runOnce(
+        () -> {
+          m_motor.setControl(m_request.withPosition(pos));
+          targetPos = pos;
+        });
+  }
+
+  private double getTargetPosition() {
+    return targetPos;
   }
 
   private double getCurrentPosition() {
-    var curPos = m_motor.getPosition();
-    return curPos.getValueAsDouble();
+    curPos = m_motor.getPosition().getValueAsDouble();
+    return curPos;
+  }
+
+  private void setCurrentPosition(double pos) {
+    m_motor.setPosition(pos);
+  }
+
+  public Command resetPosZero() {
+    return runOnce(
+        () -> {
+          setCurrentPosition(0);
+        });
   }
 
   public Command setLevel(double pos) {
-    return setTargetPosition(pos).until(() -> Math.abs(getCurrentPosition() - pos) < POS_TOLERANCE);
+    return setTargetPosition(pos)
+        .until(() -> Math.abs(getCurrentPosition() - pos) < POS_TOLERANCE)
+        .withName("setLevel" + pos);
   }
 
   public Command goUp() {
-    return startEnd(
-        () -> m_motor.setVoltage(UP_VOLTAGE),
-        () -> m_motor.setVoltage(HOLD_VOLTAGE)); // test values from dev model bot
+    return defer(() -> setLevel(getCurrentPosition() + MANUAL));
   }
 
   public Command goDown() {
-    return startEnd(
-        () -> m_motor.setVoltage(DOWN_VOLTAGE),
-        () -> m_motor.setVoltage(HOLD_VOLTAGE)); // test values from dev model bot
+    return defer(() -> setLevel(getCurrentPosition() - MANUAL));
+  }
+
+  public Command goUpPower() {
+    return startEnd(() -> m_motor.setVoltage(UP_VOLTAGE), () -> m_motor.setVoltage(HOLD_VOLTAGE));
+  }
+
+  public Command goDownPower() {
+    return startEnd(() -> m_motor.setVoltage(DOWN_VOLTAGE), () -> m_motor.setVoltage(HOLD_VOLTAGE));
   }
 
   /** Stop the control loop and motor output. */

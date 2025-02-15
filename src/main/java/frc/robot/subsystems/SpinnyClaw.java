@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
@@ -22,7 +23,8 @@ public class SpinnyClaw extends SubsystemBase {
 
   public SpinnyClaw() {
     motor = new TalonFX(Hardware.SPINNY_CLAW_MOTOR_ID);
-    factoryDefaults();
+    configMotors();
+    logTabs();
   }
 
   // (+) is to move arm up, and (-) is down
@@ -31,17 +33,25 @@ public class SpinnyClaw extends SubsystemBase {
         .finallyDo(() -> motor.setVoltage(0));
   }
 
+  // Log tabs to shuffleboard, temperature, and motor speed
+  public void logTabs() {
+    Shuffleboard.getTab("claw-info")
+        .addDouble("claw_speed", () -> motor.getVelocity().getValueAsDouble());
+    Shuffleboard.getTab("claw-info")
+        .addDouble("claw_motor_temp", () -> motor.getDeviceTemp().getValueAsDouble());
+  }
+
   // TalonFX config
-  public void factoryDefaults() {
+  public void configMotors() {
     TalonFXConfiguration configuration = new TalonFXConfiguration();
     TalonFXConfigurator cfg = motor.getConfigurator();
     var currentLimits = new CurrentLimitsConfigs();
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     cfg.apply(configuration);
     // enabling stator current limits
-    currentLimits.StatorCurrentLimit = 5; // starting low for testing
+    currentLimits.StatorCurrentLimit = 150; // subject to change
     currentLimits.StatorCurrentLimitEnable = true;
-    currentLimits.SupplyCurrentLimit = 5; // starting low for testing
+    currentLimits.SupplyCurrentLimit = 40; // subject to change
     currentLimits.SupplyCurrentLimitEnable = true;
     cfg.apply(currentLimits);
   }
