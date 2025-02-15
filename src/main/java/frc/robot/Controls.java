@@ -4,7 +4,9 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.ArmPivot;
@@ -131,7 +133,9 @@ public class Controls {
             s.elevatorSubsystem.setLevel(ElevatorSubsystem.INTAKE).withName("Elevator IntakePos"));
     operatorController.povUp().whileTrue(s.elevatorSubsystem.goUp());
     operatorController.povDown().whileTrue(s.elevatorSubsystem.goDown());
-    operatorController.leftBumper().onTrue(s.elevatorSubsystem.resetPosZero());
+    operatorController
+        .leftBumper()
+        .onTrue(s.elevatorSubsystem.resetPosZero().ignoringDisable(true));
   }
 
   private void configureArmPivotBindings() {
@@ -201,5 +205,16 @@ public class Controls {
     operatorController
         .start()
         .onTrue(s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.rainbowAnim));
+    if (s.elevatorSubsystem != null) {
+      Trigger hasBeen0ed = new Trigger(s.elevatorSubsystem::getHasBeen0ed);
+      Commands.waitSeconds(1)
+          .andThen(
+              s.elevatorLEDSubsystem.colorSet(50, 0, 0).withName("LED red").ignoringDisable(true))
+          .schedule();
+      hasBeen0ed.onTrue(
+          s.elevatorLEDSubsystem.colorSet(0, 50, 0).withName("LED green").ignoringDisable(true));
+      hasBeen0ed.onFalse(
+          s.elevatorLEDSubsystem.colorSet(50, 0, 0).withName("LED red").ignoringDisable(false));
+    }
   }
 }

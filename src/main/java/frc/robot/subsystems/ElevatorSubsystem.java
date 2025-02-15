@@ -5,7 +5,6 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -50,7 +49,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private double curPos;
   private double targetPos;
-  private double resetPos;
+  private boolean hasBeen0ed;
 
   private final MutVoltage m_appliedVoltage = Units.Volts.mutable(0);
   // Creates a SysIdRoutine
@@ -150,9 +149,15 @@ public class ElevatorSubsystem extends SubsystemBase {
   private Command setTargetPosition(double pos) {
     return runOnce(
         () -> {
-          m_motor.setControl(m_request.withPosition(pos));
-          targetPos = pos;
+          if (hasBeen0ed) {
+            m_motor.setControl(m_request.withPosition(pos));
+            targetPos = pos;
+          }
         });
+  }
+
+  public boolean getHasBeen0ed() {
+    return hasBeen0ed;
   }
 
   private double getTargetPosition() {
@@ -172,6 +177,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     return runOnce(
         () -> {
           setCurrentPosition(0);
+          hasBeen0ed = true;
         });
   }
 

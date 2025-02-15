@@ -20,11 +20,11 @@ public class Subsystems {
 
     public static final boolean DRIVEBASE_ENABLED = false;
     public static final boolean VISION_ENABLED = false;
-    public static final boolean ELEVATOR_ENABLED = false;
+    public static final boolean ELEVATOR_ENABLED = true;
     public static final boolean ARMPIVOT_ENABLED = false;
     public static final boolean SPINNYCLAW_ENABLED = false;
     public static final boolean CLIMBPIVOT_ENABLED = false;
-     public static final boolean ELEVATOR_LED_ENABLED = true;
+    public static final boolean ELEVATOR_LED_ENABLED = true;
   }
 
   // Subsystems go here
