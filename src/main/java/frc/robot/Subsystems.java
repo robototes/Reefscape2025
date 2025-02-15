@@ -69,6 +69,7 @@ public class Subsystems {
       spinnyClawSubsytem = null;
     }
     if (ELEVATOR_LED_ENABLED) {
+      System.out.println("Elevator LED");
       elevatorLEDSubsystem = new ElevatorLight();
     } else {
       elevatorLEDSubsystem = null;
