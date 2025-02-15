@@ -70,6 +70,7 @@ public class Robot extends TimedRobot {
     DriverStation.silenceJoystickConnectionWarning(true);
     AutoLogic.initShuffleBoard();
     AutonomousField.initShuffleBoard("Field", 0, 0, this::addPeriodic);
+
     AutoLogic.registerCommand();
   }
 
@@ -77,7 +78,6 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     AutoLogic.registerCommand();
-    
   }
 
   @Override

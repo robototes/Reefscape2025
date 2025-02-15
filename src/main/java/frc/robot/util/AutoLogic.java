@@ -182,11 +182,12 @@ public class AutoLogic {
     autoPicker.addOption("Mid 3 Piece", "Mid3Piece");
     autoPicker.addOption("Low 3 Piece", "Low3Piece");
     autoPicker.addOption("DRIVE ONLY", "SideWall");
-    autoPicker.addOption("Low Drive 1 L4", "OppsidetoD");
+    autoPicker.addOption("Low  1 L4", "OppsidetoD");
     autoPicker.addOption("Upper 3 Piece", "Upper3Piece");
     autoPicker.addOption("CHOREO CRAZY TEST?(IGNORE)", "4 L4 Coral");
     autoPicker.addOption("CHOREO 3 PIECE?(IGNORE)", "New Choreo");
     autoPicker.addOption("CHOREO 3 PIECE LESS CRAZY?(IGNORE)", "Triple7");
+    autoPicker.addOption("High 1 L4", "SideToJ");
   }
 
   public static Command lowerElevator() {

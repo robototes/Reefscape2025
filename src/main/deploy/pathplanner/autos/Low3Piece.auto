@@ -39,6 +39,30 @@
           "data": {
             "name": "raiseElevator"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "DtoFarCoralStation"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "lowerElevator"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FarStationtoC"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "raiseElevator"
+          }
         }
       ]
     }

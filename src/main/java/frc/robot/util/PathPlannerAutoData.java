@@ -10,7 +10,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.json.simple.parser.ParseException;
 
 public class PathPlannerAutoData {
@@ -53,7 +52,7 @@ public class PathPlannerAutoData {
     }
     this.trajectories = trajectories;
     double totalTime = 0;
-    for(PathPlannerTrajectory traj : this.trajectories) {
+    for (PathPlannerTrajectory traj : this.trajectories) {
       totalTime += traj.getTotalTimeSeconds();
     }
     autoDuration = totalTime;
@@ -66,6 +65,7 @@ public class PathPlannerAutoData {
   public Pose2d getStartingPose() {
     return this.startingPose;
   }
+
   public double getRunTime() {
     return autoDuration;
   }

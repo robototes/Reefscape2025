@@ -19,23 +19,25 @@ import java.util.function.ObjDoubleConsumer;
 public class AutonomousField {
   private static final double DEFAULT_PLAYBACK_SPEED = 1;
   private static final double UPDATE_RATE = 0.05;
+  private static final double lowerPlaybackSpeedLimit = 0.5;
+  private static final double upperPlaybackSpeedLimit = 2.5;
 
   public static void initShuffleBoard(
-      String tabName,
-      int columnIndex,
-      int rowIndex,
-      ObjDoubleConsumer<Runnable> addPeriodic) {
-	ShuffleboardTab tab = Shuffleboard.getTab(tabName);
+      String tabName, int columnIndex, int rowIndex, ObjDoubleConsumer<Runnable> addPeriodic) {
+    ShuffleboardTab tab = Shuffleboard.getTab(tabName);
     GenericEntry speedMultiplier =
         tab.add("Auto display speed", DEFAULT_PLAYBACK_SPEED)
             .withWidget(BuiltInWidgets.kNumberSlider)
-            .withProperties(Map.of("Min", 0.5, "Max", 2.5))
-            .withPosition(columnIndex + 1, rowIndex + 3) // Offset by height of Field2d display
+            .withProperties(Map.of("Min", lowerPlaybackSpeedLimit, "Max", upperPlaybackSpeedLimit))
+            .withPosition(10, 5) // Offset by height of Field2d display
+            // .withPosition(columnIndex + 1, rowIndex + 3) // Offset by height of Field2d display
             .withSize(3, 1)
             .getEntry();
 
     var autonomousField =
         new AutonomousField(() -> speedMultiplier.getDouble(DEFAULT_PLAYBACK_SPEED));
+        
+
     var watchdog =
         new Watchdog(0.001, () -> DriverStation.reportWarning("auto field loop overrun", false));
     addPeriodic.accept(
@@ -50,16 +52,28 @@ public class AutonomousField {
         },
         UPDATE_RATE);
     tab.add("Selected auto", autonomousField.getField())
-        .withPosition(columnIndex, rowIndex)
-        .withSize(4, 3);
+        .withPosition(0, 0)
+        // .withPosition(columnIndex, rowIndex)
+        .withSize(10, 6);
+
+        Shuffleboard.getTab("Start Positions(AUTO)").add("Start pose", autonomousField.getStartPose())
+        .withPosition(0, 0)
+        // .withPosition(columnIndex, rowIndex)
+        .withSize(13, 12);
+
+       
     tab.addDouble("Est. Time (s)", () -> Math.round(autonomousField.autoTotalTime() * 100) / 100.0)
-    	.withPosition(columnIndex, rowIndex + 3).withSize(1,1);
-}
+        .withPosition(columnIndex, rowIndex + 3)
+        .withSize(1, 1)
+        .withPosition(10, 4);
+    // .withPosition(columnIndex, rowIndex + 3).withSize(1,1);
+
+  }
 
   // Display
   private final Field2d field = new Field2d();
-
-  // Keeping track of the current trajectory
+ private final Field2d fieldPoseStart = new Field2d();
+  // Keeping track of the current /
   private PathPlannerAutoData autoData;
   private List<PathPlannerTrajectory> trajectories;
   private int trajectoryIndex = 0;
@@ -93,6 +107,11 @@ public class AutonomousField {
     return field;
   }
 
+
+  public Field2d getStartPose() {
+    return fieldPoseStart;
+  }
+
   /**
    * Calculates the pose to display.
    *
@@ -104,7 +123,7 @@ public class AutonomousField {
     double fpgaTime = Timer.getFPGATimestamp();
     if (lastName.isEmpty() || !lastName.get().equals(autoName)) {
       lastName = Optional.of(autoName);
-	  autoData = new PathPlannerAutoData(autoName);
+      autoData = new PathPlannerAutoData(autoName);
       trajectories = autoData.getTrajectories();
       trajectoryIndex = 0;
       lastFPGATime = fpgaTime;
@@ -141,14 +160,17 @@ public class AutonomousField {
     }
 
     field.setRobotPose(getUpdatedPose(autoName));
+    fieldPoseStart.setRobotPose(autoData.getStartingPose());
+    
   }
 
-  public double autoTotalTime()  {
-   if(autoData == null) {
-	return 0;
-   }
-   return autoData.getRunTime();
+  public double autoTotalTime() {
+    if (autoData == null) {
+      return 0;
+    }
+    return autoData.getRunTime();
   }
+
 
 
 }
