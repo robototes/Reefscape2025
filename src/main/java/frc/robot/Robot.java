@@ -4,21 +4,16 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.ArmPivot;
-import frc.robot.subsystems.SpinnyClaw;
 import frc.robot.util.AutoLogic;
+import frc.robot.util.BuildInfo;
 import frc.robot.util.FieldDisplay;
 import frc.robot.util.RobotType;
 
@@ -49,6 +44,7 @@ public class Robot extends TimedRobot {
     sensors = new Sensors();
 
     SmartDashboard.putString("current bot", robotType.toString());
+    SmartDashboard.putData("commandScheduler", CommandScheduler.getInstance());
 
     if (RobotBase.isReal()) {
       DataLogManager.start();
@@ -66,18 +62,19 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putData(CommandScheduler.getInstance());
 
+    BuildInfo.logBuildInfo();
+
     DriverStation.silenceJoystickConnectionWarning(true);
     AutoLogic.initShuffleBoard();
     FieldDisplay.initShuffleBoard();
     AutoLogic.registerCommand();
- 
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     AutoLogic.registerCommand();
-  
+
     // System.out.println("Configured: " + AutoBuilder.isConfigured());;
     // System.out.println("Trajectory Path: " + (AutoLogic.getPath()));
     // System.out.println("Trajectory Path: " + (AutoLogic.getPath()));
@@ -99,11 +96,9 @@ public class Robot extends TimedRobot {
 
     AutoLogic.RunAuto(subsystems.drivebaseSubsystem);
     Command autoCommand = AutoLogic.getAutoCommand(AutoLogic.autoPicker.getSelected());
-   
-    
+
     if (autoCommand != null) {
       autoCommand.schedule();
-     
 
     } else {
       DriverStation.reportError("Auto command not found!", false);

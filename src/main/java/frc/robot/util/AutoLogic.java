@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Controls;
 import frc.robot.Robot;
@@ -29,8 +28,6 @@ import frc.robot.Subsystems;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import java.io.IOException;
 import java.util.List;
-import java.util.jar.Attributes.Name;
-
 import org.json.simple.parser.ParseException;
 
 public class AutoLogic {
@@ -137,23 +134,25 @@ public class AutoLogic {
         .withWidget(BuiltInWidgets.kComboBoxChooser)
         .withPosition(0, 0)
         .withSize(2, 1);
-    
-        tab.add("Elevator Commands", autoAction)
+
+    tab.add("Elevator Commands", autoAction)
         .withWidget(BuiltInWidgets.kComboBoxChooser)
         .withPosition(3, 0)
         .withSize(2, 1);
 
-    tab.addString("Current Selected path", () -> autoPicker.getSelected()).withPosition(0, 1).withSize(2, 1);
-    tab.addString("Current AutoElevatorCommand(s)", () -> autoAction.getSelected()).withPosition(3,1).withSize(2,1);
-   
+    tab.addString("Current Selected path", () -> autoPicker.getSelected())
+        .withPosition(0, 1)
+        .withSize(2, 1);
+    tab.addString("Current AutoElevatorCommand(s)", () -> autoAction.getSelected())
+        .withPosition(3, 1)
+        .withSize(2, 1);
+
     autoAction.setDefaultOption("EXTEND AND WAIT", "raiseElevatorandWait");
     autoAction.addOption("EXTEND WHILE MOVING", "raiseElevator");
-    
-
   }
 
   public static <T> String[] toStringArray(List<T> dataList) {
-    
+
     String[] data = new String[dataList.size()]; // TODO FIX INFINTELY REPEATING LIST
 
     for (int i = 0; i < dataList.size(); i++) {
@@ -188,46 +187,37 @@ public class AutoLogic {
     autoPicker.addOption("CHOREO CRAZY TEST?(IGNORE)", "4 L4 Coral");
     autoPicker.addOption("CHOREO 3 PIECE?(IGNORE)", "New Choreo");
     autoPicker.addOption("CHOREO 3 PIECE LESS CRAZY?(IGNORE)", "Triple7");
-
-
-
-
-
-
   }
- 
-  
-  public static  Command lowerElevator() {
-    return Commands.none().withName("lowerElevator");
 
-  } public static  Command raiseElevator() {
+  public static Command lowerElevator() {
+    return Commands.none().withName("lowerElevator");
+  }
+
+  public static Command raiseElevator() {
     return Commands.none().withName("raiseElevator");
   }
+
   public static Command lowerElevatorandWait() {
     return Commands.sequence(lowerElevator(), new WaitCommand(0)).withName("lowerElevatorandWAIT");
   }
+
   public static Command raiseElevatorandWait() {
     return Commands.sequence(raiseElevator(), new WaitCommand(0)).withName("raiseElevatorandWAIT");
   }
- 
+
   public static void registerCommand() {
 
-if (RobotState.isDisabled()) {
-    if (autoAction.getSelected().equals("raiseElevatorandWait")) {
-      NamedCommands.registerCommand( "lowerElevator", lowerElevatorandWait());
-      NamedCommands.registerCommand( "raiseElevator", raiseElevatorandWait());
-    }
-    else if (autoAction.getSelected().equals("raiseElevator")) {
-      NamedCommands.registerCommand( "lowerElevator", lowerElevator());
-      NamedCommands.registerCommand( "raiseElevator", raiseElevator());
-     
-    
-    }
-    else {
-      System.out.println("FAILED?" + autoAction.getSelected());
-    }
+    if (RobotState.isDisabled()) {
+      if (autoAction.getSelected().equals("raiseElevatorandWait")) {
+        NamedCommands.registerCommand("lowerElevator", lowerElevatorandWait());
+        NamedCommands.registerCommand("raiseElevator", raiseElevatorandWait());
+      } else if (autoAction.getSelected().equals("raiseElevator")) {
+        NamedCommands.registerCommand("lowerElevator", lowerElevator());
+        NamedCommands.registerCommand("raiseElevator", raiseElevator());
 
+      } else {
+        System.out.println("FAILED?" + autoAction.getSelected());
+      }
+    }
   }
-}
-
 }

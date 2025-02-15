@@ -1,0 +1,69 @@
+import java.net.InetAddress;
+
+task writeBuildInfo {
+	def hasGit = { ->
+		try {
+			exec {
+				executable 'git'
+				delegate.args '--version'
+				standardOutput = OutputStream.nullOutputStream()
+			}
+		} catch (Exception e) {
+			return false
+		}
+		return true
+	}
+
+	def addGitOutput = { PrintStream output, String name, String... args ->
+		output.println("### $name (git ${String.join(' ', args)})")
+		// Temporary stream so that we don't close output
+		def execOutput = new ByteArrayOutputStream()
+		def ex = exec {
+			workingDir projectDir
+			executable 'git'
+			delegate.args args
+			standardOutput = execOutput
+		}
+		output.print(execOutput)
+	}
+
+	def convertPath = { String path ->
+		String username = System.getenv('USERNAME')
+		if (username != null) {
+			return path.replace(username, "\$USERNAME")
+		}
+		username = System.getProperty('user.name')
+		if (username != null) {
+			return path.replace(username, '<sys prop user.name>')
+		}
+		return path
+	}
+
+	doLast {
+		try (PrintStream output = new PrintStream('src/main/deploy/build-info.txt')) {
+			output.println("### Host name (InetAddress.localHost.hostName)")
+			output.println(InetAddress.localHost.hostName)
+			output.println("### Project path (convertPath(projectDir.path))")
+			output.println(convertPath(projectDir.path))
+			if (!hasGit()) {
+				// ANSI escape codes
+				def WARNINGFMT = "\033[43;30m"
+				def CLEAR = "\033[m"
+				println("${WARNINGFMT}WARNING: Could not find git! Git info will not be sent to the robot.${CLEAR}")
+				output.println("### <could not run git>")
+			} else {
+				addGitOutput(output, 'Commit hash', 'log', '-1', '--format=%H')
+				addGitOutput(output, 'Refs to latest commit', 'log', '-1', '--format=%D')
+				addGitOutput(output, 'Commit time', 'log', '-1', '--format=%ad')
+				addGitOutput(output, 'Commit message', 'log', '-1', '--format=%B')
+				addGitOutput(output, 'Remotes', 'remote', '-v')
+				addGitOutput(output, 'Changed files', 'diff-index', '--name-only', 'HEAD', '--')
+				addGitOutput(output, 'Untracked files', 'ls-files', '--exclude-standard', '--others')
+			}
+			output.println('### (END)')
+		}
+	}
+}
+if (getProjectBooleanProperty('jarWriteBuildInfo', true)) {
+	jar.dependsOn(writeBuildInfo)
+}
