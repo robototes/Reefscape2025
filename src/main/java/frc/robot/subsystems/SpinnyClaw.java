@@ -15,6 +15,8 @@ import frc.robot.Hardware;
 import java.util.function.Supplier;
 
 public class SpinnyClaw extends SubsystemBase {
+  public static final double INTAKE_SPEED = 4;
+  public static final double EXTAKE_SPEED = -4;
   // Remove once we implement PID speed
   public static int placeholderPIDSpeed;
 
@@ -54,5 +56,15 @@ public class SpinnyClaw extends SubsystemBase {
     currentLimits.SupplyCurrentLimit = 40; // subject to change
     currentLimits.SupplyCurrentLimitEnable = true;
     cfg.apply(currentLimits);
+  }
+  public Command intakePower() {
+    return runOnce(() -> motor.setVoltage(INTAKE_SPEED));
+  }
+
+  public Command extakePower() {
+    return runOnce(() -> motor.setVoltage(EXTAKE_SPEED));
+  }
+  public Command stop() {
+    return runOnce(() -> motor.stopMotor());
   }
 }
