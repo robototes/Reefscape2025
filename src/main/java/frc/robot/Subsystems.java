@@ -9,7 +9,6 @@ import frc.robot.subsystems.ClimbPivot;
 import frc.robot.subsystems.DrivebaseWrapper;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.SpinnyClaw;
-import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import frc.robot.util.RobotType;
@@ -24,8 +23,6 @@ public class Subsystems {
     public static final boolean ARMPIVOT_ENABLED = false;
     public static final boolean SPINNYCLAW_ENABLED = false;
     public static final boolean CLIMBPIVOT_ENABLED = false;
-    public static final boolean SUPERSTRUCTURE_ENABLED =
-        ELEVATOR_ENABLED && ARMPIVOT_ENABLED && SPINNYCLAW_ENABLED;
   }
 
   // Subsystems go here
@@ -36,7 +33,6 @@ public class Subsystems {
   public final ArmPivot armPivotSubsystem;
   public final ClimbPivot climbPivotSubsystem;
   public final SpinnyClaw spinnyClawSubsytem;
-  public final SuperStructure superStructure;
 
   public Subsystems() {
     // Initialize subsystems here (don't forget to check if they're enabled!)
@@ -81,11 +77,6 @@ public class Subsystems {
       spinnyClawSubsytem = new SpinnyClaw();
     } else {
       spinnyClawSubsytem = null;
-    }
-    if (SUPERSTRUCTURE_ENABLED) {
-      superStructure = new SuperStructure(elevatorSubsystem, armPivotSubsystem, spinnyClawSubsytem);
-    } else {
-      superStructure = null;
     }
   }
 }

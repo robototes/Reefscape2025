@@ -15,8 +15,10 @@ import frc.robot.Hardware;
 import java.util.function.Supplier;
 
 public class SpinnyClaw extends SubsystemBase {
-  public static final double INTAKE_SPEED = 4;
-  public static final double EXTAKE_SPEED = -4;
+  public static final double INTAKE_SPEED =
+      4; // untested, starting with a guess direction and speed
+  public static final double EXTAKE_SPEED =
+      -4; // untested, starting with a guess direction and speed
   // Remove once we implement PID speed
   public static int placeholderPIDSpeed;
 
@@ -37,10 +39,10 @@ public class SpinnyClaw extends SubsystemBase {
 
   // Log tabs to shuffleboard, temperature, and motor speed
   public void logTabs() {
-    Shuffleboard.getTab("claw-info")
-        .addDouble("claw_speed", () -> motor.getVelocity().getValueAsDouble());
-    Shuffleboard.getTab("claw-info")
-        .addDouble("claw_motor_temp", () -> motor.getDeviceTemp().getValueAsDouble());
+    Shuffleboard.getTab("Claw")
+        .addDouble("Claw Speed", () -> motor.getVelocity().getValueAsDouble());
+    Shuffleboard.getTab("Claw")
+        .addDouble("Claw Motor Temperature", () -> motor.getDeviceTemp().getValueAsDouble());
   }
 
   // TalonFX config

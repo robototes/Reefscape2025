@@ -2,17 +2,21 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.sensors.ArmSensor;
 import java.util.function.BooleanSupplier;
 
 public class SuperStructure {
   private final ElevatorSubsystem elevator;
   private final ArmPivot armPivot;
   private final SpinnyClaw spinnyClaw;
+  private final ArmSensor armSensor;
 
-  public SuperStructure(ElevatorSubsystem elevator, ArmPivot armPivot, SpinnyClaw spinnyClaw) {
+  public SuperStructure(
+      ElevatorSubsystem elevator, ArmPivot armPivot, SpinnyClaw spinnyClaw, ArmSensor armSensor) {
     this.elevator = elevator;
     this.armPivot = armPivot;
     this.spinnyClaw = spinnyClaw;
+    this.armSensor = armSensor;
   }
 
   public Command levelFourPrescore() {
@@ -100,15 +104,13 @@ public class SuperStructure {
         spinnyClaw.stop());
   }
 
-  public Command intake(BooleanSupplier intake, BooleanSupplier holding) {
+  public Command intake() {
     return Commands.sequence(
-        stow(),
-        Commands.waitUntil(intake),
         Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.INTAKE),
             armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
             spinnyClaw.intakePower()),
-        Commands.waitUntil(holding),
+        Commands.waitUntil(armSensor.inClaw()),
         stow());
   }
 }

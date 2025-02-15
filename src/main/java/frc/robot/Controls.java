@@ -9,6 +9,7 @@ import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.SuperStructure;
 import frc.robot.util.RobotType;
 
 public class Controls {
@@ -17,17 +18,17 @@ public class Controls {
   private static final int ARM_PIVOT_SPINNY_CLAW_CONTROLLER_PORT = 2;
   private static final int ELEVATOR_CONTROLLER_PORT = 3;
 
-  @SuppressWarnings("UnusedVariable")
   private final CommandXboxController driverController;
 
-  @SuppressWarnings("UnusedVariable")
   private final CommandXboxController operatorController;
 
   private final CommandXboxController armPivotSpinnyClawController;
+
   private final CommandXboxController elevatorTestController;
 
-  @SuppressWarnings("UnusedVariable")
   private final Subsystems s;
+  private final Sensors sensors;
+  private final SuperStructure superStructure;
 
   // Swerve stuff
   private double MaxSpeed =
@@ -51,18 +52,20 @@ public class Controls {
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
-  public Controls(Subsystems s) {
+  public Controls(Subsystems s, Sensors sensors, SuperStructure superStructure) {
     driverController = new CommandXboxController(DRIVER_CONTROLLER_PORT);
     operatorController = new CommandXboxController(OPERATOR_CONTROLLER_PORT);
     armPivotSpinnyClawController = new CommandXboxController(ARM_PIVOT_SPINNY_CLAW_CONTROLLER_PORT);
     elevatorTestController = new CommandXboxController(ELEVATOR_CONTROLLER_PORT);
     this.s = s;
+    this.sensors = sensors;
+    this.superStructure = superStructure;
     configureDrivebaseBindings();
     configureElevatorBindings();
     configureArmPivotBindings();
     configureClimbPivotBindings();
     configureSpinnyClawBindings();
-    configureOperatorControllerBindings();
+    configureSuperStructureBindings();
   }
 
   private void configureDrivebaseBindings() {
@@ -103,28 +106,26 @@ public class Controls {
     s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
   }
 
-  private void configureOperatorControllerBindings() {
+  private void configureSuperStructureBindings() {
+    if (superStructure == null) {
+      return;
+    }
     // operator start button used for climb - bound in climb bindings
-    // add intake command to all levels
-    operatorController
-        .y()
-        .onTrue(s.superStructure.levelFour(operatorController.leftBumper()::getAsBoolean));
-    operatorController
-        .x()
-        .onTrue(s.superStructure.levelThree(operatorController.leftBumper()::getAsBoolean));
-    operatorController
-        .b()
-        .onTrue(s.superStructure.levelTwo(operatorController.leftBumper()::getAsBoolean));
-    operatorController
-        .a()
-        .onTrue(s.superStructure.levelOne(operatorController.leftBumper()::getAsBoolean));
+    operatorController.y().onTrue(superStructure.levelFour(driverController.rightBumper()));
+    operatorController.x().onTrue(superStructure.levelThree(driverController.rightBumper()));
+    operatorController.b().onTrue(superStructure.levelTwo(driverController.rightBumper()));
+    operatorController.a().onTrue(superStructure.levelOne(driverController.rightBumper()));
+    driverController.a().onTrue(superStructure.intake());
+    if (sensors.armSensor != null) {
+      sensors.armSensor.inTrough().onTrue(superStructure.intake());
+    }
   }
 
   private void configureElevatorBindings() {
     if (s.elevatorSubsystem == null) {
       return;
     }
-    // Controls binding goes here
+    // Elevator Controls binding goes here
     elevatorTestController.leftTrigger().whileTrue(s.elevatorSubsystem.goUpPower());
     elevatorTestController.rightTrigger().whileTrue(s.elevatorSubsystem.goDownPower());
     elevatorTestController

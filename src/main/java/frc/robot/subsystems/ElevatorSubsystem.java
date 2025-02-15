@@ -29,14 +29,17 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double INTAKE = 0;
   public static final double MANUAL = 1;
   private static final double POS_TOLERANCE = 0.02;
+  // PID
   private final double ELEVATOR_KP = 3; // add feedfwds for each stage?
   private final double ELEVATOR_KI = 0;
   private final double ELEVATOR_KD = 0;
   private final double ELEVATOR_KS = 0;
   private final double ELEVATOR_KV = 0;
   private final double ELEVATOR_KA = 0;
+
   private final double REVERSE_SOFT_LIMIT = INTAKE - 0.05;
   private final double FORWARD_SOFT_LIMIT = LEVEL_FOUR_POS + 1;
+
   private final double UP_VOLTAGE = -3;
   private final double DOWN_VOLTAGE = 3;
   private final double HOLD_VOLTAGE = 0;
