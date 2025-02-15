@@ -104,13 +104,21 @@ public class Controls {
   }
 
   private void configureOperatorControllerBindings() {
-    //operator start button used for climb - bound in climb bindings
-    //add intake command to all levels
-    operatorController.y().onTrue(s.superStructure.levelFour(operatorController.leftBumper()::getAsBoolean));
-    operatorController.x().onTrue(s.superStructure.levelThree(operatorController.leftBumper()::getAsBoolean));
-    operatorController.b().onTrue(s.superStructure.levelTwo(operatorController.leftBumper()::getAsBoolean));
-    operatorController.a().onTrue(s.superStructure.levelOne(operatorController.leftBumper()::getAsBoolean));
-    }
+    // operator start button used for climb - bound in climb bindings
+    // add intake command to all levels
+    operatorController
+        .y()
+        .onTrue(s.superStructure.levelFour(operatorController.leftBumper()::getAsBoolean));
+    operatorController
+        .x()
+        .onTrue(s.superStructure.levelThree(operatorController.leftBumper()::getAsBoolean));
+    operatorController
+        .b()
+        .onTrue(s.superStructure.levelTwo(operatorController.leftBumper()::getAsBoolean));
+    operatorController
+        .a()
+        .onTrue(s.superStructure.levelOne(operatorController.leftBumper()::getAsBoolean));
+  }
 
   private void configureElevatorBindings() {
     if (s.elevatorSubsystem == null) {

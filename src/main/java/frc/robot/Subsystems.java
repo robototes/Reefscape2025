@@ -24,7 +24,8 @@ public class Subsystems {
     public static final boolean ARMPIVOT_ENABLED = false;
     public static final boolean SPINNYCLAW_ENABLED = false;
     public static final boolean CLIMBPIVOT_ENABLED = false;
-    public static final boolean SUPERSTRUCTURE_ENABLED = ELEVATOR_ENABLED && ARMPIVOT_ENABLED && SPINNYCLAW_ENABLED;
+    public static final boolean SUPERSTRUCTURE_ENABLED =
+        ELEVATOR_ENABLED && ARMPIVOT_ENABLED && SPINNYCLAW_ENABLED;
   }
 
   // Subsystems go here
