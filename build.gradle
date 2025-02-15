@@ -20,6 +20,8 @@ def getProjectBooleanProperty(String name, boolean defaultValue = false) {
     return Boolean.parseBoolean(project.getProperty(name))
 }
 
+apply from: "${rootDir}/buildinfo.gradle"
+
 def ROBOT_MAIN_CLASS = getProjectBooleanProperty('automatedTest') ? "frc.robot.test.AutomatedTestMain" : "frc.robot.Main"
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
