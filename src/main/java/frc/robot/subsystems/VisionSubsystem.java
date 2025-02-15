@@ -85,7 +85,7 @@ public class VisionSubsystem extends SubsystemBase {
   private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
 
   private static final AprilTagFieldLayout fieldLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
   public VisionSubsystem(DrivebaseWrapper aprilTagsHelper) {
     robotField = new Field2d();
