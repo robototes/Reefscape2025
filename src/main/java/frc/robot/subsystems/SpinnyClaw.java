@@ -57,6 +57,7 @@ public class SpinnyClaw extends SubsystemBase {
     currentLimits.SupplyCurrentLimitEnable = true;
     cfg.apply(currentLimits);
   }
+
   public Command intakePower() {
     return runOnce(() -> motor.setVoltage(INTAKE_SPEED));
   }
@@ -64,6 +65,7 @@ public class SpinnyClaw extends SubsystemBase {
   public Command extakePower() {
     return runOnce(() -> motor.setVoltage(EXTAKE_SPEED));
   }
+
   public Command stop() {
     return runOnce(() -> motor.stopMotor());
   }

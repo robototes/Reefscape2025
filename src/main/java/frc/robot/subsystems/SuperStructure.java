@@ -17,7 +17,7 @@ public class SuperStructure {
 
   public Command levelFourPrescore() {
     return Commands.parallel(
-      //may need to make this a sequential if elevator/arm move at different times
+        // may need to make this a sequential if elevator/arm move at different times
         elevator.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS),
         armPivot.moveToPosition(ArmPivot.PRESET_L4),
         spinnyClaw.stop());
@@ -32,11 +32,7 @@ public class SuperStructure {
 
   public Command levelFour(BooleanSupplier score) {
     return Commands.sequence(
-        levelFourPrescore(),
-        Commands.waitUntil(score),
-        levelFourScore(),
-        stow()
-        );
+        levelFourPrescore(), Commands.waitUntil(score), levelFourScore(), stow());
   }
 
   public Command levelThreePrescore() {
@@ -55,11 +51,7 @@ public class SuperStructure {
 
   public Command levelThree(BooleanSupplier score) {
     return Commands.sequence(
-        levelThreePrescore(),
-        Commands.waitUntil(score),
-        levelThreeScore(),
-        stow()
-        );
+        levelThreePrescore(), Commands.waitUntil(score), levelThreeScore(), stow());
   }
 
   public Command levelTwoPrescore() {
@@ -78,11 +70,7 @@ public class SuperStructure {
 
   public Command levelTwo(BooleanSupplier score) {
     return Commands.sequence(
-        levelTwoPrescore(),
-        Commands.waitUntil(score),
-        levelTwoScore(),
-        stow()
-        );
+        levelTwoPrescore(), Commands.waitUntil(score), levelTwoScore(), stow());
   }
 
   public Command levelOnePrescore() {
@@ -101,11 +89,7 @@ public class SuperStructure {
 
   public Command levelOne(BooleanSupplier score) {
     return Commands.sequence(
-        levelOnePrescore(),
-        Commands.waitUntil(score),
-        levelOneScore(),
-        stow()
-        );
+        levelOnePrescore(), Commands.waitUntil(score), levelOneScore(), stow());
   }
 
   public Command stow() {
@@ -121,9 +105,9 @@ public class SuperStructure {
         stow(),
         Commands.waitUntil(intake),
         Commands.parallel(
-        elevator.setLevel(ElevatorSubsystem.INTAKE),
-        armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
-        spinnyClaw.intakePower()),
+            elevator.setLevel(ElevatorSubsystem.INTAKE),
+            armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
+            spinnyClaw.intakePower()),
         Commands.waitUntil(holding),
         stow());
   }
