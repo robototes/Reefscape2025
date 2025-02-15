@@ -14,7 +14,8 @@ import frc.robot.util.RobotType;
 public class Controls {
   private static final int DRIVER_CONTROLLER_PORT = 0;
   private static final int OPERATOR_CONTROLLER_PORT = 1;
-  private static final int THIRD_CONTROLLER_PORT = 2;
+  private static final int ARM_PIVOT_SPINNY_CLAW_CONTROLLER_PORT = 2;
+  private static final int ELEVATOR_CONTROLLER_PORT = 3;
 
   @SuppressWarnings("UnusedVariable")
   private final CommandXboxController driverController;
@@ -22,7 +23,8 @@ public class Controls {
   @SuppressWarnings("UnusedVariable")
   private final CommandXboxController operatorController;
 
-  private final CommandXboxController secretThirdController;
+  private final CommandXboxController armPivotSpinnyClawController;
+  private final CommandXboxController elevatorTestController;
 
   @SuppressWarnings("UnusedVariable")
   private final Subsystems s;
@@ -52,13 +54,15 @@ public class Controls {
   public Controls(Subsystems s) {
     driverController = new CommandXboxController(DRIVER_CONTROLLER_PORT);
     operatorController = new CommandXboxController(OPERATOR_CONTROLLER_PORT);
-    secretThirdController = new CommandXboxController(THIRD_CONTROLLER_PORT);
+    armPivotSpinnyClawController = new CommandXboxController(ARM_PIVOT_SPINNY_CLAW_CONTROLLER_PORT);
+    elevatorTestController = new CommandXboxController(ELEVATOR_CONTROLLER_PORT);
     this.s = s;
     configureDrivebaseBindings();
     configureElevatorBindings();
     configureArmPivotBindings();
     configureClimbPivotBindings();
     configureSpinnyClawBindings();
+    configureOperatorControllerBindings();
   }
 
   private void configureDrivebaseBindings() {
@@ -99,38 +103,47 @@ public class Controls {
     s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
   }
 
+  private void configureOperatorControllerBindings() {
+    //operator start button used for climb - bound in climb bindings
+    //add intake command to all levels
+    operatorController.y().onTrue(s.superStructure.levelFour(operatorController.leftBumper()::getAsBoolean));
+    operatorController.x().onTrue(s.superStructure.levelThree(operatorController.leftBumper()::getAsBoolean));
+    operatorController.b().onTrue(s.superStructure.levelTwo(operatorController.leftBumper()::getAsBoolean));
+    operatorController.a().onTrue(s.superStructure.levelOne(operatorController.leftBumper()::getAsBoolean));
+    }
+
   private void configureElevatorBindings() {
     if (s.elevatorSubsystem == null) {
       return;
     }
     // Controls binding goes here
-    operatorController.leftTrigger().whileTrue(s.elevatorSubsystem.goUpPower());
-    operatorController.rightTrigger().whileTrue(s.elevatorSubsystem.goDownPower());
-    operatorController
+    elevatorTestController.leftTrigger().whileTrue(s.elevatorSubsystem.goUpPower());
+    elevatorTestController.rightTrigger().whileTrue(s.elevatorSubsystem.goDownPower());
+    elevatorTestController
         .y()
         .onTrue(
             s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS).withName("Elevator L4"));
-    operatorController
+    elevatorTestController
         .x()
         .onTrue(
             s.elevatorSubsystem
                 .setLevel(ElevatorSubsystem.LEVEL_THREE_POS)
                 .withName("Elevator L3"));
-    operatorController
+    elevatorTestController
         .b()
         .onTrue(
             s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_TWO_POS).withName("Elevator L2"));
-    operatorController
+    elevatorTestController
         .a()
         .onTrue(
             s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_ONE_POS).withName("Elevator L1"));
-    operatorController
+    elevatorTestController
         .rightBumper()
         .onTrue(
             s.elevatorSubsystem.setLevel(ElevatorSubsystem.INTAKE).withName("Elevator IntakePos"));
-    operatorController.povUp().whileTrue(s.elevatorSubsystem.goUp());
-    operatorController.povDown().whileTrue(s.elevatorSubsystem.goDown());
-    operatorController.leftBumper().onTrue(s.elevatorSubsystem.resetPosZero());
+    elevatorTestController.povUp().whileTrue(s.elevatorSubsystem.goUp());
+    elevatorTestController.povDown().whileTrue(s.elevatorSubsystem.goDown());
+    elevatorTestController.leftBumper().onTrue(s.elevatorSubsystem.resetPosZero());
   }
 
   private void configureArmPivotBindings() {
@@ -143,17 +156,17 @@ public class Controls {
     // s.armPivotSubsystem
     // .startMovingVoltage(() -> Volts.of(6 * secretThirdController.getLeftY()))
     // .withName("ManuallyMoveArm"));
-    secretThirdController
+    armPivotSpinnyClawController
         .povUp()
         .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L4).withName("SetArmPresetL4"));
-    secretThirdController
+    armPivotSpinnyClawController
         .povLeft()
         .onTrue(
             s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L2_L3).withName("SetArmPresetL2_3"));
-    secretThirdController
+    armPivotSpinnyClawController
         .povDown()
         .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_UP).withName("SetArmPresetUp"));
-    secretThirdController
+    armPivotSpinnyClawController
         .povRight()
         .onTrue(
             s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_DOWN).withName("SetArmPresetDown"));
@@ -179,10 +192,10 @@ public class Controls {
       return;
     }
     // Claw controls bindings go here
-    operatorController
+    armPivotSpinnyClawController
         .rightBumper()
         .whileTrue(s.spinnyClawSubsytem.movingVoltage(() -> Volts.of(9)));
-    operatorController
+    armPivotSpinnyClawController
         .leftBumper()
         .whileTrue(s.spinnyClawSubsytem.movingVoltage(() -> Volts.of(-9)));
   }

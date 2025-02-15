@@ -17,7 +17,8 @@ public class SuperStructure {
 
   public Command levelFourPrescore() {
     return Commands.parallel(
-        // may need to make this a sequential if elevator/arm move at different times
+        // may need to change things if elevator/arm move at different times
+        // arm may need to move first - sequential?
         elevator.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS),
         armPivot.moveToPosition(ArmPivot.PRESET_L4),
         spinnyClaw.stop());
@@ -100,7 +101,6 @@ public class SuperStructure {
   }
 
   public Command intake(BooleanSupplier intake, BooleanSupplier holding) {
-    // not sure if boolean supplier will work to check using sensors
     return Commands.sequence(
         stow(),
         Commands.waitUntil(intake),
