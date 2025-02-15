@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.BuildInfo;
 import frc.robot.util.RobotType;
 
 public class Robot extends TimedRobot {
@@ -56,6 +57,8 @@ public class Robot extends TimedRobot {
         .onCommandFinish(command -> System.out.println("Command finished: " + command.getName()));
 
     SmartDashboard.putData(CommandScheduler.getInstance());
+
+    BuildInfo.logBuildInfo();
 
     DriverStation.silenceJoystickConnectionWarning(true);
   }
