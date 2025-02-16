@@ -21,6 +21,8 @@ import frc.robot.Hardware;
 import java.util.function.Supplier;
 
 public class ArmPivot extends SubsystemBase {
+  // Throughbore encoder:
+  // Hard stop 0.05 rotations, Straight down 0.06 rotations, positive up
   // Presets
   private final double ARMPIVOT_KP = 3;
   private final double ARMPIVOT_KI = 0;
@@ -112,21 +114,19 @@ public class ArmPivot extends SubsystemBase {
 
   // TalonFX config
   public void factoryDefaults() {
-    var feedbackSettings = new FeedbackConfigs();
-    feedbackSettings.SensorToMechanismRatio = 1 / ARM_RATIO;
-
     TalonFXConfiguration configuration = new TalonFXConfiguration();
     TalonFXConfigurator cfg = motor.getConfigurator();
 
+    var feedbackSettings = new FeedbackConfigs();
+    feedbackSettings.SensorToMechanismRatio = 1 / ARM_RATIO;
     cfg.apply(feedbackSettings);
 
     var currentLimits = new CurrentLimitsConfigs();
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
     // ContinousWrap only works if position is between 0 and 1
-
     // configuration.ClosedLoopGeneral.ContinuousWrap = true;
     cfg.apply(configuration);
+
     // enabling current limits
     currentLimits.StatorCurrentLimit = 20; // starting low for testing
     currentLimits.StatorCurrentLimitEnable = true;

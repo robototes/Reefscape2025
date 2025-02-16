@@ -36,7 +36,6 @@ public class AutonomousField {
 
     var autonomousField =
         new AutonomousField(() -> speedMultiplier.getDouble(DEFAULT_PLAYBACK_SPEED));
-        
 
     var watchdog =
         new Watchdog(0.001, () -> DriverStation.reportWarning("auto field loop overrun", false));
@@ -56,12 +55,12 @@ public class AutonomousField {
         // .withPosition(columnIndex, rowIndex)
         .withSize(10, 6);
 
-        Shuffleboard.getTab("Start Positions(AUTO)").add("Start pose", autonomousField.getStartPose())
+    Shuffleboard.getTab("Start Positions(AUTO)")
+        .add("Start pose", autonomousField.getStartPose())
         .withPosition(0, 0)
         // .withPosition(columnIndex, rowIndex)
         .withSize(13, 12);
 
-       
     tab.addDouble("Est. Time (s)", () -> Math.round(autonomousField.autoTotalTime() * 100) / 100.0)
         .withPosition(columnIndex, rowIndex + 3)
         .withSize(1, 1)
@@ -72,7 +71,7 @@ public class AutonomousField {
 
   // Display
   private final Field2d field = new Field2d();
- private final Field2d fieldPoseStart = new Field2d();
+  private final Field2d fieldPoseStart = new Field2d();
   // Keeping track of the current /
   private PathPlannerAutoData autoData;
   private List<PathPlannerTrajectory> trajectories;
@@ -106,7 +105,6 @@ public class AutonomousField {
   public Field2d getField() {
     return field;
   }
-
 
   public Field2d getStartPose() {
     return fieldPoseStart;
@@ -161,7 +159,6 @@ public class AutonomousField {
 
     field.setRobotPose(getUpdatedPose(autoName));
     fieldPoseStart.setRobotPose(autoData.getStartingPose());
-    
   }
 
   public double autoTotalTime() {
@@ -170,7 +167,4 @@ public class AutonomousField {
     }
     return autoData.getRunTime();
   }
-
-
-
 }

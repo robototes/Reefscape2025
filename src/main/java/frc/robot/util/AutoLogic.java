@@ -188,6 +188,7 @@ public class AutoLogic {
     autoPicker.addOption("CHOREO 3 PIECE?(IGNORE)", "New Choreo");
     autoPicker.addOption("CHOREO 3 PIECE LESS CRAZY?(IGNORE)", "Triple7");
     autoPicker.addOption("High 1 L4", "SideToJ");
+    autoPicker.addOption("CHOREO High 4 L4(IGNORE)", "HighL4");
   }
 
   public static Command lowerElevator() {
@@ -195,6 +196,14 @@ public class AutoLogic {
   }
 
   public static Command raiseElevator() {
+    return Commands.none().withName("raiseElevator");
+  }
+
+  public static Command raiseArm() {
+    return Commands.none().withName("raiseElevator");
+  }
+
+  public static Command lowerArm() {
     return Commands.none().withName("raiseElevator");
   }
 
