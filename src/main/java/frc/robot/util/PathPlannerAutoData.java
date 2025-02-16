@@ -38,7 +38,11 @@ public class PathPlannerAutoData {
 
   public PathPlannerAutoData(String autoName) {
     auto = new PathPlannerAuto(autoName);
-    startingPose = auto.getStartingPose();
+    Pose2d startingPose = auto.getStartingPose();
+    if (startingPose == null) {
+      startingPose = Pose2d.kZero;
+    }
+    this.startingPose = startingPose;
     List<PathPlannerTrajectory> trajectories;
     try {
       List<PathPlannerPath> paths = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
