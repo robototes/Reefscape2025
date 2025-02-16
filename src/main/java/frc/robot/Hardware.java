@@ -5,6 +5,9 @@ public class Hardware {
 
   // Swerve: 1-12
 
+  // LEDs [15-19]
+  public static final int ELEVATOR_LED = 15;
+
   // elevator [20-24]
   public static final int ELEVATOR_MOTOR_ONE = 20;
   public static final int ELEVATOR_MOTOR_TWO = 21;
