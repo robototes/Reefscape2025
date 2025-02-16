@@ -24,7 +24,7 @@ public class SuperStructure {
         // may need to change things if elevator/arm move at different times
         // arm may need to move first - sequential?
         elevator.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS),
-        armPivot.moveToPosition(ArmPivot.PRESET_L4),
+        armPivot.moveToPosition(ArmPivot.PRESET_UP),
         spinnyClaw.stop());
   }
 
