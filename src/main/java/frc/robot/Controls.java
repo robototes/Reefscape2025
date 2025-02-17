@@ -13,7 +13,7 @@ import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.util.RobotType;
-import main.java.frc.robot.util.BranchHeight;
+import frc.robot.util.BranchHeight;
 
 public class Controls {
   private static final int DRIVER_CONTROLLER_PORT = 0;
