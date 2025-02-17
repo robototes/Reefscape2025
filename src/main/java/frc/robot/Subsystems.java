@@ -4,6 +4,7 @@ import static frc.robot.Subsystems.SubsystemConstants.*;
 
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
+import frc.robot.sensors.ElevatorLight;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ClimbPivot;
 import frc.robot.subsystems.DrivebaseWrapper;
@@ -22,6 +23,7 @@ public class Subsystems {
     public static final boolean ARMPIVOT_ENABLED = false;
     public static final boolean SPINNYCLAW_ENABLED = false;
     public static final boolean CLIMBPIVOT_ENABLED = false;
+    public static final boolean ELEVATOR_LED_ENABLED = false;
   }
 
   // Subsystems go here
@@ -32,6 +34,7 @@ public class Subsystems {
   public final ArmPivot armPivotSubsystem;
   public final ClimbPivot climbPivotSubsystem;
   public final SpinnyClaw spinnyClawSubsytem;
+  public final ElevatorLight elevatorLEDSubsystem;
 
   public Subsystems() {
     // Initialize subsystems here (don't forget to check if they're enabled!)
@@ -76,6 +79,11 @@ public class Subsystems {
       spinnyClawSubsytem = new SpinnyClaw();
     } else {
       spinnyClawSubsytem = null;
+    }
+    if (ELEVATOR_LED_ENABLED) {
+      elevatorLEDSubsystem = new ElevatorLight();
+    } else {
+      elevatorLEDSubsystem = null;
     }
   }
 }

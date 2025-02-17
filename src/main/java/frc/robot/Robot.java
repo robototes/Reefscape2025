@@ -15,6 +15,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.AutoLogic;
 import frc.robot.util.AutonomousField;
+import frc.robot.Sensors.SensorConstants;
+import frc.robot.Subsystems.SubsystemConstants;
+import frc.robot.subsystems.SuperStructure;
 import frc.robot.util.BuildInfo;
 import frc.robot.util.RobotType;
 import java.util.List;
@@ -32,7 +35,11 @@ public class Robot extends TimedRobot {
   public final Controls controls;
   public final Subsystems subsystems;
   public final Sensors sensors;
+
   public List<Pose2d> pathPoses;
+
+  public final SuperStructure superStructure;
+
 
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
@@ -43,8 +50,21 @@ public class Robot extends TimedRobot {
     LiveWindow.disableAllTelemetry();
 
     subsystems = new Subsystems();
-    controls = new Controls(subsystems);
     sensors = new Sensors();
+    if (SubsystemConstants.ELEVATOR_ENABLED
+        && SubsystemConstants.ARMPIVOT_ENABLED
+        && SubsystemConstants.SPINNYCLAW_ENABLED
+        && SensorConstants.ARMSENSOR_ENABLED) {
+      superStructure =
+          new SuperStructure(
+              subsystems.elevatorSubsystem,
+              subsystems.armPivotSubsystem,
+              subsystems.spinnyClawSubsytem,
+              sensors.armSensor);
+    } else {
+      superStructure = null;
+    }
+    controls = new Controls(subsystems, sensors, superStructure);
 
     SmartDashboard.putString("current bot", robotType.toString());
     SmartDashboard.putData("commandScheduler", CommandScheduler.getInstance());

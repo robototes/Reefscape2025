@@ -29,14 +29,17 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double INTAKE = 0;
   public static final double MANUAL = 1;
   private static final double POS_TOLERANCE = 0.02;
+  // PID
   private final double ELEVATOR_KP = 3; // add feedfwds for each stage?
   private final double ELEVATOR_KI = 0;
   private final double ELEVATOR_KD = 0;
   private final double ELEVATOR_KS = 0;
   private final double ELEVATOR_KV = 0;
   private final double ELEVATOR_KA = 0;
+
   private final double REVERSE_SOFT_LIMIT = INTAKE - 0.05;
   private final double FORWARD_SOFT_LIMIT = LEVEL_FOUR_POS + 1;
+
   private final double UP_VOLTAGE = -3;
   private final double DOWN_VOLTAGE = 3;
   private final double HOLD_VOLTAGE = 0;
@@ -49,7 +52,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private double curPos;
   private double targetPos;
-  private double resetPos;
+  private boolean hasBeen0ed;
 
   private final MutVoltage m_appliedVoltage = Units.Volts.mutable(0);
   // Creates a SysIdRoutine
@@ -149,9 +152,15 @@ public class ElevatorSubsystem extends SubsystemBase {
   private Command setTargetPosition(double pos) {
     return runOnce(
         () -> {
-          m_motor.setControl(m_request.withPosition(pos));
-          targetPos = pos;
+          if (hasBeen0ed) {
+            m_motor.setControl(m_request.withPosition(pos));
+            targetPos = pos;
+          }
         });
+  }
+
+  public boolean getHasBeen0ed() {
+    return hasBeen0ed;
   }
 
   private double getTargetPosition() {
@@ -171,6 +180,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     return runOnce(
         () -> {
           setCurrentPosition(0);
+          hasBeen0ed = true;
         });
   }
 
