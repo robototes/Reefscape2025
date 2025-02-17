@@ -13,6 +13,7 @@ import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.util.RobotType;
+import main.java.frc.robot.util.BranchHeight;
 
 public class Controls {
   private static final int DRIVER_CONTROLLER_PORT = 0;
@@ -32,23 +33,22 @@ public class Controls {
   private final Sensors sensors;
   private final SuperStructure superStructure;
 
+  private BranchHeight branchHeight = null;
+
   // Swerve stuff
-  private double MaxSpeed =
-      RobotType.getCurrent() == RobotType.BONK
-          ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
-          : CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+  private double MaxSpeed = RobotType.getCurrent() == RobotType.BONK
+      ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
+      : CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   // kSpeedAt12Volts desired top speed
-  private double MaxAngularRate =
-      RotationsPerSecond.of(0.75)
-          .in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+  private double MaxAngularRate = RotationsPerSecond.of(0.75)
+      .in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
   /* Setting up bindings for necessary control of the swerve drive platform */
-  private final SwerveRequest.FieldCentric drive =
-      new SwerveRequest.FieldCentric()
-          .withDeadband(MaxSpeed * 0.1)
-          .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-          .withDriveRequestType(
-              DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+      .withDeadband(MaxSpeed * 0.1)
+      .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+      .withDriveRequestType(
+          DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -81,18 +81,17 @@ public class Controls {
     s.drivebaseSubsystem.setDefaultCommand(
         // s.drivebaseSubsystem will execute this command periodically
         s.drivebaseSubsystem.applyRequest(
-            () ->
-                drive
-                    .withVelocityX(
-                        -driverController.getLeftY()
-                            * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(
-                        -driverController.getLeftX()
-                            * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(
-                        -driverController.getRightX()
-                            * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            ));
+            () -> drive
+                .withVelocityX(
+                    -driverController.getLeftY()
+                        * MaxSpeed) // Drive forward with negative Y (forward)
+                .withVelocityY(
+                    -driverController.getLeftX()
+                        * MaxSpeed) // Drive left with negative X (left)
+                .withRotationalRate(
+                    -driverController.getRightX()
+                        * MaxAngularRate) // Drive counterclockwise with negative X (left)
+        ));
     s.drivebaseSubsystem.applyRequest(() -> brake).ignoringDisable(true).schedule();
 
     // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
@@ -114,14 +113,20 @@ public class Controls {
       return;
     }
     // operator start button used for climb - bound in climb bindings
-    operatorController.y().onTrue(superStructure.levelFour(driverController.rightBumper()));
-    operatorController.x().onTrue(superStructure.levelThree(driverController.rightBumper()));
-    operatorController.b().onTrue(superStructure.levelTwo(driverController.rightBumper()));
-    operatorController.a().onTrue(superStructure.levelOne(driverController.rightBumper()));
+    operatorController.y().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_FOUR));
+    operatorController.x().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE));
+    operatorController.b().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO));
+    operatorController.a().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE));
     driverController.a().onTrue(superStructure.intake());
     if (sensors.armSensor != null) {
       sensors.armSensor.inTrough().onTrue(superStructure.intake());
     }
+    driverController.leftBumper().onTrue(Commands.defer(() -> switch (branchHeight) {
+      case LEVEL_FOUR -> superStructure.levelFour(driverController.rightBumper());
+      case LEVEL_THREE -> superStructure.levelThree(driverController.rightBumper());
+      case LEVEL_TWO -> superStructure.levelTwo(driverController.rightBumper());
+      case LEVEL_ONE -> superStructure.levelOne(driverController.rightBumper());
+    }));
   }
 
   private void configureElevatorBindings() {
