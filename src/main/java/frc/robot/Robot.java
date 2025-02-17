@@ -35,9 +35,7 @@ public class Robot extends TimedRobot {
   public final Controls controls;
   public final Subsystems subsystems;
   public final Sensors sensors;
-
   public List<Pose2d> pathPoses;
-
   public final SuperStructure superStructure;
 
 

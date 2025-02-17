@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
+import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import java.io.IOException;
 import java.util.List;
@@ -38,7 +39,6 @@ public class AutoLogic {
   public static SendableChooser<String> autoPicker = new SendableChooser<String>();
   public static SendableChooser<String> autoAction = new SendableChooser<String>();
   public static final double FEEDER_DELAY = 0.4;
-
   // rpm to rev up launcher before launching
   public static final double REV_RPM = 2500;
   public static final double STAGE_ANGLE = 262;
@@ -192,27 +192,29 @@ public class AutoLogic {
   }
 
   public static Command lowerElevator() {
+    if (Robot.getInstance().superStructure != null) {
+    return Robot.getInstance().superStructure.intake();
+    }
     return Commands.none().withName("lowerElevator");
   }
 
   public static Command raiseElevator() {
-    return Commands.none().withName("raiseElevator");
+    if (Robot.getInstance().superStructure != null) {
+      return Robot.getInstance().superStructure.levelFour(() -> true);
+      }
+      return Commands.none().withName("raiseElevator");
+   
   }
 
-  public static Command raiseArm() {
-    return Commands.none().withName("raiseElevator");
-  }
-
-  public static Command lowerArm() {
-    return Commands.none().withName("raiseElevator");
-  }
+  
 
   public static Command lowerElevatorandWait() {
-    return Commands.sequence(lowerElevator(), new WaitCommand(0)).withName("lowerElevatorandWAIT");
+    
+    return Commands.sequence(lowerElevator(), new WaitCommand(1)).withName("lowerElevatorandWAIT");
   }
 
   public static Command raiseElevatorandWait() {
-    return Commands.sequence(raiseElevator(), new WaitCommand(0)).withName("raiseElevatorandWAIT");
+    return Commands.sequence(raiseElevator(), new WaitCommand(1)).withName("raiseElevatorandWAIT");
   }
 
   public static void registerCommand() {

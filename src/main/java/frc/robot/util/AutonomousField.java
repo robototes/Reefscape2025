@@ -20,7 +20,7 @@ public class AutonomousField {
   private static final double DEFAULT_PLAYBACK_SPEED = 1;
   private static final double UPDATE_RATE = 0.05;
   private static final double lowerPlaybackSpeedLimit = 0.5;
-  private static final double upperPlaybackSpeedLimit = 2.5;
+  private static final double upperPlaybackSpeedLimit = 2.0;
 
   public static void initShuffleBoard(
       String tabName, int columnIndex, int rowIndex, ObjDoubleConsumer<Runnable> addPeriodic) {
@@ -59,7 +59,7 @@ public class AutonomousField {
         .add("Start pose", autonomousField.getStartPose())
         .withPosition(0, 0)
         // .withPosition(columnIndex, rowIndex)
-        .withSize(13, 12);
+        .withSize(12, 6);
 
     tab.addDouble("Est. Time (s)", () -> Math.round(autonomousField.autoTotalTime() * 100) / 100.0)
         .withPosition(columnIndex, rowIndex + 3)
