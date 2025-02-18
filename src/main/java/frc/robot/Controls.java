@@ -166,10 +166,12 @@ public class Controls {
     }
 
     // Arm Controls binding goes here
-    // s.armPivotSubsystem.setDefaultCommand(
-    // s.armPivotSubsystem
-    // .startMovingVoltage(() -> Volts.of(6 * secretThirdController.getLeftY()))
-    // .withName("ManuallyMoveArm"));
+    armPivotSpinnyClawController
+        .leftStick()
+        .whileTrue(
+            s.armPivotSubsystem
+                .startMovingVoltage(() -> Volts.of(6 * armPivotSpinnyClawController.getLeftY()))
+                .withName("ManuallyMoveArm"));
     armPivotSpinnyClawController
         .povUp()
         .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L4).withName("SetArmPresetL4"));
