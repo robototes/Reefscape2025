@@ -85,17 +85,18 @@ public class Controls {
     s.drivebaseSubsystem.setDefaultCommand(
         // s.drivebaseSubsystem will execute this command periodically
         s.drivebaseSubsystem.applyRequest(
-            () -> drive
-                .withVelocityX(
-                    -driverController.getLeftY()
-                        * MaxSpeed) // Drive forward with negative Y (forward)
-                .withVelocityY(
-                    -driverController.getLeftX()
-                        * MaxSpeed) // Drive left with negative X (left)
-                .withRotationalRate(
-                    -driverController.getRightX()
-                        * MaxAngularRate) // Drive counterclockwise with negative X (left)
-        ));
+            () ->
+                drive
+                    .withVelocityX(
+                        -driverController.getLeftY()
+                            * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(
+                        -driverController.getLeftX()
+                            * MaxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(
+                        -driverController.getRightX()
+                            * MaxAngularRate) // Drive counterclockwise with negative X (left)
+            ));
     s.drivebaseSubsystem.applyRequest(() -> brake).ignoringDisable(true).schedule();
 
     // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
@@ -125,10 +126,19 @@ public class Controls {
     if (sensors.armSensor != null) {
       sensors.armSensor.inTrough().onTrue(superStructure.intake());
     }
-    driverController.leftBumper().onTrue(
-        Commands.select(Map.of(
-            BranchHeight.LEVEL_FOUR, superStructure.levelFour(driverController.rightBumper()),
-            BranchHeight.LEVEL_THREE, superStructure.levelThree(driverController.rightBumper()), BranchHeight.LEVEL_TWO, superStructure.levelTwo(driverController.rightBumper()), BranchHeight.LEVEL_ONE, superStructure.levelOne(driverController.rightBumper())),
+    driverController
+        .leftBumper()
+            .onTrue(
+                Commands.select(
+                    Map.of(
+                        BranchHeight.LEVEL_FOUR,
+                        superStructure.levelFour(driverController.rightBumper()),
+                        BranchHeight.LEVEL_THREE, 
+                        superStructure.levelThree(driverController.rightBumper()),
+                        BranchHeight.LEVEL_TWO,
+                        superStructure.levelTwo(driverController.rightBumper()),
+                        BranchHeight.LEVEL_ONE,
+                        superStructure.levelOne(driverController.rightBumper())),
           () -> branchHeight));
   }
 
