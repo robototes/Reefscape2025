@@ -68,9 +68,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     Shuffleboard.getTab("Elevator").addDouble("Motor Current Position", () -> getCurrentPosition());
     Shuffleboard.getTab("Elevator").addDouble("Target Position", () -> getTargetPosition());
     Shuffleboard.getTab("Elevator")
-        .addDouble("M1 voltage", () -> m_motor.getSupplyCurrent().getValueAsDouble());
+        .addDouble("M1 supply current", () -> m_motor.getSupplyCurrent().getValueAsDouble());
     Shuffleboard.getTab("Elevator")
-        .addDouble("M2 voltage", () -> m_motor2.getSupplyCurrent().getValueAsDouble());
+        .addDouble("M2 supply current", () -> m_motor2.getSupplyCurrent().getValueAsDouble());
     Shuffleboard.getTab("Elevator").addBoolean("Is zero'd", () -> getHasBeen0ed());
     Shuffleboard.getTab("Elevator")
         .addDouble("M1 temp", () -> m_motor.getDeviceTemp().getValueAsDouble());
@@ -125,19 +125,23 @@ public class ElevatorSubsystem extends SubsystemBase {
     var talonFXConfigurator = m_motor.getConfigurator();
     var talonFXConfigurator2 = m_motor2.getConfigurator();
     TalonFXConfiguration configuration = new TalonFXConfiguration();
-    // soft limits
-    configuration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    configuration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    configuration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = FORWARD_SOFT_LIMIT;
-    configuration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_SOFT_LIMIT;
-    // talonFXConfigurator2.apply(softLimits);
+
     // enable stator current limit
     configuration.CurrentLimits.StatorCurrentLimit = 160;
     configuration.CurrentLimits.StatorCurrentLimitEnable = true;
     configuration.CurrentLimits.SupplyCurrentLimit = 80;
     configuration.CurrentLimits.SupplyCurrentLimitEnable = true;
+
     // create brake mode for motors
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    // motor 2 gets current limits and motor output mode, but not softlimits or PID
+    talonFXConfigurator2.apply(configuration);
+
+    // soft limits
+    configuration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    configuration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    configuration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = FORWARD_SOFT_LIMIT;
+    configuration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_SOFT_LIMIT;
 
     // set slot 0 gains
     configuration.Slot0.kS = ELEVATOR_KS; // Add 0.25 V output to overcome static friction
