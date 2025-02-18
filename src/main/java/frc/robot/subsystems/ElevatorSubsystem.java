@@ -19,9 +19,9 @@ import java.util.function.DoubleConsumer;
 
 public class ElevatorSubsystem extends SubsystemBase {
   public static final double LEVEL_FOUR_POS = 37;
-  public static final double LEVEL_THREE_POS = 20;
-  public static final double LEVEL_TWO_POS = 10;
-  public static final double LEVEL_ONE_POS = 2;
+  public static final double LEVEL_THREE_POS = 13;
+  public static final double LEVEL_TWO_POS = 3.15;
+  public static final double LEVEL_ONE_POS = 8.06;
   public static final double STOWED = 1;
   public static final double INTAKE = 0;
   public static final double MANUAL = 1;
@@ -195,16 +195,16 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public Command setLevel(double pos) {
     return runOnce(
-      () -> {
-        if (hasBeen0ed) {
-          m_motor.setControl(m_request.withPosition(pos));
-          m_motor2.setControl(new Follower(m_motor.getDeviceID(), true));
-          targetPos = pos;
-          rumble.accept(0);
-        } else {
-          rumble.accept(0.2);
-        }
-      })
+            () -> {
+              if (hasBeen0ed) {
+                m_motor.setControl(m_request.withPosition(pos));
+                m_motor2.setControl(new Follower(m_motor.getDeviceID(), true));
+                targetPos = pos;
+                rumble.accept(0);
+              } else {
+                rumble.accept(0.2);
+              }
+            })
         .until(() -> Math.abs(getCurrentPosition() - pos) < POS_TOLERANCE)
         .withName("setLevel" + pos);
   }
