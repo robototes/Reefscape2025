@@ -5,11 +5,12 @@ import static edu.wpi.first.units.Units.Volts;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Voltage;
@@ -70,7 +71,7 @@ public class ArmPivot extends SubsystemBase {
     return targetPos;
   }
 
-  private double getCurrentPosition() {
+  private double getCurrentMotorPosition() {
     var curPos = motor.getPosition();
     return curPos.getValueAsDouble();
   }
@@ -88,7 +89,8 @@ public class ArmPivot extends SubsystemBase {
     // double
     return setTargetPosition(position)
         .andThen(
-            Commands.waitUntil(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE));
+            Commands.waitUntil(
+                () -> Math.abs(getCurrentMotorPosition() - position) < POS_TOLERANCE));
   }
 
   // (+) is to move arm up, and (-) is down
@@ -102,28 +104,28 @@ public class ArmPivot extends SubsystemBase {
         .addDouble("Pivot Speed", () -> motor.getVelocity().getValueAsDouble());
     Shuffleboard.getTab("Arm Pivot")
         .addDouble("Pivot Motor Temperature", () -> motor.getDeviceTemp().getValueAsDouble());
-    Shuffleboard.getTab("Arm Pivot").addDouble("Pivot Position", () -> getCurrentPosition());
+    Shuffleboard.getTab("Arm Pivot")
+        .addDouble("Pivot Motor Position", () -> getCurrentMotorPosition());
     Shuffleboard.getTab("Arm Pivot").addDouble("Pivot Target Pos", () -> getTargetPosition());
   }
 
   // TalonFX config
   public void factoryDefaults() {
-    var feedbackSettings = new FeedbackConfigs();
-    feedbackSettings.SensorToMechanismRatio = 1 / ARM_RATIO;
-
-    TalonFXConfiguration configuration = new TalonFXConfiguration();
     TalonFXConfigurator cfg = motor.getConfigurator();
+    var feedback_configs = new FeedbackConfigs();
+    feedback_configs.FeedbackRemoteSensorID = Hardware.ARM_PIVOT_CANDI_ID;
+    feedback_configs.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANdiPWM1;
 
-    cfg.apply(feedbackSettings);
+    cfg.apply(feedback_configs);
 
-    var currentLimits = new CurrentLimitsConfigs();
-    configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    MotorOutputConfigs motorOutputConfiguration = new MotorOutputConfigs();
 
-    // ContinousWrap only works if position is between 0 and 1
+    motorOutputConfiguration.NeutralMode = NeutralModeValue.Brake;
 
     // configuration.ClosedLoopGeneral.ContinuousWrap = true;
-    cfg.apply(configuration);
+    cfg.apply(motorOutputConfiguration);
     // enabling current limits
+    var currentLimits = new CurrentLimitsConfigs();
     currentLimits.StatorCurrentLimit = 20; // starting low for testing
     currentLimits.StatorCurrentLimitEnable = true;
     currentLimits.SupplyCurrentLimit = 10; // starting low for testing
