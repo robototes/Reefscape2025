@@ -1,10 +1,6 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -75,6 +71,25 @@ public class ElevatorSubsystem extends SubsystemBase {
         .addDouble("M1 voltage", () -> m_motor.getSupplyCurrent().getValueAsDouble());
     Shuffleboard.getTab("Elevator")
         .addDouble("M2 voltage", () -> m_motor2.getSupplyCurrent().getValueAsDouble());
+    Shuffleboard.getTab("Elevator").addBoolean("Is zero'd", () -> getHasBeen0ed());
+    Shuffleboard.getTab("Elevator")
+        .addDouble("M1 temp", () -> m_motor.getDeviceTemp().getValueAsDouble());
+    Shuffleboard.getTab("Elevator")
+        .addDouble("M2 temp", () -> m_motor2.getDeviceTemp().getValueAsDouble());
+    Shuffleboard.getTab("Elevator")
+        .addDouble("M1 output voltage", () -> m_motor.getMotorVoltage().getValueAsDouble());
+    Shuffleboard.getTab("Elevator")
+        .addDouble("M2 output voltage", () -> m_motor2.getMotorVoltage().getValueAsDouble());
+    Shuffleboard.getTab("Elevator")
+        .addBoolean("M1 at forward softstop", () -> m_motor.getFault_ForwardSoftLimit().getValue());
+    Shuffleboard.getTab("Elevator")
+        .addBoolean("M1 at reverse softstop", () -> m_motor.getFault_ReverseSoftLimit().getValue());
+    Shuffleboard.getTab("Elevator")
+        .addBoolean(
+            "M2 at forward softstop", () -> m_motor2.getFault_ForwardSoftLimit().getValue());
+    Shuffleboard.getTab("Elevator")
+        .addBoolean(
+            "M2 at reverse softstop", () -> m_motor2.getFault_ReverseSoftLimit().getValue());
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
@@ -109,46 +124,37 @@ public class ElevatorSubsystem extends SubsystemBase {
     // add FOC at some point please --gives more torque
     var talonFXConfigurator = m_motor.getConfigurator();
     var talonFXConfigurator2 = m_motor2.getConfigurator();
-    var currentLimits = new CurrentLimitsConfigs();
-    var softLimits = new SoftwareLimitSwitchConfigs();
+    TalonFXConfiguration configuration = new TalonFXConfiguration();
     // soft limits
-    softLimits.ForwardSoftLimitEnable = true;
-    softLimits.ReverseSoftLimitEnable = true;
-    softLimits.ForwardSoftLimitThreshold = FORWARD_SOFT_LIMIT;
-    softLimits.ReverseSoftLimitThreshold = REVERSE_SOFT_LIMIT;
-    talonFXConfigurator.apply(softLimits);
+    configuration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    configuration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    configuration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = FORWARD_SOFT_LIMIT;
+    configuration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_SOFT_LIMIT;
     // talonFXConfigurator2.apply(softLimits);
     // enable stator current limit
-    currentLimits.StatorCurrentLimit = 160;
-    currentLimits.StatorCurrentLimitEnable = true;
-    currentLimits.SupplyCurrentLimit = 80;
-    currentLimits.SupplyCurrentLimitEnable = true;
-    talonFXConfigurator.apply(currentLimits);
-    talonFXConfigurator2.apply(currentLimits);
+    configuration.CurrentLimits.StatorCurrentLimit = 160;
+    configuration.CurrentLimits.StatorCurrentLimitEnable = true;
+    configuration.CurrentLimits.SupplyCurrentLimit = 80;
+    configuration.CurrentLimits.SupplyCurrentLimitEnable = true;
     // create brake mode for motors
-    var outputConfigs = new MotorOutputConfigs();
-    outputConfigs.NeutralMode = NeutralModeValue.Brake;
-    talonFXConfigurator.apply(outputConfigs);
-    talonFXConfigurator2.apply(outputConfigs);
+    configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     // set slot 0 gains
-    var slot0Configs = new Slot0Configs();
-    slot0Configs.kS = ELEVATOR_KS; // Add 0.25 V output to overcome static friction
-    slot0Configs.kV = ELEVATOR_KV; // A velocity target of 1 rps results in 0.12 V output
-    slot0Configs.kA = ELEVATOR_KA; // An acceleration of 1 rps/s requires 0.01 V output
-    slot0Configs.kP = ELEVATOR_KP; // A position error of 2.5 rotations results in 12 V output
-    slot0Configs.kI = ELEVATOR_KI; // no output for integrated error
-    slot0Configs.kD = ELEVATOR_KD; // A velocity error of 1 rps results in 0.1 V output
-    talonFXConfigurator.apply(slot0Configs);
+    configuration.Slot0.kS = ELEVATOR_KS; // Add 0.25 V output to overcome static friction
+    configuration.Slot0.kV = ELEVATOR_KV; // A velocity target of 1 rps results in 0.12 V output
+    configuration.Slot0.kA = ELEVATOR_KA; // An acceleration of 1 rps/s requires 0.01 V output
+    configuration.Slot0.kP =
+        ELEVATOR_KP; // A position error of 2.5 rotations results in 12 V output
+    configuration.Slot0.kI = ELEVATOR_KI; // no output for integrated error
+    configuration.Slot0.kD = ELEVATOR_KD; // A velocity error of 1 rps results in 0.1 V output
 
     // set Motion Magic settings
-    var motionMagicConfigs = new MotionMagicConfigs();
-    motionMagicConfigs.MotionMagicCruiseVelocity = 80; // Target cruise velocity of 80 rps
-    motionMagicConfigs.MotionMagicAcceleration =
+    configuration.MotionMagic.MotionMagicCruiseVelocity = 80; // Target cruise velocity of 80 rps
+    configuration.MotionMagic.MotionMagicAcceleration =
         160; // Target acceleration of 160 rps/s (0.5 seconds)
-    motionMagicConfigs.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
+    configuration.MotionMagic.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
-    talonFXConfigurator.apply(motionMagicConfigs);
+    talonFXConfigurator.apply(configuration);
   }
 
   private Command setTargetPosition(double pos) {
