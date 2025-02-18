@@ -114,10 +114,18 @@ public class Controls {
       return;
     }
     // operator start button used for climb - bound in climb bindings
-    operatorController.y().onTrue(superStructure.levelFour(driverController.rightBumper()).withName("level 4"));
-    operatorController.x().onTrue(superStructure.levelThree(driverController.rightBumper()).withName("level 3"));
-    operatorController.b().onTrue(superStructure.levelTwo(driverController.rightBumper()).withName("level 2"));
-    operatorController.a().onTrue(superStructure.levelOne(driverController.rightBumper()).withName("level 1"));
+    operatorController
+        .y()
+        .onTrue(superStructure.levelFour(driverController.rightBumper()).withName("level 4"));
+    operatorController
+        .x()
+        .onTrue(superStructure.levelThree(driverController.rightBumper()).withName("level 3"));
+    operatorController
+        .b()
+        .onTrue(superStructure.levelTwo(driverController.rightBumper()).withName("level 2"));
+    operatorController
+        .a()
+        .onTrue(superStructure.levelOne(driverController.rightBumper()).withName("level 1"));
     driverController.a().onTrue(superStructure.intake());
     if (sensors.armSensor != null) {
       sensors.armSensor.inTrough().onTrue(superStructure.intake());
@@ -129,8 +137,12 @@ public class Controls {
       return;
     }
     // Controls binding goes here
-    operatorController.leftTrigger().whileTrue(s.elevatorSubsystem.goUpPower().withName("Power up"));
-    operatorController.rightTrigger().whileTrue(s.elevatorSubsystem.goDownPower().withName("Power down"));
+    operatorController
+        .leftTrigger()
+        .whileTrue(s.elevatorSubsystem.goUpPower().withName("Power up"));
+    operatorController
+        .rightTrigger()
+        .whileTrue(s.elevatorSubsystem.goDownPower().withName("Power down"));
     // operatorController
     //     .leftTrigger()
     //     .whileTrue(s.elevatorSubsystem.sysIdDynamic(Direction.kForward));
@@ -166,10 +178,16 @@ public class Controls {
         .onTrue(
             s.elevatorSubsystem.setLevel(ElevatorSubsystem.INTAKE).withName("Elevator IntakePos"));
     operatorController.povUp().whileTrue(s.elevatorSubsystem.goUp().withName("Elevator go up"));
-    operatorController.povDown().whileTrue(s.elevatorSubsystem.goDown().withName("Elevator go down"));
+    operatorController
+        .povDown()
+        .whileTrue(s.elevatorSubsystem.goDown().withName("Elevator go down"));
     operatorController
         .leftBumper()
-        .onTrue(s.elevatorSubsystem.resetPosZero().ignoringDisable(true).withName("Reset elevator zero"));
+        .onTrue(
+            s.elevatorSubsystem
+                .resetPosZero()
+                .ignoringDisable(true)
+                .withName("Reset elevator zero"));
   }
 
   private void configureArmPivotBindings() {
