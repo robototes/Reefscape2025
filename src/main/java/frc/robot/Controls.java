@@ -121,12 +121,11 @@ public class Controls {
     if (sensors.armSensor != null) {
       sensors.armSensor.inTrough().onTrue(superStructure.intake());
     }
-    driverController.leftBumper().onTrue(Commands.defer(() -> switch (branchHeight) {
-      case LEVEL_FOUR -> superStructure.levelFour(driverController.rightBumper());
-      case LEVEL_THREE -> superStructure.levelThree(driverController.rightBumper());
-      case LEVEL_TWO -> superStructure.levelTwo(driverController.rightBumper());
-      case LEVEL_ONE -> superStructure.levelOne(driverController.rightBumper());
-    }));
+    driverController.leftBumper().onTrue(
+        Commands.select(Map.of(
+            BranchHeight.LEVEL_FOUR, superStructure.levelFour(driverController.rightBumper()),
+            BranchHeight.LEVEL_THREE, superStructure.levelThree(driverController.rightBumper()), BranchHeight.LEVEL_TWO, superStructure.levelTwo(driverController.rightBumper()), BranchHeight.LEVEL_ONE, superStructure.levelOne(driverController.rightBumper())),
+          () -> branchHeight));
   }
 
   private void configureElevatorBindings() {
