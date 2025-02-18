@@ -128,18 +128,18 @@ public class Controls {
     }
     driverController
         .leftBumper()
-            .onTrue(
-                Commands.select(
-                    Map.of(
-                        BranchHeight.LEVEL_FOUR,
-                        superStructure.levelFour(driverController.rightBumper()),
-                        BranchHeight.LEVEL_THREE, 
-                        superStructure.levelThree(driverController.rightBumper()),
-                        BranchHeight.LEVEL_TWO,
-                        superStructure.levelTwo(driverController.rightBumper()),
-                        BranchHeight.LEVEL_ONE,
-                        superStructure.levelOne(driverController.rightBumper())),
-          () -> branchHeight));
+          .onTrue(
+              Commands.select(
+                  Map.of(
+                      BranchHeight.LEVEL_FOUR,
+                      superStructure.levelFour(driverController.rightBumper()),
+                      BranchHeight.LEVEL_THREE, 
+                      superStructure.levelThree(driverController.rightBumper()),
+                      BranchHeight.LEVEL_TWO,
+                      superStructure.levelTwo(driverController.rightBumper()),
+                      BranchHeight.LEVEL_ONE,
+                      superStructure.levelOne(driverController.rightBumper())),
+                  () -> branchHeight));
   }
 
   private void configureElevatorBindings() {
