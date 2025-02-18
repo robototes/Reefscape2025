@@ -2,11 +2,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Volts;
 
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -112,47 +108,43 @@ public class ArmPivot extends SubsystemBase {
   // TalonFX config
   public void factoryDefaults() {
     TalonFXConfigurator cfg = motor.getConfigurator();
-    var feedback_configs = new FeedbackConfigs();
-    feedback_configs.FeedbackRemoteSensorID = Hardware.ARM_PIVOT_CANDI_ID;
-    feedback_configs.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANdiPWM1;
+    var talonFXConfiguration = new TalonFXConfiguration();
 
-    cfg.apply(feedback_configs);
+    talonFXConfiguration.Feedback.FeedbackRemoteSensorID = Hardware.ARM_PIVOT_CANDI_ID;
+    talonFXConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANdiPWM1;
 
-    MotorOutputConfigs motorOutputConfiguration = new MotorOutputConfigs();
+    talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-    motorOutputConfiguration.NeutralMode = NeutralModeValue.Brake;
-
-    // configuration.ClosedLoopGeneral.ContinuousWrap = true;
-    cfg.apply(motorOutputConfiguration);
     // enabling current limits
-    var currentLimits = new CurrentLimitsConfigs();
-    currentLimits.StatorCurrentLimit = 20; // starting low for testing
-    currentLimits.StatorCurrentLimitEnable = true;
-    currentLimits.SupplyCurrentLimit = 10; // starting low for testing
-    currentLimits.SupplyCurrentLimitEnable = true;
-    cfg.apply(currentLimits);
+    talonFXConfiguration.CurrentLimits.StatorCurrentLimit = 20; // starting low for testing
+    talonFXConfiguration.CurrentLimits.StatorCurrentLimitEnable = true;
+    talonFXConfiguration.CurrentLimits.SupplyCurrentLimit = 10; // starting low for testing
+    talonFXConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     // PID
-    var slot0Configs = new Slot0Configs();
     // set slot 0 gains
-    slot0Configs.kS = ARMPIVOT_KS; // Add 0.25 V output to overcome static friction
-    slot0Configs.kV = ARMPIVOT_KV; // A velocity target of 1 rps results in 0.12 V output
-    slot0Configs.kA = ARMPIVOT_KA; // An acceleration of 1 rps/s requires 0.01 V output
-    slot0Configs.kP = ARMPIVOT_KP; // A position error of 2.5 rotations results in 12 V output
-    slot0Configs.kI = ARMPIVOT_KI; // no output for integrated error
-    slot0Configs.kD = ARMPIVOT_KD; // A velocity error of 1 rps results in 0.1 V output
-    slot0Configs.kG = ARMPIVOT_KG; // Gravity feedforward
-    slot0Configs.GravityType = GravityTypeValue.Arm_Cosine;
-    cfg.apply(slot0Configs);
+    talonFXConfiguration.Slot0.kS = ARMPIVOT_KS; // Add 0.25 V output to overcome static friction
+    talonFXConfiguration.Slot0.kV =
+        ARMPIVOT_KV; // A velocity target of 1 rps results in 0.12 V output
+    talonFXConfiguration.Slot0.kA =
+        ARMPIVOT_KA; // An acceleration of 1 rps/s requires 0.01 V output
+    talonFXConfiguration.Slot0.kP =
+        ARMPIVOT_KP; // A position error of 2.5 rotations results in 12 V output
+    talonFXConfiguration.Slot0.kI = ARMPIVOT_KI; // no output for integrated error
+    talonFXConfiguration.Slot0.kD =
+        ARMPIVOT_KD; // A velocity error of 1 rps results in 0.1 V output
+    talonFXConfiguration.Slot0.kG = ARMPIVOT_KG; // Gravity feedforward
+    talonFXConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
     // set Motion Magic settings in rps not mechanism units
-    var motionMagicConfigs = new MotionMagicConfigs();
-    motionMagicConfigs.MotionMagicCruiseVelocity = (80); // Target cruise velocity of 80 rps
-    motionMagicConfigs.MotionMagicAcceleration =
+    talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity =
+        (80); // Target cruise velocity of 80 rps
+    talonFXConfiguration.MotionMagic.MotionMagicAcceleration =
         160; // Target acceleration of 160 rps/s (0.5 seconds)
-    motionMagicConfigs.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
-    cfg.apply(motionMagicConfigs);
+    talonFXConfiguration.MotionMagic.MotionMagicJerk =
+        1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
+    cfg.apply(talonFXConfiguration);
     motor.setPosition(0);
   }
 }
