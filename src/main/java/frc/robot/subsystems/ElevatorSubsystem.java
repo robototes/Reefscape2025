@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Hardware;
+import java.util.function.DoubleConsumer;
 
 public class ElevatorSubsystem extends SubsystemBase {
   public static final double LEVEL_FOUR_POS = 37;
@@ -46,6 +47,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   private double curPos;
   private double targetPos;
   private boolean hasBeen0ed;
+
+  private DoubleConsumer rumble = (rumble) -> {};
 
   private final MutVoltage m_appliedVoltage = Units.Volts.mutable(0);
   // Creates a SysIdRoutine
@@ -161,15 +164,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     talonFXConfigurator.apply(configuration);
   }
 
-  private Command setTargetPosition(double pos) {
-    return runOnce(
-        () -> {
-          if (hasBeen0ed) {
-            m_motor.setControl(m_request.withPosition(pos));
-            // m_motor2.setControl(m_request.withPosition(-pos));
-            targetPos = pos;
-          }
-        });
+  public void setRumble(DoubleConsumer rumble) {
+    this.rumble = rumble;
   }
 
   public boolean getHasBeen0ed() {
@@ -198,7 +194,17 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public Command setLevel(double pos) {
-    return setTargetPosition(pos)
+    return runOnce(
+      () -> {
+        if (hasBeen0ed) {
+          m_motor.setControl(m_request.withPosition(pos));
+          m_motor2.setControl(new Follower(m_motor.getDeviceID(), true));
+          targetPos = pos;
+          rumble.accept(0);
+        } else {
+          rumble.accept(0.2);
+        }
+      })
         .until(() -> Math.abs(getCurrentPosition() - pos) < POS_TOLERANCE)
         .withName("setLevel" + pos);
   }
@@ -218,8 +224,10 @@ public class ElevatorSubsystem extends SubsystemBase {
               m_motor2.setVoltage(-UP_VOLTAGE);
             },
             () -> {
-              m_motor.setVoltage(HOLD_VOLTAGE);
-              m_motor2.setVoltage(-HOLD_VOLTAGE);
+              m_motor.stopMotor();
+              m_motor2.stopMotor();
+              // m_motor.setVoltage(HOLD_VOLTAGE);
+              // m_motor2.setVoltage(-HOLD_VOLTAGE);
             })
         .withName("Elevator up power");
   }
@@ -231,8 +239,10 @@ public class ElevatorSubsystem extends SubsystemBase {
               m_motor2.setVoltage(-DOWN_VOLTAGE);
             },
             () -> {
-              m_motor.setVoltage(HOLD_VOLTAGE);
-              m_motor2.setVoltage(-HOLD_VOLTAGE);
+              m_motor.stopMotor();
+              m_motor2.stopMotor();
+              // m_motor.setVoltage(HOLD_VOLTAGE);
+              // m_motor2.setVoltage(-HOLD_VOLTAGE);
             })
         .withName("Elevator down power");
   }

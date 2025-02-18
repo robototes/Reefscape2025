@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -155,7 +156,12 @@ public class Controls {
     // operatorController
     //    .rightBumper()
     //    .whileTrue(s.elevatorSubsystem.sysIdQuasistatic(Direction.kReverse));
-    operatorController
+    s.elevatorSubsystem.setRumble(
+        (rumble) -> {
+          elevatorTestController.setRumble(RumbleType.kBothRumble, rumble);
+          operatorController.setRumble(RumbleType.kBothRumble, rumble);
+        });
+    elevatorTestController
         .y()
         .onTrue(
             s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS).withName("Elevator L4"));
