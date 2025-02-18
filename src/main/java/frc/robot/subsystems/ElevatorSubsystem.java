@@ -21,25 +21,25 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Hardware;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  public static final double LEVEL_FOUR_POS = 8;
-  public static final double LEVEL_THREE_POS = 6;
-  public static final double LEVEL_TWO_POS = 4;
+  public static final double LEVEL_FOUR_POS = 37;
+  public static final double LEVEL_THREE_POS = 20;
+  public static final double LEVEL_TWO_POS = 10;
   public static final double LEVEL_ONE_POS = 2;
   public static final double STOWED = 1;
   public static final double INTAKE = 0;
   public static final double MANUAL = 1;
   private static final double POS_TOLERANCE = 0.02;
-  private final double ELEVATOR_KP = 3; // add feedfwds for each stage?
+  private final double ELEVATOR_KP = 13.804; // add feedfwds for each stage?
   private final double ELEVATOR_KI = 0;
-  private final double ELEVATOR_KD = 0;
-  private final double ELEVATOR_KS = 0;
-  private final double ELEVATOR_KV = 0;
-  private final double ELEVATOR_KA = 0;
-  private final double REVERSE_SOFT_LIMIT = INTAKE - 0.05;
-  private final double FORWARD_SOFT_LIMIT = LEVEL_FOUR_POS + 1;
-  private final double UP_VOLTAGE = 6;
-  private final double DOWN_VOLTAGE = -2;
-  private final double HOLD_VOLTAGE = 0;
+  private final double ELEVATOR_KD = 0.079221;
+  private final double ELEVATOR_KS = 0.33878;
+  private final double ELEVATOR_KV = 0.12975;
+  private final double ELEVATOR_KA = 0.0070325;
+  private final double REVERSE_SOFT_LIMIT = -0.05;
+  private final double FORWARD_SOFT_LIMIT = 38;
+  private final double UP_VOLTAGE = 5;
+  private final double DOWN_VOLTAGE = -3;
+  private final double HOLD_VOLTAGE = 0.6;
   // create a Motion Magic request, voltage output
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
 
@@ -61,10 +61,10 @@ public class ElevatorSubsystem extends SubsystemBase {
   /** Subsystem constructor. */
   public ElevatorSubsystem() {
     // m_encoder.setDistancePerPulse(Constants.kElevatorEncoderDistPerPulse);
-    m_motor = new TalonFX(Hardware.ELEVATOR_MOTOR_ONE);
-    m_motor2 = new TalonFX(Hardware.ELEVATOR_MOTOR_TWO);
+    m_motor = new TalonFX(Hardware.ELEVATOR_MOTOR_ONE, "Drivebase");
+    m_motor2 = new TalonFX(Hardware.ELEVATOR_MOTOR_TWO, "Drivebase");
     motorConfigs();
-    //m_motor2.setControl(new Follower(m_motor.getDeviceID(), true));
+    m_motor2.setControl(new Follower(m_motor.getDeviceID(), true));
 
     // Publish Mechanism2d to SmartDashboard
     // To view the Elevator visualization, select Network Tables -> SmartDashboard -> Elevator Sim
@@ -87,7 +87,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public void voltageDrive(Voltage drive) {
     m_motor.setVoltage(drive.in(Units.Volts));
-    m_motor2.setVoltage(drive.in(Units.Volts));
+    m_motor2.setVoltage(-drive.in(Units.Volts));
   }
 
   public void logMotors(SysIdRoutineLog log) { // in theory this should work?
@@ -116,7 +116,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     softLimits.ReverseSoftLimitEnable = true;
     softLimits.ForwardSoftLimitThreshold = FORWARD_SOFT_LIMIT;
     softLimits.ReverseSoftLimitThreshold = REVERSE_SOFT_LIMIT;
-    // talonFXConfigurator.apply(softLimits);
+    talonFXConfigurator.apply(softLimits);
     // talonFXConfigurator2.apply(softLimits);
     // enable stator current limit
     currentLimits.StatorCurrentLimit = 160;
@@ -156,6 +156,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         () -> {
           if (hasBeen0ed) {
             m_motor.setControl(m_request.withPosition(pos));
+            // m_motor2.setControl(m_request.withPosition(-pos));
             targetPos = pos;
           }
         });
@@ -202,26 +203,28 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public Command goUpPower() {
     return startEnd(
-        () -> {
-          m_motor.setVoltage(UP_VOLTAGE);
-          m_motor2.setVoltage(-UP_VOLTAGE);
-        },
-        () -> {
-          m_motor.setVoltage(HOLD_VOLTAGE);
-          m_motor2.setVoltage(-HOLD_VOLTAGE);
-        });
+            () -> {
+              m_motor.setVoltage(UP_VOLTAGE);
+              m_motor2.setVoltage(-UP_VOLTAGE);
+            },
+            () -> {
+              m_motor.setVoltage(HOLD_VOLTAGE);
+              m_motor2.setVoltage(-HOLD_VOLTAGE);
+            })
+        .withName("Elevator up power");
   }
 
   public Command goDownPower() {
     return startEnd(
-        () -> {
-          m_motor.setVoltage(DOWN_VOLTAGE);
-          m_motor2.setVoltage(-DOWN_VOLTAGE);
-        },
-        () -> {
-          m_motor.setVoltage(HOLD_VOLTAGE);
-          m_motor2.setVoltage(-HOLD_VOLTAGE);
-        });
+            () -> {
+              m_motor.setVoltage(DOWN_VOLTAGE);
+              m_motor2.setVoltage(-DOWN_VOLTAGE);
+            },
+            () -> {
+              m_motor.setVoltage(HOLD_VOLTAGE);
+              m_motor2.setVoltage(-HOLD_VOLTAGE);
+            })
+        .withName("Elevator down power");
   }
 
   /** Stop the control loop and motor output. */

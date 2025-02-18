@@ -95,7 +95,7 @@ public class Controls {
     // -driveController.getLeftX()))
     // ));
 
-    // reset the field-centric heading on left bumper press
+    // reset the field-centric heading on back button press
     driverController
         .back()
         .onTrue(s.drivebaseSubsystem.runOnce(() -> s.drivebaseSubsystem.seedFieldCentric()));
@@ -109,6 +109,18 @@ public class Controls {
     // Controls binding goes here
     operatorController.leftTrigger().whileTrue(s.elevatorSubsystem.goUpPower());
     operatorController.rightTrigger().whileTrue(s.elevatorSubsystem.goDownPower());
+    // operatorController
+    //     .leftTrigger()
+    //     .whileTrue(s.elevatorSubsystem.sysIdDynamic(Direction.kForward));
+    // operatorController
+    //     .leftBumper()
+    //     .whileTrue(s.elevatorSubsystem.sysIdQuasistatic(Direction.kForward));
+    // operatorController
+    //     .rightTrigger()
+    //     .whileTrue(s.elevatorSubsystem.sysIdDynamic(Direction.kReverse));
+    // operatorController
+    //    .rightBumper()
+    //    .whileTrue(s.elevatorSubsystem.sysIdQuasistatic(Direction.kReverse));
     operatorController
         .y()
         .onTrue(
@@ -127,12 +139,13 @@ public class Controls {
         .a()
         .onTrue(
             s.elevatorSubsystem.setLevel(ElevatorSubsystem.LEVEL_ONE_POS).withName("Elevator L1"));
-    operatorController
-        .rightBumper()
-        .onTrue(
-            s.elevatorSubsystem.setLevel(ElevatorSubsystem.INTAKE).withName("Elevator IntakePos"));
-    operatorController.povUp().whileTrue(s.elevatorSubsystem.goUp());
-    operatorController.povDown().whileTrue(s.elevatorSubsystem.goDown());
+    // operatorController
+    //     .rightBumper()
+    //     .onTrue(
+    //         s.elevatorSubsystem.setLevel(ElevatorSubsystem.INTAKE).withName("Elevator
+    // IntakePos"));
+    // operatorController.povUp().whileTrue(s.elevatorSubsystem.goUp());
+    // operatorController.povDown().whileTrue(s.elevatorSubsystem.goDown());
     operatorController
         .leftBumper()
         .onTrue(s.elevatorSubsystem.resetPosZero().ignoringDisable(true));
