@@ -12,9 +12,8 @@ import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.SuperStructure;
-import frc.robot.util.RobotType;
 import frc.robot.util.BranchHeight;
-
+import frc.robot.util.RobotType;
 import java.util.Map;
 
 public class Controls {
@@ -38,19 +37,22 @@ public class Controls {
   private BranchHeight branchHeight = null;
 
   // Swerve stuff
-  private double MaxSpeed = RobotType.getCurrent() == RobotType.BONK
-      ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
-      : CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+  private double MaxSpeed =
+      RobotType.getCurrent() == RobotType.BONK
+          ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
+          : CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   // kSpeedAt12Volts desired top speed
-  private double MaxAngularRate = RotationsPerSecond.of(0.75)
-      .in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+  private double MaxAngularRate =
+      RotationsPerSecond.of(0.75)
+          .in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
   /* Setting up bindings for necessary control of the swerve drive platform */
-  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MaxSpeed * 0.1)
-      .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-      .withDriveRequestType(
-          DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+  private final SwerveRequest.FieldCentric drive =
+      new SwerveRequest.FieldCentric()
+          .withDeadband(MaxSpeed * 0.1)
+          .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+          .withDriveRequestType(
+              DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
