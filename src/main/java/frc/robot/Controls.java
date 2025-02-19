@@ -110,7 +110,7 @@ public class Controls {
                           Math.min(
                               1,
                               MAX_ROTATION_ACCELERATION / translationLimit.omegaRadiansPerSecond));
-                  ChassisSpeeds newSpeeds = speed.times(dt).plus(acceleration);
+                  ChassisSpeeds newSpeeds = speed.plus(acceleration.times(dt));
 
                   return drive
                       .withVelocityX(newSpeeds.vxMetersPerSecond)
