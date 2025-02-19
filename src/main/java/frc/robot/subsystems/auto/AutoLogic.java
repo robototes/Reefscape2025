@@ -6,6 +6,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
+import com.pathplanner.lib.util.FileVersionException;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -35,10 +37,14 @@ import frc.team2412.robot.subsystems.LauncherSubsystem; */
 import frc.robot.subsystems.auto.DynamicSendableChooser;
 import frc.robot.subsystems.auto.PathPlannerAutos;
 import frc.robot.subsystems.auto.PathPlannerAutos.Auto;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
+
+import org.json.simple.parser.ParseException;
 
 public class AutoLogic {
 	public static Robot r = Robot.getInstance();
@@ -226,8 +232,11 @@ public class AutoLogic {
 	 *
 	 * @param pathName
 	 * @return follow path command
+	 * @throws ParseException 
+	 * @throws IOException 
+	 * @throws FileVersionException 
 	 */
-	public static Command getAutoCommand(String pathName) {
+	public static Command getAutoCommand(String pathName) throws FileVersionException, IOException, ParseException {
 		// Load the path you want to follow using its name in the GUI
 		PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
 
