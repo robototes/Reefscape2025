@@ -147,7 +147,7 @@ public class Controls {
                 Map.of(
                     BranchHeight.LEVEL_FOUR,
                     superStructure.levelFour(driverController.rightBumper()),
-                    BranchHeight.LEVEL_THREE, 
+                    BranchHeight.LEVEL_THREE,
                     superStructure.levelThree(driverController.rightBumper()),
                     BranchHeight.LEVEL_TWO,
                     superStructure.levelTwo(driverController.rightBumper()),
