@@ -119,7 +119,6 @@ public class Controls {
       return;
     }
     // operator start button used for climb - bound in climb bindings
-<<<<<<< HEAD
     operatorController.y().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_FOUR));
     operatorController.x().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE));
     operatorController.b().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO));
