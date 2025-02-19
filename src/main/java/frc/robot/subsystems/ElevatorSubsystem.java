@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Hardware;
@@ -19,14 +20,16 @@ import java.util.function.DoubleConsumer;
 
 public class ElevatorSubsystem extends SubsystemBase {
   // Maximum is 38.34
-  public static final double LEVEL_FOUR_POS = 38;
+  public static final double LEVEL_FOUR_PRE_POS = 37.5;
+  public static final double LEVEL_FOUR_POS = 36.5;
   public static final double LEVEL_THREE_POS = 13;
   public static final double LEVEL_TWO_POS = 3.15;
   public static final double LEVEL_ONE_POS = 8.06;
-  public static final double STOWED = 1;
-  public static final double INTAKE = 0;
-  public static final double MANUAL = 1;
-  private static final double POS_TOLERANCE = 0.02;
+  public static final double STOWED = 2;
+  public static final double INTAKE = 0.1;
+  public static final double PRE_INTAKE = 2;
+  public static final double MANUAL = 0.1;
+  private static final double POS_TOLERANCE = 0.1;
   private final double ELEVATOR_KP = 13.804; // add feedfwds for each stage?
   private final double ELEVATOR_KI = 0;
   private final double ELEVATOR_KD = 0.079221;
@@ -229,7 +232,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                 rumble.accept(0.2);
               }
             })
-        .until(() -> Math.abs(getCurrentPosition() - pos) < POS_TOLERANCE)
+        .andThen(Commands.waitUntil(() -> Math.abs(getCurrentPosition() - pos) < POS_TOLERANCE))
         .withName("setLevel" + pos);
   }
 
@@ -272,8 +275,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   /** Stop the control loop and motor output. */
-  public void stop() {
-    // m_controller.setGoal(0.0);
-    m_motor.set(0.0);
+  public Command stop() {
+    return runOnce(() -> m_motor.stopMotor()).ignoringDisable(true).withName("ElevatorStop");
   }
 }

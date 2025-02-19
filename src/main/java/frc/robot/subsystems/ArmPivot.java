@@ -35,6 +35,7 @@ public class ArmPivot extends SubsystemBase {
   public static final double PRESET_L4 = 0.0;
   public static final double PRESET_PRE_L4 = 1.0 / 16.0;
   public static final double PRESET_STOWED = 0.125;
+  public static final double PRESET_OUT = 0;
   public static final double PRESET_UP = 0.25; // Pointing Directly upwards
   public static final double PRESET_DOWN = -0.25;
   public static final double HARDSTOP_HIGH = 0.32;

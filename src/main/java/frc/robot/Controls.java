@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.BonkTunerConstants;
@@ -158,7 +159,7 @@ public class Controls {
     operatorController
         .a()
         .onTrue(superStructure.levelOne(driverController.rightBumper()).withName("level 1"));
-    // driverController.a().onTrue(superStructure.intake());
+    driverController.a().onTrue(superStructure.intake());
     if (sensors.armSensor != null) {
       sensors.armSensor.inTrough().onTrue(superStructure.intake());
     }
@@ -168,6 +169,7 @@ public class Controls {
     if (s.elevatorSubsystem == null) {
       return;
     }
+    RobotModeTriggers.disabled().onTrue(s.elevatorSubsystem.stop());
     // Controls binding goes here
     operatorController
         .leftTrigger()
@@ -221,8 +223,12 @@ public class Controls {
     operatorController
         .leftBumper()
         .onTrue(
-            s.elevatorSubsystem
-                .resetPosZero()
+            Commands.sequence(
+                    Commands.runOnce(
+                        () -> operatorController.setRumble(RumbleType.kBothRumble, 0.5)),
+                    s.elevatorSubsystem.resetPosZero(),
+                    Commands.runOnce(
+                        () -> operatorController.setRumble(RumbleType.kBothRumble, 0.0)))
                 .ignoringDisable(true)
                 .withName("Reset elevator zero"));
   }
@@ -265,6 +271,9 @@ public class Controls {
         .povDown()
         .onTrue(
             s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_DOWN).withName("SetArmPresetDown"));
+    operatorController
+        .povRight()
+        .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_OUT).withName("ArmPivotOut"));
   }
 
   private void configureClimbPivotBindings() {
