@@ -121,20 +121,17 @@ public class Controls {
     // operator start button used for climb - bound in climb bindings
     operatorController
         .y()
-        .onTrue(
-            Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_FOUR).withName("level 4"));
+        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_FOUR).withName("level 4"));
     operatorController
         .x()
         .onTrue(
             Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"));
     operatorController
         .b()
-        .onTrue(
-            Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO).withName("level 2"));
+        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO).withName("level 2"));
     operatorController
         .a()
-        .onTrue(
-            Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE).withName("level 1"));
+        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE).withName("level 1"));
 
 
     driverController.a().onTrue(superStructure.intake());
