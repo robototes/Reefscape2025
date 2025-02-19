@@ -1,4 +1,4 @@
-package frc.team2412.robot.util;
+package frc.robot.subsystems.auto;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
@@ -11,12 +11,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.team2412.robot.commands.launcher.SetAngleAmpLaunchCommand;
-import frc.team2412.robot.subsystems.DrivebaseSubsystem;
-import frc.team2412.robot.subsystems.LauncherSubsystem;
+import frc.robot.subsystems.DrivebaseWrapper;
 import java.util.List;
 
-public class AmpAlign {
+public class AutoAlign {
 	private static final Pose2d BLUE_AMP_POSES =
 			// amp on the blue side
 
