@@ -150,7 +150,7 @@ public class Controls {
                     superStructure.levelTwo(driverController.rightBumper()),
                     BranchHeight.LEVEL_ONE,
                     superStructure.levelOne(driverController.rightBumper())),
-                () -> branchHeight));
+                () -> branchHeight).withName("go to target branch height"));
   }
 
   private void configureElevatorBindings() {
