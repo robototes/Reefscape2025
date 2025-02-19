@@ -217,6 +217,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         () -> {
           setCurrentPosition(0);
           hasBeen0ed = true;
+          rumble.accept(0);
         });
   }
 
@@ -227,7 +228,6 @@ public class ElevatorSubsystem extends SubsystemBase {
                 m_motor.setControl(m_request.withPosition(pos));
                 m_motor2.setControl(new Follower(m_motor.getDeviceID(), true));
                 targetPos = pos;
-                rumble.accept(0);
               } else {
                 rumble.accept(0.2);
               }
