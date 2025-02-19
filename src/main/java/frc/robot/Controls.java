@@ -4,6 +4,9 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
@@ -186,4 +189,17 @@ public class Controls {
         .leftBumper()
         .whileTrue(s.spinnyClawSubsytem.movingVoltage(() -> Volts.of(-9)));
   }
+
+  public void vibrateDriveController(double vibration) {
+		if (!DriverStation.isAutonomous()) {
+			driverController.getHID().setRumble(RumbleType.kBothRumble, vibration);
+		}
+	}
+
+	public void vibrateCoDriveController(double vibration) {
+		if (!DriverStation.isAutonomous()) {
+			operatorController.getHID().setRumble(RumbleType.kBothRumble, vibration);
+		}
+	}
+
 }

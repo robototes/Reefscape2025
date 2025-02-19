@@ -9,8 +9,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Subsystems.SubsystemConstants;
+import frc.robot.subsystems.auto.AutoLogic;
 import frc.robot.util.BuildInfo;
 import frc.robot.util.RobotType;
 
@@ -27,6 +30,7 @@ public class Robot extends TimedRobot {
   public final Controls controls;
   public final Subsystems subsystems;
   public final Sensors sensors;
+  public final AutoLogic autoLogic;
 
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
@@ -38,6 +42,7 @@ public class Robot extends TimedRobot {
     subsystems = new Subsystems();
     controls = new Controls(subsystems);
     sensors = new Sensors();
+    autoLogic = new AutoLogic();
 
     SmartDashboard.putString("current bot", robotType.toString());
     SmartDashboard.putData("commandScheduler", CommandScheduler.getInstance());
@@ -78,10 +83,15 @@ public class Robot extends TimedRobot {
   public void disabledExit() {}
 
   @Override
-  public void autonomousInit() {}
-
-  @Override
-  public void autonomousPeriodic() {}
+  public void autonomousInit() {
+		Shuffleboard.startRecording();
+    AutoLogic.registerCommands();
+    AutoLogic.initShuffleBoard();
+		DriverStation.silenceJoystickConnectionWarning(!DriverStation.isFMSAttached());
+		if (AutoLogic.getSelectedAuto() != null && SubsystemConstants.DRIVEBASE_ENABLED) {
+			AutoLogic.getSelectedAuto().schedule();
+		}
+	}
 
   @Override
   public void autonomousExit() {
