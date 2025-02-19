@@ -156,10 +156,33 @@ public class ElevatorSubsystem extends SubsystemBase {
     configuration.Slot0.kD = ELEVATOR_KD; // A velocity error of 1 rps results in 0.1 V output
 
     // set Motion Magic settings
-    configuration.MotionMagic.MotionMagicCruiseVelocity = 80; // Target cruise velocity of 80 rps
-    configuration.MotionMagic.MotionMagicAcceleration =
-        160; // Target acceleration of 160 rps/s (0.5 seconds)
-    configuration.MotionMagic.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
+    // Bottom to full: ~40 rotations
+    // Constant jerk:
+    //   x = 1/6 j t^3
+    //   j = 6 x / t^3
+    // Considering half of the movement:
+    //   j = 6 (x/2) / (t/2)^3
+    //     = 24 x / t^3
+    // Maximum acceleration:
+    //   a = j (t/2)
+    //     = (24 x / t^3) (t/2)
+    //     = 12 x / t^2
+    // For full travel in 0.8 seconds:
+    //   j = 24 (40 rot) / (0.8 s)^3
+    //     = 1875 rot/s^3
+    //   a = 12 (40 rot) / (0.8 s)^2
+    //     = 750 rot/s^2
+    // For full travel in 0.75 seconds:
+    //   j = 24 (40 rot) / (0.75 s)^3
+    //     = (61440 / 27) rot/s^3
+    //     = 2275.56 rot/s^3
+    //   a = 12 (40 rot) / (0.75 s)^2
+    //     = (7680 / 9) rot/s^2
+    //     = 853.33 rot/s^2
+    // MotionMagic uses mechanism rotations per second*
+    configuration.MotionMagic.MotionMagicCruiseVelocity = 80;
+    configuration.MotionMagic.MotionMagicAcceleration = 750;
+    configuration.MotionMagic.MotionMagicJerk = 1875;
 
     talonFXConfigurator.apply(configuration);
   }
