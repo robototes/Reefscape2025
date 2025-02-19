@@ -141,17 +141,18 @@ public class Controls {
         .leftBumper()
         .onTrue(
             Commands.select(
-                Map.of(
-                    BranchHeight.LEVEL_FOUR,
-                    superStructure.levelFour(driverController.rightBumper()),
-                    BranchHeight.LEVEL_THREE,
-                    superStructure.levelThree(driverController.rightBumper()),
-                    BranchHeight.LEVEL_TWO,
-                    superStructure.levelTwo(driverController.rightBumper()),
-                    BranchHeight.LEVEL_ONE,
-                    superStructure.levelOne(driverController.rightBumper())),
-                () -> branchHeight).withName("go to target branch height"));
-  }
+                  Map.of(
+                      BranchHeight.LEVEL_FOUR,
+                      superStructure.levelFour(driverController.rightBumper()),
+                      BranchHeight.LEVEL_THREE,
+                      superStructure.levelThree(driverController.rightBumper()),
+                      BranchHeight.LEVEL_TWO,
+                      superStructure.levelTwo(driverController.rightBumper()),
+                      BranchHeight.LEVEL_ONE,
+                      superStructure.levelOne(driverController.rightBumper())),
+                  () -> branchHeight)
+            .withName("go to target branch height"));
+    }
 
   private void configureElevatorBindings() {
     if (s.elevatorSubsystem == null) {
