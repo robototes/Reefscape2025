@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.ArmPivot;
@@ -202,6 +203,18 @@ public class Controls {
     }
 
     // Arm Controls binding goes here
+    armPivotSpinnyClawController
+        .a()
+        .whileTrue(s.armPivotSubsystem.SysIDDynamic(Direction.kForward));
+    armPivotSpinnyClawController
+        .b()
+        .whileTrue(s.armPivotSubsystem.SysIDDynamic(Direction.kReverse));
+    armPivotSpinnyClawController
+        .x()
+        .whileTrue(s.armPivotSubsystem.SysIDQuasistatic(Direction.kForward));
+    armPivotSpinnyClawController
+        .y()
+        .whileTrue(s.armPivotSubsystem.SysIDQuasistatic(Direction.kReverse));
     armPivotSpinnyClawController
         .leftStick()
         .whileTrue(
