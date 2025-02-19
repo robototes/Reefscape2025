@@ -26,14 +26,14 @@ public class ArmPivot extends SubsystemBase {
   private final double ARMPIVOT_KV = 0.12;
   private final double ARMPIVOT_KG = 0;
   private final double ARMPIVOT_KA = 0.01;
-  public static final double PRESET_L1 = 0.0; // This is at position perpendicular to elevator
-  public static final double PRESET_L2_L3 = 45.0;
-  public static final double PRESET_L4 = 0.0;
-  public static final double PRESET_UP = 90.0; // Pointing Directly upwards
-  public static final double PRESET_DOWN = -90.0;
-  public static final double HARDSTOP_HIGH = 95.0;
-  public static final double HARDSTOP_LOW = -95.0;
-  public static final double POS_TOLERANCE = 1.0;
+  public static final double PRESET_L1 = 0.3; // This is at position perpendicular to elevator
+  public static final double PRESET_L2_L3 = 0.38;
+  public static final double PRESET_L4 = 0.3;
+  public static final double PRESET_UP = 0.55; // Pointing Directly upwards
+  public static final double PRESET_DOWN = 0.06;
+  public static final double HARDSTOP_HIGH = 0.63;
+  public static final double HARDSTOP_LOW = 0.05;
+  public static final double POS_TOLERANCE = 0.01;
   public static final double PLACEHOLDER_CORAL_WEIGHT_KG = 0.8;
   // Constant for gear ratio (the power that one motor gives to gear)
   private static final double ARM_RATIO = 360 * (12.0 / 60.0) * (20.0 / 60.0) * (18.0 / 48.0);
