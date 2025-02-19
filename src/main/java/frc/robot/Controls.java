@@ -4,9 +4,9 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -85,36 +85,44 @@ public class Controls {
     // and Y is defined as to the left according to WPILib convention.
     s.drivebaseSubsystem.setDefaultCommand(
         // s.drivebaseSubsystem will execute this command periodically
-        s.drivebaseSubsystem.applyRequest(
-            () -> {
-              ChassisSpeeds speed = s.drivebaseSubsystem.returnSpeeds();
-              ChassisSpeeds targetSpeeds =
-                  new ChassisSpeeds(
-                      -driverController.getLeftY()
-                          * MaxSpeed, // Drive forward with negative Y (forward)
-                      -driverController.getLeftX() * MaxSpeed, // Drive left with negative X (left)
-                      -driverController.getRightX()
-                          * MaxAngularRate); // Drive counterclockwise with negative X (left)
-              ChassisSpeeds diff = targetSpeeds.minus(speed);
-              double dt = 0.02;
-              // Vx Vy and Omega are really accelerations and not velocities.
-              ChassisSpeeds acceleration = diff.div(dt);
-              double translationAccelMagnitude =
-                  Math.hypot(acceleration.vxMetersPerSecond, acceleration.vyMetersPerSecond);
-              ChassisSpeeds translationLimit =
-                  acceleration.times(Math.min(1, MAX_ACCELERATION / translationAccelMagnitude));
-              ChassisSpeeds rotationLimit =
-                  translationLimit.times(
-                      Math.min(
-                          1, MAX_ROTATION_ACCELERATION / translationLimit.omegaRadiansPerSecond));
-              ChassisSpeeds newSpeeds = speed.times(dt).plus(acceleration);
+        s.drivebaseSubsystem
+            .applyRequest(
+                () -> {
+                  ChassisSpeeds speed = s.drivebaseSubsystem.returnSpeeds();
+                  ChassisSpeeds targetSpeeds =
+                      new ChassisSpeeds(
+                          -driverController.getLeftY()
+                              * MaxSpeed, // Drive forward with negative Y (forward)
+                          -driverController.getLeftX()
+                              * MaxSpeed, // Drive left with negative X (left)
+                          -driverController.getRightX()
+                              * MaxAngularRate); // Drive counterclockwise with negative X (left)
+                  ChassisSpeeds diff = targetSpeeds.minus(speed);
+                  double dt = 0.02;
+                  // Vx Vy and Omega are really accelerations and not velocities.
+                  ChassisSpeeds acceleration = diff.div(dt);
+                  double translationAccelMagnitude =
+                      Math.hypot(acceleration.vxMetersPerSecond, acceleration.vyMetersPerSecond);
+                  ChassisSpeeds translationLimit =
+                      acceleration.times(Math.min(1, MAX_ACCELERATION / translationAccelMagnitude));
+                  ChassisSpeeds rotationLimit =
+                      translationLimit.times(
+                          Math.min(
+                              1,
+                              MAX_ROTATION_ACCELERATION / translationLimit.omegaRadiansPerSecond));
+                  ChassisSpeeds newSpeeds = speed.times(dt).plus(acceleration);
 
-              return drive
-                  .withVelocityX(newSpeeds.vxMetersPerSecond)
-                  .withVelocityY(newSpeeds.vyMetersPerSecond)
-                  .withRotationalRate(newSpeeds.omegaRadiansPerSecond);
-            }).withName("Drive"));
-    s.drivebaseSubsystem.applyRequest(() -> brake).ignoringDisable(true).withName("Brake").schedule();
+                  return drive
+                      .withVelocityX(newSpeeds.vxMetersPerSecond)
+                      .withVelocityY(newSpeeds.vyMetersPerSecond)
+                      .withRotationalRate(newSpeeds.omegaRadiansPerSecond);
+                })
+            .withName("Drive"));
+    s.drivebaseSubsystem
+        .applyRequest(() -> brake)
+        .ignoringDisable(true)
+        .withName("Brake")
+        .schedule();
 
     // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
     // brake));
