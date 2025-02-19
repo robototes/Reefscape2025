@@ -23,20 +23,22 @@ import java.util.function.Supplier;
 
 public class ArmPivot extends SubsystemBase {
   // Presets
-  private final double ARMPIVOT_KP = 3;
+  private final double ARMPIVOT_KP = 20;
   private final double ARMPIVOT_KI = 0;
   private final double ARMPIVOT_KD = 0;
-  private final double ARMPIVOT_KS = 0;
-  private final double ARMPIVOT_KV = 0.12;
-  private final double ARMPIVOT_KG = 0.1;
-  private final double ARMPIVOT_KA = 0.01;
-  public static final double PRESET_L1 = 0.3; // This is at position perpendicular to elevator
-  public static final double PRESET_L2_L3 = 0.38;
-  public static final double PRESET_L4 = 0.3;
-  public static final double PRESET_UP = 0.55; // Pointing Directly upwards
-  public static final double PRESET_DOWN = 0.06;
-  public static final double HARDSTOP_HIGH = 0.63;
-  public static final double HARDSTOP_LOW = 0.05;
+  private final double ARMPIVOT_KS = 0.1;
+  private final double ARMPIVOT_KV = 0.69;
+  private final double ARMPIVOT_KG = 0.18;
+  private final double ARMPIVOT_KA = 0.0;
+  public static final double PRESET_L1 = 0; // This is at position perpendicular to elevator
+  public static final double PRESET_L2_L3 = 0.125;
+  public static final double PRESET_L4 = 0.0;
+  public static final double PRESET_PRE_L4 = 1.0 / 16.0;
+  public static final double PRESET_STOWED = 0.125;
+  public static final double PRESET_UP = 0.25; // Pointing Directly upwards
+  public static final double PRESET_DOWN = -0.25;
+  public static final double HARDSTOP_HIGH = 0.32;
+  public static final double HARDSTOP_LOW = -0.26;
   public static final double POS_TOLERANCE = 0.01;
   public static final double PLACEHOLDER_CORAL_WEIGHT_KG = 0.8;
   // Constant for gear ratio (the power that one motor gives to gear)
@@ -116,7 +118,7 @@ public class ArmPivot extends SubsystemBase {
 
   // (+) is to move arm up, and (-) is down
   public Command startMovingVoltage(Supplier<Voltage> speedControl) {
-    return run(() -> motor.setVoltage(speedControl.get().in(Volts)));
+    return runEnd(() -> motor.setVoltage(speedControl.get().in(Volts)), () -> motor.stopMotor());
   }
 
   // logging
@@ -172,6 +174,5 @@ public class ArmPivot extends SubsystemBase {
         1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
     cfg.apply(talonFXConfiguration);
-    motor.setPosition(0);
   }
 }
