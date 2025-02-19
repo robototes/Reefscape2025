@@ -18,7 +18,8 @@ import frc.robot.Hardware;
 import java.util.function.DoubleConsumer;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  public static final double LEVEL_FOUR_POS = 37;
+  // Maximum is 38.34
+  public static final double LEVEL_FOUR_POS = 38;
   public static final double LEVEL_THREE_POS = 13;
   public static final double LEVEL_TWO_POS = 3.15;
   public static final double LEVEL_ONE_POS = 8.06;
