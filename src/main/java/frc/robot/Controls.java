@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -106,7 +107,7 @@ public class Controls {
     // -driveController.getLeftX()))
     // ));
 
-    // reset the field-centric heading on left bumper press
+    // reset the field-centric heading on back button press
     driverController
         .back()
         .onTrue(s.drivebaseSubsystem.runOnce(() -> s.drivebaseSubsystem.seedFieldCentric()));
@@ -118,10 +119,24 @@ public class Controls {
       return;
     }
     // operator start button used for climb - bound in climb bindings
+<<<<<<< HEAD
     operatorController.y().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_FOUR));
     operatorController.x().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE));
     operatorController.b().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO));
     operatorController.a().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE));
+    operatorController
+        .y()
+        .onTrue(superStructure.levelFour(driverController.rightBumper()).withName("level 4"));
+    operatorController
+        .x()
+        .onTrue(superStructure.levelThree(driverController.rightBumper()).withName("level 3"));
+    operatorController
+        .b()
+        .onTrue(superStructure.levelTwo(driverController.rightBumper()).withName("level 2"));
+    operatorController
+        .a()
+        .onTrue(superStructure.levelOne(driverController.rightBumper()).withName("level 1"));
+
     driverController.a().onTrue(superStructure.intake());
     if (sensors.armSensor != null) {
       sensors.armSensor.inTrough().onTrue(superStructure.intake());
@@ -146,9 +161,30 @@ public class Controls {
     if (s.elevatorSubsystem == null) {
       return;
     }
-    // Elevator Controls binding goes here
-    elevatorTestController.leftTrigger().whileTrue(s.elevatorSubsystem.goUpPower());
-    elevatorTestController.rightTrigger().whileTrue(s.elevatorSubsystem.goDownPower());
+    // Controls binding goes here
+    operatorController
+        .leftTrigger()
+        .whileTrue(s.elevatorSubsystem.goUpPower().withName("Power up"));
+    operatorController
+        .rightTrigger()
+        .whileTrue(s.elevatorSubsystem.goDownPower().withName("Power down"));
+    // operatorController
+    //     .leftTrigger()
+    //     .whileTrue(s.elevatorSubsystem.sysIdDynamic(Direction.kForward));
+    // operatorController
+    //     .leftBumper()
+    //     .whileTrue(s.elevatorSubsystem.sysIdQuasistatic(Direction.kForward));
+    // operatorController
+    //     .rightTrigger()
+    //     .whileTrue(s.elevatorSubsystem.sysIdDynamic(Direction.kReverse));
+    // operatorController
+    //    .rightBumper()
+    //    .whileTrue(s.elevatorSubsystem.sysIdQuasistatic(Direction.kReverse));
+    s.elevatorSubsystem.setRumble(
+        (rumble) -> {
+          elevatorTestController.setRumble(RumbleType.kBothRumble, rumble);
+          operatorController.setRumble(RumbleType.kBothRumble, rumble);
+        });
     elevatorTestController
         .y()
         .onTrue(
@@ -171,11 +207,17 @@ public class Controls {
         .rightBumper()
         .onTrue(
             s.elevatorSubsystem.setLevel(ElevatorSubsystem.INTAKE).withName("Elevator IntakePos"));
-    operatorController.povUp().whileTrue(s.elevatorSubsystem.goUp());
-    operatorController.povDown().whileTrue(s.elevatorSubsystem.goDown());
+    operatorController.povUp().whileTrue(s.elevatorSubsystem.goUp().withName("Elevator go up"));
+    operatorController
+        .povDown()
+        .whileTrue(s.elevatorSubsystem.goDown().withName("Elevator go down"));
     operatorController
         .leftBumper()
-        .onTrue(s.elevatorSubsystem.resetPosZero().ignoringDisable(true));
+        .onTrue(
+            s.elevatorSubsystem
+                .resetPosZero()
+                .ignoringDisable(true)
+                .withName("Reset elevator zero"));
   }
 
   private void configureArmPivotBindings() {
