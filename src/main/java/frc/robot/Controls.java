@@ -173,17 +173,17 @@ public class Controls {
                 .startMovingVoltage(() -> Volts.of(6 * armPivotSpinnyClawController.getLeftY()))
                 .withName("ManuallyMoveArm"));
     armPivotSpinnyClawController
-        .povUp()
+        .povRight()
         .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L4).withName("SetArmPresetL4"));
     armPivotSpinnyClawController
         .povLeft()
         .onTrue(
             s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L2_L3).withName("SetArmPresetL2_3"));
     armPivotSpinnyClawController
-        .povDown()
+        .povUp()
         .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_UP).withName("SetArmPresetUp"));
     armPivotSpinnyClawController
-        .povRight()
+        .povDown()
         .onTrue(
             s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_DOWN).withName("SetArmPresetDown"));
   }
