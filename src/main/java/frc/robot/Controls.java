@@ -119,22 +119,11 @@ public class Controls {
       return;
     }
     // operator start button used for climb - bound in climb bindings
-    operatorController.y().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_FOUR));
-    operatorController.x().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE));
-    operatorController.b().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO));
-    operatorController.a().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE));
-    operatorController
-        .y()
-        .onTrue(superStructure.levelFour(driverController.rightBumper()).withName("level 4"));
-    operatorController
-        .x()
-        .onTrue(superStructure.levelThree(driverController.rightBumper()).withName("level 3"));
-    operatorController
-        .b()
-        .onTrue(superStructure.levelTwo(driverController.rightBumper()).withName("level 2"));
-    operatorController
-        .a()
-        .onTrue(superStructure.levelOne(driverController.rightBumper()).withName("level 1"));
+    operatorController.y().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_FOUR).withName("level 4"));
+    operatorController.x().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE.withName("level 3")));
+    operatorController.b().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO.withName("level 2")));
+    operatorController.a().onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE.withName("level 1")));
+
 
     driverController.a().onTrue(superStructure.intake());
     if (sensors.armSensor != null) {
