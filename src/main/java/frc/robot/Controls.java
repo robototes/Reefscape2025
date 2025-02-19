@@ -82,20 +82,26 @@ public class Controls {
     // and Y is defined as to the left according to WPILib convention.
     s.drivebaseSubsystem.setDefaultCommand(
         // s.drivebaseSubsystem will execute this command periodically
-        s.drivebaseSubsystem.applyRequest(
-            () ->
-                drive
-                    .withVelocityX(
-                        -driverController.getLeftY()
-                            * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(
-                        -driverController.getLeftX()
-                            * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(
-                        -driverController.getRightX()
-                            * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            ));
-    s.drivebaseSubsystem.applyRequest(() -> brake).ignoringDisable(true).schedule();
+        s.drivebaseSubsystem
+            .applyRequest(
+                () ->
+                    drive
+                        .withVelocityX(
+                            -driverController.getLeftY()
+                                * MaxSpeed) // Drive forward with negative Y (forward)
+                        .withVelocityY(
+                            -driverController.getLeftX()
+                                * MaxSpeed) // Drive left with negative X (left)
+                        .withRotationalRate(
+                            -driverController.getRightX()
+                                * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                )
+            .withName("Drive"));
+    s.drivebaseSubsystem
+        .applyRequest(() -> brake)
+        .ignoringDisable(true)
+        .withName("Brake")
+        .schedule();
 
     // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
     // brake));
@@ -107,7 +113,10 @@ public class Controls {
     // reset the field-centric heading on back button press
     driverController
         .back()
-        .onTrue(s.drivebaseSubsystem.runOnce(() -> s.drivebaseSubsystem.seedFieldCentric()));
+        .onTrue(
+            s.drivebaseSubsystem
+                .runOnce(() -> s.drivebaseSubsystem.seedFieldCentric())
+                .withName("Reset gyro"));
     s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
   }
 
@@ -128,7 +137,7 @@ public class Controls {
     operatorController
         .a()
         .onTrue(superStructure.levelOne(driverController.rightBumper()).withName("level 1"));
-    driverController.a().onTrue(superStructure.intake());
+    // driverController.a().onTrue(superStructure.intake());
     if (sensors.armSensor != null) {
       sensors.armSensor.inTrough().onTrue(superStructure.intake());
     }
@@ -219,7 +228,7 @@ public class Controls {
         .leftStick()
         .whileTrue(
             s.armPivotSubsystem
-                .startMovingVoltage(() -> Volts.of(6 * armPivotSpinnyClawController.getLeftY()))
+                .startMovingVoltage(() -> Volts.of(3 * armPivotSpinnyClawController.getLeftY()))
                 .withName("ManuallyMoveArm"));
     armPivotSpinnyClawController
         .povRight()
@@ -250,12 +259,10 @@ public class Controls {
       return;
     }
     // Claw controls bindings go here
-    armPivotSpinnyClawController
-        .rightBumper()
-        .whileTrue(s.spinnyClawSubsytem.movingVoltage(() -> Volts.of(9)));
-    armPivotSpinnyClawController
-        .leftBumper()
-        .whileTrue(s.spinnyClawSubsytem.movingVoltage(() -> Volts.of(-9)));
+    armPivotSpinnyClawController.rightBumper().whileTrue(s.spinnyClawSubsytem.holdExtakePower());
+    armPivotSpinnyClawController.leftBumper().whileTrue(s.spinnyClawSubsytem.holdIntakePower());
+    driverController.leftTrigger().whileTrue(s.spinnyClawSubsytem.holdExtakePower());
+    driverController.rightTrigger().whileTrue(s.spinnyClawSubsytem.holdIntakePower());
   }
 
   private void configureElevatorLEDBindings() {

@@ -21,23 +21,23 @@ public class SuperStructure {
 
   public Command levelFourPrescore() {
     return Commands.parallel(
-        // may need to change things if elevator/arm move at different times
-        // arm may need to move first - sequential?
-        elevator.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS),
-        armPivot.moveToPosition(ArmPivot.PRESET_UP),
-        spinnyClaw.stop());
-  }
-
-  public Command levelFourScore() {
-    return Commands.parallel(
-        elevator.setLevel(ElevatorSubsystem.STOWED),
-        armPivot.moveToPosition(ArmPivot.PRESET_L4),
-        spinnyClaw.extakePower());
+            // may need to change things if elevator/arm move at different times
+            // arm may need to move first - sequential?
+            elevator.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS),
+            armPivot.moveToPosition(ArmPivot.PRESET_UP),
+            spinnyClaw.stop())
+        .andThen(armPivot.moveToPosition(ArmPivot.PRESET_PRE_L4));
   }
 
   public Command levelFour(BooleanSupplier score) {
     return Commands.sequence(
-        levelFourPrescore(), Commands.waitUntil(score), levelFourScore(), stow());
+        levelFourPrescore(),
+        Commands.waitUntil(score),
+        Commands.parallel(
+            elevator.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS),
+            armPivot.moveToPosition(ArmPivot.PRESET_L4)),
+        spinnyClaw.holdExtakePower().withTimeout(0.2),
+        stow());
   }
 
   public Command levelThreePrescore() {
@@ -75,7 +75,10 @@ public class SuperStructure {
 
   public Command levelTwo(BooleanSupplier score) {
     return Commands.sequence(
-        levelTwoPrescore(), Commands.waitUntil(score), levelTwoScore(), stow());
+        levelTwoPrescore(),
+        Commands.waitUntil(score),
+        levelTwoScore().alongWith(Commands.waitSeconds(0.2)),
+        stow());
   }
 
   public Command levelOnePrescore() {
@@ -100,7 +103,7 @@ public class SuperStructure {
   public Command stow() {
     return Commands.parallel(
         elevator.setLevel(ElevatorSubsystem.STOWED),
-        armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
+        armPivot.moveToPosition(ArmPivot.PRESET_STOWED),
         spinnyClaw.stop());
   }
 
