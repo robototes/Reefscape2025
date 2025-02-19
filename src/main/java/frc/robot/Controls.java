@@ -223,12 +223,12 @@ public class Controls {
     operatorController
         .leftBumper()
         .onTrue(
-            Commands.sequence(
-                    Commands.runOnce(
-                        () -> operatorController.setRumble(RumbleType.kBothRumble, 0.5)),
+            Commands.parallel(
                     s.elevatorSubsystem.resetPosZero(),
-                    Commands.runOnce(
-                        () -> operatorController.setRumble(RumbleType.kBothRumble, 0.0)))
+                    Commands.startEnd(
+                            () -> operatorController.setRumble(RumbleType.kBothRumble, 0.5),
+                            () -> operatorController.setRumble(RumbleType.kBothRumble, 0))
+                        .withTimeout(0.3))
                 .ignoringDisable(true)
                 .withName("Reset elevator zero"));
   }
