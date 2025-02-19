@@ -38,6 +38,7 @@ public class AutoLogic {
 
   public static SendableChooser<String> autoPicker = new SendableChooser<String>();
   public static SendableChooser<String> autoAction = new SendableChooser<String>();
+  public static SendableChooser<String> testedAutos = new SendableChooser<String>();
   public static final double FEEDER_DELAY = 0.4;
   // rpm to rev up launcher before launching
   public static final double REV_RPM = 2500;
@@ -128,7 +129,7 @@ public class AutoLogic {
     RunAuto(s.drivebaseSubsystem);
 
     addAutoOptions();
-
+    addTestedAutos();
     tab.add("Auto Selector", autoPicker)
         .withWidget(BuiltInWidgets.kComboBoxChooser)
         .withPosition(0, 0)
@@ -146,6 +147,15 @@ public class AutoLogic {
     tab.addString("Current AutoElevatorCommand(s)", () -> autoAction.getSelected())
         .withPosition(3, 1)
         .withSize(2, 1);
+
+
+
+        tab.add("Tested Autos", testedAutos )
+        .withWidget(BuiltInWidgets.kComboBoxChooser)
+        .withPosition(3, 0)
+        .withSize(2, 1);
+        
+   
 
     autoAction.setDefaultOption("EXTEND AND WAIT", "raiseElevatorandWait");
     autoAction.addOption("EXTEND WHILE MOVING", "raiseElevator");
@@ -189,6 +199,11 @@ public class AutoLogic {
     autoPicker.addOption("CHOREO 3 PIECE LESS CRAZY?(IGNORE)", "Triple7");
     autoPicker.addOption("High 1 L4", "SideToJ");
     autoPicker.addOption("CHOREO High 4 L4(IGNORE)", "HighL4");
+  }
+
+
+  public static void addTestedAutos() {
+
   }
 
   public static Command lowerElevator() {
