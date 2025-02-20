@@ -17,7 +17,9 @@ import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.SuperStructure;
+import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
+import java.util.Map;
 
 public class Controls {
   private static final int DRIVER_CONTROLLER_PORT = 0;
@@ -36,6 +38,8 @@ public class Controls {
   private final Subsystems s;
   private final Sensors sensors;
   private final SuperStructure superStructure;
+
+  private BranchHeight branchHeight = null;
 
   // Swerve stuff
   private double MaxSpeed =
@@ -150,21 +154,37 @@ public class Controls {
     // operator start button used for climb - bound in climb bindings
     operatorController
         .y()
-        .onTrue(superStructure.levelFour(driverController.rightBumper()).withName("level 4"));
+        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_FOUR).withName("level 4"));
     operatorController
         .x()
-        .onTrue(superStructure.levelThree(driverController.rightBumper()).withName("level 3"));
+        .onTrue(
+            Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"));
     operatorController
         .b()
-        .onTrue(superStructure.levelTwo(driverController.rightBumper()).withName("level 2"));
+        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO).withName("level 2"));
     operatorController
         .a()
-        .onTrue(superStructure.levelOne(driverController.rightBumper()).withName("level 1"));
+        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE).withName("level 1"));
     operatorController.rightBumper().onTrue(superStructure.stow().withName("Stow"));
     driverController.a().onTrue(superStructure.intake());
     if (sensors.armSensor != null) {
       sensors.armSensor.inTrough().onTrue(superStructure.intake());
     }
+    driverController
+        .leftBumper()
+        .onTrue(
+            Commands.select(
+                    Map.of(
+                        BranchHeight.LEVEL_FOUR,
+                        superStructure.levelFour(driverController.rightBumper()),
+                        BranchHeight.LEVEL_THREE,
+                        superStructure.levelThree(driverController.rightBumper()),
+                        BranchHeight.LEVEL_TWO,
+                        superStructure.levelTwo(driverController.rightBumper()),
+                        BranchHeight.LEVEL_ONE,
+                        superStructure.levelOne(driverController.rightBumper())),
+                    () -> branchHeight)
+                .withName("go to target branch height"));
   }
 
   private void configureElevatorBindings() {
