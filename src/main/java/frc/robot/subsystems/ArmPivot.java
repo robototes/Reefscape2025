@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -31,7 +32,7 @@ public class ArmPivot extends SubsystemBase {
   private final double ARMPIVOT_KG = 0.18;
   private final double ARMPIVOT_KA = 0.0;
   public static final double PRESET_L1 = 0; // This is at position perpendicular to elevator
-  public static final double PRESET_L2_L3 = 0.125;
+  public static final double PRESET_L2_L3 = Units.degreesToRotations(55);
   public static final double PRESET_L4 = 0.0;
   public static final double PRESET_PRE_L4 = 1.0 / 16.0;
   public static final double PRESET_STOWED = 0.125;
