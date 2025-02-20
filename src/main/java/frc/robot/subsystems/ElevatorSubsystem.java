@@ -12,20 +12,24 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Hardware;
 import java.util.function.DoubleConsumer;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  public static final double LEVEL_FOUR_POS = 37;
+  // Maximum is 38.34
+  public static final double LEVEL_FOUR_PRE_POS = 37.5;
+  public static final double LEVEL_FOUR_POS = 36.5;
   public static final double LEVEL_THREE_POS = 13;
   public static final double LEVEL_TWO_POS = 3.15;
   public static final double LEVEL_ONE_POS = 8.06;
-  public static final double STOWED = 1;
-  public static final double INTAKE = 0;
-  public static final double MANUAL = 1;
-  private static final double POS_TOLERANCE = 0.02;
+  public static final double STOWED = 2;
+  public static final double INTAKE = 0.1;
+  public static final double PRE_INTAKE = 2;
+  public static final double MANUAL = 0.1;
+  private static final double POS_TOLERANCE = 0.1;
   private final double ELEVATOR_KP = 13.804; // add feedfwds for each stage?
   private final double ELEVATOR_KI = 0;
   private final double ELEVATOR_KD = 0.079221;
@@ -156,10 +160,33 @@ public class ElevatorSubsystem extends SubsystemBase {
     configuration.Slot0.kD = ELEVATOR_KD; // A velocity error of 1 rps results in 0.1 V output
 
     // set Motion Magic settings
-    configuration.MotionMagic.MotionMagicCruiseVelocity = 80; // Target cruise velocity of 80 rps
-    configuration.MotionMagic.MotionMagicAcceleration =
-        160; // Target acceleration of 160 rps/s (0.5 seconds)
-    configuration.MotionMagic.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
+    // Bottom to full: ~40 rotations
+    // Constant jerk:
+    //   x = 1/6 j t^3
+    //   j = 6 x / t^3
+    // Considering half of the movement:
+    //   j = 6 (x/2) / (t/2)^3
+    //     = 24 x / t^3
+    // Maximum acceleration:
+    //   a = j (t/2)
+    //     = (24 x / t^3) (t/2)
+    //     = 12 x / t^2
+    // For full travel in 0.8 seconds:
+    //   j = 24 (40 rot) / (0.8 s)^3
+    //     = 1875 rot/s^3
+    //   a = 12 (40 rot) / (0.8 s)^2
+    //     = 750 rot/s^2
+    // For full travel in 0.75 seconds:
+    //   j = 24 (40 rot) / (0.75 s)^3
+    //     = (61440 / 27) rot/s^3
+    //     = 2275.56 rot/s^3
+    //   a = 12 (40 rot) / (0.75 s)^2
+    //     = (7680 / 9) rot/s^2
+    //     = 853.33 rot/s^2
+    // MotionMagic uses mechanism rotations per second*
+    configuration.MotionMagic.MotionMagicCruiseVelocity = 80;
+    configuration.MotionMagic.MotionMagicAcceleration = 750;
+    configuration.MotionMagic.MotionMagicJerk = 1875;
 
     talonFXConfigurator.apply(configuration);
   }
@@ -190,6 +217,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         () -> {
           setCurrentPosition(0);
           hasBeen0ed = true;
+          rumble.accept(0);
         });
   }
 
@@ -200,12 +228,11 @@ public class ElevatorSubsystem extends SubsystemBase {
                 m_motor.setControl(m_request.withPosition(pos));
                 m_motor2.setControl(new Follower(m_motor.getDeviceID(), true));
                 targetPos = pos;
-                rumble.accept(0);
               } else {
                 rumble.accept(0.2);
               }
             })
-        .until(() -> Math.abs(getCurrentPosition() - pos) < POS_TOLERANCE)
+        .andThen(Commands.waitUntil(() -> Math.abs(getCurrentPosition() - pos) < POS_TOLERANCE))
         .withName("setLevel" + pos);
   }
 
@@ -248,8 +275,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   /** Stop the control loop and motor output. */
-  public void stop() {
-    // m_controller.setGoal(0.0);
-    m_motor.set(0.0);
+  public Command stop() {
+    return runOnce(() -> m_motor.stopMotor()).ignoringDisable(true).withName("ElevatorStop");
   }
 }

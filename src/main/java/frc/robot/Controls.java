@@ -4,10 +4,13 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.ArmPivot;
@@ -38,6 +41,8 @@ public class Controls {
       RobotType.getCurrent() == RobotType.BONK
           ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
           : CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+  private final double MAX_ACCELERATION = 1.0;
+  private final double MAX_ROTATION_ACCELERATION = 1.0;
   // kSpeedAt12Volts desired top speed
   private double MaxAngularRate =
       RotationsPerSecond.of(0.75)
@@ -81,20 +86,44 @@ public class Controls {
     // and Y is defined as to the left according to WPILib convention.
     s.drivebaseSubsystem.setDefaultCommand(
         // s.drivebaseSubsystem will execute this command periodically
-        s.drivebaseSubsystem.applyRequest(
-            () ->
-                drive
-                    .withVelocityX(
-                        -driverController.getLeftY()
-                            * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(
-                        -driverController.getLeftX()
-                            * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(
-                        -driverController.getRightX()
-                            * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            ));
-    s.drivebaseSubsystem.applyRequest(() -> brake).ignoringDisable(true).schedule();
+        s.drivebaseSubsystem
+            .applyRequest(
+                () -> {
+                  ChassisSpeeds speed = s.drivebaseSubsystem.returnSpeeds();
+                  ChassisSpeeds targetSpeeds =
+                      new ChassisSpeeds(
+                          -driverController.getLeftY()
+                              * MaxSpeed, // Drive forward with negative Y (forward)
+                          -driverController.getLeftX()
+                              * MaxSpeed, // Drive left with negative X (left)
+                          -driverController.getRightX()
+                              * MaxAngularRate); // Drive counterclockwise with negative X (left)
+                  ChassisSpeeds diff = targetSpeeds.minus(speed);
+                  double dt = 0.02;
+                  // Vx Vy and Omega are really accelerations and not velocities.
+                  ChassisSpeeds acceleration = diff.div(dt);
+                  double translationAccelMagnitude =
+                      Math.hypot(acceleration.vxMetersPerSecond, acceleration.vyMetersPerSecond);
+                  ChassisSpeeds translationLimit =
+                      acceleration.times(Math.min(1, MAX_ACCELERATION / translationAccelMagnitude));
+                  ChassisSpeeds rotationLimit =
+                      translationLimit.times(
+                          Math.min(
+                              1,
+                              MAX_ROTATION_ACCELERATION / translationLimit.omegaRadiansPerSecond));
+                  ChassisSpeeds newSpeeds = speed.plus(acceleration.times(dt));
+
+                  return drive
+                      .withVelocityX(newSpeeds.vxMetersPerSecond)
+                      .withVelocityY(newSpeeds.vyMetersPerSecond)
+                      .withRotationalRate(newSpeeds.omegaRadiansPerSecond);
+                })
+            .withName("Drive"));
+    s.drivebaseSubsystem
+        .applyRequest(() -> brake)
+        .ignoringDisable(true)
+        .withName("Brake")
+        .schedule();
 
     // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
     // brake));
@@ -106,7 +135,10 @@ public class Controls {
     // reset the field-centric heading on back button press
     driverController
         .back()
-        .onTrue(s.drivebaseSubsystem.runOnce(() -> s.drivebaseSubsystem.seedFieldCentric()));
+        .onTrue(
+            s.drivebaseSubsystem
+                .runOnce(() -> s.drivebaseSubsystem.seedFieldCentric())
+                .withName("Reset gyro"));
     s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
   }
 
@@ -137,6 +169,7 @@ public class Controls {
     if (s.elevatorSubsystem == null) {
       return;
     }
+    RobotModeTriggers.disabled().onTrue(s.elevatorSubsystem.stop());
     // Controls binding goes here
     operatorController
         .leftTrigger()
@@ -190,8 +223,12 @@ public class Controls {
     operatorController
         .leftBumper()
         .onTrue(
-            s.elevatorSubsystem
-                .resetPosZero()
+            Commands.parallel(
+                    s.elevatorSubsystem.resetPosZero(),
+                    Commands.startEnd(
+                            () -> operatorController.setRumble(RumbleType.kBothRumble, 0.5),
+                            () -> operatorController.setRumble(RumbleType.kBothRumble, 0))
+                        .withTimeout(0.3))
                 .ignoringDisable(true)
                 .withName("Reset elevator zero"));
   }
@@ -202,24 +239,41 @@ public class Controls {
     }
 
     // Arm Controls binding goes here
-    // s.armPivotSubsystem.setDefaultCommand(
-    // s.armPivotSubsystem
-    // .startMovingVoltage(() -> Volts.of(6 * secretThirdController.getLeftY()))
-    // .withName("ManuallyMoveArm"));
     armPivotSpinnyClawController
-        .povUp()
+        .a()
+        .whileTrue(s.armPivotSubsystem.SysIDDynamic(Direction.kForward));
+    armPivotSpinnyClawController
+        .b()
+        .whileTrue(s.armPivotSubsystem.SysIDDynamic(Direction.kReverse));
+    armPivotSpinnyClawController
+        .x()
+        .whileTrue(s.armPivotSubsystem.SysIDQuasistatic(Direction.kForward));
+    armPivotSpinnyClawController
+        .y()
+        .whileTrue(s.armPivotSubsystem.SysIDQuasistatic(Direction.kReverse));
+    armPivotSpinnyClawController
+        .leftStick()
+        .whileTrue(
+            s.armPivotSubsystem
+                .startMovingVoltage(() -> Volts.of(3 * armPivotSpinnyClawController.getLeftY()))
+                .withName("ManuallyMoveArm"));
+    armPivotSpinnyClawController
+        .povRight()
         .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L4).withName("SetArmPresetL4"));
     armPivotSpinnyClawController
         .povLeft()
         .onTrue(
             s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_L2_L3).withName("SetArmPresetL2_3"));
     armPivotSpinnyClawController
-        .povDown()
+        .povUp()
         .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_UP).withName("SetArmPresetUp"));
     armPivotSpinnyClawController
-        .povRight()
+        .povDown()
         .onTrue(
             s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_DOWN).withName("SetArmPresetDown"));
+    operatorController
+        .povRight()
+        .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_OUT).withName("ArmPivotOut"));
   }
 
   private void configureClimbPivotBindings() {
@@ -235,12 +289,10 @@ public class Controls {
       return;
     }
     // Claw controls bindings go here
-    armPivotSpinnyClawController
-        .rightBumper()
-        .whileTrue(s.spinnyClawSubsytem.movingVoltage(() -> Volts.of(9)));
-    armPivotSpinnyClawController
-        .leftBumper()
-        .whileTrue(s.spinnyClawSubsytem.movingVoltage(() -> Volts.of(-9)));
+    armPivotSpinnyClawController.rightBumper().whileTrue(s.spinnyClawSubsytem.holdExtakePower());
+    armPivotSpinnyClawController.leftBumper().whileTrue(s.spinnyClawSubsytem.holdIntakePower());
+    driverController.leftTrigger().whileTrue(s.spinnyClawSubsytem.holdExtakePower());
+    driverController.rightTrigger().whileTrue(s.spinnyClawSubsytem.holdIntakePower());
   }
 
   private void configureElevatorLEDBindings() {
