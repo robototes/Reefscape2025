@@ -14,40 +14,65 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Controls;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 
 public class AutoAlign {
 	private static final double MaxAcceleration = 1;
 	private static final double MaxAngularAcceleraition = 1;
-	private static final Pose2d BRANCH_A =
+	private static final Pose2d BRANCH_B_A =
 			new Pose2d(new Translation2d(3.117, 4.181), Rotation2d.fromDegrees(0));
-	private static final Pose2d BRANCH_B =
+	private static final Pose2d BRANCH_B_B =
 			new Pose2d(new Translation2d(3.117, 3.855), Rotation2d.fromDegrees(0));
-	private static final Pose2d BRANCH_C =
+	private static final Pose2d BRANCH_B_C =
 			new Pose2d(new Translation2d(3.668, 2.910), Rotation2d.fromDegrees(60));
-	private static final Pose2d BRANCH_D =
+	private static final Pose2d BRANCH_B_D =
 			new Pose2d(new Translation2d(3.920, 2.706), Rotation2d.fromDegrees(60));
-	private static final Pose2d BRANCH_E =
+	private static final Pose2d BRANCH_B_E =
 			new Pose2d(new Translation2d(5.035, 2.706), Rotation2d.fromDegrees(120));	
-	private static final Pose2d BRANCH_F =
+	private static final Pose2d BRANCH_B_F =
 			new Pose2d(new Translation2d(5.311, 2.910), Rotation2d.fromDegrees(120));	
-	private static final Pose2d BRANCH_G =
+	private static final Pose2d BRANCH_B_G =
 			new Pose2d(new Translation2d(5.874, 3.855), Rotation2d.fromDegrees(180));
-	private static final Pose2d BRANCH_H =
+	private static final Pose2d BRANCH_B_H =
 			new Pose2d(new Translation2d(5.874, 4.181), Rotation2d.fromDegrees(180));	
-	private static final Pose2d BRANCH_I =
+	private static final Pose2d BRANCH_B_I =
 			new Pose2d(new Translation2d(5.311, 5.092), Rotation2d.fromDegrees(240));
-	private static final Pose2d BRANCH_J =
+	private static final Pose2d BRANCH_B_J =
 			new Pose2d(new Translation2d(5.035, 5.308), Rotation2d.fromDegrees(240));
-	private static final Pose2d BRANCH_K =
+	private static final Pose2d BRANCH_B_K =
 			new Pose2d(new Translation2d(5.035, 5.308), Rotation2d.fromDegrees(300));
-	private static final Pose2d BRANCH_L =
+	private static final Pose2d BRANCH_B_L =
 			new Pose2d(new Translation2d(3.668, 5.092), Rotation2d.fromDegrees(300));
-	private static final List<Pose2d> branchesPoses = Arrays.asList(BRANCH_A, BRANCH_B, BRANCH_C, BRANCH_D, BRANCH_E, BRANCH_F, BRANCH_G, BRANCH_H, BRANCH_I, BRANCH_J, BRANCH_K, BRANCH_L);
+	private static final List<Pose2d> blueBranchesPoses = Arrays.asList(BRANCH_B_A, BRANCH_B_B, BRANCH_B_C, BRANCH_B_D, BRANCH_B_E, BRANCH_B_F, BRANCH_B_G, BRANCH_B_H, BRANCH_B_I, BRANCH_B_J, BRANCH_B_K, BRANCH_B_L);
 
-	private static Command autoAlign(
+	private static final Pose2d BRANCH_R_A =
+			new Pose2d(new Translation2d(3.117, 4.181), Rotation2d.fromDegrees(0));
+	private static final Pose2d BRANCH_R_B =
+			new Pose2d(new Translation2d(3.117, 3.855), Rotation2d.fromDegrees(0));
+	private static final Pose2d BRANCH_R_C =
+			new Pose2d(new Translation2d(3.668, 2.910), Rotation2d.fromDegrees(60));
+	private static final Pose2d BRANCH_R_D =
+			new Pose2d(new Translation2d(3.920, 2.706), Rotation2d.fromDegrees(60));
+	private static final Pose2d BRANCH_R_E =
+			new Pose2d(new Translation2d(5.035, 2.706), Rotation2d.fromDegrees(120));	
+	private static final Pose2d BRANCH_R_F =
+			new Pose2d(new Translation2d(5.311, 2.910), Rotation2d.fromDegrees(120));	
+	private static final Pose2d BRANCH_R_G =
+			new Pose2d(new Translation2d(5.874, 3.855), Rotation2d.fromDegrees(180));
+	private static final Pose2d BRANCH_R_H =
+			new Pose2d(new Translation2d(5.874, 4.181), Rotation2d.fromDegrees(180));	
+	private static final Pose2d BRANCH_R_I =
+			new Pose2d(new Translation2d(5.311, 5.092), Rotation2d.fromDegrees(240));
+	private static final Pose2d BRANCH_R_J =
+			new Pose2d(new Translation2d(5.035, 5.308), Rotation2d.fromDegrees(240));
+	private static final Pose2d BRANCH_R_K =
+			new Pose2d(new Translation2d(5.035, 5.308), Rotation2d.fromDegrees(300));
+	private static final Pose2d BRANCH_R_L =
+			new Pose2d(new Translation2d(3.668, 5.092), Rotation2d.fromDegrees(300));
+	private static final List<Pose2d> redBranchesPoses = Arrays.asList(BRANCH_R_A, BRANCH_R_B, BRANCH_R_C, BRANCH_R_D, BRANCH_R_E, BRANCH_R_F, BRANCH_R_G, BRANCH_R_H, BRANCH_R_I, BRANCH_R_J, BRANCH_R_K, BRANCH_R_L);
+
+	public static Command autoAlign(
 		CommandSwerveDrivetrain drivebaseSubsystem) {
 
 		Pose2d robotPose = drivebaseSubsystem.getState().Pose;
@@ -58,6 +83,7 @@ public class AutoAlign {
 			isBlue = false;
 		}
 		// figures out which branch to go to
+		List<Pose2d> branchesPoses = isBlue ? blueBranchesPoses : redBranchesPoses;
 		Pose2d branchPose = robotPose.nearest(branchesPoses);
 		// sets the point for the path to go to
 		List<Waypoint> waypointsPoeses = PathPlannerPath.waypointsFromPoses(robotPose, branchPose);
@@ -80,12 +106,7 @@ public class AutoAlign {
 		return AutoBuilder.followPath(path);
 	}
 
-	public static Command ampPreset(
-			CommandSwerveDrivetrain drivebaseSubsystem) {
-		return new AlignCommand(drivebaseSubsystem);
-	}
-
-	private static class AlignCommand extends Command {
+	public static class AlignCommand extends Command {
 		private final CommandSwerveDrivetrain drivebaseSubsystem;
 		private Command alignCommand = null;
 

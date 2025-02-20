@@ -13,6 +13,7 @@ import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.util.RobotType;
+import frc.robot.subsystems.auto.AutoAlign;
 
 public class Controls {
   private static final int DRIVER_CONTROLLER_PORT = 0;
@@ -62,6 +63,7 @@ public class Controls {
     configureArmPivotBindings();
     configureClimbPivotBindings();
     configureSpinnyClawBindings();
+    configureAlignBindings();
   }
 
   private void configureDrivebaseBindings() {
@@ -188,6 +190,17 @@ public class Controls {
     operatorController
         .leftBumper()
         .whileTrue(s.spinnyClawSubsytem.movingVoltage(() -> Volts.of(-9)));
+  }
+
+  private void configureAlignBindings() {
+    if (s.drivebaseSubsystem == null) {
+      return;
+    }
+    driverController
+        .leftBumper()
+        .onTrue(
+            AutoAlign.autoAlign(
+                s.drivebaseSubsystem));
   }
 
   public void vibrateDriveController(double vibration) {
