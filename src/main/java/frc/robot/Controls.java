@@ -172,6 +172,7 @@ public class Controls {
     }
     driverController
         .leftBumper()
+        .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
         .onTrue(
             Commands.select(
                     Map.of(
