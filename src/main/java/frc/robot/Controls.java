@@ -46,8 +46,8 @@ public class Controls {
       RobotType.getCurrent() == RobotType.BONK
           ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
           : CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-  private final double MAX_ACCELERATION = 1.0;
-  private final double MAX_ROTATION_ACCELERATION = 1.0;
+  private final double MAX_ACCELERATION = 50;
+  private final double MAX_ROTATION_ACCELERATION = 50;
   // kSpeedAt12Volts desired top speed
   private double MaxAngularRate =
       RotationsPerSecond.of(0.75)
@@ -107,15 +107,22 @@ public class Controls {
                   double dt = 0.02;
                   // Vx Vy and Omega are really accelerations and not velocities.
                   ChassisSpeeds acceleration = diff.div(dt);
-                  double translationAccelMagnitude =
-                      Math.hypot(acceleration.vxMetersPerSecond, acceleration.vyMetersPerSecond);
-                  ChassisSpeeds translationLimit =
-                      acceleration.times(Math.min(1, MAX_ACCELERATION / translationAccelMagnitude));
-                  ChassisSpeeds rotationLimit =
-                      translationLimit.times(
-                          Math.min(
-                              1,
-                              MAX_ROTATION_ACCELERATION / translationLimit.omegaRadiansPerSecond));
+                  // double translationAccelMagnitude =
+                  //     Math.hypot(acceleration.vxMetersPerSecond, acceleration.vyMetersPerSecond);
+                  // ChassisSpeeds translationLimit =
+                  //     acceleration.times(
+                  //         Math.min(1, Math.abs(MAX_ACCELERATION / translationAccelMagnitude)));
+                  // ChassisSpeeds rotationLimit =
+                  //     translationLimit.times(
+                  //         Math.min(
+                  //             1,
+                  //             Math.abs(
+                  //                 MAX_ROTATION_ACCELERATION
+                  //                     / translationLimit.omegaRadiansPerSecond)));
+                  // This *should* be rotationLimit, but the acceleration limiting causes the
+                  // commanded speed to fall into the deadband. The proper fix is to do the deadband
+                  // first, which relies on us doing the deadband ourselves, which is being
+                  // difficult.
                   ChassisSpeeds newSpeeds = speed.plus(acceleration.times(dt));
 
                   return drive
