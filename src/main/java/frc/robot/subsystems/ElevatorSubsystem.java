@@ -25,8 +25,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double LEVEL_FOUR_POS = 36.5;
   public static final double LEVEL_THREE_PRE_POS = 16.8;
   public static final double LEVEL_THREE_POS = 14;
-  public static final double LEVEL_TWO_PRE_POS = 3.15;
-  public static final double LEVEL_TWO_POS = 3;
+  public static final double LEVEL_TWO_PRE_POS = 4.8;
+  public static final double LEVEL_TWO_POS = 4.4;
   public static final double LEVEL_ONE_POS = 8.06;
   public static final double STOWED = 2;
   public static final double INTAKE = 0.1;
