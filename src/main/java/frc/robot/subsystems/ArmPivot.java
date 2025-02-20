@@ -95,7 +95,7 @@ public class ArmPivot extends SubsystemBase {
     return targetPos;
   }
 
-  private double getCurrentMotorPosition() {
+  private double getCurrentPosition() {
     var curPos = motor.getPosition();
     return curPos.getValueAsDouble();
   }
@@ -113,8 +113,7 @@ public class ArmPivot extends SubsystemBase {
     // double
     return setTargetPosition(position)
         .andThen(
-            Commands.waitUntil(
-                () -> Math.abs(getCurrentMotorPosition() - position) < POS_TOLERANCE));
+            Commands.waitUntil(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE));
   }
 
   // (+) is to move arm up, and (-) is down
@@ -128,9 +127,10 @@ public class ArmPivot extends SubsystemBase {
         .addDouble("Pivot Speed", () -> motor.getVelocity().getValueAsDouble());
     Shuffleboard.getTab("Arm Pivot")
         .addDouble("Pivot Motor Temperature", () -> motor.getDeviceTemp().getValueAsDouble());
-    Shuffleboard.getTab("Arm Pivot")
-        .addDouble("Pivot Motor Position", () -> getCurrentMotorPosition());
+    Shuffleboard.getTab("Arm Pivot").addDouble("Pivot Position", () -> getCurrentPosition());
     Shuffleboard.getTab("Arm Pivot").addDouble("Pivot Target Pos", () -> getTargetPosition());
+    Shuffleboard.getTab("Arm Pivot")
+        .addDouble("Pivot Motor rotor Pos", () -> motor.getRotorPosition().getValueAsDouble());
   }
 
   // TalonFX config
