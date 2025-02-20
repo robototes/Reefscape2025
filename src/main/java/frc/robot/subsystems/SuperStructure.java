@@ -34,44 +34,29 @@ public class SuperStructure {
         stow());
   }
 
-  public Command levelThreePrescore() {
-    return Commands.parallel(
-        elevator.setLevel(ElevatorSubsystem.LEVEL_THREE_POS),
-        armPivot.moveToPosition(ArmPivot.PRESET_L2_L3),
-        spinnyClaw.stop());
-  }
-
-  public Command levelThreeScore() {
-    return Commands.parallel(
-        elevator.setLevel(ElevatorSubsystem.STOWED),
-        armPivot.moveToPosition(ArmPivot.PRESET_L2_L3),
-        spinnyClaw.extakePower());
-  }
-
   public Command levelThree(BooleanSupplier score) {
     return Commands.sequence(
-        levelThreePrescore(), Commands.waitUntil(score), levelThreeScore(), stow());
-  }
-
-  public Command levelTwoPrescore() {
-    return Commands.parallel(
-        elevator.setLevel(ElevatorSubsystem.LEVEL_TWO_POS),
+        Commands.parallel(
+            elevator.setLevel(ElevatorSubsystem.LEVEL_THREE_PRE_POS),
+            armPivot.moveToPosition(ArmPivot.PRESET_UP),
+            spinnyClaw.stop()),
         armPivot.moveToPosition(ArmPivot.PRESET_L2_L3),
-        spinnyClaw.stop());
-  }
-
-  public Command levelTwoScore() {
-    return Commands.parallel(
-        elevator.setLevel(ElevatorSubsystem.STOWED),
-        armPivot.moveToPosition(ArmPivot.PRESET_L2_L3),
-        spinnyClaw.extakePower());
+        Commands.waitUntil(score),
+        elevator.setLevel(ElevatorSubsystem.LEVEL_THREE_POS),
+        spinnyClaw.holdExtakePower().withTimeout(0.15),
+        stow());
   }
 
   public Command levelTwo(BooleanSupplier score) {
     return Commands.sequence(
-        levelTwoPrescore(),
+        Commands.parallel(
+            elevator.setLevel(ElevatorSubsystem.LEVEL_TWO_PRE_POS),
+            armPivot.moveToPosition(ArmPivot.PRESET_UP),
+            spinnyClaw.stop()),
+        armPivot.moveToPosition(ArmPivot.PRESET_L2_L3),
         Commands.waitUntil(score),
-        levelTwoScore().alongWith(Commands.waitSeconds(0.2)),
+        elevator.setLevel(ElevatorSubsystem.LEVEL_TWO_POS),
+        spinnyClaw.holdExtakePower().withTimeout(0.15),
         stow());
   }
 

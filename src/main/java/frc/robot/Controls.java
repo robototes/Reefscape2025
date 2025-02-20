@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -159,6 +160,7 @@ public class Controls {
     operatorController
         .a()
         .onTrue(superStructure.levelOne(driverController.rightBumper()).withName("level 1"));
+    operatorController.rightBumper().onTrue(superStructure.stow().withName("Stow"));
     driverController.a().onTrue(superStructure.intake());
     if (sensors.armSensor != null) {
       sensors.armSensor.inTrough().onTrue(superStructure.intake());
@@ -172,11 +174,19 @@ public class Controls {
     RobotModeTriggers.disabled().onTrue(s.elevatorSubsystem.stop());
     // Controls binding goes here
     operatorController
-        .leftTrigger()
-        .whileTrue(s.elevatorSubsystem.goUpPower().withName("Power up"));
+        .leftTrigger(0.1)
+        .whileTrue(
+            s.elevatorSubsystem
+                .goUpPower(
+                    () -> MathUtil.applyDeadband(operatorController.getLeftTriggerAxis(), 0.1))
+                .withName("Power up"));
     operatorController
-        .rightTrigger()
-        .whileTrue(s.elevatorSubsystem.goDownPower().withName("Power down"));
+        .rightTrigger(0.1)
+        .whileTrue(
+            s.elevatorSubsystem
+                .goDownPower(
+                    () -> MathUtil.applyDeadband(operatorController.getRightTriggerAxis(), 0.1))
+                .withName("Power down"));
     // operatorController
     //     .leftTrigger()
     //     .whileTrue(s.elevatorSubsystem.sysIdDynamic(Direction.kForward));

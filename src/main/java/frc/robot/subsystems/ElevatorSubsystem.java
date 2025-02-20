@@ -17,13 +17,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Hardware;
 import java.util.function.DoubleConsumer;
+import java.util.function.DoubleSupplier;
 
 public class ElevatorSubsystem extends SubsystemBase {
   // Maximum is 38.34
   public static final double LEVEL_FOUR_PRE_POS = 37.5;
   public static final double LEVEL_FOUR_POS = 36.5;
-  public static final double LEVEL_THREE_POS = 13;
-  public static final double LEVEL_TWO_POS = 3.15;
+  public static final double LEVEL_THREE_PRE_POS = 16.8;
+  public static final double LEVEL_THREE_POS = 14;
+  public static final double LEVEL_TWO_PRE_POS = 3.15;
+  public static final double LEVEL_TWO_POS = 3;
   public static final double LEVEL_ONE_POS = 8.06;
   public static final double STOWED = 2;
   public static final double INTAKE = 0.1;
@@ -244,11 +247,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     return defer(() -> setLevel(getCurrentPosition() - MANUAL));
   }
 
-  public Command goUpPower() {
-    return startEnd(
+  public Command goUpPower(DoubleSupplier scale) {
+    return runEnd(
             () -> {
-              m_motor.setVoltage(UP_VOLTAGE);
-              m_motor2.setVoltage(-UP_VOLTAGE);
+              m_motor.setVoltage(scale.getAsDouble() * UP_VOLTAGE);
+              m_motor2.setVoltage(scale.getAsDouble() * -UP_VOLTAGE);
             },
             () -> {
               m_motor.stopMotor();
@@ -259,11 +262,11 @@ public class ElevatorSubsystem extends SubsystemBase {
         .withName("Elevator up power");
   }
 
-  public Command goDownPower() {
+  public Command goDownPower(DoubleSupplier scale) {
     return startEnd(
             () -> {
-              m_motor.setVoltage(DOWN_VOLTAGE);
-              m_motor2.setVoltage(-DOWN_VOLTAGE);
+              m_motor.setVoltage(scale.getAsDouble() * DOWN_VOLTAGE);
+              m_motor2.setVoltage(scale.getAsDouble() * -DOWN_VOLTAGE);
             },
             () -> {
               m_motor.stopMotor();
