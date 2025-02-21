@@ -163,7 +163,7 @@ public class AutoLogic {
 
   public static <T> String[] toStringArray(List<T> dataList) {
 
-    String[] data = new String[dataList.size()]; // TODO FIX INFINTELY REPEATING LIST
+    String[] data = new String[dataList.size()]; 
 
     for (int i = 0; i < dataList.size(); i++) {
 
