@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -16,7 +17,9 @@ import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.SuperStructure;
+import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
+import java.util.Map;
 
 public class Controls {
   private static final int DRIVER_CONTROLLER_PORT = 0;
@@ -36,13 +39,15 @@ public class Controls {
   private final Sensors sensors;
   private final SuperStructure superStructure;
 
+  private BranchHeight branchHeight = null;
+
   // Swerve stuff
   private double MaxSpeed =
       RobotType.getCurrent() == RobotType.BONK
           ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
           : CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-  private final double MAX_ACCELERATION = 1.0;
-  private final double MAX_ROTATION_ACCELERATION = 1.0;
+  private final double MAX_ACCELERATION = 50;
+  private final double MAX_ROTATION_ACCELERATION = 50;
   // kSpeedAt12Volts desired top speed
   private double MaxAngularRate =
       RotationsPerSecond.of(0.75)
@@ -102,15 +107,22 @@ public class Controls {
                   double dt = 0.02;
                   // Vx Vy and Omega are really accelerations and not velocities.
                   ChassisSpeeds acceleration = diff.div(dt);
-                  double translationAccelMagnitude =
-                      Math.hypot(acceleration.vxMetersPerSecond, acceleration.vyMetersPerSecond);
-                  ChassisSpeeds translationLimit =
-                      acceleration.times(Math.min(1, MAX_ACCELERATION / translationAccelMagnitude));
-                  ChassisSpeeds rotationLimit =
-                      translationLimit.times(
-                          Math.min(
-                              1,
-                              MAX_ROTATION_ACCELERATION / translationLimit.omegaRadiansPerSecond));
+                  // double translationAccelMagnitude =
+                  //     Math.hypot(acceleration.vxMetersPerSecond, acceleration.vyMetersPerSecond);
+                  // ChassisSpeeds translationLimit =
+                  //     acceleration.times(
+                  //         Math.min(1, Math.abs(MAX_ACCELERATION / translationAccelMagnitude)));
+                  // ChassisSpeeds rotationLimit =
+                  //     translationLimit.times(
+                  //         Math.min(
+                  //             1,
+                  //             Math.abs(
+                  //                 MAX_ROTATION_ACCELERATION
+                  //                     / translationLimit.omegaRadiansPerSecond)));
+                  // This *should* be rotationLimit, but the acceleration limiting causes the
+                  // commanded speed to fall into the deadband. The proper fix is to do the deadband
+                  // first, which relies on us doing the deadband ourselves, which is being
+                  // difficult.
                   ChassisSpeeds newSpeeds = speed.plus(acceleration.times(dt));
 
                   return drive
@@ -149,20 +161,38 @@ public class Controls {
     // operator start button used for climb - bound in climb bindings
     operatorController
         .y()
-        .onTrue(superStructure.levelFour(driverController.rightBumper()).withName("level 4"));
+        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_FOUR).withName("level 4"));
     operatorController
         .x()
-        .onTrue(superStructure.levelThree(driverController.rightBumper()).withName("level 3"));
+        .onTrue(
+            Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"));
     operatorController
         .b()
-        .onTrue(superStructure.levelTwo(driverController.rightBumper()).withName("level 2"));
+        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO).withName("level 2"));
     operatorController
         .a()
-        .onTrue(superStructure.levelOne(driverController.rightBumper()).withName("level 1"));
+        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE).withName("level 1"));
+    operatorController.rightBumper().onTrue(superStructure.stow().withName("Stow"));
     driverController.a().onTrue(superStructure.intake());
     if (sensors.armSensor != null) {
       sensors.armSensor.inTrough().onTrue(superStructure.intake());
     }
+    driverController
+        .leftBumper()
+        .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
+        .onTrue(
+            Commands.select(
+                    Map.of(
+                        BranchHeight.LEVEL_FOUR,
+                        superStructure.levelFour(driverController.rightBumper()),
+                        BranchHeight.LEVEL_THREE,
+                        superStructure.levelThree(driverController.rightBumper()),
+                        BranchHeight.LEVEL_TWO,
+                        superStructure.levelTwo(driverController.rightBumper()),
+                        BranchHeight.LEVEL_ONE,
+                        superStructure.levelOne(driverController.rightBumper())),
+                    () -> branchHeight)
+                .withName("go to target branch height"));
   }
 
   private void configureElevatorBindings() {
@@ -172,11 +202,19 @@ public class Controls {
     RobotModeTriggers.disabled().onTrue(s.elevatorSubsystem.stop());
     // Controls binding goes here
     operatorController
-        .leftTrigger()
-        .whileTrue(s.elevatorSubsystem.goUpPower().withName("Power up"));
+        .leftTrigger(0.1)
+        .whileTrue(
+            s.elevatorSubsystem
+                .goUpPower(
+                    () -> MathUtil.applyDeadband(operatorController.getLeftTriggerAxis(), 0.1))
+                .withName("Power up"));
     operatorController
-        .rightTrigger()
-        .whileTrue(s.elevatorSubsystem.goDownPower().withName("Power down"));
+        .rightTrigger(0.1)
+        .whileTrue(
+            s.elevatorSubsystem
+                .goDownPower(
+                    () -> MathUtil.applyDeadband(operatorController.getRightTriggerAxis(), 0.1))
+                .withName("Power down"));
     // operatorController
     //     .leftTrigger()
     //     .whileTrue(s.elevatorSubsystem.sysIdDynamic(Direction.kForward));
