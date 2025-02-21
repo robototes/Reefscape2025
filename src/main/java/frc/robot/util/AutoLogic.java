@@ -225,11 +225,11 @@ public class AutoLogic {
 
   public static Command lowerElevatorandWait() {
     
-    return Commands.sequence(lowerElevator(), new WaitCommand(1)).withName("lowerElevatorandWAIT");
+    return Commands.sequence( new WaitCommand(0.8),lowerElevator()).withName("lowerElevatorandWAIT");
   }
 
   public static Command raiseElevatorandWait() {
-    return Commands.sequence(raiseElevator(), new WaitCommand(1)).withName("raiseElevatorandWAIT");
+    return Commands.sequence(new WaitCommand(0.8),raiseElevator()).withName("raiseElevatorandWAIT");
   }
 
   public static void registerCommand() {

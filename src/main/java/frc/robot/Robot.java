@@ -39,6 +39,7 @@ public class Robot extends TimedRobot {
   public final SuperStructure superStructure;
 
 
+  @SuppressWarnings("unused")
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
 
@@ -88,7 +89,6 @@ public class Robot extends TimedRobot {
     DriverStation.silenceJoystickConnectionWarning(true);
     AutoLogic.initShuffleBoard();
     AutonomousField.initShuffleBoard("Field", 0, 0, this::addPeriodic);
-
     AutoLogic.registerCommand();
   }
 
