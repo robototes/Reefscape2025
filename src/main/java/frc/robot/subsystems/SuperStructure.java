@@ -60,23 +60,16 @@ public class SuperStructure {
         stow());
   }
 
-  public Command levelOnePrescore() {
-    return Commands.parallel(
-        elevator.setLevel(ElevatorSubsystem.LEVEL_ONE_POS),
-        armPivot.moveToPosition(ArmPivot.PRESET_L1),
-        spinnyClaw.stop());
-  }
-
-  public Command levelOneScore() {
-    return Commands.parallel(
-        elevator.setLevel(ElevatorSubsystem.STOWED),
-        armPivot.moveToPosition(ArmPivot.PRESET_L1),
-        spinnyClaw.extakePower());
-  }
-
   public Command levelOne(BooleanSupplier score) {
     return Commands.sequence(
-        levelOnePrescore(), Commands.waitUntil(score), levelOneScore(), stow());
+        Commands.parallel(
+            elevator.setLevel(ElevatorSubsystem.LEVEL_ONE_POS),
+            armPivot.moveToPosition(ArmPivot.PRESET_L1),
+            spinnyClaw.stop()),
+        Commands.waitUntil(score),
+        elevator.setLevel(ElevatorSubsystem.LEVEL_TWO_POS),
+        spinnyClaw.holdExtakePower().withTimeout(0.15),
+        stow());
   }
 
   public Command stow() {
