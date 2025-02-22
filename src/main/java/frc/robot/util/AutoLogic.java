@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
-import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import java.io.IOException;
 import java.util.List;
@@ -148,14 +147,10 @@ public class AutoLogic {
         .withPosition(3, 1)
         .withSize(2, 1);
 
-
-
-        tab.add("Tested Autos", testedAutos )
+    tab.add("Tested Autos", testedAutos)
         .withWidget(BuiltInWidgets.kComboBoxChooser)
         .withPosition(3, 0)
         .withSize(2, 1);
-        
-   
 
     autoAction.setDefaultOption("EXTEND AND WAIT", "raiseElevatorandWait");
     autoAction.addOption("EXTEND WHILE MOVING", "raiseElevator");
@@ -163,7 +158,7 @@ public class AutoLogic {
 
   public static <T> String[] toStringArray(List<T> dataList) {
 
-    String[] data = new String[dataList.size()]; 
+    String[] data = new String[dataList.size()];
 
     for (int i = 0; i < dataList.size(); i++) {
 
@@ -199,16 +194,14 @@ public class AutoLogic {
     autoPicker.addOption("CHOREO 3 PIECE LESS CRAZY?(IGNORE)", "Triple7");
     autoPicker.addOption("High 1 L4", "SideToJ");
     autoPicker.addOption("CHOREO High 4 L4(IGNORE)", "HighL4");
+    autoPicker.addOption("TESTING Low 3 Piece", "TEST Low3Piece");
   }
 
-
-  public static void addTestedAutos() {
-
-  }
+  public static void addTestedAutos() {}
 
   public static Command lowerElevator() {
     if (Robot.getInstance().superStructure != null) {
-    return Robot.getInstance().superStructure.intake();
+      return Robot.getInstance().superStructure.intake();
     }
     return Commands.none().withName("lowerElevator");
   }
@@ -216,20 +209,19 @@ public class AutoLogic {
   public static Command raiseElevator() {
     if (Robot.getInstance().superStructure != null) {
       return Robot.getInstance().superStructure.levelFour(() -> true);
-      }
-      return Commands.none().withName("raiseElevator");
-   
+    }
+    return Commands.none().withName("raiseElevator");
   }
 
-  
-
   public static Command lowerElevatorandWait() {
-    
-    return Commands.sequence( new WaitCommand(0.8),lowerElevator()).withName("lowerElevatorandWAIT");
+
+    return Commands.sequence(new WaitCommand(0.8), lowerElevator())
+        .withName("lowerElevatorandWAIT");
   }
 
   public static Command raiseElevatorandWait() {
-    return Commands.sequence(new WaitCommand(0.8),raiseElevator()).withName("raiseElevatorandWAIT");
+    return Commands.sequence(new WaitCommand(0.8), raiseElevator())
+        .withName("raiseElevatorandWAIT");
   }
 
   public static void registerCommand() {

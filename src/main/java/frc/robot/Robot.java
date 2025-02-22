@@ -13,11 +13,11 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.util.AutoLogic;
-import frc.robot.util.AutonomousField;
 import frc.robot.Sensors.SensorConstants;
 import frc.robot.Subsystems.SubsystemConstants;
 import frc.robot.subsystems.SuperStructure;
+import frc.robot.util.AutoLogic;
+import frc.robot.util.AutonomousField;
 import frc.robot.util.BuildInfo;
 import frc.robot.util.RobotType;
 import java.util.List;
@@ -37,7 +37,6 @@ public class Robot extends TimedRobot {
   public final Sensors sensors;
   public List<Pose2d> pathPoses;
   public final SuperStructure superStructure;
-
 
   @SuppressWarnings("unused")
   protected Robot() {
