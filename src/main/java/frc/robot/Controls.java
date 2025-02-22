@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -12,8 +11,8 @@ import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.util.RobotType;
 import frc.robot.subsystems.auto.AutoAlign;
+import frc.robot.util.RobotType;
 
 public class Controls {
   private static final int DRIVER_CONTROLLER_PORT = 0;
@@ -196,23 +195,18 @@ public class Controls {
     if (s.drivebaseSubsystem == null) {
       return;
     }
-    driverController
-        .leftBumper()
-        .onTrue(
-            AutoAlign.autoAlign(
-                s.drivebaseSubsystem));
+    driverController.leftBumper().onTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
   }
 
   public void vibrateDriveController(double vibration) {
-		if (!DriverStation.isAutonomous()) {
-			driverController.getHID().setRumble(RumbleType.kBothRumble, vibration);
-		}
-	}
+    if (!DriverStation.isAutonomous()) {
+      driverController.getHID().setRumble(RumbleType.kBothRumble, vibration);
+    }
+  }
 
-	public void vibrateCoDriveController(double vibration) {
-		if (!DriverStation.isAutonomous()) {
-			operatorController.getHID().setRumble(RumbleType.kBothRumble, vibration);
-		}
-	}
-
+  public void vibrateCoDriveController(double vibration) {
+    if (!DriverStation.isAutonomous()) {
+      operatorController.getHID().setRumble(RumbleType.kBothRumble, vibration);
+    }
+  }
 }

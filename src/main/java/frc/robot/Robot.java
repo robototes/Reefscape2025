@@ -84,14 +84,14 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-		Shuffleboard.startRecording();
+    Shuffleboard.startRecording();
     AutoLogic.registerCommands();
     AutoLogic.initShuffleBoard();
-		DriverStation.silenceJoystickConnectionWarning(!DriverStation.isFMSAttached());
-		if (AutoLogic.getSelectedAuto() != null && SubsystemConstants.DRIVEBASE_ENABLED) {
-			AutoLogic.getSelectedAuto().schedule();
-		}
-	}
+    DriverStation.silenceJoystickConnectionWarning(!DriverStation.isFMSAttached());
+    if (AutoLogic.getSelectedAuto() != null && SubsystemConstants.DRIVEBASE_ENABLED) {
+      AutoLogic.getSelectedAuto().schedule();
+    }
+  }
 
   @Override
   public void autonomousExit() {
