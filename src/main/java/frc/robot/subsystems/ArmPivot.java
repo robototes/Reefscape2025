@@ -31,7 +31,7 @@ public class ArmPivot extends SubsystemBase {
   private final double ARMPIVOT_KV = 0.69;
   private final double ARMPIVOT_KG = 0.18;
   private final double ARMPIVOT_KA = 0.0;
-  public static final double PRESET_L1 = 0; // This is at position perpendicular to elevator
+  public static final double PRESET_L1 = -1.0 / 16; // This is at position perpendicular to elevator
   public static final double PRESET_L2_L3 = Units.degreesToRotations(55);
   public static final double PRESET_L4 = 0.0;
   public static final double PRESET_PRE_L4 = 1.0 / 16.0;
