@@ -224,6 +224,11 @@ public class AutoLogic {
         .withName("raiseElevatorandWAIT");
   }
 
+  public static Command autoAlignmentCommand() {
+    return Commands.sequence(new WaitCommand(0.8), raiseElevator())
+        .withName("raiseElevatorandWAIT");
+  }
+
   public static void registerCommand() {
 
     if (RobotState.isDisabled()) {

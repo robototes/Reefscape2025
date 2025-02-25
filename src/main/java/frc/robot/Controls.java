@@ -13,6 +13,7 @@ import frc.robot.generated.TestBaseTunerConstants;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.SuperStructure;
+import frc.robot.util.AutoAlign;
 import frc.robot.util.RobotType;
 
 public class Controls {
@@ -34,14 +35,14 @@ public class Controls {
   private final SuperStructure superStructure;
 
   // Swerve stuff
-  private double MaxSpeed =
+  public static double MaxSpeed =
       RobotType.getCurrent() == RobotType.BONK
           ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
           : RobotType.getCurrent() == RobotType.TESTBASE
               ? TestBaseTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
               : CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   // kSpeedAt12Volts desired top speed
-  private double MaxAngularRate =
+  public static double MaxAngularRate =
       RotationsPerSecond.of(0.75)
           .in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
@@ -72,6 +73,7 @@ public class Controls {
     configureSpinnyClawBindings();
     configureSuperStructureBindings();
     configureElevatorLEDBindings();
+    configureAlignBindings();
   }
 
   private void configureDrivebaseBindings() {
@@ -125,6 +127,12 @@ public class Controls {
     if (sensors.armSensor != null) {
       sensors.armSensor.inTrough().onTrue(superStructure.intake());
     }
+  }
+  private void configureAlignBindings() {
+    if (s.drivebaseSubsystem == null) {
+      return;
+    }
+    driverController.leftBumper().onTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
   }
 
   private void configureElevatorBindings() {
