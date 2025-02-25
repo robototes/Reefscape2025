@@ -7,6 +7,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -18,7 +20,7 @@ import frc.robot.Hardware;
 
 public class ClimbPivot extends SubsystemBase {
 
-  private final TalonFX climbPivotMotorOne;
+  private final TalonFX climbPivotMotorOne;   
   private final TalonFX climbPivotMotorTwo;
   private final DigitalInput climbSensor;
   // entry for isClimbIn/out
@@ -33,6 +35,10 @@ public class ClimbPivot extends SubsystemBase {
   private boolean isClimbOut = false;
   private boolean isClimbIn = true;
   private boolean nextMoveOut = true;
+
+  //alerts
+  private final Alert NotConnectedError = new Alert("Climb", "Motor 1 not connected", AlertType.kError);
+  private final Alert NotConnectedError2 = new Alert("Climb", "Motor 2 not connected", AlertType.kError);
 
   public ClimbPivot() {
     climbPivotMotorOne = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_ONE_ID);
@@ -148,5 +154,7 @@ public class ClimbPivot extends SubsystemBase {
     } else {
       isClimbIn = false;
     }
+    NotConnectedError.set(!climbPivotMotorOne.getMotorVoltage().hasUpdated());
+    NotConnectedError.set(!climbPivotMotorTwo.getMotorVoltage().hasUpdated());
   }
 }
