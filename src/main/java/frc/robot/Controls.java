@@ -77,11 +77,11 @@ public class Controls {
     this.sensors = sensors;
     this.superStructure = superStructure;
     configureDrivebaseBindings();
+    configureSuperStructureBindings();
     configureElevatorBindings();
     configureArmPivotBindings();
     configureClimbPivotBindings();
     configureSpinnyClawBindings();
-    configureSuperStructureBindings();
     configureElevatorLEDBindings();
   }
 
@@ -351,7 +351,7 @@ public class Controls {
         .start()
         .onTrue(s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.rainbowAnim));
     if (s.elevatorSubsystem != null) {
-      Trigger hasBeen0ed = new Trigger(s.elevatorSubsystem::getHasBeen0ed);
+      Trigger hasBeen0ed = new Trigger(s.elevatorSubsystem::getHasBeenZeroed);
       Commands.waitSeconds(1)
           .andThen(
               s.elevatorLEDSubsystem.colorSet(50, 0, 0).withName("LED red").ignoringDisable(true))
