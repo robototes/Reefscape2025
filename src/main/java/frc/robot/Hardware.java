@@ -5,6 +5,9 @@ public class Hardware {
 
   // Swerve: 1-12
 
+  // LEDs [15-19]
+  public static final int ELEVATOR_LED = 15;
+
   // elevator [20-24]
   public static final int ELEVATOR_MOTOR_ONE = 20;
   public static final int ELEVATOR_MOTOR_TWO = 21;
@@ -15,6 +18,7 @@ public class Hardware {
 
   // arm pivot [30-34]
   public static final int ARM_PIVOT_MOTOR_ID = 30;
+  public static final int ARM_PIVOT_CANDI_ID = 31;
 
   // climb [50-59]
   public static final int CLIMB_PIVOT_MOTOR_ONE_ID = 50;

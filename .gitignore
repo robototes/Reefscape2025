@@ -186,3 +186,6 @@ compile_commands.json
 
 # Eclipse generated file for annotation processors
 .factorypath
+
+# Generated build info file
+src/main/deploy/build-info.txt

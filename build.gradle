@@ -1,7 +1,7 @@
 plugins {
     id "java"
     id "com.diffplug.spotless" version "6.20.0"
-    id "edu.wpi.first.GradleRIO" version "2025.2.1"
+    id "edu.wpi.first.GradleRIO" version "2025.3.1"
     id "net.ltgt.errorprone" version "4.0.1"
 
 }
@@ -19,6 +19,8 @@ def getProjectBooleanProperty(String name, boolean defaultValue = false) {
     // Values that are not "true" or "false" (including null) are treated as false
     return Boolean.parseBoolean(project.getProperty(name))
 }
+
+apply from: "${rootDir}/buildinfo.gradle"
 
 def ROBOT_MAIN_CLASS = getProjectBooleanProperty('automatedTest') ? "frc.robot.test.AutomatedTestMain" : "frc.robot.Main"
 
