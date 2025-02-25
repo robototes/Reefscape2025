@@ -17,6 +17,8 @@ import java.util.function.Supplier;
 public class SpinnyClaw extends SubsystemBase {
   public static final double INTAKE_SPEED = -4;
   public static final double EXTAKE_SPEED = 2;
+  public static final double ALGAE_INTAKE_SPEED = -2; //untested
+  public static final double ALGAE_EXTAKE_SPEED = 2; //untested
   // Remove once we implement PID speed
   public static int placeholderPIDSpeed;
 
@@ -66,6 +68,14 @@ public class SpinnyClaw extends SubsystemBase {
     return runOnce(() -> motor.setVoltage(EXTAKE_SPEED)).withName("Extake power");
   }
 
+  public Command algaeIntakePower() {
+    return runOnce(() -> motor.setVoltage(ALGAE_INTAKE_SPEED)).withName("Algae Intake power");
+  }
+
+  public Command algaeExtakePower() {
+    return runOnce(() -> motor.setVoltage(ALGAE_EXTAKE_SPEED)).withName("Algae Extake power");
+  }
+
   public Command holdIntakePower() {
     return startEnd(() -> motor.setVoltage(INTAKE_SPEED), () -> motor.stopMotor())
         .withName("Hold intake power");
@@ -75,6 +85,13 @@ public class SpinnyClaw extends SubsystemBase {
     return startEnd(() -> motor.setVoltage(EXTAKE_SPEED), () -> motor.stopMotor())
         .withName("Hold extake power");
   }
+
+  /* 
+  public Command algaeHoldIntakePower() { // tbh idk if it works
+    return startEnd(() -> motor.setVoltage(ALGAE_INTAKE_SPEED), () -> motor.stopMotor())
+        .withName("Algae hold intake power");
+  }
+  */
 
   public Command stop() {
     return runOnce(() -> motor.stopMotor()).withName("Spinny claw stop");

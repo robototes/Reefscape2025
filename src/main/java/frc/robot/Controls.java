@@ -315,6 +315,18 @@ public class Controls {
     operatorController
         .povRight()
         .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_OUT).withName("ArmPivotOut"));
+    armPivotSpinnyClawController
+        .leftBumper()
+        .onTrue(
+            s.armPivotSubsystem.moveToPosition(ArmPivot.ALGAE_REMOVE).withName("SetAlgaePresetRemove"));
+    armPivotSpinnyClawController
+        .rightBumper()
+        .onTrue(
+            s.armPivotSubsystem.moveToPosition(ArmPivot.ALGAE_SCORE).withName("SetAlgaePresetScore"));
+    armPivotSpinnyClawController
+        .povDown()
+        .onTrue(
+            s.armPivotSubsystem.moveToPosition(ArmPivot.ALGAE_STOWED).withName("SetAlgaePresetStowed"));
   }
 
   private void configureClimbPivotBindings() {
