@@ -70,7 +70,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_motor = new TalonFX(Hardware.ELEVATOR_MOTOR_ONE, "Drivebase");
     m_motor2 = new TalonFX(Hardware.ELEVATOR_MOTOR_TWO, "Drivebase");
     motorConfigs();
-    m_motor2.setControl(new Follower(m_motor.getDeviceID(), true));
 
     Shuffleboard.getTab("Elevator").addDouble("Motor Current Position", () -> getCurrentPosition());
     Shuffleboard.getTab("Elevator").addDouble("Target Position", () -> getTargetPosition());
