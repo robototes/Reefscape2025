@@ -70,7 +70,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_motor = new TalonFX(Hardware.ELEVATOR_MOTOR_ONE, "Drivebase");
     m_motor2 = new TalonFX(Hardware.ELEVATOR_MOTOR_TWO, "Drivebase");
     motorConfigs();
-    m_motor2.setControl(new Follower(m_motor.getDeviceID(), true));
 
     // Publish Mechanism2d to SmartDashboard
     // To view the Elevator visualization, select Network Tables -> SmartDashboard -> Elevator Sim

@@ -13,6 +13,7 @@ import java.util.function.BooleanSupplier;
 public class ArmSensor {
 
   private final LaserCan mainSensor;
+  // Sensor reads in meters, is converted to milimeters in code?
   private static final double TROUGH_LOWER_LIMIT = 250; // untested guess value (in millimeters)
   private static final double TROUGH_UPPER_LIMIT = 350; // untested guess value
   private static final double CLAW_LOWER_LIMIT = 30; // untested guess value
