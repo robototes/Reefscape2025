@@ -33,7 +33,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double PRE_INTAKE = 2;
   public static final double MANUAL = 0.1;
   private static final double POS_TOLERANCE = 0.1;
-  private final double ELEVATOR_KP = 13.804; // add feedfwds for each stage?
+  private final double ELEVATOR_KP = 13.804;
   private final double ELEVATOR_KI = 0;
   private final double ELEVATOR_KD = 0.079221;
   private final double ELEVATOR_KS = 0.33878;
@@ -72,9 +72,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     motorConfigs();
     m_motor2.setControl(new Follower(m_motor.getDeviceID(), true));
 
-    // Publish Mechanism2d to SmartDashboard
-    // To view the Elevator visualization, select Network Tables -> SmartDashboard -> Elevator Sim
-    // SmartDashboard.putData("Elevator Sim", m_mech2d);
     Shuffleboard.getTab("Elevator").addDouble("Motor Current Position", () -> getCurrentPosition());
     Shuffleboard.getTab("Elevator").addDouble("Target Position", () -> getTargetPosition());
     Shuffleboard.getTab("Elevator")
@@ -115,7 +112,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_motor2.setVoltage(-drive.in(Units.Volts));
   }
 
-  public void logMotors(SysIdRoutineLog log) { // in theory this should work?
+  public void logMotors(SysIdRoutineLog log) {
     log.motor("elevator-motor")
         .voltage(
             m_appliedVoltage.mut_replace(
@@ -154,13 +151,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     configuration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_SOFT_LIMIT;
 
     // set slot 0 gains
-    configuration.Slot0.kS = ELEVATOR_KS; // Add 0.25 V output to overcome static friction
-    configuration.Slot0.kV = ELEVATOR_KV; // A velocity target of 1 rps results in 0.12 V output
-    configuration.Slot0.kA = ELEVATOR_KA; // An acceleration of 1 rps/s requires 0.01 V output
-    configuration.Slot0.kP =
-        ELEVATOR_KP; // A position error of 2.5 rotations results in 12 V output
-    configuration.Slot0.kI = ELEVATOR_KI; // no output for integrated error
-    configuration.Slot0.kD = ELEVATOR_KD; // A velocity error of 1 rps results in 0.1 V output
+    configuration.Slot0.kS = ELEVATOR_KS;
+    configuration.Slot0.kV = ELEVATOR_KV;
+    configuration.Slot0.kA = ELEVATOR_KA;
+    configuration.Slot0.kP = ELEVATOR_KP;
+    configuration.Slot0.kI = ELEVATOR_KI;
+    configuration.Slot0.kD = ELEVATOR_KD;
 
     // set Motion Magic settings
     // Bottom to full: ~40 rotations

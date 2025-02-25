@@ -31,13 +31,13 @@ public class ArmPivot extends SubsystemBase {
   private final double ARMPIVOT_KV = 0.69;
   private final double ARMPIVOT_KG = 0.18;
   private final double ARMPIVOT_KA = 0.0;
-  public static final double PRESET_L1 = -1.0 / 16; // This is at position perpendicular to elevator
+  public static final double PRESET_L1 = -1.0 / 16;
   public static final double PRESET_L2_L3 = Units.degreesToRotations(55);
   public static final double PRESET_L4 = 0.0;
   public static final double PRESET_PRE_L4 = 1.0 / 16.0;
   public static final double PRESET_STOWED = 0.125;
   public static final double PRESET_OUT = 0;
-  public static final double PRESET_UP = 0.25; // Pointing Directly upwards
+  public static final double PRESET_UP = 0.25; // Pointing directly upwards
   public static final double PRESET_DOWN = -0.25;
   public static final double HARDSTOP_HIGH = 0.32;
   public static final double HARDSTOP_LOW = -0.26;
@@ -47,9 +47,6 @@ public class ArmPivot extends SubsystemBase {
   private static final double ARM_RATIO = (12.0 / 60.0) * (20.0 / 60.0) * (18.0 / 48.0);
   // create a Motion Magic request, voltage output
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
-
-  // Remove once we implement PID speed
-  public static int placeholderPIDSpeed;
 
   // TalonFX
   private final TalonFX motor;
@@ -103,15 +100,6 @@ public class ArmPivot extends SubsystemBase {
 
   // preset command placeholder
   public Command moveToPosition(double position) {
-    /*
-     * if (position <= HARDSTOP_LOW) {
-     * position = HARDSTOP_LOW + POS_TOLERANCE;
-     * } else if (position >= HARDSTOP_HIGH) {
-     * position = HARDSTOP_HIGH - POS_TOLERANCE;
-     * }
-     */
-    // Initilizing variable to use within following Lambda
-    // double
     return setTargetPosition(position)
         .andThen(
             Commands.waitUntil(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE));
@@ -154,22 +142,22 @@ public class ArmPivot extends SubsystemBase {
 
     // PID
     // set slot 0 gains
-    talonFXConfiguration.Slot0.kS = ARMPIVOT_KS; // Add 0.25 V output to overcome static friction
+    talonFXConfiguration.Slot0.kS = ARMPIVOT_KS;
     talonFXConfiguration.Slot0.kV =
-        ARMPIVOT_KV; // A velocity target of 1 rps results in 0.12 V output
+        ARMPIVOT_KV;
     talonFXConfiguration.Slot0.kA =
-        ARMPIVOT_KA; // An acceleration of 1 rps/s requires 0.01 V output
+        ARMPIVOT_KA;
     talonFXConfiguration.Slot0.kP =
-        ARMPIVOT_KP; // A position error of 2.5 rotations results in 12 V output
-    talonFXConfiguration.Slot0.kI = ARMPIVOT_KI; // no output for integrated error
+        ARMPIVOT_KP;
+    talonFXConfiguration.Slot0.kI = ARMPIVOT_KI;
     talonFXConfiguration.Slot0.kD =
-        ARMPIVOT_KD; // A velocity error of 1 rps results in 0.1 V output
-    talonFXConfiguration.Slot0.kG = ARMPIVOT_KG; // Gravity feedforward
+        ARMPIVOT_KD;
+    talonFXConfiguration.Slot0.kG = ARMPIVOT_KG;
     talonFXConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
     // set Motion Magic settings in rps not mechanism units
     talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity =
-        (80); // Target cruise velocity of 80 rps
+        80; // Target cruise velocity of 80 rps
     talonFXConfiguration.MotionMagic.MotionMagicAcceleration =
         160; // Target acceleration of 160 rps/s (0.5 seconds)
     talonFXConfiguration.MotionMagic.MotionMagicJerk =

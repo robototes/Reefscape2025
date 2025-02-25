@@ -321,7 +321,6 @@ public class Controls {
     if (s.climbPivotSubsystem == null) {
       return;
     }
-    // Idk if this is great code or horrible code
     climbTestController.back().onTrue(s.climbPivotSubsystem.toggleClimb());
     climbTestController.start().onTrue(s.climbPivotSubsystem.zeroClimb());
   }
@@ -341,9 +340,6 @@ public class Controls {
     if (s.elevatorLEDSubsystem == null) {
       return;
     }
-
-    // s.elevatorLEDSubsystem.setDefaultCommand(
-    // s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.rainbowAnim));
     operatorController
         .back()
         .onTrue(s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.larsonAnim));
