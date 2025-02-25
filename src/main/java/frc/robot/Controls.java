@@ -42,6 +42,8 @@ public class Controls {
   private final SuperStructure superStructure;
 
   private BranchHeight branchHeight = null;
+  private boolean slowMode;
+
 
   // Swerve stuff
   private double MaxSpeed =
@@ -66,136 +68,146 @@ public class Controls {
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
-
-  public Controls(Subsystems s, Sensors sensors, SuperStructure superStructure) {
-    driverController = new CommandXboxController(DRIVER_CONTROLLER_PORT);
-    operatorController = new CommandXboxController(OPERATOR_CONTROLLER_PORT);
-    armPivotSpinnyClawController = new CommandXboxController(ARM_PIVOT_SPINNY_CLAW_CONTROLLER_PORT);
-    elevatorTestController = new CommandXboxController(ELEVATOR_CONTROLLER_PORT);
-    climbTestController = new CommandXboxController(CLIMB_TEST_CONTROLLER_PORT);
-    this.s = s;
-    this.sensors = sensors;
-    this.superStructure = superStructure;
-    configureDrivebaseBindings();
-    configureElevatorBindings();
-    configureArmPivotBindings();
-    configureClimbPivotBindings();
-    configureSpinnyClawBindings();
-    configureSuperStructureBindings();
-    configureElevatorLEDBindings();
-  }
-
-  private void configureDrivebaseBindings() {
-    if (s.drivebaseSubsystem == null) {
-      // Stop running this method
-      return;
+  
+    public Controls(Subsystems s, Sensors sensors, SuperStructure superStructure) {
+      driverController = new CommandXboxController(DRIVER_CONTROLLER_PORT);
+      operatorController = new CommandXboxController(OPERATOR_CONTROLLER_PORT);
+      armPivotSpinnyClawController = new CommandXboxController(ARM_PIVOT_SPINNY_CLAW_CONTROLLER_PORT);
+      elevatorTestController = new CommandXboxController(ELEVATOR_CONTROLLER_PORT);
+      climbTestController = new CommandXboxController(CLIMB_TEST_CONTROLLER_PORT);
+      this.s = s;
+      this.sensors = sensors;
+      this.superStructure = superStructure;
+      configureDrivebaseBindings();
+      configureElevatorBindings();
+      configureArmPivotBindings();
+      configureClimbPivotBindings();
+      configureSpinnyClawBindings();
+      configureSuperStructureBindings();
+      configureElevatorLEDBindings();
     }
-    // Note that X is defined as forward according to WPILib convention,
-    // and Y is defined as to the left according to WPILib convention.
-    s.drivebaseSubsystem.setDefaultCommand(
-        // s.drivebaseSubsystem will execute this command periodically
-        s.drivebaseSubsystem
-            .applyRequest(
-                () -> {
-                  ChassisSpeeds speed = s.drivebaseSubsystem.returnSpeeds();
-                  ChassisSpeeds targetSpeeds =
-                      new ChassisSpeeds(
-                          -driverController.getLeftY()
-                              * MaxSpeed, // Drive forward with negative Y (forward)
-                          -driverController.getLeftX()
-                              * MaxSpeed, // Drive left with negative X (left)
-                          -driverController.getRightX()
-                              * MaxAngularRate); // Drive counterclockwise with negative X (left)
-                  ChassisSpeeds diff = targetSpeeds.minus(speed);
-                  double dt = 0.02;
-                  // Vx Vy and Omega are really accelerations and not velocities.
-                  ChassisSpeeds acceleration = diff.div(dt);
-                  // double translationAccelMagnitude =
-                  //     Math.hypot(acceleration.vxMetersPerSecond, acceleration.vyMetersPerSecond);
-                  // ChassisSpeeds translationLimit =
-                  //     acceleration.times(
-                  //         Math.min(1, Math.abs(MAX_ACCELERATION / translationAccelMagnitude)));
-                  // ChassisSpeeds rotationLimit =
-                  //     translationLimit.times(
-                  //         Math.min(
-                  //             1,
-                  //             Math.abs(
-                  //                 MAX_ROTATION_ACCELERATION
-                  //                     / translationLimit.omegaRadiansPerSecond)));
-                  // This *should* be rotationLimit, but the acceleration limiting causes the
-                  // commanded speed to fall into the deadband. The proper fix is to do the deadband
-                  // first, which relies on us doing the deadband ourselves, which is being
-                  // difficult.
-                  ChassisSpeeds newSpeeds = speed.plus(acceleration.times(dt));
-
-                  return drive
-                      .withVelocityX(newSpeeds.vxMetersPerSecond)
-                      .withVelocityY(newSpeeds.vyMetersPerSecond)
-                      .withRotationalRate(newSpeeds.omegaRadiansPerSecond);
-                })
-            .withName("Drive"));
-    s.drivebaseSubsystem
-        .applyRequest(() -> brake)
-        .ignoringDisable(true)
-        .withName("Brake")
-        .schedule();
-
-    // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
-    // brake));
-    // driveController.b().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
-    // point.withModuleDirection(new Rotation2d(-driveController.getLeftY(),
-    // -driveController.getLeftX()))
-    // ));
-
-    // reset the field-centric heading on back button press
-    driverController
-        .back()
-        .onTrue(
-            s.drivebaseSubsystem
-                .runOnce(() -> s.drivebaseSubsystem.seedFieldCentric())
-                .withName("Reset gyro"));
-    s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
-  }
-
-  private void configureSuperStructureBindings() {
-    if (superStructure == null) {
-      return;
+  
+    private void configureDrivebaseBindings() {
+      if (s.drivebaseSubsystem == null) {
+        // Stop running this method
+        return;
+      }
+      // Note that X is defined as forward according to WPILib convention,
+      // and Y is defined as to the left according to WPILib convention.
+      s.drivebaseSubsystem.setDefaultCommand(
+          // s.drivebaseSubsystem will execute this command periodically
+          s.drivebaseSubsystem
+              .applyRequest(
+                  () -> {
+                    ChassisSpeeds speed = s.drivebaseSubsystem.returnSpeeds();
+                    ChassisSpeeds targetSpeeds =
+                        new ChassisSpeeds(
+                            -driverController.getLeftY()
+                                * MaxSpeed * (slowMode ? 0.5 : 1), // Drive forward with negative Y (forward)
+                            -driverController.getLeftX()
+                                * MaxSpeed * (slowMode ? 0.5 : 1), // Drive left with negative X (left)
+                            -driverController.getRightX()
+                                * MaxAngularRate * (slowMode ? 0.5 : 1)); // Drive counterclockwise with negative X (left)
+                    ChassisSpeeds diff = targetSpeeds.minus(speed);
+                    double dt = 0.02;
+                    // Vx Vy and Omega are really accelerations and not velocities.
+                    ChassisSpeeds acceleration = diff.div(dt);
+                    // double translationAccelMagnitude =
+                    //     Math.hypot(acceleration.vxMetersPerSecond, acceleration.vyMetersPerSecond);
+                    // ChassisSpeeds translationLimit =
+                    //     acceleration.times(
+                    //         Math.min(1, Math.abs(MAX_ACCELERATION / translationAccelMagnitude)));
+                    // ChassisSpeeds rotationLimit =
+                    //     translationLimit.times(
+                    //         Math.min(
+                    //             1,
+                    //             Math.abs(
+                    //                 MAX_ROTATION_ACCELERATION
+                    //                     / translationLimit.omegaRadiansPerSecond)));
+                    // This *should* be rotationLimit, but the acceleration limiting causes the
+                    // commanded speed to fall into the deadband. The proper fix is to do the deadband
+                    // first, which relies on us doing the deadband ourselves, which is being
+                    // difficult.
+                    ChassisSpeeds newSpeeds = speed.plus(acceleration.times(dt));
+  
+                    return drive
+                        .withVelocityX(newSpeeds.vxMetersPerSecond)
+                        .withVelocityY(newSpeeds.vyMetersPerSecond)
+                        .withRotationalRate(newSpeeds.omegaRadiansPerSecond);
+                  })
+              .withName("Drive"));
+      s.drivebaseSubsystem
+          .applyRequest(() -> brake)
+          .ignoringDisable(true)
+          .withName("Brake")
+          .schedule();
+  
+      // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
+      // brake));
+      // driveController.b().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
+      // point.withModuleDirection(new Rotation2d(-driveController.getLeftY(),
+      // -driveController.getLeftX()))
+      // ));
+  
+      // reset the field-centric heading on back button press
+      driverController
+          .back()
+          .onTrue(
+              s.drivebaseSubsystem
+                  .runOnce(() -> s.drivebaseSubsystem.seedFieldCentric())
+                  .withName("Reset gyro"));
+      s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
+      driverController
+      .start()
+      .whileTrue(
+          Commands.startEnd(
+              () -> {
+                slowMode = true;
+            },
+            () -> {
+              slowMode = false;
+            }));
     }
-    // operator start button used for climb - bound in climb bindings
-    operatorController
-        .y()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_FOUR).withName("level 4"));
-    operatorController
-        .x()
-        .onTrue(
-            Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"));
-    operatorController
-        .b()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO).withName("level 2"));
-    operatorController
-        .a()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE).withName("level 1"));
-    operatorController.rightBumper().onTrue(superStructure.stow().withName("Stow"));
-    driverController.a().onTrue(superStructure.intake());
-    if (sensors.armSensor != null) {
-      sensors.armSensor.inTrough().onTrue(superStructure.intake());
-    }
-    driverController
-        .leftBumper()
-        .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
-        .onTrue(
-            Commands.select(
-                    Map.of(
-                        BranchHeight.LEVEL_FOUR,
-                        superStructure.levelFour(driverController.rightBumper()),
-                        BranchHeight.LEVEL_THREE,
-                        superStructure.levelThree(driverController.rightBumper()),
-                        BranchHeight.LEVEL_TWO,
-                        superStructure.levelTwo(driverController.rightBumper()),
-                        BranchHeight.LEVEL_ONE,
-                        superStructure.levelOne(driverController.rightBumper())),
-                    () -> branchHeight)
-                .withName("go to target branch height"));
+  
+    private void configureSuperStructureBindings() {
+      if (superStructure == null) {
+        return;
+      }
+      // operator start button used for climb - bound in climb bindings
+      operatorController
+          .y()
+          .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_FOUR).withName("level 4"));
+      operatorController
+          .x()
+          .onTrue(
+              Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"));
+      operatorController
+          .b()
+          .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO).withName("level 2"));
+      operatorController
+          .a()
+          .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE).withName("level 1"));
+      operatorController.rightBumper().onTrue(superStructure.stow().withName("Stow"));
+      driverController.a().onTrue(superStructure.intake());
+      if (sensors.armSensor != null) {
+        sensors.armSensor.inTrough().onTrue(superStructure.intake());
+      }
+      driverController
+          .leftBumper()
+          .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
+          .onTrue(
+              Commands.select(
+                      Map.of(
+                          BranchHeight.LEVEL_FOUR,
+                          superStructure.levelFour(driverController.rightBumper()),
+                          BranchHeight.LEVEL_THREE,
+                          superStructure.levelThree(driverController.rightBumper()),
+                          BranchHeight.LEVEL_TWO,
+                          superStructure.levelTwo(driverController.rightBumper()),
+                          BranchHeight.LEVEL_ONE,
+                          superStructure.levelOne(driverController.rightBumper())),
+                      () -> branchHeight)
+                  .withName("go to target branch height"));
   }
 
   private void configureElevatorBindings() {
