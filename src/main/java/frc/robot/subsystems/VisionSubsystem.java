@@ -22,10 +22,9 @@ import frc.robot.Hardware;
 import java.util.EnumSet;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonUtils;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 /*
  * All 3D poses and transforms use the NWU (North-West-Up) coordinate system, where +X is
@@ -50,20 +49,23 @@ public class VisionSubsystem extends SubsystemBase {
   private static final double CAMERA_YAW_FRONT = 0;
   private static final double CAMERA_YAW_BACK = Units.degreesToRadians(180);
 
-  public static final Transform3d ROBOT_TO_CAM_FRONT = new Transform3d(
-      CAMERA_X_POS_METERS_FRONT,
-      CAMERA_Y_POS_METERS,
-      CAMERA_Z_POS_METERS,
-      new Rotation3d(CAMERA_ROLL, CAMERA_PITCH_FRONT, CAMERA_YAW_FRONT));
+  public static final Transform3d ROBOT_TO_CAM_FRONT =
+      new Transform3d(
+          CAMERA_X_POS_METERS_FRONT,
+          CAMERA_Y_POS_METERS,
+          CAMERA_Z_POS_METERS,
+          new Rotation3d(CAMERA_ROLL, CAMERA_PITCH_FRONT, CAMERA_YAW_FRONT));
 
-  public static final Transform3d ROBOT_TO_CAM_BACK = new Transform3d(
-      CAMERA_X_POS_METERS_BACK,
-      CAMERA_Y_POS_METERS,
-      CAMERA_Z_POS_METERS,
-      new Rotation3d(CAMERA_ROLL, CAMERA_PITCH_BACK, CAMERA_YAW_BACK));
+  public static final Transform3d ROBOT_TO_CAM_BACK =
+      new Transform3d(
+          CAMERA_X_POS_METERS_BACK,
+          CAMERA_Y_POS_METERS,
+          CAMERA_Z_POS_METERS,
+          new Rotation3d(CAMERA_ROLL, CAMERA_PITCH_BACK, CAMERA_YAW_BACK));
 
   // TODO Measure these
-  private static final Vector<N3> STANDARD_DEVS = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5));
+  private static final Vector<N3> STANDARD_DEVS =
+      VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5));
 
   private final PhotonCamera photonCamera;
   private final PhotonCamera photonCamera2;
@@ -92,10 +94,12 @@ public class VisionSubsystem extends SubsystemBase {
     rawVisionFieldObject = robotField.getObject("RawVision");
     photonCamera = new PhotonCamera(Hardware.FRONT_CAM);
     photonCamera2 = new PhotonCamera(Hardware.BACK_CAM);
-    photonPoseEstimatorFrontCamera = new PhotonPoseEstimator(
-        fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_FRONT);
-    photonPoseEstimatorBackCamera = new PhotonPoseEstimator(
-        fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_BACK);
+    photonPoseEstimatorFrontCamera =
+        new PhotonPoseEstimator(
+            fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_FRONT);
+    photonPoseEstimatorBackCamera =
+        new PhotonPoseEstimator(
+            fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_BACK);
 
     var networkTables = NetworkTableInstance.getDefault();
     networkTables.addListener(
@@ -144,8 +148,10 @@ public class VisionSubsystem extends SubsystemBase {
       var RawTimestampSeconds = result.getTimestampSeconds();
       var TimestampSeconds = estimatedPose.get().timestampSeconds;
       var FieldPose = estimatedPose.get().estimatedPose.toPose2d();
-      var Distance = PhotonUtils.getDistanceToPose(FieldPose,
-          fieldLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d());
+      var Distance =
+      roundUpToOneDecimalPlace(PhotonUtils.getDistanceToPose(
+              FieldPose,
+              fieldLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d()));
       aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastTimestampSeconds, STANDARD_DEVS);
       robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       if (RawTimestampSeconds > lastRawTimestampSeconds) {
@@ -179,4 +185,7 @@ public class VisionSubsystem extends SubsystemBase {
     return Units.metersToInches(Distance);
   }
 
+  public double roundUpToOneDecimalPlace(double num) {
+    return Math.ceil(num * 10) / 10;
+  }
 }
