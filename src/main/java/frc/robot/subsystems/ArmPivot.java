@@ -143,15 +143,11 @@ public class ArmPivot extends SubsystemBase {
     // PID
     // set slot 0 gains
     talonFXConfiguration.Slot0.kS = ARMPIVOT_KS;
-    talonFXConfiguration.Slot0.kV =
-        ARMPIVOT_KV;
-    talonFXConfiguration.Slot0.kA =
-        ARMPIVOT_KA;
-    talonFXConfiguration.Slot0.kP =
-        ARMPIVOT_KP;
+    talonFXConfiguration.Slot0.kV = ARMPIVOT_KV;
+    talonFXConfiguration.Slot0.kA = ARMPIVOT_KA;
+    talonFXConfiguration.Slot0.kP = ARMPIVOT_KP;
     talonFXConfiguration.Slot0.kI = ARMPIVOT_KI;
-    talonFXConfiguration.Slot0.kD =
-        ARMPIVOT_KD;
+    talonFXConfiguration.Slot0.kD = ARMPIVOT_KD;
     talonFXConfiguration.Slot0.kG = ARMPIVOT_KG;
     talonFXConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
