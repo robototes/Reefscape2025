@@ -42,7 +42,6 @@ public class Controls {
   private final SuperStructure superStructure;
 
   private BranchHeight branchHeight = null;
-  private boolean slowMode;
 
   // Swerve stuff
   private double MaxSpeed =
@@ -103,13 +102,13 @@ public class Controls {
                       new ChassisSpeeds(
                           -driverController.getLeftY()
                               * MaxSpeed
-                              * (slowMode ? 0.5 : 1), // Drive forward with negative Y (forward)
+                              * (driverController.start().getAsBoolean() ? 0.5 : 1), // Drive forward with negative Y (forward)
                           -driverController.getLeftX()
                               * MaxSpeed
-                              * (slowMode ? 0.5 : 1), // Drive left with negative X (left)
+                              * (driverController.start().getAsBoolean() ? 0.5 : 1), // Drive left with negative X (left)
                           -driverController.getRightX()
                               * MaxAngularRate
-                              * (slowMode
+                              * (driverController.start().getAsBoolean()
                                   ? 0.5
                                   : 1)); // Drive counterclockwise with negative X (left)
                   ChassisSpeeds diff = targetSpeeds.minus(speed);
@@ -161,16 +160,6 @@ public class Controls {
                 .runOnce(() -> s.drivebaseSubsystem.seedFieldCentric())
                 .withName("Reset gyro"));
     s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
-    driverController
-        .start()
-        .whileTrue(
-            Commands.startEnd(
-                () -> {
-                  slowMode = true;
-                },
-                () -> {
-                  slowMode = false;
-                }));
   }
 
   private void configureSuperStructureBindings() {
