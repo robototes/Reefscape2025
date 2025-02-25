@@ -102,10 +102,14 @@ public class Controls {
                       new ChassisSpeeds(
                           -driverController.getLeftY()
                               * MaxSpeed
-                              * (driverController.start().getAsBoolean() ? 0.5 : 1), // Drive forward with negative Y (forward)
+                              * (driverController.start().getAsBoolean()
+                                  ? 0.5
+                                  : 1), // Drive forward with negative Y (forward)
                           -driverController.getLeftX()
                               * MaxSpeed
-                              * (driverController.start().getAsBoolean() ? 0.5 : 1), // Drive left with negative X (left)
+                              * (driverController.start().getAsBoolean()
+                                  ? 0.5
+                                  : 1), // Drive left with negative X (left)
                           -driverController.getRightX()
                               * MaxAngularRate
                               * (driverController.start().getAsBoolean()
