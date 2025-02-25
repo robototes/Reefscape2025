@@ -19,7 +19,7 @@ public class ClimbPivot extends SubsystemBase {
 
   private final TalonFX motorOne;
   private final TalonFX motorTwo;
-  private final DigitalInput climbSensor;
+  private final DigitalInput sensor;
   // entry for isClimbIn/out
   private GenericEntry climbstateEntry;
   private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Climb");
@@ -38,7 +38,7 @@ public class ClimbPivot extends SubsystemBase {
   public ClimbPivot() {
     motorOne = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_ONE_ID);
     motorTwo = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_TWO_ID);
-    climbSensor = new DigitalInput(Hardware.CLIMB_SENSOR);
+    sensor = new DigitalInput(Hardware.CLIMB_SENSOR);
     configureMotors();
     setupLogging();
     motorTwo.setControl(new Follower(motorOne.getDeviceID(), true));
@@ -103,7 +103,7 @@ public class ClimbPivot extends SubsystemBase {
   }
 
   public boolean checkClimbSensor() {
-    return climbSensor.get();
+    return sensor.get();
   }
 
   public double getClimbVelocity() {
