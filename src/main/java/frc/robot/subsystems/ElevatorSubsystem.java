@@ -157,7 +157,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     configuration.Slot0.kS = ELEVATOR_KS; // Add 0.25 V output to overcome static friction
     configuration.Slot0.kV = ELEVATOR_KV; // A velocity target of 1 rps results in 0.12 V output
     configuration.Slot0.kA = ELEVATOR_KA; // An acceleration of 1 rps/s requires 0.01 V output
-    configuration.Slot0.kP = ELEVATOR_KP; // A position error of 2.5 rotations results in 12 V output
+    configuration.Slot0.kP =
+        ELEVATOR_KP; // A position error of 2.5 rotations results in 12 V output
     configuration.Slot0.kI = ELEVATOR_KI; // no output for integrated error
     configuration.Slot0.kD = ELEVATOR_KD; // A velocity error of 1 rps results in 0.1 V output
 
@@ -278,9 +279,12 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   /** Stop the control loop and motor output. */
   public Command stop() {
-    return runOnce(() -> {
-      m_motor.stopMotor();
-      m_motor2.stopMotor();
-    }).ignoringDisable(true).withName("ElevatorStop");
+    return runOnce(
+            () -> {
+              m_motor.stopMotor();
+              m_motor2.stopMotor();
+            })
+        .ignoringDisable(true)
+        .withName("ElevatorStop");
   }
 }
