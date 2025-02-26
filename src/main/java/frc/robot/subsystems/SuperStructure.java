@@ -90,7 +90,10 @@ public class SuperStructure {
   }
 
   public Trigger inPreIntakePosition() {
-    return new Trigger(() -> elevator.atPosition(ElevatorSubsystem.PRE_INTAKE) && armPivot.atPosition(ArmPivot.PRESET_DOWN));
+    return new Trigger(
+        () ->
+            elevator.atPosition(ElevatorSubsystem.PRE_INTAKE)
+                && armPivot.atPosition(ArmPivot.PRESET_DOWN));
   }
 
   public Command intake() {
