@@ -31,7 +31,7 @@ public class SuperStructure {
             elevator.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS),
             armPivot.moveToPosition(ArmPivot.PRESET_L4)),
         spinnyClaw.holdExtakePower().withTimeout(0.2),
-        stow());
+        preIntake());
   }
 
   public Command levelThree(BooleanSupplier score) {
@@ -44,7 +44,7 @@ public class SuperStructure {
         Commands.waitUntil(score),
         elevator.setLevel(ElevatorSubsystem.LEVEL_THREE_POS),
         spinnyClaw.holdExtakePower().withTimeout(0.15),
-        stow());
+        preIntake());
   }
 
   public Command levelTwo(BooleanSupplier score) {
@@ -57,7 +57,7 @@ public class SuperStructure {
         Commands.waitUntil(score),
         elevator.setLevel(ElevatorSubsystem.LEVEL_TWO_POS),
         spinnyClaw.holdExtakePower().withTimeout(0.15),
-        stow());
+        preIntake());
   }
 
   public Command levelOne(BooleanSupplier score) {
@@ -69,7 +69,7 @@ public class SuperStructure {
         Commands.waitUntil(score),
         elevator.setLevel(ElevatorSubsystem.LEVEL_TWO_POS),
         spinnyClaw.holdExtakePower().withTimeout(0.15),
-        stow());
+        preIntake());
   }
 
   public Command stow() {
@@ -79,13 +79,17 @@ public class SuperStructure {
         spinnyClaw.stop());
   }
 
+  public Command preIntake() {
+    return Commands.sequence(
+        stow(),
+        Commands.parallel(
+            elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
+            armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
+            spinnyClaw.intakePower()));
+  }
+
   public Command intake() {
     return Commands.sequence(
-            Commands.parallel(
-                elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
-                armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
-                spinnyClaw.intakePower()),
-            // Commands.waitUntil(armSensor.inTrough()),
             elevator.setLevel(ElevatorSubsystem.INTAKE),
             Commands.waitSeconds(0.1),
             spinnyClaw.stop(),
