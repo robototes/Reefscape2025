@@ -37,7 +37,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double PRE_INTAKE = 2;
   public static final double MANUAL = 0.1;
   private static final double POS_TOLERANCE = 0.1;
-  private final double ELEVATOR_KP = 13.804; // add feedfwds for each stage?
+  private final double ELEVATOR_KP = 13.804;
   private final double ELEVATOR_KI = 0;
   private final double ELEVATOR_KD = 0.079221;
   private final double ELEVATOR_KS = 0.33878;
@@ -57,7 +57,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private double curPos;
   private double targetPos;
-  private boolean hasBeen0ed;
+  private boolean hasBeenZeroed;
 
   private DoubleConsumer rumble = (rumble) -> {};
 
@@ -82,18 +82,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_motor = new TalonFX(Hardware.ELEVATOR_MOTOR_ONE, "Drivebase");
     m_motor2 = new TalonFX(Hardware.ELEVATOR_MOTOR_TWO, "Drivebase");
     motorConfigs();
-    m_motor2.setControl(new Follower(m_motor.getDeviceID(), true));
 
-    // Publish Mechanism2d to SmartDashboard
-    // To view the Elevator visualization, select Network Tables -> SmartDashboard -> Elevator Sim
-    // SmartDashboard.putData("Elevator Sim", m_mech2d);
     Shuffleboard.getTab("Elevator").addDouble("Motor Current Position", () -> getCurrentPosition());
     Shuffleboard.getTab("Elevator").addDouble("Target Position", () -> getTargetPosition());
     Shuffleboard.getTab("Elevator")
         .addDouble("M1 supply current", () -> m_motor.getSupplyCurrent().getValueAsDouble());
     Shuffleboard.getTab("Elevator")
         .addDouble("M2 supply current", () -> m_motor2.getSupplyCurrent().getValueAsDouble());
-    Shuffleboard.getTab("Elevator").addBoolean("Is zero'd", () -> getHasBeen0ed());
+    Shuffleboard.getTab("Elevator").addBoolean("Is zero'd", () -> getHasBeenZeroed());
     Shuffleboard.getTab("Elevator")
         .addDouble("M1 temp", () -> m_motor.getDeviceTemp().getValueAsDouble());
     Shuffleboard.getTab("Elevator")
@@ -127,7 +123,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_motor2.setVoltage(-drive.in(Units.Volts));
   }
 
-  public void logMotors(SysIdRoutineLog log) { // in theory this should work?
+  public void logMotors(SysIdRoutineLog log) {
     log.motor("elevator-motor")
         .voltage(
             m_appliedVoltage.mut_replace(
@@ -166,13 +162,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     configuration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_SOFT_LIMIT;
 
     // set slot 0 gains
-    configuration.Slot0.kS = ELEVATOR_KS; // Add 0.25 V output to overcome static friction
-    configuration.Slot0.kV = ELEVATOR_KV; // A velocity target of 1 rps results in 0.12 V output
-    configuration.Slot0.kA = ELEVATOR_KA; // An acceleration of 1 rps/s requires 0.01 V output
-    configuration.Slot0.kP =
-        ELEVATOR_KP; // A position error of 2.5 rotations results in 12 V output
-    configuration.Slot0.kI = ELEVATOR_KI; // no output for integrated error
-    configuration.Slot0.kD = ELEVATOR_KD; // A velocity error of 1 rps results in 0.1 V output
+    configuration.Slot0.kS = ELEVATOR_KS;
+    configuration.Slot0.kV = ELEVATOR_KV;
+    configuration.Slot0.kA = ELEVATOR_KA;
+    configuration.Slot0.kP = ELEVATOR_KP;
+    configuration.Slot0.kI = ELEVATOR_KI;
+    configuration.Slot0.kD = ELEVATOR_KD;
 
     // set Motion Magic settings
     // Bottom to full: ~40 rotations
@@ -210,8 +205,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     this.rumble = rumble;
   }
 
-  public boolean getHasBeen0ed() {
-    return hasBeen0ed;
+  public boolean getHasBeenZeroed() {
+    return hasBeenZeroed;
   }
 
   private double getTargetPosition() {
@@ -231,7 +226,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     return runOnce(
         () -> {
           setCurrentPosition(0);
-          hasBeen0ed = true;
+          hasBeenZeroed = true;
           rumble.accept(0);
         });
   }
@@ -239,7 +234,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public Command setLevel(double pos) {
     return runOnce(
             () -> {
-              if (hasBeen0ed) {
+              if (hasBeenZeroed) {
                 m_motor.setControl(m_request.withPosition(pos));
                 m_motor2.setControl(new Follower(m_motor.getDeviceID(), true));
                 targetPos = pos;
@@ -291,7 +286,13 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   /** Stop the control loop and motor output. */
   public Command stop() {
-    return runOnce(() -> m_motor.stopMotor()).ignoringDisable(true).withName("ElevatorStop");
+    return runOnce(
+            () -> {
+              m_motor.stopMotor();
+              m_motor2.stopMotor();
+            })
+        .ignoringDisable(true)
+        .withName("ElevatorStop");
   }
 
   @Override

@@ -26,6 +26,7 @@ public class Controls {
   private static final int OPERATOR_CONTROLLER_PORT = 1;
   private static final int ARM_PIVOT_SPINNY_CLAW_CONTROLLER_PORT = 2;
   private static final int ELEVATOR_CONTROLLER_PORT = 3;
+  private static final int CLIMB_TEST_CONTROLLER_PORT = 4;
 
   private final CommandXboxController driverController;
 
@@ -35,6 +36,7 @@ public class Controls {
 
   private final CommandXboxController elevatorTestController;
 
+  private final CommandXboxController climbTestController;
   private final Subsystems s;
   private final Sensors sensors;
   private final SuperStructure superStructure;
@@ -70,15 +72,16 @@ public class Controls {
     operatorController = new CommandXboxController(OPERATOR_CONTROLLER_PORT);
     armPivotSpinnyClawController = new CommandXboxController(ARM_PIVOT_SPINNY_CLAW_CONTROLLER_PORT);
     elevatorTestController = new CommandXboxController(ELEVATOR_CONTROLLER_PORT);
+    climbTestController = new CommandXboxController(CLIMB_TEST_CONTROLLER_PORT);
     this.s = s;
     this.sensors = sensors;
     this.superStructure = superStructure;
     configureDrivebaseBindings();
+    configureSuperStructureBindings();
     configureElevatorBindings();
     configureArmPivotBindings();
     configureClimbPivotBindings();
     configureSpinnyClawBindings();
-    configureSuperStructureBindings();
     configureElevatorLEDBindings();
   }
 
@@ -318,8 +321,8 @@ public class Controls {
     if (s.climbPivotSubsystem == null) {
       return;
     }
-    // Idk if this is great code or horrible code
-    operatorController.start().onTrue(s.climbPivotSubsystem.toggleClimb());
+    climbTestController.back().onTrue(s.climbPivotSubsystem.toggleClimb());
+    climbTestController.start().onTrue(s.climbPivotSubsystem.zeroClimb());
   }
 
   private void configureSpinnyClawBindings() {
@@ -337,9 +340,6 @@ public class Controls {
     if (s.elevatorLEDSubsystem == null) {
       return;
     }
-
-    // s.elevatorLEDSubsystem.setDefaultCommand(
-    // s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.rainbowAnim));
     operatorController
         .back()
         .onTrue(s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.larsonAnim));
@@ -347,7 +347,7 @@ public class Controls {
         .start()
         .onTrue(s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.rainbowAnim));
     if (s.elevatorSubsystem != null) {
-      Trigger hasBeen0ed = new Trigger(s.elevatorSubsystem::getHasBeen0ed);
+      Trigger hasBeen0ed = new Trigger(s.elevatorSubsystem::getHasBeenZeroed);
       Commands.waitSeconds(1)
           .andThen(
               s.elevatorLEDSubsystem.colorSet(50, 0, 0).withName("LED red").ignoringDisable(true))
