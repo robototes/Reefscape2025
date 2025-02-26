@@ -11,21 +11,9 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "raiseElevator"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "EtoRightSideFar"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "lowerElevator"
           }
         },
         {
@@ -35,33 +23,15 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "raiseElevator"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "DtoRightSideFar"
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "lowerElevator"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "RightsideclosetoC"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "raiseElevator"
           }
         }
       ]

@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SideWallToJ"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "raiseElevator"
+            "pathName": "YourSideWalltoK"
           }
         }
       ]

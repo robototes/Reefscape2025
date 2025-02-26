@@ -31,7 +31,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "FarRightCcoral"
+            "pathName": "RightSideFarToC"
           }
         },
         {
@@ -43,7 +43,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "CtoFarCoralStation"
+            "pathName": "CtoRightSideFar"
           }
         },
         {
@@ -55,7 +55,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "FarStationtoD"
+            "pathName": "RightsideclosetoD"
           }
         },
         {

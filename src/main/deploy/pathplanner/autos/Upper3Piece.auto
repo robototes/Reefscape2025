@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "UpperMidtoJ"
+            "pathName": "YourSideMidtoJ"
           }
         },
         {
@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "JtoUpperFarStation"
+            "pathName": "J to Leftsidefar"
           }
         },
         {
@@ -31,7 +31,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "UpperFarStationToK"
+            "pathName": "LeftSideCloseToK"
           }
         },
         {
@@ -43,7 +43,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "KToUpperFarStation"
+            "pathName": "KToLeftSideFar"
           }
         },
         {
@@ -55,7 +55,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "UpperStationToL"
+            "pathName": "LeftSideCloseToL"
           }
         },
         {
