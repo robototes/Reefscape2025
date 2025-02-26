@@ -77,11 +77,11 @@ public class Controls {
     this.sensors = sensors;
     this.superStructure = superStructure;
     configureDrivebaseBindings();
+    configureSuperStructureBindings();
     configureElevatorBindings();
     configureArmPivotBindings();
     configureClimbPivotBindings();
     configureSpinnyClawBindings();
-    configureSuperStructureBindings();
     configureElevatorLEDBindings();
   }
 
@@ -339,7 +339,6 @@ public class Controls {
     if (s.climbPivotSubsystem == null) {
       return;
     }
-    // Idk if this is great code or horrible code
     climbTestController.back().onTrue(s.climbPivotSubsystem.toggleClimb());
     climbTestController.start().onTrue(s.climbPivotSubsystem.zeroClimb());
   }
@@ -359,9 +358,6 @@ public class Controls {
     if (s.elevatorLEDSubsystem == null) {
       return;
     }
-
-    // s.elevatorLEDSubsystem.setDefaultCommand(
-    // s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.rainbowAnim));
     operatorController
         .back()
         .onTrue(s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.larsonAnim));
@@ -369,7 +365,7 @@ public class Controls {
         .start()
         .onTrue(s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.rainbowAnim));
     if (s.elevatorSubsystem != null) {
-      Trigger hasBeen0ed = new Trigger(s.elevatorSubsystem::getHasBeen0ed);
+      Trigger hasBeen0ed = new Trigger(s.elevatorSubsystem::getHasBeenZeroed);
       Commands.waitSeconds(1)
           .andThen(
               s.elevatorLEDSubsystem.colorSet(50, 0, 0).withName("LED red").ignoringDisable(true))
