@@ -17,9 +17,9 @@ import frc.robot.Hardware;
 
 public class ClimbPivot extends SubsystemBase {
 
-  private final TalonFX climbPivotMotorOne;
-  private final TalonFX climbPivotMotorTwo;
-  private final DigitalInput climbSensor;
+  private final TalonFX motorOne;
+  private final TalonFX motorTwo;
+  private final DigitalInput sensor;
   // entry for isClimbIn/out
   private GenericEntry climbstateEntry;
   private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Climb");
@@ -36,17 +36,17 @@ public class ClimbPivot extends SubsystemBase {
   private boolean nextMoveOut = true;
 
   public ClimbPivot() {
-    climbPivotMotorOne = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_ONE_ID);
-    climbPivotMotorTwo = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_TWO_ID);
-    climbSensor = new DigitalInput(Hardware.CLIMB_SENSOR);
+    motorOne = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_ONE_ID);
+    motorTwo = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_TWO_ID);
+    sensor = new DigitalInput(Hardware.CLIMB_SENSOR);
     configureMotors();
     setupLogging();
-    climbPivotMotorTwo.setControl(new Follower(climbPivotMotorOne.getDeviceID(), true));
+    motorTwo.setControl(new Follower(motorOne.getDeviceID(), true));
   }
 
   private void configureMotors() {
-    var talonFXConfigurator = climbPivotMotorOne.getConfigurator();
-    var talonFXConfigurator2 = climbPivotMotorTwo.getConfigurator();
+    var talonFXConfigurator = motorOne.getConfigurator();
+    var talonFXConfigurator2 = motorTwo.getConfigurator();
     TalonFXConfiguration configuration = new TalonFXConfiguration();
     // Set and enable current limit
     configuration.CurrentLimits.StatorCurrentLimit = 150;
@@ -68,11 +68,11 @@ public class ClimbPivot extends SubsystemBase {
 
   public Command moveClimbMotor(double speed) {
     return run(() -> {
-          climbPivotMotorOne.set(speed);
+          motorOne.set(speed);
         })
         .finallyDo(
             () -> {
-              climbPivotMotorOne.stopMotor();
+              motorOne.stopMotor();
             });
   }
 
@@ -82,20 +82,20 @@ public class ClimbPivot extends SubsystemBase {
                     () -> {
                       // climb out
                       nextMoveOut = false;
-                      climbPivotMotorOne.set(CLIMB_OUT_SPEED);
+                      motorOne.set(CLIMB_OUT_SPEED);
                     },
                     () -> {
-                      climbPivotMotorOne.stopMotor();
+                      motorOne.stopMotor();
                     })
                 .until(() -> isClimbOut),
             startEnd(
                     () -> {
                       // climb in
                       nextMoveOut = true;
-                      climbPivotMotorOne.set(CLIMB_IN_SPEED);
+                      motorOne.set(CLIMB_IN_SPEED);
                     },
                     () -> {
-                      climbPivotMotorOne.stopMotor();
+                      motorOne.stopMotor();
                     })
                 .until(() -> isClimbIn),
             () -> nextMoveOut)
@@ -103,19 +103,19 @@ public class ClimbPivot extends SubsystemBase {
   }
 
   public boolean checkClimbSensor() {
-    return climbSensor.get();
+    return sensor.get();
   }
 
   public double getClimbVelocity() {
-    return climbPivotMotorOne.getVelocity().getValueAsDouble();
+    return motorOne.getVelocity().getValueAsDouble();
   }
 
   public double getClimbPosition() {
-    return climbPivotMotorOne.getPosition().getValueAsDouble();
+    return motorOne.getPosition().getValueAsDouble();
   }
 
   public void setPosition(double pos) {
-    climbPivotMotorOne.setPosition(pos);
+    motorOne.setPosition(pos);
   }
 
   public Command zeroClimb() {
@@ -152,13 +152,13 @@ public class ClimbPivot extends SubsystemBase {
   @Override
   public void periodic() {
     if (MathUtil.isNear(
-        climbPivotMotorOne.getPosition().getValueAsDouble(), CLIMB_OUT_PRESET, BOOLEAN_TOLERANCE)) {
+        motorOne.getPosition().getValueAsDouble(), CLIMB_OUT_PRESET, BOOLEAN_TOLERANCE)) {
       isClimbOut = true;
     } else {
       isClimbOut = false;
     }
     if (MathUtil.isNear(
-        climbPivotMotorOne.getPosition().getValueAsDouble(), CLIMB_IN_PRESET, BOOLEAN_TOLERANCE)) {
+        motorOne.getPosition().getValueAsDouble(), CLIMB_IN_PRESET, BOOLEAN_TOLERANCE)) {
       isClimbIn = true;
     } else {
       isClimbIn = false;
