@@ -72,6 +72,28 @@ public class SuperStructure {
         stow());
   }
 
+  public Command stow() {
+    return Commands.parallel(
+        elevator.setLevel(ElevatorSubsystem.STOWED),
+        armPivot.moveToPosition(ArmPivot.PRESET_STOWED),
+        spinnyClaw.stop());
+  }
+
+  public Command intake() {
+    return Commands.sequence(
+            Commands.parallel(
+                elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
+                armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
+                spinnyClaw.intakePower()),
+            // Commands.waitUntil(armSensor.inTrough()),
+            elevator.setLevel(ElevatorSubsystem.INTAKE),
+            Commands.waitSeconds(0.1),
+            spinnyClaw.stop(),
+            elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
+            stow())
+        .withName("Intake");
+  }
+
   public Command algaeLevelThreeFour() {
     return Commands.sequence(
         spinnyClaw.algaeIntakePower(),
@@ -88,13 +110,6 @@ public class SuperStructure {
         algaeStow());
   }
 
-  public Command stow() {
-    return Commands.parallel(
-        elevator.setLevel(ElevatorSubsystem.STOWED),
-        armPivot.moveToPosition(ArmPivot.PRESET_STOWED),
-        spinnyClaw.stop());
-  }
-
   public Command algaeStow() { // Big North + Spider collab on this one
     return Commands.parallel(
         elevator.setLevel(ElevatorSubsystem.ALGAE_STOWED),
@@ -102,18 +117,12 @@ public class SuperStructure {
         spinnyClaw.algaeIntakePower());
   }
 
-  public Command intake() {
+  public Command algaeScore() { // Big North + Spider collab on this one
     return Commands.sequence(
-            Commands.parallel(
-                elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
-                armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
-                spinnyClaw.intakePower()),
-            // Commands.waitUntil(armSensor.inTrough()),
-            elevator.setLevel(ElevatorSubsystem.INTAKE),
-            Commands.waitSeconds(0.1),
-            spinnyClaw.stop(),
-            elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
-            stow())
-        .withName("Intake");
+        Commands.parallel(
+            elevator.setLevel(ElevatorSubsystem.ALGAE_SCORE),
+            armPivot.moveToPosition(ArmPivot.ALGAE_SCORE),
+            spinnyClaw.algaeIntakePower()),
+        spinnyClaw.algaeExtakePower());
   }
 }
