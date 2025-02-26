@@ -89,7 +89,7 @@ public class Controls {
       return;
     }
 
-    double getLeftX = MathUtil.applyDeadband(driverController.getLeftX(),0.1);
+    double getLeftX = MathUtil.applyDeadband(driverController.getLeftX(), 0.1);
     double getLeftY = MathUtil.applyDeadband(driverController.getLeftY(), 0.1);
     double getRightX = MathUtil.applyDeadband(driverController.getRightX(), 0.1);
     // Note that X is defined as forward according to WPILib convention,
