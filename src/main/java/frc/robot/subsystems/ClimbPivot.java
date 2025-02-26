@@ -6,6 +6,8 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -20,7 +22,7 @@ import frc.robot.Hardware;
 
 public class ClimbPivot extends SubsystemBase {
 
-  private final TalonFX climbPivotMotorOne;   
+  private final TalonFX climbPivotMotorOne;
   private final TalonFX climbPivotMotorTwo;
   private final DigitalInput climbSensor;
   // entry for isClimbIn/out
@@ -36,9 +38,12 @@ public class ClimbPivot extends SubsystemBase {
   private boolean isClimbIn = true;
   private boolean nextMoveOut = true;
 
-  //alerts
-  private final Alert NotConnectedError = new Alert("Climb", "Motor 1 not connected", AlertType.kError);
-  private final Alert NotConnectedError2 = new Alert("Climb", "Motor 2 not connected", AlertType.kError);
+  // alerts
+  private final Alert NotConnectedError =
+      new Alert("Climb", "Motor 1 not connected", AlertType.kError);
+  private final Alert NotConnectedError2 =
+      new Alert("Climb", "Motor 2 not connected", AlertType.kError);
+  private final Debouncer notConnectedDebouncer = new Debouncer(.1, DebounceType.kBoth);
 
   public ClimbPivot() {
     climbPivotMotorOne = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_ONE_ID);
@@ -154,7 +159,9 @@ public class ClimbPivot extends SubsystemBase {
     } else {
       isClimbIn = false;
     }
-    NotConnectedError.set(!climbPivotMotorOne.getMotorVoltage().hasUpdated());
-    NotConnectedError.set(!climbPivotMotorTwo.getMotorVoltage().hasUpdated());
+    NotConnectedError.set(
+        notConnectedDebouncer.calculate(!climbPivotMotorOne.getMotorVoltage().hasUpdated()));
+    NotConnectedError2.set(
+        notConnectedDebouncer.calculate(!climbPivotMotorTwo.getMotorVoltage().hasUpdated()));
   }
 }

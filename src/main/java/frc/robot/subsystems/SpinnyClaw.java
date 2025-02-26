@@ -7,6 +7,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -25,8 +27,10 @@ public class SpinnyClaw extends SubsystemBase {
   // TalonFX
   private final TalonFX motor;
 
-  //alerts
-  private final Alert NotConnectedError = new Alert("Spinny Claw", "Motor not connected", AlertType.kError);
+  // alerts
+  private final Alert NotConnectedError =
+      new Alert("Spinny Claw", "Motor not connected", AlertType.kError);
+  private final Debouncer notConnectedDebouncer = new Debouncer(.1, DebounceType.kBoth);
 
   public SpinnyClaw() {
     motor = new TalonFX(Hardware.SPINNY_CLAW_MOTOR_ID);
@@ -85,7 +89,8 @@ public class SpinnyClaw extends SubsystemBase {
     return runOnce(() -> motor.stopMotor()).withName("Spinny claw stop");
   }
 
+  @Override
   public void periodic() {
-    NotConnectedError.set(!motor.getMotorVoltage().hasUpdated());
+    NotConnectedError.set(notConnectedDebouncer.calculate(!motor.getMotorVoltage().hasUpdated()));
   }
 }
