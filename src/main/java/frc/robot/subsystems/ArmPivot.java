@@ -11,6 +11,8 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -89,6 +91,10 @@ public class ArmPivot extends SubsystemBase {
         });
   }
 
+   public boolean atPosition(double position) {
+    return MathUtil.isNear(position, getCurrentPosition(), POS_TOLERANCE);
+  }
+  
   private double getTargetPosition() {
     return targetPos;
   }

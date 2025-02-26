@@ -178,7 +178,7 @@ public class Controls {
     operatorController.rightBumper().onTrue(superStructure.stow().withName("Stow"));
     driverController.a().onTrue(superStructure.intake());
     if (sensors.armSensor != null) {
-      sensors.armSensor.inTrough().onTrue(superStructure.intake());
+      sensors.armSensor.inTrough().and(superStructure.inPreIntakePosition()).onTrue(superStructure.intake());
     }
     driverController
         .leftBumper()
