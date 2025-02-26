@@ -175,8 +175,8 @@ public class ClimbPivot extends SubsystemBase {
       isClimbIn = false;
     }
     NotConnectedError.set(
-        notConnectedDebouncer.calculate(!climbPivotMotorOne.getMotorVoltage().hasUpdated()));
+        notConnectedDebouncer.calculate(!motorOne.getMotorVoltage().hasUpdated()));
     NotConnectedError2.set(
-        notConnectedDebouncer.calculate(!climbPivotMotorTwo.getMotorVoltage().hasUpdated()));
+        notConnectedDebouncer.calculate(!motorTwo.getMotorVoltage().hasUpdated()));
   }
 }
