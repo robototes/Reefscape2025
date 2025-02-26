@@ -99,24 +99,17 @@ public class Controls {
         s.drivebaseSubsystem
             .applyRequest(
                 () -> {
+                  double inputScale = driverController.start().getAsBoolean() ? 0.5 : 1;
                   ChassisSpeeds speed = s.drivebaseSubsystem.returnSpeeds();
                   ChassisSpeeds targetSpeeds =
                       new ChassisSpeeds(
                           -getLeftX
                               * MaxSpeed
-                              * (driverController.start().getAsBoolean()
-                                  ? 0.5
-                                  : 1), // Drive forward with negative Y (forward)
-                          -getLeftY
-                              * MaxSpeed
-                              * (driverController.start().getAsBoolean()
-                                  ? 0.5
-                                  : 1), // Drive left with negative X (left)
+                              * inputScale, // Drive forward with negative Y (forward)
+                          -getLeftY * MaxSpeed * inputScale, // Drive left with negative X (left)
                           -getRightX
                               * MaxAngularRate
-                              * (driverController.start().getAsBoolean()
-                                  ? 0.5
-                                  : 1)); // Drive counterclockwise with negative X (left)
+                              * inputScale); // Drive counterclockwise with negative X (left)
                   ChassisSpeeds diff = targetSpeeds.minus(speed);
                   double dt = 0.02;
                   // Vx Vy and Omega are really accelerations and not velocities.
