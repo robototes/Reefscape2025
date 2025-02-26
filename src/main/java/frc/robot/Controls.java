@@ -89,9 +89,9 @@ public class Controls {
       return;
     }
 
-    double getLeftX = MathUtil.applyDeadband(driverController.getLeftX(), 0.1);
-    double getLeftY = MathUtil.applyDeadband(driverController.getLeftY(), 0.1);
-    double getRightX = MathUtil.applyDeadband(driverController.getRightX(), 0.1);
+    double getLeftX = Math.pow(MathUtil.applyDeadband(driverController.getLeftX(), 0.1), 3);
+    double getLeftY = Math.pow(MathUtil.applyDeadband(driverController.getLeftY(), 0.1), 3);
+    double getRightX = Math.pow(MathUtil.applyDeadband(driverController.getRightX(), 0.1), 3);
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
     s.drivebaseSubsystem.setDefaultCommand(
