@@ -89,9 +89,6 @@ public class Controls {
       return;
     }
 
-    double getLeftX = Math.pow(MathUtil.applyDeadband(driverController.getLeftX(), 0.1), 3);
-    double getLeftY = Math.pow(MathUtil.applyDeadband(driverController.getLeftY(), 0.1), 3);
-    double getRightX = Math.pow(MathUtil.applyDeadband(driverController.getRightX(), 0.1), 3);
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
     s.drivebaseSubsystem.setDefaultCommand(
@@ -99,6 +96,12 @@ public class Controls {
         s.drivebaseSubsystem
             .applyRequest(
                 () -> {
+                  double getLeftX =
+                      Math.pow(MathUtil.applyDeadband(driverController.getLeftX(), 0.1), 3);
+                  double getLeftY =
+                      Math.pow(MathUtil.applyDeadband(driverController.getLeftY(), 0.1), 3);
+                  double getRightX =
+                      Math.pow(MathUtil.applyDeadband(driverController.getRightX(), 0.1), 3);
                   double inputScale = driverController.start().getAsBoolean() ? 0.5 : 1;
                   ChassisSpeeds speed = s.drivebaseSubsystem.returnSpeeds();
                   ChassisSpeeds targetSpeeds =
