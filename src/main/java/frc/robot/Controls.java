@@ -7,6 +7,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -321,7 +322,15 @@ public class Controls {
     if (s.climbPivotSubsystem == null) {
       return;
     }
-    climbTestController.back().onTrue(s.climbPivotSubsystem.toggleClimb());
+
+    Command setClimbLEDs;
+    if (s.elevatorLEDSubsystem != null) {
+      setClimbLEDs = s.elevatorLEDSubsystem.colorSet(0, 255, 0);
+    } else {
+      setClimbLEDs = Commands.none();
+    }
+
+    climbTestController.back().onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDs));
     climbTestController.start().onTrue(s.climbPivotSubsystem.zeroClimb());
   }
 
