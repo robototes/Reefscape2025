@@ -79,7 +79,7 @@ public class Robot extends TimedRobot {
         .onCommandFinish(command -> System.out.println("Command finished: " + command.getName()));
 
     SmartDashboard.putData(CommandScheduler.getInstance());
-
+    AutoLogic.buildAuto(subsystems.drivebaseSubsystem);
     BuildInfo.logBuildInfo();
 
     DriverStation.silenceJoystickConnectionWarning(true);
