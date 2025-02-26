@@ -2,7 +2,9 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
@@ -19,6 +21,8 @@ public class ClimbPivot extends SubsystemBase {
 
   private final TalonFX motorOne;
   private final TalonFX motorTwo;
+  private CANdi encoder;
+
   private final DigitalInput sensor;
   // entry for isClimbIn/out
   private GenericEntry climbstateEntry;
@@ -34,19 +38,21 @@ public class ClimbPivot extends SubsystemBase {
   private boolean isClimbOut = false;
   private boolean isClimbIn = true;
   private boolean nextMoveOut = true;
-
-  public ClimbPivot() {
-    motorOne = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_ONE_ID);
-    motorTwo = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_TWO_ID);
-    sensor = new DigitalInput(Hardware.CLIMB_SENSOR);
-    configureMotors();
-    setupLogging();
-    motorTwo.setControl(new Follower(motorOne.getDeviceID(), true));
+  
+    public ClimbPivot() {
+      motorOne = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_ONE_ID);
+      motorTwo = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_TWO_ID);
+      encoder = new CANdi(Hardware.CLIMB_PIVOT_CANDI_ID);
+      sensor = new DigitalInput(Hardware.CLIMB_SENSOR);
+      configure();
+      setupLogging();
+      motorTwo.setControl(new Follower(motorOne.getDeviceID(), true));
   }
 
-  private void configureMotors() {
+  private void configure() {
     var talonFXConfigurator = motorOne.getConfigurator();
     var talonFXConfigurator2 = motorTwo.getConfigurator();
+    
     TalonFXConfiguration configuration = new TalonFXConfiguration();
     // Set and enable current limit
     configuration.CurrentLimits.StatorCurrentLimit = 150;
