@@ -77,10 +77,10 @@ public class SuperStructure {
         spinnyClaw.algaeIntakePower(),
         armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
         elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR),
-        algaeStow());  
+        algaeStow());
   }
 
-  public Command algaeLevelTwoThree() { //theoretically
+  public Command algaeLevelTwoThree() { // theoretically
     return Commands.sequence(
         spinnyClaw.algaeIntakePower(),
         armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
@@ -95,7 +95,7 @@ public class SuperStructure {
         spinnyClaw.stop());
   }
 
-  public Command algaeStow() { // Big North + Spider collab on this one 
+  public Command algaeStow() { // Big North + Spider collab on this one
     return Commands.parallel(
         elevator.setLevel(ElevatorSubsystem.ALGAE_STOWED),
         armPivot.moveToPosition(ArmPivot.ALGAE_STOWED),

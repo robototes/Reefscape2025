@@ -318,15 +318,21 @@ public class Controls {
     armPivotSpinnyClawController
         .leftBumper()
         .onTrue(
-            s.armPivotSubsystem.moveToPosition(ArmPivot.ALGAE_REMOVE).withName("SetAlgaePresetRemove"));
+            s.armPivotSubsystem
+                .moveToPosition(ArmPivot.ALGAE_REMOVE)
+                .withName("SetAlgaePresetRemove"));
     armPivotSpinnyClawController
         .rightBumper()
         .onTrue(
-            s.armPivotSubsystem.moveToPosition(ArmPivot.ALGAE_SCORE).withName("SetAlgaePresetScore"));
+            s.armPivotSubsystem
+                .moveToPosition(ArmPivot.ALGAE_SCORE)
+                .withName("SetAlgaePresetScore"));
     armPivotSpinnyClawController
         .povDown()
         .onTrue(
-            s.armPivotSubsystem.moveToPosition(ArmPivot.ALGAE_STOWED).withName("SetAlgaePresetStowed"));
+            s.armPivotSubsystem
+                .moveToPosition(ArmPivot.ALGAE_STOWED)
+                .withName("SetAlgaePresetStowed"));
   }
 
   private void configureClimbPivotBindings() {
