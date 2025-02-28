@@ -65,9 +65,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   // alerts
   private final Alert NotConnectedError =
-      new Alert("m_motor", "Motor 1 not connected", AlertType.kError);
+      new Alert("Elevator", "Motor 1 not connected", AlertType.kError);
   private final Alert NotConnectedError2 =
-      new Alert("m_motor2", "Motor 2 not connected", AlertType.kError);
+      new Alert("Elevator", "Motor 2 not connected", AlertType.kError);
   private final Debouncer notConnectedDebouncer = new Debouncer(.1, DebounceType.kBoth);
 
   // Creates a SysIdRoutine
