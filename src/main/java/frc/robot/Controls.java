@@ -204,9 +204,9 @@ public class Controls {
                     Commands.select(
                         Map.of(
                             AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR,
-                            superStructure.algaeLevelThreeFour(),
+                            superStructure.algaeLevelThreeFourFling(),
                             AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE,
-                            superStructure.algaeLevelTwoThree()),
+                            superStructure.algaeLevelTwoThreeFling()),
                         () -> algaeIntakeHeight)),
                 () -> scoringMode).withName("Driver Intake"));
     if (sensors.armSensor != null) {
