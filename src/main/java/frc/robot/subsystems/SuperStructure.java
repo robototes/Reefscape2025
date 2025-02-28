@@ -133,11 +133,11 @@ public class SuperStructure {
         spinnyClaw.algaeIntakePower());
   }
 
-  public Command algaeScore() { // Big North + Spider collab on this one
+  public Command algaeProcessorScore() { // Big North + Spider collab on this one
     return Commands.sequence(
         Commands.parallel(
-            elevator.setLevel(ElevatorSubsystem.ALGAE_SCORE),
-            armPivot.moveToPosition(ArmPivot.ALGAE_SCORE),
+            elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE),
+            armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
             spinnyClaw.algaeIntakePower()),
         spinnyClaw.algaeExtakePower());
   }

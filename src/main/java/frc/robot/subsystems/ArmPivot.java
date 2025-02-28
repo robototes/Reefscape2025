@@ -37,7 +37,7 @@ public class ArmPivot extends SubsystemBase {
   public static final double PRESET_PRE_L4 = 1.0 / 16.0;
   public static final double ALGAE_REMOVE = 0; // untested
   public static final double ALGAE_STOWED = 0; // untested
-  public static final double ALGAE_SCORE = 0.125; // untested
+  public static final double ALGAE_PROCESSOR_SCORE = 0.125; // untested
   public static final double PRESET_STOWED = 0.125;
   public static final double PRESET_OUT = 0;
   public static final double PRESET_UP = 0.25; // Pointing directly upwards

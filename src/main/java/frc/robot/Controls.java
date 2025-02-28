@@ -233,7 +233,7 @@ public class Controls {
                                 superStructure.levelOne(driverController.rightBumper())),
                             () -> branchHeight),
                         ScoringMode.ALGAE,
-                        superStructure.algaeScore()),
+                        superStructure.algaeProcessorScore()),
                     () -> scoringMode)
                 .withName("score"));
   }
@@ -310,7 +310,7 @@ public class Controls {
         .povDown()
         .onTrue(
             s.elevatorSubsystem
-                .setLevel(ElevatorSubsystem.ALGAE_SCORE)
+                .setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE)
                 .withName("Elevator Processor"));
     operatorController.povUp().whileTrue(s.elevatorSubsystem.goUp().withName("Elevator go up"));
     operatorController
@@ -368,7 +368,7 @@ public class Controls {
         .b()
         .onTrue(
             s.armPivotSubsystem
-                .moveToPosition(ArmPivot.ALGAE_SCORE)
+                .moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE)
                 .withName("SetAlgaePresetScore"));
     armPivotSpinnyClawController
         .a()
