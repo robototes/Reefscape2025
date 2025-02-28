@@ -64,6 +64,7 @@ public class SpinnyClaw extends SubsystemBase {
   private Command setPower(double pow) {
     return runOnce(() -> motor.setVoltage(pow));
   }
+
   private Command holdPower(double pow) {
     return startEnd(() -> motor.setVoltage(pow), () -> motor.stopMotor());
   }
@@ -83,8 +84,8 @@ public class SpinnyClaw extends SubsystemBase {
   public Command holdExtakePower() {
     return holdPower(EXTAKE_SPEED).withName("Hold extake power");
   }
-  
-  //algae stuff
+
+  // algae stuff
   public Command algaeIntakePower() {
     return setPower(ALGAE_INTAKE_SPEED).withName("Algae Intake power");
   }
@@ -92,11 +93,11 @@ public class SpinnyClaw extends SubsystemBase {
   public Command algaeExtakePower() {
     return setPower(ALGAE_EXTAKE_SPEED).withName("Algae Extake power");
   }
-  
+
   public Command algaeHoldIntakePower() { // tbh idk if it works
     return holdPower(ALGAE_INTAKE_SPEED).withName("Algae hold intake power");
   }
-  
+
   public Command algaeHoldExtakePower() { // tbh idk if it works
     return holdPower(ALGAE_EXTAKE_SPEED).withName("Algae hold extake power");
   }

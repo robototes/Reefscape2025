@@ -185,30 +185,32 @@ public class Controls {
             Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("algae level 2-3"));
     ;
-    
-    /*operatorController
-        .a()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.ALGAE_STOWED).withName("algae stow"));*/
 
-    operatorController.rightBumper()
-    .onTrue(superStructure.stow().withName("Stow"))
-    .onTrue(superStructure.algaeStow().withName("Algae Stow"));
+    /*operatorController
+    .a()
+    .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.ALGAE_STOWED).withName("algae stow"));*/
+
+    operatorController
+        .rightBumper()
+        .onTrue(superStructure.stow().withName("Stow"))
+        .onTrue(superStructure.algaeStow().withName("Algae Stow"));
     driverController
         .a()
         .onTrue(
             Commands.select(
-                Map.of(
-                    ScoringMode.CORAL,
-                    superStructure.intake(),
-                    ScoringMode.ALGAE,
-                    Commands.select(
-                        Map.of(
-                            AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR,
-                            superStructure.algaeLevelThreeFourFling(),
-                            AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE,
-                            superStructure.algaeLevelTwoThreeFling()),
-                        () -> algaeIntakeHeight)),
-                () -> scoringMode).withName("Driver Intake"));
+                    Map.of(
+                        ScoringMode.CORAL,
+                        superStructure.intake(),
+                        ScoringMode.ALGAE,
+                        Commands.select(
+                            Map.of(
+                                AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR,
+                                superStructure.algaeLevelThreeFourFling(),
+                                AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE,
+                                superStructure.algaeLevelTwoThreeFling()),
+                            () -> algaeIntakeHeight)),
+                    () -> scoringMode)
+                .withName("Driver Intake"));
     if (sensors.armSensor != null) {
       sensors.armSensor.inTrough().onTrue(superStructure.intake());
     }
@@ -256,7 +258,7 @@ public class Controls {
                 .goDownPower(
                     () -> MathUtil.applyDeadband(operatorController.getRightTriggerAxis(), 0.1))
                 .withName("Power down"));
-    
+
     s.elevatorSubsystem.setRumble(
         (rumble) -> {
           elevatorTestController.setRumble(RumbleType.kBothRumble, rumble);
@@ -283,7 +285,9 @@ public class Controls {
     elevatorTestController
         .rightBumper()
         .onTrue(
-            s.elevatorSubsystem.setLevel(ElevatorSubsystem.INTAKE_POS).withName("Elevator IntakePos"));
+            s.elevatorSubsystem
+                .setLevel(ElevatorSubsystem.INTAKE_POS)
+                .withName("Elevator IntakePos"));
     elevatorTestController
         .povUp()
         .onTrue(
@@ -389,8 +393,12 @@ public class Controls {
     // Claw controls bindings go here
     armPivotSpinnyClawController.leftBumper().whileTrue(s.spinnyClawSubsytem.holdExtakePower());
     armPivotSpinnyClawController.rightBumper().whileTrue(s.spinnyClawSubsytem.holdIntakePower());
-    armPivotSpinnyClawController.leftTrigger().whileTrue(s.spinnyClawSubsytem.algaeHoldExtakePower());
-    armPivotSpinnyClawController.rightTrigger().whileTrue(s.spinnyClawSubsytem.algaeHoldIntakePower());
+    armPivotSpinnyClawController
+        .leftTrigger()
+        .whileTrue(s.spinnyClawSubsytem.algaeHoldExtakePower());
+    armPivotSpinnyClawController
+        .rightTrigger()
+        .whileTrue(s.spinnyClawSubsytem.algaeHoldIntakePower());
     driverController.leftTrigger().whileTrue(s.spinnyClawSubsytem.holdExtakePower());
     driverController.rightTrigger().whileTrue(s.spinnyClawSubsytem.holdIntakePower());
   }

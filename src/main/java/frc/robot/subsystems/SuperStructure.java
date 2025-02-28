@@ -109,6 +109,7 @@ public class SuperStructure {
         elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE),
         algaeStow());
   }
+
   public Command algaeLevelThreeFourFling() {
     return Commands.sequence(
         spinnyClaw.algaeFlingPower(),
