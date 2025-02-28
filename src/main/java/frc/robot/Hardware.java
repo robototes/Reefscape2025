@@ -18,6 +18,7 @@ public class Hardware {
 
   // arm pivot [30-34]
   public static final int ARM_PIVOT_MOTOR_ID = 30;
+  public static final int ARM_PIVOT_CANDI_ID = 31;
 
   // climb [50-59]
   public static final int CLIMB_PIVOT_MOTOR_ONE_ID = 50;

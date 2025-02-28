@@ -19,98 +19,78 @@ public class SuperStructure {
     this.armSensor = armSensor;
   }
 
-  public Command levelFourPrescore() {
-    return Commands.parallel(
-        // may need to change things if elevator/arm move at different times
-        // arm may need to move first - sequential?
-        elevator.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS),
-        armPivot.moveToPosition(ArmPivot.PRESET_UP),
-        spinnyClaw.stop());
-  }
-
-  public Command levelFourScore() {
-    return Commands.parallel(
-        elevator.setLevel(ElevatorSubsystem.STOWED),
-        armPivot.moveToPosition(ArmPivot.PRESET_L4),
-        spinnyClaw.extakePower());
-  }
-
   public Command levelFour(BooleanSupplier score) {
     return Commands.sequence(
-        levelFourPrescore(), Commands.waitUntil(score), levelFourScore(), stow());
-  }
-
-  public Command levelThreePrescore() {
-    return Commands.parallel(
-        elevator.setLevel(ElevatorSubsystem.LEVEL_THREE_POS),
-        armPivot.moveToPosition(ArmPivot.PRESET_L2_L3),
-        spinnyClaw.stop());
-  }
-
-  public Command levelThreeScore() {
-    return Commands.parallel(
-        elevator.setLevel(ElevatorSubsystem.STOWED),
-        armPivot.moveToPosition(ArmPivot.PRESET_L2_L3),
-        spinnyClaw.extakePower());
+        Commands.parallel(
+            elevator.setLevel(ElevatorSubsystem.LEVEL_FOUR_PRE_POS),
+            armPivot.moveToPosition(ArmPivot.PRESET_UP),
+            spinnyClaw.stop()),
+        armPivot.moveToPosition(ArmPivot.PRESET_PRE_L4),
+        Commands.waitUntil(score),
+        Commands.parallel(
+            elevator.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS),
+            armPivot.moveToPosition(ArmPivot.PRESET_L4)),
+        spinnyClaw.holdExtakePower().withTimeout(0.2),
+        stow());
   }
 
   public Command levelThree(BooleanSupplier score) {
     return Commands.sequence(
-        levelThreePrescore(), Commands.waitUntil(score), levelThreeScore(), stow());
-  }
-
-  public Command levelTwoPrescore() {
-    return Commands.parallel(
-        elevator.setLevel(ElevatorSubsystem.LEVEL_TWO_POS),
+        Commands.parallel(
+            elevator.setLevel(ElevatorSubsystem.LEVEL_THREE_PRE_POS),
+            armPivot.moveToPosition(ArmPivot.PRESET_UP),
+            spinnyClaw.stop()),
         armPivot.moveToPosition(ArmPivot.PRESET_L2_L3),
-        spinnyClaw.stop());
-  }
-
-  public Command levelTwoScore() {
-    return Commands.parallel(
-        elevator.setLevel(ElevatorSubsystem.STOWED),
-        armPivot.moveToPosition(ArmPivot.PRESET_L2_L3),
-        spinnyClaw.extakePower());
+        Commands.waitUntil(score),
+        elevator.setLevel(ElevatorSubsystem.LEVEL_THREE_POS),
+        spinnyClaw.holdExtakePower().withTimeout(0.15),
+        stow());
   }
 
   public Command levelTwo(BooleanSupplier score) {
     return Commands.sequence(
-        levelTwoPrescore(), Commands.waitUntil(score), levelTwoScore(), stow());
-  }
-
-  public Command levelOnePrescore() {
-    return Commands.parallel(
-        elevator.setLevel(ElevatorSubsystem.LEVEL_ONE_POS),
-        armPivot.moveToPosition(ArmPivot.PRESET_L1),
-        spinnyClaw.stop());
-  }
-
-  public Command levelOneScore() {
-    return Commands.parallel(
-        elevator.setLevel(ElevatorSubsystem.STOWED),
-        armPivot.moveToPosition(ArmPivot.PRESET_L1),
-        spinnyClaw.extakePower());
+        Commands.parallel(
+            elevator.setLevel(ElevatorSubsystem.LEVEL_TWO_PRE_POS),
+            armPivot.moveToPosition(ArmPivot.PRESET_UP),
+            spinnyClaw.stop()),
+        armPivot.moveToPosition(ArmPivot.PRESET_L2_L3),
+        Commands.waitUntil(score),
+        elevator.setLevel(ElevatorSubsystem.LEVEL_TWO_POS),
+        spinnyClaw.holdExtakePower().withTimeout(0.15),
+        stow());
   }
 
   public Command levelOne(BooleanSupplier score) {
     return Commands.sequence(
-        levelOnePrescore(), Commands.waitUntil(score), levelOneScore(), stow());
+        Commands.parallel(
+            elevator.setLevel(ElevatorSubsystem.LEVEL_ONE_POS),
+            armPivot.moveToPosition(ArmPivot.PRESET_L1),
+            spinnyClaw.stop()),
+        Commands.waitUntil(score),
+        elevator.setLevel(ElevatorSubsystem.LEVEL_TWO_POS),
+        spinnyClaw.holdExtakePower().withTimeout(0.15),
+        stow());
   }
 
   public Command stow() {
     return Commands.parallel(
         elevator.setLevel(ElevatorSubsystem.STOWED),
-        armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
+        armPivot.moveToPosition(ArmPivot.PRESET_STOWED),
         spinnyClaw.stop());
   }
 
   public Command intake() {
     return Commands.sequence(
-        Commands.parallel(
+            Commands.parallel(
+                elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
+                armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
+                spinnyClaw.intakePower()),
+            // Commands.waitUntil(armSensor.inTrough()),
             elevator.setLevel(ElevatorSubsystem.INTAKE),
-            armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
-            spinnyClaw.intakePower()),
-        Commands.waitUntil(armSensor.inClaw()),
-        stow());
+            Commands.waitSeconds(0.1),
+            spinnyClaw.stop(),
+            elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
+            stow())
+        .withName("Intake");
   }
 }

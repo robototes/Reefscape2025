@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -25,10 +24,12 @@ public class ClimbPivot extends SubsystemBase {
   private GenericEntry climbstateEntry;
   private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Climb");
 
-  private final double CLIMB_OUT_PRESET = 90;
+  private final double CLIMB_OUT_PRESET = -72;
+  private final double FORWARD_SOFT_STOP = 1;
+  private final double REVERSE_SOFT_STOP = -78;
   private final double CLIMB_IN_PRESET = 0;
-  private final double CLIMB_IN_SPEED = 0.5;
-  private final double CLIMB_OUT_SPEED = -0.5;
+  private final double CLIMB_IN_SPEED = 0.2;
+  private final double CLIMB_OUT_SPEED = -0.2;
   private final double BOOLEAN_TOLERANCE = 2;
   private boolean isClimbOut = false;
   private boolean isClimbIn = true;
@@ -40,28 +41,29 @@ public class ClimbPivot extends SubsystemBase {
     climbSensor = new DigitalInput(Hardware.CLIMB_SENSOR);
     configureMotors();
     setupLogging();
+    climbPivotMotorTwo.setControl(new Follower(climbPivotMotorOne.getDeviceID(), true));
   }
 
   private void configureMotors() {
     var talonFXConfigurator = climbPivotMotorOne.getConfigurator();
     var talonFXConfigurator2 = climbPivotMotorTwo.getConfigurator();
+    TalonFXConfiguration configuration = new TalonFXConfiguration();
     // Set and enable current limit
-    var currentLimits = new CurrentLimitsConfigs();
-    currentLimits.StatorCurrentLimit = 5;
-    currentLimits.StatorCurrentLimitEnable = true;
-    currentLimits.SupplyCurrentLimit = 5;
-    currentLimits.SupplyCurrentLimitEnable = true;
-    talonFXConfigurator.apply(currentLimits);
-    talonFXConfigurator2.apply(currentLimits);
-
-    var talonFXMotorOutput = new MotorOutputConfigs();
+    configuration.CurrentLimits.StatorCurrentLimit = 150;
+    configuration.CurrentLimits.StatorCurrentLimitEnable = true;
+    configuration.CurrentLimits.SupplyCurrentLimit = 75;
+    configuration.CurrentLimits.SupplyCurrentLimitEnable = true;
     // Enable brake mode
-    talonFXMotorOutput.NeutralMode = NeutralModeValue.Brake;
-    talonFXConfigurator.apply(talonFXMotorOutput);
-    talonFXConfigurator2.apply(talonFXMotorOutput);
+    configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    talonFXConfigurator2.apply(configuration);
+
+    configuration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    configuration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    configuration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = FORWARD_SOFT_STOP;
+    configuration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_SOFT_STOP;
+    talonFXConfigurator.apply(configuration);
     // OpposeMasterDirection can be changed based on climb design, not yet sure if 2nd motor will be
     // on opposite side
-    climbPivotMotorTwo.setControl(new Follower(climbPivotMotorOne.getDeviceID(), true));
   }
 
   public Command moveClimbMotor(double speed) {
@@ -95,7 +97,7 @@ public class ClimbPivot extends SubsystemBase {
                     () -> {
                       climbPivotMotorOne.stopMotor();
                     })
-                .until(() -> !isClimbIn),
+                .until(() -> isClimbIn),
             () -> nextMoveOut)
         .withName("toggleClimb");
   }
@@ -106,6 +108,18 @@ public class ClimbPivot extends SubsystemBase {
 
   public double getClimbVelocity() {
     return climbPivotMotorOne.getVelocity().getValueAsDouble();
+  }
+
+  public double getClimbPosition() {
+    return climbPivotMotorOne.getPosition().getValueAsDouble();
+  }
+
+  public void setPosition(double pos) {
+    climbPivotMotorOne.setPosition(pos);
+  }
+
+  public Command zeroClimb() {
+    return runOnce(() -> setPosition(0));
   }
 
   public void setupLogging() {
@@ -132,6 +146,7 @@ public class ClimbPivot extends SubsystemBase {
     shuffleboardTab
         .addDouble("Motor Speed", () -> getClimbVelocity())
         .withWidget(BuiltInWidgets.kTextView);
+    shuffleboardTab.addDouble("Motor Position", () -> getClimbPosition());
   }
 
   @Override

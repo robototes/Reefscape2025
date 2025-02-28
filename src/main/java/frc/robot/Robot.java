@@ -4,12 +4,14 @@
 
 package frc.robot;
 
+import au.grapplerobotics.CanBridge;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -35,7 +37,11 @@ public class Robot extends TimedRobot {
   public final Controls controls;
   public final Subsystems subsystems;
   public final Sensors sensors;
+
   public List<Pose2d> pathPoses;
+
+  public final AutoLogic autoLogic;
+
   public final SuperStructure superStructure;
 
   @SuppressWarnings("unused")
@@ -44,11 +50,13 @@ public class Robot extends TimedRobot {
 
     instance = this;
     robotType = RobotType.getCurrent();
+    CanBridge.runTCP();
 
     LiveWindow.disableAllTelemetry();
 
     subsystems = new Subsystems();
     sensors = new Sensors();
+    autoLogic = new AutoLogic();
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
         && SubsystemConstants.SPINNYCLAW_ENABLED
@@ -65,7 +73,6 @@ public class Robot extends TimedRobot {
     controls = new Controls(subsystems, sensors, superStructure);
 
     SmartDashboard.putString("current bot", robotType.toString());
-    SmartDashboard.putData("commandScheduler", CommandScheduler.getInstance());
 
     if (RobotBase.isReal()) {
       DataLogManager.start();
@@ -82,6 +89,7 @@ public class Robot extends TimedRobot {
         .onCommandFinish(command -> System.out.println("Command finished: " + command.getName()));
 
     SmartDashboard.putData(CommandScheduler.getInstance());
+    AutoLogic.RunAuto(subsystems.drivebaseSubsystem);
 
     BuildInfo.logBuildInfo();
 
@@ -94,7 +102,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    AutoLogic.registerCommand();
   }
 
   @Override
@@ -123,7 +130,13 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+
+    Shuffleboard.startRecording();
+
+   
+    DriverStation.silenceJoystickConnectionWarning(!DriverStation.isFMSAttached());
+  }
 
   @Override
   public void autonomousExit() {

@@ -15,10 +15,8 @@ import frc.robot.Hardware;
 import java.util.function.Supplier;
 
 public class SpinnyClaw extends SubsystemBase {
-  public static final double INTAKE_SPEED =
-      4; // untested, starting with a guess direction and speed
-  public static final double EXTAKE_SPEED =
-      -4; // untested, starting with a guess direction and speed
+  public static final double INTAKE_SPEED = -4;
+  public static final double EXTAKE_SPEED = 2;
   // Remove once we implement PID speed
   public static int placeholderPIDSpeed;
 
@@ -61,14 +59,24 @@ public class SpinnyClaw extends SubsystemBase {
   }
 
   public Command intakePower() {
-    return runOnce(() -> motor.setVoltage(INTAKE_SPEED));
+    return runOnce(() -> motor.setVoltage(INTAKE_SPEED)).withName("Intake power");
   }
 
   public Command extakePower() {
-    return runOnce(() -> motor.setVoltage(EXTAKE_SPEED));
+    return runOnce(() -> motor.setVoltage(EXTAKE_SPEED)).withName("Extake power");
+  }
+
+  public Command holdIntakePower() {
+    return startEnd(() -> motor.setVoltage(INTAKE_SPEED), () -> motor.stopMotor())
+        .withName("Hold intake power");
+  }
+
+  public Command holdExtakePower() {
+    return startEnd(() -> motor.setVoltage(EXTAKE_SPEED), () -> motor.stopMotor())
+        .withName("Hold extake power");
   }
 
   public Command stop() {
-    return runOnce(() -> motor.stopMotor());
+    return runOnce(() -> motor.stopMotor()).withName("Spinny claw stop");
   }
 }
