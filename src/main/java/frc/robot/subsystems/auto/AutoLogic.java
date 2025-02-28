@@ -43,13 +43,18 @@ public class AutoLogic {
   public static final double STAGE_ANGLE = 262;
 
   public static enum StartPosition {
-    AMP_SIDE_SUBWOOFER(
-        "Amp Side Subwoofer", new Pose2d(0.73, 6.62, new Rotation2d(Units.degreesToRadians(-120)))),
-    MID_SIDE_SUBWOOFER(
-        "Mid Side Subwoofer", new Pose2d(1.33, 5.55, new Rotation2d(Units.degreesToRadians(180)))),
-    SOURCE_SIDE_SUBWOOFER(
-        "Source Side Subwoofer",
-        new Pose2d(0.73, 4.47, new Rotation2d(Units.degreesToRadians(120)))),
+    ALLIANCE_SIDE_WALL(
+        "Alliance Side Wall",
+        new Pose2d(7.187, 7.277, new Rotation2d(Units.degreesToRadians(270)))),
+    ALLIANCE_SIDE_MIDDLE(
+        "Alliance Side Middle",
+        new Pose2d(7.187, 6.171, new Rotation2d(Units.degreesToRadians(270)))),
+    MIDDLE("MIDDLE", new Pose2d(7.187, 4.044, new Rotation2d(Units.degreesToRadians(180)))),
+    OPPOSITE_ALLIANCE_SIDE_WALL(
+        "Alliance Side Wall", new Pose2d(7.187, 1.908, new Rotation2d(Units.degreesToRadians(90)))),
+    OPPOSITE_ALLIANCE_SIDE_MIDDLE(
+        "Alliance Side Middle",
+        new Pose2d(7.187, 0.811, new Rotation2d(Units.degreesToRadians(90)))),
     MISC("Misc", null);
 
     final String title; // for shuffleboard display
@@ -74,74 +79,30 @@ public class AutoLogic {
 
   private static List<AutoPath> noPiecePaths =
       List.of(
-          // presets
-          new AutoPath("Test Path Rotate", "5mForwardRotate180"),
-          new AutoPath("Test Path", "DiameterTest"),
-          new AutoPath("Master PID Test", "MasterPIDTest"),
-          new AutoPath("Tune Translational PID", "TuneTranslationalPID"),
-          new AutoPath("Tune Rotational PID", "TuneRotationalPID"),
-          new AutoPath("Stand Still", "PresetSourceSide1Score"),
-          new AutoPath("Stand Still", "PresetMid1Score"),
-          new AutoPath("Stand Still", "PresetAmpSide1Score"),
-          new AutoPath("Subwoofer Launch Test", "SubwooferLaunchTest"),
-          // new AutoPath("Pass Auto Line", "PresetSourceSide1ScorePassAutoLine"),
-          new AutoPath("Pass Autoline", "PresetAmpSide1ScorePassAutoline"),
-          new AutoPath("Pass Autoline", "PresetSourceSide1ScorePassAutoline"),
-          new AutoPath("Vision Launch Test", "VisionLaunchTest", true),
-          new AutoPath("Steal Test", "StealTest"));
+          new AutoPath("YSW0", "YSW0"),
+          new AutoPath("YSM0", "YSM0"),
+          new AutoPath("M0", "M0"),
+          new AutoPath("OSM0", "OSM0"),
+          new AutoPath("OSW0", "OSW0"));
 
   private static List<AutoPath> onePiecePaths =
       List.of(
-          // presets
-          new AutoPath("Autoline N1", "PresetAmpSide2Score"),
-          new AutoPath("Autoline N2", "PresetMidAutoline2Score"),
-          new AutoPath("Autoline N3", "PresetSourceSideAutoline2Score"),
-          new AutoPath("Centerline N5", "PresetSourceSideFar2Score")
-          // vision
-          );
+          new AutoPath("YSW_J", "YSW_J"),
+          new AutoPath("YSW_I", "YSW_I"),
+          new AutoPath("YSM_I", "YSM_I"),
+          new AutoPath("M_G", "M_G"),
+          new AutoPath("M_H", "M_H"),
+          new AutoPath("OSM_F", "OSM_F"),
+          new AutoPath("OSW_F", "OSW_F"),
+          new AutoPath("OSW_E", "OSW_E"));
 
-  private static List<AutoPath> twoPiecePaths =
-      List.of(
-          // presets
-          new AutoPath("Autoline N1 Centerline N1", "PresetAmpSideAutoline3Score"),
-          new AutoPath("Autoline N2 N1", "PresetMidAutoline3Score"),
-          new AutoPath("Autoline N2 N3", "PresetMidAutoline3Score2"),
-          new AutoPath("Centerline N5 N4", "PresetSourceSideCenterline3Score2"),
-          new AutoPath("Centerline N5 N3", "PresetSourceSideCenterline3Score2"),
-          // vision
-          new AutoPath("Centerline N5 N4", "VisionSourceSide3Score", true),
-          new AutoPath("Centerline N3 N1", "VisionMidFar2Score", true),
-          new AutoPath("Autoline N1 Centerline N1", "VisionAmpSideFarAutoline3Score", true));
+  private static List<AutoPath> twoPiecePaths = List.of(new AutoPath("YSWLSF_I-J", "YSWKSF_I-J"));
 
   private static List<AutoPath> threePiecePaths =
-      List.of(
-          // presets
-          new AutoPath("Autoline N1 N2 N3", "PresetAmpSideAutoline4Score"),
-          new AutoPath("Autoline N2 N3 N1", "PresetMidAutoline4Score"),
-          new AutoPath("Autoline N3 N2 N1", "PresetSourceSideAutoline4Score"),
-          new AutoPath("Autoline N1 Centerline N1 Autoline N2", "PresetAmpSideAutolineFar4Score"),
-          // vision
-          new AutoPath("Autoline N1 Centerline N1 N2", "VisionAmpSide4Score", true),
-          new AutoPath("Autoline N1 N2 N3", "VisionAmpSideAutoline4Score", true),
-          new AutoPath("Autoline N3 N2 N1", "VisionMid4Score", true),
-          new AutoPath("Autoline N2 Centerline N3 N1", "VisionMidFar4Score2", true),
-          new AutoPath("Autoline N2 Centerline N3 N2", "VisionMidFar4Score3", true),
-          new AutoPath("Autoline N3 N2 N1", "VisionSourceSideAutoline4Score", true));
+      List.of(new AutoPath("YSWLSF_I-J-K", "YSWLSF_I-J-K"));
 
   private static List<AutoPath> fourPiecePaths =
-      List.of(
-          // presets
-          // vision
-          new AutoPath("Centerline N1 Autoline N1 N2 N3", "VisionAmpSideAutoline5Score", true),
-          new AutoPath("Autoline N1 Centerline N1 N2 Autoline N2", "VisionAmpSide5Score", true));
-
-  private static List<AutoPath> fivePiecePaths =
-      List.of(new AutoPath("GTA(Centerline N5N4N3N2N1)", "VisionSourceSideGrandTheftAuto", true));
-
-  private static List<AutoPath> sixPiecePaths =
-      List.of(
-          new AutoPath(
-              "Autoline N1 GTA(Centerline N1N2N3N4N5)", "VisionAmpSideGrandTheftAuto", true));
+      List.of(new AutoPath("YSWLSF_I-J-K-L", "YSWLSF_I-J-K-L", true));
   // map (gulp)
   private static Map<Integer, List<AutoPath>> commandsMap =
       Map.of(
@@ -154,11 +115,7 @@ public class AutoLogic {
           3,
           threePiecePaths,
           4,
-          fourPiecePaths,
-          5,
-          fivePiecePaths,
-          6,
-          sixPiecePaths);
+          fourPiecePaths);
 
   // vars
 
