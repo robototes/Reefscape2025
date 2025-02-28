@@ -7,31 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": " OppSideWalltoE"
+            "pathName": "Yoursidemiddle to I"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "EtoRightSideFar"
+            "pathName": "I to Left side far"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "FarStationtoD"
+            "pathName": "Leftsidefar to J"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "DtoFarCoralStation"
+            "pathName": "J to Leftsidefar"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "FarStationtoC"
+            "pathName": "Leftsidefar to K"
           }
         }
       ]
