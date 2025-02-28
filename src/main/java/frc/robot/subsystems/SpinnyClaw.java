@@ -60,38 +60,45 @@ public class SpinnyClaw extends SubsystemBase {
     cfg.apply(currentLimits);
   }
 
+  private Command setPower(double pow) {
+    return runOnce(() -> motor.setVoltage(pow));
+  }
+  private Command holdPower(double pow) {
+    return startEnd(() -> motor.setVoltage(pow), () -> motor.stopMotor());
+  }
+
   public Command intakePower() {
-    return runOnce(() -> motor.setVoltage(INTAKE_SPEED)).withName("Intake power");
+    return setPower(INTAKE_SPEED).withName("Intake power");
   }
 
   public Command extakePower() {
-    return runOnce(() -> motor.setVoltage(EXTAKE_SPEED)).withName("Extake power");
-  }
-
-  public Command algaeIntakePower() {
-    return runOnce(() -> motor.setVoltage(ALGAE_INTAKE_SPEED)).withName("Algae Intake power");
-  }
-
-  public Command algaeExtakePower() {
-    return runOnce(() -> motor.setVoltage(ALGAE_EXTAKE_SPEED)).withName("Algae Extake power");
+    return setPower(EXTAKE_SPEED).withName("Extake power");
   }
 
   public Command holdIntakePower() {
-    return startEnd(() -> motor.setVoltage(INTAKE_SPEED), () -> motor.stopMotor())
-        .withName("Hold intake power");
+    return holdPower(INTAKE_SPEED).withName("Hold intake power");
   }
 
   public Command holdExtakePower() {
-    return startEnd(() -> motor.setVoltage(EXTAKE_SPEED), () -> motor.stopMotor())
-        .withName("Hold extake power");
+    return holdPower(EXTAKE_SPEED).withName("Hold extake power");
+  }
+  
+  //algae stuff
+  public Command algaeIntakePower() {
+    return setPower(ALGAE_INTAKE_SPEED).withName("Algae Intake power");
   }
 
-  /*
-  public Command algaeHoldIntakePower() { // tbh idk if it works
-    return startEnd(() -> motor.setVoltage(ALGAE_INTAKE_SPEED), () -> motor.stopMotor())
-        .withName("Algae hold intake power");
+  public Command algaeExtakePower() {
+    return setPower(ALGAE_EXTAKE_SPEED).withName("Algae Extake power");
   }
-  */
+  
+  public Command algaeHoldIntakePower() { // tbh idk if it works
+    return holdPower(ALGAE_INTAKE_SPEED).withName("Algae hold intake power");
+  }
+  
+  public Command algaeHoldExtakePower() { // tbh idk if it works
+    return holdPower(ALGAE_EXTAKE_SPEED).withName("Algae hold extake power");
+  }
 
   public Command stop() {
     return runOnce(() -> motor.stopMotor()).withName("Spinny claw stop");

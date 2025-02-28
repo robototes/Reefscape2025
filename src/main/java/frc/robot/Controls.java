@@ -185,17 +185,14 @@ public class Controls {
             Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("algae level 2-3"));
     ;
+    
     /*operatorController
-        .x()
-        .onTrue(
-            Commands.runOnce(() -> branchHeight = BranchHeight.ALGAE_LEVEL_THREE_FOUR).withName("algae level 3-4"));
-    operatorController
-        .b()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.ALGAE_LEVEL_TWO_THREE).withName("algae level 2-3"));
-    operatorController
         .a()
         .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.ALGAE_STOWED).withName("algae stow"));*/
-    operatorController.rightBumper().onTrue(superStructure.stow().withName("Stow"));
+
+    operatorController.rightBumper()
+    .onTrue(superStructure.stow().withName("Stow"))
+    .onTrue(superStructure.algaeStow().withName("Algae Stow"));
     driverController
         .a()
         .onTrue(
@@ -211,7 +208,7 @@ public class Controls {
                             AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE,
                             superStructure.algaeLevelTwoThree()),
                         () -> algaeIntakeHeight)),
-                () -> scoringMode));
+                () -> scoringMode).withName("Driver Intake"));
     if (sensors.armSensor != null) {
       sensors.armSensor.inTrough().onTrue(superStructure.intake());
     }
@@ -259,18 +256,7 @@ public class Controls {
                 .goDownPower(
                     () -> MathUtil.applyDeadband(operatorController.getRightTriggerAxis(), 0.1))
                 .withName("Power down"));
-    // operatorController
-    //     .leftTrigger()
-    //     .whileTrue(s.elevatorSubsystem.sysIdDynamic(Direction.kForward));
-    // operatorController
-    //     .leftBumper()
-    //     .whileTrue(s.elevatorSubsystem.sysIdQuasistatic(Direction.kForward));
-    // operatorController
-    //     .rightTrigger()
-    //     .whileTrue(s.elevatorSubsystem.sysIdDynamic(Direction.kReverse));
-    // operatorController
-    //    .rightBumper()
-    //    .whileTrue(s.elevatorSubsystem.sysIdQuasistatic(Direction.kReverse));
+    
     s.elevatorSubsystem.setRumble(
         (rumble) -> {
           elevatorTestController.setRumble(RumbleType.kBothRumble, rumble);
@@ -297,21 +283,21 @@ public class Controls {
     elevatorTestController
         .rightBumper()
         .onTrue(
-            s.elevatorSubsystem.setLevel(ElevatorSubsystem.INTAKE).withName("Elevator IntakePos"));
+            s.elevatorSubsystem.setLevel(ElevatorSubsystem.INTAKE_POS).withName("Elevator IntakePos"));
     elevatorTestController
-        .leftBumper()
+        .povUp()
         .onTrue(
             s.elevatorSubsystem
                 .setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)
                 .withName("Elevator Algae L3-L4"));
     elevatorTestController
-        .povUp()
+        .povLeft()
         .onTrue(
             s.elevatorSubsystem
                 .setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)
                 .withName("Elevator Algae L2-L3"));
     elevatorTestController
-        .povUp()
+        .povRight()
         .onTrue(
             s.elevatorSubsystem
                 .setLevel(ElevatorSubsystem.ALGAE_STOWED)
@@ -345,18 +331,6 @@ public class Controls {
     }
 
     // Arm Controls binding goes here
-    /*armPivotSpinnyClawController
-        .a()
-        .whileTrue(s.armPivotSubsystem.SysIDDynamic(Direction.kForward));
-    armPivotSpinnyClawController
-        .b()
-        .whileTrue(s.armPivotSubsystem.SysIDDynamic(Direction.kReverse));
-    armPivotSpinnyClawController
-        .x()
-        .whileTrue(s.armPivotSubsystem.SysIDQuasistatic(Direction.kForward));
-    armPivotSpinnyClawController
-        .y()
-        .whileTrue(s.armPivotSubsystem.SysIDQuasistatic(Direction.kReverse));*/
     armPivotSpinnyClawController
         .leftStick()
         .whileTrue(
@@ -413,10 +387,10 @@ public class Controls {
       return;
     }
     // Claw controls bindings go here
-    armPivotSpinnyClawController.rightBumper().whileTrue(s.spinnyClawSubsytem.holdExtakePower());
-    armPivotSpinnyClawController.leftBumper().whileTrue(s.spinnyClawSubsytem.holdIntakePower());
-    armPivotSpinnyClawController.rightTrigger().whileTrue(s.spinnyClawSubsytem.algaeExtakePower());
-    armPivotSpinnyClawController.leftTrigger().whileTrue(s.spinnyClawSubsytem.algaeIntakePower());
+    armPivotSpinnyClawController.leftBumper().whileTrue(s.spinnyClawSubsytem.holdExtakePower());
+    armPivotSpinnyClawController.rightBumper().whileTrue(s.spinnyClawSubsytem.holdIntakePower());
+    armPivotSpinnyClawController.leftTrigger().whileTrue(s.spinnyClawSubsytem.algaeHoldExtakePower());
+    armPivotSpinnyClawController.rightTrigger().whileTrue(s.spinnyClawSubsytem.algaeHoldIntakePower());
     driverController.leftTrigger().whileTrue(s.spinnyClawSubsytem.holdExtakePower());
     driverController.rightTrigger().whileTrue(s.spinnyClawSubsytem.holdIntakePower());
   }

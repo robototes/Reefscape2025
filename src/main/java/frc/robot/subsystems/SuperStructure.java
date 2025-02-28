@@ -86,7 +86,7 @@ public class SuperStructure {
                 armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
                 spinnyClaw.intakePower()),
             // Commands.waitUntil(armSensor.inTrough()),
-            elevator.setLevel(ElevatorSubsystem.INTAKE),
+            elevator.setLevel(ElevatorSubsystem.INTAKE_POS),
             Commands.waitSeconds(0.1),
             spinnyClaw.stop(),
             elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
