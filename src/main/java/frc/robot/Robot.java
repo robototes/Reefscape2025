@@ -11,6 +11,10 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Sensors.SensorConstants;
+import frc.robot.Subsystems.SubsystemConstants;
+import frc.robot.subsystems.SuperStructure;
+import frc.robot.util.BuildInfo;
 import frc.robot.util.RobotType;
 
 public class Robot extends TimedRobot {
@@ -26,6 +30,7 @@ public class Robot extends TimedRobot {
   public final Controls controls;
   public final Subsystems subsystems;
   public final Sensors sensors;
+  public final SuperStructure superStructure;
 
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
@@ -35,8 +40,21 @@ public class Robot extends TimedRobot {
     LiveWindow.disableAllTelemetry();
 
     subsystems = new Subsystems();
-    controls = new Controls(subsystems);
     sensors = new Sensors();
+    if (SubsystemConstants.ELEVATOR_ENABLED
+        && SubsystemConstants.ARMPIVOT_ENABLED
+        && SubsystemConstants.SPINNYCLAW_ENABLED
+        && SensorConstants.ARMSENSOR_ENABLED) {
+      superStructure =
+          new SuperStructure(
+              subsystems.elevatorSubsystem,
+              subsystems.armPivotSubsystem,
+              subsystems.spinnyClawSubsytem,
+              sensors.armSensor);
+    } else {
+      superStructure = null;
+    }
+    controls = new Controls(subsystems, sensors, superStructure);
 
     SmartDashboard.putString("current bot", robotType.toString());
 
@@ -55,6 +73,8 @@ public class Robot extends TimedRobot {
         .onCommandFinish(command -> System.out.println("Command finished: " + command.getName()));
 
     SmartDashboard.putData(CommandScheduler.getInstance());
+
+    BuildInfo.logBuildInfo();
 
     DriverStation.silenceJoystickConnectionWarning(true);
   }
