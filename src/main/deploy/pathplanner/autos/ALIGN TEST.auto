@@ -7,7 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ALIGN TESTRightSideFarToC"
+            "pathName": "ALIGN TEST"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoAlign"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of ALIGN TEST"
           }
         },
         {

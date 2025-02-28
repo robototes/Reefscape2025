@@ -38,7 +38,6 @@ public class AutoLogic {
   private static SendableChooser<String> autoPicker = new SendableChooser<String>();
   private static SendableChooser<String> autoAction = new SendableChooser<String>();
   private static SendableChooser<String> testedAutos = new SendableChooser<String>();
- 
 
   private static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
 
@@ -122,8 +121,6 @@ public class AutoLogic {
 
   public static void initShuffleBoard() {
 
-    configureAuto(s.drivebaseSubsystem);
-
     addAutoOptions();
     addTestedAutos();
     tab.add("Auto Selector", autoPicker)
@@ -193,6 +190,7 @@ public class AutoLogic {
     autoPicker.addOption("CHOREO High 4 L4(IGNORE)", "HighL4");
     autoPicker.addOption("TESTING Low 3 Piece", "TEST Low3Piece");
     autoPicker.addOption("ALIGNMENT TEST", "ALIGN TEST");
+    autoPicker.addOption("DRIVE TEST", "DRIVE1FT");
   }
 
   public static void addTestedAutos() {}
@@ -223,8 +221,7 @@ public class AutoLogic {
   }
 
   public static Command autoAlignmentCommand() {
-    return Commands.sequence(new WaitCommand(0.8), raiseElevator())
-        .withName("raiseElevatorandWAIT");
+    return AutoAlign.autoAlign(s.drivebaseSubsystem).withName("AutoAlign");
   }
 
   public static void registerCommand() {
@@ -233,11 +230,11 @@ public class AutoLogic {
       if (autoAction.getSelected().equals("raiseElevatorandWait")) {
         NamedCommands.registerCommand("lowerElevator", lowerElevatorandWait());
         NamedCommands.registerCommand("raiseElevator", raiseElevatorandWait());
-        NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
+        NamedCommands.registerCommand("AutoAlign", autoAlignmentCommand());
       } else if (autoAction.getSelected().equals("raiseElevator")) {
         NamedCommands.registerCommand("lowerElevator", lowerElevator());
         NamedCommands.registerCommand("raiseElevator", raiseElevator());
-        NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
+        NamedCommands.registerCommand("AutoAlign", autoAlignmentCommand());
 
       } else {
         System.out.println("FAILED?" + autoAction.getSelected());

@@ -5,7 +5,6 @@
 package frc.robot;
 
 import au.grapplerobotics.CanBridge;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -22,7 +21,6 @@ import frc.robot.util.AutoLogic;
 import frc.robot.util.AutonomousField;
 import frc.robot.util.BuildInfo;
 import frc.robot.util.RobotType;
-import java.util.List;
 
 public class Robot extends TimedRobot {
   /** Singleton Stuff */
@@ -38,10 +36,6 @@ public class Robot extends TimedRobot {
   public final Subsystems subsystems;
   public final Sensors sensors;
 
-  public List<Pose2d> pathPoses;
-
-  public final AutoLogic autoLogic;
-
   public final SuperStructure superStructure;
 
   @SuppressWarnings("unused")
@@ -56,7 +50,7 @@ public class Robot extends TimedRobot {
 
     subsystems = new Subsystems();
     sensors = new Sensors();
-    autoLogic = new AutoLogic();
+
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
         && SubsystemConstants.SPINNYCLAW_ENABLED
@@ -117,9 +111,11 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
 
     // Checks if FMS is attatched and enables joystick warning if true
+    DriverStation.silenceJoystickConnectionWarning(!DriverStation.isFMSAttached());
 
     AutoLogic.configureAuto(subsystems.drivebaseSubsystem);
     Command autoCommand = AutoLogic.getAutoCommand(AutoLogic.getSelectedAutoName());
+    Shuffleboard.startRecording();
 
     if (autoCommand != null) {
       autoCommand.schedule();
@@ -130,12 +126,7 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void autonomousPeriodic() {
-
-    Shuffleboard.startRecording();
-
-    DriverStation.silenceJoystickConnectionWarning(!DriverStation.isFMSAttached());
-  }
+  public void autonomousPeriodic() {}
 
   @Override
   public void autonomousExit() {

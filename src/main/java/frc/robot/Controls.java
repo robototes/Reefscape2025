@@ -85,7 +85,6 @@ public class Controls {
     configureArmPivotBindings();
     configureClimbPivotBindings();
     configureSpinnyClawBindings();
-    configureAlignBindings();
     configureSuperStructureBindings();
     configureElevatorLEDBindings();
     configureAlignBindings();

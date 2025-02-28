@@ -50,41 +50,44 @@ public class Subsystems {
         drivebaseSubsystem = CompTunerConstants.createDrivetrain();
       }
       drivebaseWrapper = new DrivebaseWrapper(drivebaseSubsystem);
+    } else {
+      drivebaseSubsystem = null;
+      drivebaseWrapper = new DrivebaseWrapper();
+    }
 
-      if (VISION_ENABLED) {
-        visionSubsystem = new VisionSubsystem(drivebaseWrapper);
-      } else {
-        visionSubsystem = null;
-      }
+    if (VISION_ENABLED) {
+      visionSubsystem = new VisionSubsystem(drivebaseWrapper);
+    } else {
+      visionSubsystem = null;
+    }
 
-      if (ELEVATOR_ENABLED) {
-        elevatorSubsystem = new ElevatorSubsystem();
-      } else {
-        elevatorSubsystem = null;
-      }
+    if (ELEVATOR_ENABLED) {
+      elevatorSubsystem = new ElevatorSubsystem();
+    } else {
+      elevatorSubsystem = null;
+    }
 
-      if (ARMPIVOT_ENABLED) {
-        armPivotSubsystem = new ArmPivot();
-      } else {
-        armPivotSubsystem = null;
-      }
+    if (ARMPIVOT_ENABLED) {
+      armPivotSubsystem = new ArmPivot();
+    } else {
+      armPivotSubsystem = null;
+    }
 
-      if (CLIMBPIVOT_ENABLED) {
-        climbPivotSubsystem = new ClimbPivot();
-      } else {
-        climbPivotSubsystem = null;
-      }
+    if (CLIMBPIVOT_ENABLED) {
+      climbPivotSubsystem = new ClimbPivot();
+    } else {
+      climbPivotSubsystem = null;
+    }
 
-      if (SPINNYCLAW_ENABLED) {
-        spinnyClawSubsytem = new SpinnyClaw();
-      } else {
-        spinnyClawSubsytem = null;
-      }
-      if (ELEVATOR_LED_ENABLED) {
-        elevatorLEDSubsystem = new ElevatorLight();
-      } else {
-        elevatorLEDSubsystem = null;
-      }
+    if (SPINNYCLAW_ENABLED) {
+      spinnyClawSubsytem = new SpinnyClaw();
+    } else {
+      spinnyClawSubsytem = null;
+    }
+    if (ELEVATOR_LED_ENABLED) {
+      elevatorLEDSubsystem = new ElevatorLight();
+    } else {
+      elevatorLEDSubsystem = null;
     }
   }
 }
