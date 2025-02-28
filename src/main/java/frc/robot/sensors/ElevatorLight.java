@@ -12,6 +12,10 @@ import com.ctre.phoenix.led.RgbFadeAnimation;
 import com.ctre.phoenix.led.SingleFadeAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation;
+
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.AddressableLEDBufferView;
+import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
@@ -21,12 +25,17 @@ public class ElevatorLight extends SubsystemBase {
   private CANdle candle;
 
   // private String curAnimation = "default";
+  private final AddressableLEDBuffer buffer = new AddressableLEDBuffer(100);
+  private final AddressableLEDBufferView rightLEDs = buffer.createView(0, 100); 
+  private final AddressableLEDBufferView leftLEDs = buffer.createView(0, 0); 
+  private final AddressableLEDBufferView topRightLEDs = buffer.createView(0, 100); 
+  private final AddressableLEDBufferView topLeftLEDs = buffer.createView(0, 100); 
 
   // LED modes
-  public RainbowAnimation rainbowAnim = new RainbowAnimation(.5, .89, 64);
+  public RainbowAnimation rainbowAnim = 
+      new RainbowAnimation(.5, .89, 64);
   public LarsonAnimation larsonAnim =
-      new LarsonAnimation(
-          177, 156, 217); // try again with full string, looks like annoying flashing
+      new LarsonAnimation(177, 156, 217); // try again with full string, looks like annoying flashing
   public TwinkleAnimation twinkleAnim =
       new TwinkleAnimation(135, 30, 270); // cool ig idk test on full string, it twinkle
   public ColorFlowAnimation colorFlowAnim =
@@ -72,4 +81,14 @@ public class ElevatorLight extends SubsystemBase {
   public Command animate(Animation animation) {
     return runOnce(() -> candle.animate(animation));
   }
-}
+
+  public Command animate(LEDPattern animation, String name) {
+    return run(() -> {
+        animation.applyTo(buffer);
+        for(int i=0; i<buffer.getLength(); ++i){
+          candle.setLEDs(buffer.getRed(i), buffer.getBlue(i), buffer.getGreen(i),0,i,1);
+        }
+      }).withName("Animate" + name);
+  }
+
+  }
