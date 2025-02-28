@@ -31,21 +31,18 @@ import java.util.List;
 import org.json.simple.parser.ParseException;
 
 public class AutoLogic {
-  public static Robot r = Robot.getInstance();
-  public static final Subsystems s = r.subsystems;
-  public static final Controls controls = r.controls;
+  private static final Robot r = Robot.getInstance();
+  private static final Subsystems s = r.subsystems;
+  private static final Controls controls = r.controls;
 
-  public static SendableChooser<String> autoPicker = new SendableChooser<String>();
-  public static SendableChooser<String> autoAction = new SendableChooser<String>();
-  public static SendableChooser<String> testedAutos = new SendableChooser<String>();
-  public static final double FEEDER_DELAY = 0.4;
-  // rpm to rev up launcher before launching
-  public static final double REV_RPM = 2500;
-  public static final double STAGE_ANGLE = 262;
+  private static SendableChooser<String> autoPicker = new SendableChooser<String>();
+  private static SendableChooser<String> autoAction = new SendableChooser<String>();
+  private static SendableChooser<String> testedAutos = new SendableChooser<String>();
+ 
 
-  public static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
+  private static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
 
-  public static void RunAuto(CommandSwerveDrivetrain drivebase) {
+  public static void configureAuto(CommandSwerveDrivetrain drivebase) {
 
     try {
       AutoBuilder.configure(
@@ -125,7 +122,7 @@ public class AutoLogic {
 
   public static void initShuffleBoard() {
 
-    RunAuto(s.drivebaseSubsystem);
+    configureAuto(s.drivebaseSubsystem);
 
     addAutoOptions();
     addTestedAutos();
@@ -195,20 +192,21 @@ public class AutoLogic {
     autoPicker.addOption("High 1 L4", "SideToJ");
     autoPicker.addOption("CHOREO High 4 L4(IGNORE)", "HighL4");
     autoPicker.addOption("TESTING Low 3 Piece", "TEST Low3Piece");
+    autoPicker.addOption("ALIGNMENT TEST", "ALIGN TEST");
   }
 
   public static void addTestedAutos() {}
 
   public static Command lowerElevator() {
-    if (Robot.getInstance().superStructure != null) {
-      return Robot.getInstance().superStructure.intake();
+    if (r.superStructure != null) {
+      return r.superStructure.intake();
     }
     return Commands.none().withName("lowerElevator");
   }
 
   public static Command raiseElevator() {
-    if (Robot.getInstance().superStructure != null) {
-      return Robot.getInstance().superStructure.levelFour(() -> true);
+    if (r.superStructure != null) {
+      return r.superStructure.levelFour(() -> true);
     }
     return Commands.none().withName("raiseElevator");
   }

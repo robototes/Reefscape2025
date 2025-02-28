@@ -89,7 +89,7 @@ public class Robot extends TimedRobot {
         .onCommandFinish(command -> System.out.println("Command finished: " + command.getName()));
 
     SmartDashboard.putData(CommandScheduler.getInstance());
-    AutoLogic.RunAuto(subsystems.drivebaseSubsystem);
+    AutoLogic.configureAuto(subsystems.drivebaseSubsystem);
 
     BuildInfo.logBuildInfo();
 
@@ -118,7 +118,7 @@ public class Robot extends TimedRobot {
 
     // Checks if FMS is attatched and enables joystick warning if true
 
-    AutoLogic.RunAuto(subsystems.drivebaseSubsystem);
+    AutoLogic.configureAuto(subsystems.drivebaseSubsystem);
     Command autoCommand = AutoLogic.getAutoCommand(AutoLogic.getSelectedAutoName());
 
     if (autoCommand != null) {
