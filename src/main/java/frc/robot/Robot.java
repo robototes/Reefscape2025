@@ -134,7 +134,6 @@ public class Robot extends TimedRobot {
 
     Shuffleboard.startRecording();
 
-   
     DriverStation.silenceJoystickConnectionWarning(!DriverStation.isFMSAttached());
   }
 

@@ -136,7 +136,7 @@ public class AutoLogic {
 
     tab.add("Elevator Commands", autoAction)
         .withWidget(BuiltInWidgets.kComboBoxChooser)
-        .withPosition(3, 0)
+        .withPosition(3, 2)
         .withSize(2, 1);
 
     tab.addString("Current Selected path", () -> getSelectedAutoName())
@@ -235,9 +235,11 @@ public class AutoLogic {
       if (autoAction.getSelected().equals("raiseElevatorandWait")) {
         NamedCommands.registerCommand("lowerElevator", lowerElevatorandWait());
         NamedCommands.registerCommand("raiseElevator", raiseElevatorandWait());
+        NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
       } else if (autoAction.getSelected().equals("raiseElevator")) {
         NamedCommands.registerCommand("lowerElevator", lowerElevator());
         NamedCommands.registerCommand("raiseElevator", raiseElevator());
+        NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
 
       } else {
         System.out.println("FAILED?" + autoAction.getSelected());
