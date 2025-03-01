@@ -9,7 +9,7 @@ public class Sensors {
   public static class SensorConstants {
     // <SENSOR>_ENABLED constants go here
     public static final boolean ARMSENSOR_ENABLED = true;
-    public static final boolean BRANCHSENSORS_ENABLED = true;
+    public static final boolean BRANCHSENSORS_ENABLED = false;
   }
 
   // Sensors go here

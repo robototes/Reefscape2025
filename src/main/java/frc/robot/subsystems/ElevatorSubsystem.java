@@ -5,6 +5,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.Units;
@@ -205,6 +206,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     this.rumble = rumble;
   }
 
+  public boolean atPosition(double position) {
+    return MathUtil.isNear(position, getCurrentPosition(), POS_TOLERANCE);
+  }
+
   public boolean getHasBeenZeroed() {
     return hasBeenZeroed;
   }
@@ -242,7 +247,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                 rumble.accept(0.2);
               }
             })
-        .andThen(Commands.waitUntil(() -> Math.abs(getCurrentPosition() - pos) < POS_TOLERANCE))
+        .andThen(Commands.waitUntil(() -> atPosition(pos)))
         .withName("setLevel" + pos);
   }
 

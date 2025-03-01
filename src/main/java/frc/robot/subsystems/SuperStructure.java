@@ -2,21 +2,18 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.sensors.ArmSensor;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.BooleanSupplier;
 
 public class SuperStructure {
   private final ElevatorSubsystem elevator;
   private final ArmPivot armPivot;
   private final SpinnyClaw spinnyClaw;
-  private final ArmSensor armSensor;
 
-  public SuperStructure(
-      ElevatorSubsystem elevator, ArmPivot armPivot, SpinnyClaw spinnyClaw, ArmSensor armSensor) {
+  public SuperStructure(ElevatorSubsystem elevator, ArmPivot armPivot, SpinnyClaw spinnyClaw) {
     this.elevator = elevator;
     this.armPivot = armPivot;
     this.spinnyClaw = spinnyClaw;
-    this.armSensor = armSensor;
   }
 
   public Command levelFour(BooleanSupplier score) {
@@ -31,7 +28,7 @@ public class SuperStructure {
             elevator.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS),
             armPivot.moveToPosition(ArmPivot.PRESET_L4)),
         spinnyClaw.holdExtakePower().withTimeout(0.2),
-        stow());
+        preIntake());
   }
 
   public Command levelThree(BooleanSupplier score) {
@@ -44,7 +41,7 @@ public class SuperStructure {
         Commands.waitUntil(score),
         elevator.setLevel(ElevatorSubsystem.LEVEL_THREE_POS),
         spinnyClaw.holdExtakePower().withTimeout(0.15),
-        stow());
+        preIntake());
   }
 
   public Command levelTwo(BooleanSupplier score) {
@@ -57,7 +54,7 @@ public class SuperStructure {
         Commands.waitUntil(score),
         elevator.setLevel(ElevatorSubsystem.LEVEL_TWO_POS),
         spinnyClaw.holdExtakePower().withTimeout(0.15),
-        stow());
+        preIntake());
   }
 
   public Command levelOne(BooleanSupplier score) {
@@ -69,7 +66,7 @@ public class SuperStructure {
         Commands.waitUntil(score),
         elevator.setLevel(ElevatorSubsystem.LEVEL_TWO_POS),
         spinnyClaw.holdExtakePower().withTimeout(0.15),
-        stow());
+        preIntake());
   }
 
   public Command stow() {
@@ -79,13 +76,22 @@ public class SuperStructure {
         spinnyClaw.stop());
   }
 
+  public Command preIntake() {
+    return Commands.parallel(
+        elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
+        armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
+        spinnyClaw.intakePower());
+  }
+
+  public Trigger inPreIntakePosition() {
+    return new Trigger(
+        () ->
+            elevator.atPosition(ElevatorSubsystem.PRE_INTAKE)
+                && armPivot.atPosition(ArmPivot.PRESET_DOWN));
+  }
+
   public Command intake() {
     return Commands.sequence(
-            Commands.parallel(
-                elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
-                armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
-                spinnyClaw.intakePower()),
-            // Commands.waitUntil(armSensor.inTrough()),
             elevator.setLevel(ElevatorSubsystem.INTAKE),
             Commands.waitSeconds(0.1),
             spinnyClaw.stop(),
