@@ -44,7 +44,7 @@ public class Controls {
   private BranchHeight branchHeight = null;
 
   // Swerve stuff
-  public static double MaxSpeed =
+  private static final double MaxSpeed =
       RobotType.getCurrent() == RobotType.BONK
           ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
           : RobotType.getCurrent() == RobotType.TESTBASE
