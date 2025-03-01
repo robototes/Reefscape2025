@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -191,14 +190,14 @@ public class Controls {
     .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.ALGAE_STOWED).withName("algae stow"));*/
     operatorController
         .leftTrigger()
-        .onTrue(Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE).withName("Algae Scoring Mode"));
+        .onTrue(
+            Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE).withName("Algae Scoring Mode"));
     operatorController
         .rightTrigger()
-        .onTrue(Commands.runOnce(() -> scoringMode = ScoringMode.CORAL).withName("Coral Scoring Mode"));
-    operatorController
-        .povLeft()
-        .onTrue(superStructure.stow().withName("Stow"));
-        //.onTrue(superStructure.algaeStow().withName("Algae Stow"));
+        .onTrue(
+            Commands.runOnce(() -> scoringMode = ScoringMode.CORAL).withName("Coral Scoring Mode"));
+    operatorController.povLeft().onTrue(superStructure.stow().withName("Stow"));
+    // .onTrue(superStructure.algaeStow().withName("Algae Stow"));
     driverController
         .a()
         .onTrue(
@@ -263,7 +262,9 @@ public class Controls {
     elevatorTestController
         .y()
         .onTrue(
-            s.elevatorSubsystem.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_POS).withName("Elevator L4"));
+            s.elevatorSubsystem
+                .setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_POS)
+                .withName("Elevator L4"));
     elevatorTestController
         .x()
         .onTrue(
@@ -273,11 +274,15 @@ public class Controls {
     elevatorTestController
         .b()
         .onTrue(
-            s.elevatorSubsystem.setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_POS).withName("Elevator L2"));
+            s.elevatorSubsystem
+                .setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_POS)
+                .withName("Elevator L2"));
     elevatorTestController
         .a()
         .onTrue(
-            s.elevatorSubsystem.setLevel(ElevatorSubsystem.CORAL_LEVEL_ONE_POS).withName("Elevator L1"));
+            s.elevatorSubsystem
+                .setLevel(ElevatorSubsystem.CORAL_LEVEL_ONE_POS)
+                .withName("Elevator L1"));
     elevatorTestController
         .rightBumper()
         .onTrue(
@@ -322,9 +327,11 @@ public class Controls {
     elevatorTestController
         .leftBumper()
         .whileTrue(
-            Commands.startEnd(() -> s.elevatorSubsystem.setCoastMode(), () -> s.elevatorSubsystem.setBrakeMode())
-            .ignoringDisable(true).withName("Coast to Brake Mode")
-        );
+            Commands.startEnd(
+                    () -> s.elevatorSubsystem.setCoastMode(),
+                    () -> s.elevatorSubsystem.setBrakeMode())
+                .ignoringDisable(true)
+                .withName("Coast to Brake Mode"));
   }
 
   private void configureArmPivotBindings() {
@@ -347,18 +354,28 @@ public class Controls {
                 .withName("ManuallyMoveArm"));
     armPivotSpinnyClawController
         .povRight()
-        .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_L4).withName("SetArmPresetL4"));
+        .onTrue(
+            s.armPivotSubsystem
+                .moveToPosition(ArmPivot.CORAL_PRESET_L4)
+                .withName("SetArmPresetL4"));
     armPivotSpinnyClawController
         .povLeft()
         .onTrue(
-            s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_L2_L3).withName("SetArmPresetL2_3"));
+            s.armPivotSubsystem
+                .moveToPosition(ArmPivot.CORAL_PRESET_L2_L3)
+                .withName("SetArmPresetL2_3"));
     armPivotSpinnyClawController
         .povUp()
-        .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_UP).withName("SetArmPresetUp"));
+        .onTrue(
+            s.armPivotSubsystem
+                .moveToPosition(ArmPivot.CORAL_PRESET_UP)
+                .withName("SetArmPresetUp"));
     armPivotSpinnyClawController
         .povDown()
         .onTrue(
-            s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_DOWN).withName("SetArmPresetDown"));
+            s.armPivotSubsystem
+                .moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
+                .withName("SetArmPresetDown"));
     operatorController
         .povRight()
         .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_OUT).withName("ArmPivotOut"));

@@ -241,18 +241,18 @@ public class ElevatorSubsystem extends SubsystemBase {
         .withName("setLevel" + pos);
   }
 
-  public Command setBrakeMode(){
+  public Command setBrakeMode() {
     return runOnce(
-      () -> {
-        m_motor.setControl(new StaticBrake());
-      });
+        () -> {
+          m_motor.setControl(new StaticBrake());
+        });
   }
 
-  public Command setCoastMode(){
+  public Command setCoastMode() {
     return runOnce(
-      () -> {
-        m_motor.setControl(new CoastOut());
-      });
+        () -> {
+          m_motor.setControl(new CoastOut());
+        });
   }
 
   public Command goUp() {
@@ -294,7 +294,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public Command startMovingVoltage(Supplier<Voltage> speedControl) {
-    return runEnd(() -> m_motor.setVoltage(speedControl.get().in(Units.Volts)), () -> m_motor.stopMotor());
+    return runEnd(
+        () -> m_motor.setVoltage(speedControl.get().in(Units.Volts)), () -> m_motor.stopMotor());
   }
 
   /** Stop the control loop and motor output. */

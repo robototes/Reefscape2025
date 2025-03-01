@@ -96,33 +96,37 @@ public class SuperStructure {
 
   public Command algaeLevelThreeFourIntake() {
     return Commands.sequence(
-        spinnyClaw.algaeIntakePower(),
-        armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-        elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR),
+        Commands.parallel(
+            spinnyClaw.algaeIntakePower(),
+            armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
+            elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
         algaeStow());
   }
 
   public Command algaeLevelTwoThreeIntake() { // theoretically
     return Commands.sequence(
-        spinnyClaw.algaeIntakePower(),
-        armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-        elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE),
+        Commands.parallel(
+            spinnyClaw.algaeIntakePower(),
+            armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
+            elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
         algaeStow());
   }
 
   public Command algaeLevelThreeFourFling() {
     return Commands.sequence(
-        spinnyClaw.algaeFlingPower(),
-        armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-        elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR),
+        Commands.parallel(
+            spinnyClaw.algaeFlingPower(),
+            armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
+            elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
         algaeStow());
   }
 
   public Command algaeLevelTwoThreeFling() { // theoretically
     return Commands.sequence(
-        spinnyClaw.algaeFlingPower(),
-        armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-        elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE),
+        Commands.parallel(
+            spinnyClaw.algaeFlingPower(),
+            armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
+            elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
         algaeStow());
   }
 
