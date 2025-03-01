@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
+import frc.robot.generated.TestBaseTunerConstants;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.SuperStructure;
@@ -61,6 +62,8 @@ public class Controls {
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
+          .withDeadband(0.0001)
+          .withRotationalDeadband(0.0001)
           .withDriveRequestType(
               DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -99,20 +102,17 @@ public class Controls {
         s.drivebaseSubsystem
             .applyRequest(
                 () -> {
-                  double getLeftX =
-                      Math.pow(MathUtil.applyDeadband(driverController.getLeftX(), 0.1), 3);
-                  double getLeftY =
-                      Math.pow(MathUtil.applyDeadband(driverController.getLeftY(), 0.1), 3);
-                  double getRightX =
-                      Math.pow(MathUtil.applyDeadband(driverController.getRightX(), 0.1), 3);
+                  double getLeftX = MathUtil.applyDeadband(driverController.getLeftX(), 0.1);
+                  double getLeftY = MathUtil.applyDeadband(driverController.getLeftY(), 0.1);
+                  double getRightX = MathUtil.applyDeadband(driverController.getRightX(), 0.1);
                   double inputScale = driverController.start().getAsBoolean() ? 0.5 : 1;
                   ChassisSpeeds speed = s.drivebaseSubsystem.returnSpeeds();
                   ChassisSpeeds targetSpeeds =
                       new ChassisSpeeds(
-                          -getLeftX
+                          -getLeftY
                               * MaxSpeed
                               * inputScale, // Drive forward with negative Y (forward)
-                          -getLeftY * MaxSpeed * inputScale, // Drive left with negative X (left)
+                          -getLeftX * MaxSpeed * inputScale, // Drive left with negative X (left)
                           -getRightX
                               * MaxAngularRate
                               * inputScale); // Drive counterclockwise with negative X (left)

@@ -7,7 +7,7 @@ public enum RobotType {
   CRANE(0x22, 0xb0, 0x92),
   COMPETITION(0, 0, 0),
   TESTBASE(0x33, 0x9d, 0xe7);
-  
+
   @SuppressWarnings("ImmutableEnumChecker")
   private final MACAddress macAddress;
 
