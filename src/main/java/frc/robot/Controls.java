@@ -153,6 +153,7 @@ public class Controls {
         .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE).withName("level 1"));
     operatorController.rightBumper().onTrue(superStructure.stow().withName("Stow"));
     driverController.a().onTrue(superStructure.intake());
+    operatorController.povLeft().onTrue(superStructure.preIntake());
     if (sensors.armSensor != null) {
       sensors
           .armSensor
