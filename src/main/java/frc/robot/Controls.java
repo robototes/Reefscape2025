@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -66,8 +65,6 @@ public class Controls {
           .withRotationalDeadband(0.0001)
           .withDriveRequestType(
               DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -106,57 +103,19 @@ public class Controls {
                   double getLeftY = MathUtil.applyDeadband(driverController.getLeftY(), 0.1);
                   double getRightX = MathUtil.applyDeadband(driverController.getRightX(), 0.1);
                   double inputScale = driverController.start().getAsBoolean() ? 0.5 : 1;
-                  ChassisSpeeds speed = s.drivebaseSubsystem.returnSpeeds();
-                  ChassisSpeeds targetSpeeds =
-                      new ChassisSpeeds(
+                  return drive
+                      .withVelocityX(
                           -getLeftY
                               * MaxSpeed
-                              * inputScale, // Drive forward with negative Y (forward)
-                          -getLeftX * MaxSpeed * inputScale, // Drive left with negative X (left)
+                              * inputScale) // Drive forward with negative Y (forward)
+                      .withVelocityY(
+                          -getLeftX * MaxSpeed * inputScale) // Drive left with negative X (left)
+                      .withRotationalRate(
                           -getRightX
                               * MaxAngularRate
                               * inputScale); // Drive counterclockwise with negative X (left)
-                  ChassisSpeeds diff = targetSpeeds.minus(speed);
-                  double dt = 0.02;
-                  // Vx Vy and Omega are really accelerations and not velocities.
-                  ChassisSpeeds acceleration = diff.div(dt);
-                  // double translationAccelMagnitude =
-                  //     Math.hypot(acceleration.vxMetersPerSecond, acceleration.vyMetersPerSecond);
-                  // ChassisSpeeds translationLimit =
-                  //     acceleration.times(
-                  //         Math.min(1, Math.abs(MAX_ACCELERATION / translationAccelMagnitude)));
-                  // ChassisSpeeds rotationLimit =
-                  //     translationLimit.times(
-                  //         Math.min(
-                  //             1,
-                  //             Math.abs(
-                  //                 MAX_ROTATION_ACCELERATION
-                  //                     / translationLimit.omegaRadiansPerSecond)));
-                  // This *should* be rotationLimit, but the acceleration limiting causes the
-                  // commanded speed to fall into the deadband. The proper fix is to do the deadband
-                  // first, which relies on us doing the deadband ourselves, which is being
-                  // difficult.
-                  ChassisSpeeds newSpeeds = speed.plus(acceleration.times(dt));
-
-                  return drive
-                      .withVelocityX(newSpeeds.vxMetersPerSecond)
-                      .withVelocityY(newSpeeds.vyMetersPerSecond)
-                      .withRotationalRate(newSpeeds.omegaRadiansPerSecond);
                 })
             .withName("Drive"));
-    RobotModeTriggers.disabled()
-        .onTrue(
-            s.drivebaseSubsystem
-                .applyRequest(() -> brake)
-                .ignoringDisable(true)
-                .withName("Disable Brake"));
-    if (DriverStation.isDisabled()) {
-      s.drivebaseSubsystem
-          .applyRequest(() -> brake)
-          .ignoringDisable(true)
-          .withName("Brake")
-          .schedule();
-    }
 
     // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
     // brake));
