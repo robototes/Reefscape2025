@@ -37,36 +37,49 @@ import org.photonvision.targeting.PhotonPipelineResult;
  * means that from the (red) driver's perspective +X is away and +Y is to the right.
  */
 public class VisionSubsystem extends SubsystemBase {
-  private static final double CAMERA_X_POS_METERS_FRONT = 0.25;
-  private static final double CAMERA_X_POS_METERS_BACK = 0.154;
-  private static final double CAMERA_Y_POS_METERS_FRONT = -0.289;
-  private static final double CAMERA_Y_POS_METERS_BACK = -0.7;
-  private static final double CAMERA_Z_POS_METERS_FRONT = -0.223;
-  private static final double CAMERA_Z_POS_METERS_BACK = -0.737;
+  /*
+   * private static final double CAMERA_X_POS_METERS_FRONT = 0.25;
+   * private static final double CAMERA_X_POS_METERS_BACK = 0.154;
+   * private static final double CAMERA_Y_POS_METERS_FRONT = -0.289;
+   * private static final double CAMERA_Y_POS_METERS_BACK = -0.7;
+   * private static final double CAMERA_Z_POS_METERS_FRONT = -0.223;
+   * private static final double CAMERA_Z_POS_METERS_BACK = -0.737;
+   * private static final double CAMERA_ROLL_FRONT = 0;
+   * private static final double CAMERA_ROLL_BACK = Units.degreesToRadians(180);
+   * private static final double CAMERA_PITCH_FRONT = Units.degreesToRadians(-20);
+   * private static final double CAMERA_PITCH_BACK = Units.degreesToRadians(-20);
+   * private static final double CAMERA_YAW_FRONT = Units.degreesToRadians(20);
+   * private static final double CAMERA_YAW_BACK = Units.degreesToRadians(180);
+   */
+
+  // for testing on only drivebase bot
+  private static final double CAMERA_X_POS_METERS_FRONT = 0;
+  private static final double CAMERA_X_POS_METERS_BACK = 0;
+  private static final double CAMERA_Y_POS_METERS_FRONT = 0;
+  private static final double CAMERA_Y_POS_METERS_BACK = 0;
+  private static final double CAMERA_Z_POS_METERS_FRONT = 0;
+  private static final double CAMERA_Z_POS_METERS_BACK = 0;
   private static final double CAMERA_ROLL_FRONT = 0;
-  private static final double CAMERA_ROLL_BACK = Units.degreesToRadians(180);
-  private static final double CAMERA_PITCH_FRONT = Units.degreesToRadians(-20);
-  private static final double CAMERA_PITCH_BACK = Units.degreesToRadians(-20);
-  private static final double CAMERA_YAW_FRONT = Units.degreesToRadians(20);
-  private static final double CAMERA_YAW_BACK = Units.degreesToRadians(180);
+  private static final double CAMERA_ROLL_BACK = 0;
+  private static final double CAMERA_PITCH_FRONT = 0;
+  private static final double CAMERA_PITCH_BACK = 0;
+  private static final double CAMERA_YAW_FRONT = 0;
+  private static final double CAMERA_YAW_BACK = 0;
 
-  public static final Transform3d ROBOT_TO_CAM_FRONT =
-      new Transform3d(
-          CAMERA_X_POS_METERS_FRONT,
-          CAMERA_Y_POS_METERS_FRONT,
-          CAMERA_Z_POS_METERS_FRONT,
-          new Rotation3d(CAMERA_ROLL_FRONT, CAMERA_PITCH_FRONT, CAMERA_YAW_FRONT));
+  public static final Transform3d ROBOT_TO_CAM_FRONT = new Transform3d(
+      CAMERA_X_POS_METERS_FRONT,
+      CAMERA_Y_POS_METERS_FRONT,
+      CAMERA_Z_POS_METERS_FRONT,
+      new Rotation3d(CAMERA_ROLL_FRONT, CAMERA_PITCH_FRONT, CAMERA_YAW_FRONT));
 
-  public static final Transform3d ROBOT_TO_CAM_BACK =
-      new Transform3d(
-          CAMERA_X_POS_METERS_BACK,
-          CAMERA_Y_POS_METERS_BACK,
-          CAMERA_Z_POS_METERS_BACK,
-          new Rotation3d(CAMERA_ROLL_BACK, CAMERA_PITCH_BACK, CAMERA_YAW_BACK));
+  public static final Transform3d ROBOT_TO_CAM_BACK = new Transform3d(
+      CAMERA_X_POS_METERS_BACK,
+      CAMERA_Y_POS_METERS_BACK,
+      CAMERA_Z_POS_METERS_BACK,
+      new Rotation3d(CAMERA_ROLL_BACK, CAMERA_PITCH_BACK, CAMERA_YAW_BACK));
 
   // TODO Measure these
-  private static final Vector<N3> STANDARD_DEVS =
-      VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5));
+  private static final Vector<N3> STANDARD_DEVS = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5));
 
   private final PhotonCamera photonCamera;
   private final PhotonCamera photonCamera2;
@@ -85,8 +98,8 @@ public class VisionSubsystem extends SubsystemBase {
   private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
   private double Distance = 0;
 
-  private static final AprilTagFieldLayout fieldLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+  private static final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout
+      .loadField(AprilTagFields.k2025ReefscapeWelded);
 
   public VisionSubsystem(DrivebaseWrapper aprilTagsHelper) {
     robotField = new Field2d();
@@ -95,12 +108,10 @@ public class VisionSubsystem extends SubsystemBase {
     rawVisionFieldObject = robotField.getObject("RawVision");
     photonCamera = new PhotonCamera(Hardware.FRONT_CAM);
     photonCamera2 = new PhotonCamera(Hardware.BACK_CAM);
-    photonPoseEstimatorFrontCamera =
-        new PhotonPoseEstimator(
-            fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_FRONT);
-    photonPoseEstimatorBackCamera =
-        new PhotonPoseEstimator(
-            fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_BACK);
+    photonPoseEstimatorFrontCamera = new PhotonPoseEstimator(
+        fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_FRONT);
+    photonPoseEstimatorBackCamera = new PhotonPoseEstimator(
+        fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_BACK);
 
     var networkTables = NetworkTableInstance.getDefault();
     networkTables.addListener(
@@ -149,10 +160,9 @@ public class VisionSubsystem extends SubsystemBase {
       var RawTimestampSeconds = result.getTimestampSeconds();
       var TimestampSeconds = estimatedPose.get().timestampSeconds;
       var FieldPose = estimatedPose.get().estimatedPose.toPose2d();
-      var Distance =
-          PhotonUtils.getDistanceToPose(
-              FieldPose,
-              fieldLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d());
+      var Distance = PhotonUtils.getDistanceToPose(
+          FieldPose,
+          fieldLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d());
       aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastTimestampSeconds, STANDARD_DEVS);
       robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       if (RawTimestampSeconds > lastRawTimestampSeconds) {
