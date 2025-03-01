@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Hardware;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 public class ElevatorSubsystem extends SubsystemBase {
   // Maximum is 38.34
@@ -274,6 +275,10 @@ public class ElevatorSubsystem extends SubsystemBase {
               // m_motor2.setVoltage(-HOLD_VOLTAGE);
             })
         .withName("Elevator down power");
+  }
+
+  public Command startMovingVoltage(Supplier<Voltage> speedControl) {
+    return runEnd(() -> m_motor.setVoltage(speedControl.get().in(Units.Volts)), () -> m_motor.stopMotor());
   }
 
   /** Stop the control loop and motor output. */

@@ -196,9 +196,9 @@ public class Controls {
         .rightTrigger()
         .onTrue(Commands.runOnce(() -> scoringMode = ScoringMode.CORAL).withName("Coral Scoring Mode"));
     operatorController
-        .rightBumper()
-        .onTrue(superStructure.stow().withName("Stow"))
-        .onTrue(superStructure.algaeStow().withName("Algae Stow"));
+        .povLeft()
+        .onTrue(superStructure.stow().withName("Stow"));
+        //.onTrue(superStructure.algaeStow().withName("Algae Stow"));
     driverController
         .a()
         .onTrue(
@@ -250,20 +250,11 @@ public class Controls {
     RobotModeTriggers.disabled().onTrue(s.elevatorSubsystem.stop());
     // Controls binding goes here
     operatorController
-        .leftTrigger(0.1)
+        .leftStick()
         .whileTrue(
             s.elevatorSubsystem
-                .goUpPower(
-                    () -> MathUtil.applyDeadband(operatorController.getLeftTriggerAxis(), 0.1))
-                .withName("Power up"));
-    operatorController
-        .rightTrigger(0.1)
-        .whileTrue(
-            s.elevatorSubsystem
-                .goDownPower(
-                    () -> MathUtil.applyDeadband(operatorController.getRightTriggerAxis(), 0.1))
-                .withName("Power down"));
-
+                .startMovingVoltage(() -> Volts.of(3 * -operatorController.getLeftY()))
+                .withName("Manually Control Elevator"));
     s.elevatorSubsystem.setRumble(
         (rumble) -> {
           elevatorTestController.setRumble(RumbleType.kBothRumble, rumble);
@@ -317,12 +308,8 @@ public class Controls {
             s.elevatorSubsystem
                 .setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE)
                 .withName("Elevator Processor"));
-    operatorController.povUp().whileTrue(s.elevatorSubsystem.goUp().withName("Elevator go up"));
     operatorController
-        .povDown()
-        .whileTrue(s.elevatorSubsystem.goDown().withName("Elevator go down"));
-    operatorController
-        .leftBumper()
+        .back()
         .onTrue(
             Commands.parallel(
                     s.elevatorSubsystem.resetPosZero(),
@@ -340,11 +327,17 @@ public class Controls {
     }
 
     // Arm Controls binding goes here
-    armPivotSpinnyClawController
-        .leftStick()
+    operatorController // Untested :p
+        .rightStick()
         .whileTrue(
             s.armPivotSubsystem
-                .startMovingVoltage(() -> Volts.of(3 * armPivotSpinnyClawController.getLeftY()))
+                .startMovingVoltage(() -> Volts.of(3 * operatorController.getRightY()))
+                .withName("ManuallyMoveArm"));
+    armPivotSpinnyClawController // Untested :p
+        .rightStick()
+        .whileTrue(
+            s.armPivotSubsystem
+                .startMovingVoltage(() -> Volts.of(3 * armPivotSpinnyClawController.getRightY()))
                 .withName("ManuallyMoveArm"));
     armPivotSpinnyClawController
         .povRight()
