@@ -19,78 +19,150 @@ public class SuperStructure {
     this.armSensor = armSensor;
   }
 
-  public Command levelFour(BooleanSupplier score) {
+  public Command coralLevelFour(BooleanSupplier score) {
     return Commands.sequence(
         Commands.parallel(
-            elevator.setLevel(ElevatorSubsystem.LEVEL_FOUR_PRE_POS),
-            armPivot.moveToPosition(ArmPivot.PRESET_UP),
+            elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS),
+            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
             spinnyClaw.stop()),
-        armPivot.moveToPosition(ArmPivot.PRESET_PRE_L4),
+        armPivot.moveToPosition(ArmPivot.CORAL_PRESET_PRE_L4),
         Commands.waitUntil(score),
         Commands.parallel(
-            elevator.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS),
-            armPivot.moveToPosition(ArmPivot.PRESET_L4)),
-        spinnyClaw.holdExtakePower().withTimeout(0.2),
-        stow());
+            elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_POS),
+            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L4)),
+        spinnyClaw.coralHoldExtakePower().withTimeout(0.2),
+        coralStow()).withName("Coral Level 4");
   }
 
-  public Command levelThree(BooleanSupplier score) {
+  public Command coralLevelThree(BooleanSupplier score) {
     return Commands.sequence(
         Commands.parallel(
-            elevator.setLevel(ElevatorSubsystem.LEVEL_THREE_PRE_POS),
-            armPivot.moveToPosition(ArmPivot.PRESET_UP),
+            elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS),
+            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
             spinnyClaw.stop()),
-        armPivot.moveToPosition(ArmPivot.PRESET_L2_L3),
+        armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L2_L3),
         Commands.waitUntil(score),
-        elevator.setLevel(ElevatorSubsystem.LEVEL_THREE_POS),
-        spinnyClaw.holdExtakePower().withTimeout(0.15),
-        stow());
+        elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_POS),
+        spinnyClaw.coralHoldExtakePower().withTimeout(0.15),
+        coralStow().withName("Coral Level 3"));
   }
 
-  public Command levelTwo(BooleanSupplier score) {
+  public Command coralLevelTwo(BooleanSupplier score) {
     return Commands.sequence(
         Commands.parallel(
-            elevator.setLevel(ElevatorSubsystem.LEVEL_TWO_PRE_POS),
-            armPivot.moveToPosition(ArmPivot.PRESET_UP),
+            elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS),
+            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
             spinnyClaw.stop()),
-        armPivot.moveToPosition(ArmPivot.PRESET_L2_L3),
+        armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L2_L3),
         Commands.waitUntil(score),
-        elevator.setLevel(ElevatorSubsystem.LEVEL_TWO_POS),
-        spinnyClaw.holdExtakePower().withTimeout(0.15),
-        stow());
+        elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_POS),
+        spinnyClaw.coralHoldExtakePower().withTimeout(0.15),
+        coralStow()).withName("Coral Level 2");
   }
 
-  public Command levelOne(BooleanSupplier score) {
+  public Command coralLevelOne(BooleanSupplier score) {
     return Commands.sequence(
         Commands.parallel(
-            elevator.setLevel(ElevatorSubsystem.LEVEL_ONE_POS),
-            armPivot.moveToPosition(ArmPivot.PRESET_L1),
+            elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_ONE_POS),
+            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L1),
             spinnyClaw.stop()),
         Commands.waitUntil(score),
-        elevator.setLevel(ElevatorSubsystem.LEVEL_TWO_POS),
-        spinnyClaw.holdExtakePower().withTimeout(0.15),
-        stow());
+        elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_POS),
+        spinnyClaw.coralHoldExtakePower().withTimeout(0.15),
+        coralStow()).withName("Coral Level 1");
   }
 
-  public Command stow() {
+  public Command coralStow() {
     return Commands.parallel(
-        elevator.setLevel(ElevatorSubsystem.STOWED),
-        armPivot.moveToPosition(ArmPivot.PRESET_STOWED),
-        spinnyClaw.stop());
+        elevator.setLevel(ElevatorSubsystem.CORAL_STOWED),
+        armPivot.moveToPosition(ArmPivot.CORAL_PRESET_STOWED),
+        spinnyClaw.stop()).withName("Coral Stow");
   }
 
-  public Command intake() {
+  public Command coralIntake() {
     return Commands.sequence(
             Commands.parallel(
-                elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
-                armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
+                elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
+                armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN),
                 spinnyClaw.intakePower()),
             // Commands.waitUntil(armSensor.inTrough()),
-            elevator.setLevel(ElevatorSubsystem.INTAKE),
+            elevator.setLevel(ElevatorSubsystem.CORAL_INTAKE_POS),
             Commands.waitSeconds(0.1),
             spinnyClaw.stop(),
-            elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
-            stow())
-        .withName("Intake");
+            elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
+            coralStow())
+        .withName("Coral Intake");
+  }
+
+  public Command algaeLevelThreeFourIntake() {
+    return Commands.sequence(
+        Commands.parallel(
+            spinnyClaw.algaeIntakePower(),
+            armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
+            elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
+        // add a wait command here
+        algaeStow()).withName("Alage L3-L4 Intake");
+  }
+
+  public Command algaeLevelTwoThreeIntake() { // theoretically
+    return Commands.sequence(
+        Commands.parallel(
+            spinnyClaw.algaeIntakePower(),
+            armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
+            elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
+        // add a wait command here
+        algaeStow().withName("Algae L2-L3 Intake"));
+  }
+
+  public Command algaeLevelThreeFourFling() {
+    return Commands.sequence(
+        Commands.parallel(
+            spinnyClaw.algaeFlingPower(),
+            armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
+            elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
+        algaeStow()).withName("Algae L3-L4 Fling");
+  }
+
+  public Command algaeLevelTwoThreeFling() { // theoretically
+    return Commands.sequence(
+        Commands.parallel(
+            spinnyClaw.algaeFlingPower(),
+            armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
+            elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
+        algaeStow()).withName("Algae L2-L3 Fling");
+  }
+
+  public Command algaeLevelThreeFourPop() {
+    return Commands.sequence(
+        Commands.parallel(
+            armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE_PREPOS),
+            elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
+        armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
+        algaeStow()).withName("Algae L3-L4 Pop");
+  }
+
+  public Command algaeLevelTwoThreePop() { // theoretically
+    return Commands.sequence(
+        Commands.parallel(
+            armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE_PREPOS),
+            elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
+        armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
+        algaeStow()).withName("Algae L2-L3 Pop");
+  }
+
+  public Command algaeStow() { // Big North + Spider collab on this one
+    return Commands.parallel(
+        elevator.setLevel(ElevatorSubsystem.ALGAE_STOWED),
+        armPivot.moveToPosition(ArmPivot.ALGAE_STOWED),
+        spinnyClaw.algaeIntakePower()).withName("Algae Stow");
+  }
+
+  public Command algaeProcessorScore() { // Big North + Spider collab on this one
+    return Commands.sequence(
+        Commands.parallel(
+            elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE),
+            armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
+            spinnyClaw.algaeIntakePower()),
+        spinnyClaw.algaeExtakePower()).withName("Algae Processor Score");
   }
 }
