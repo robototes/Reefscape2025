@@ -37,34 +37,35 @@ import org.photonvision.targeting.PhotonPipelineResult;
  * means that from the (red) driver's perspective +X is away and +Y is to the right.
  */
 public class VisionSubsystem extends SubsystemBase {
-  /*
-   * private static final double CAMERA_X_POS_METERS_FRONT = 0.25;
-   * private static final double CAMERA_X_POS_METERS_BACK = 0.154;
-   * private static final double CAMERA_Y_POS_METERS_FRONT = -0.289;
-   * private static final double CAMERA_Y_POS_METERS_BACK = -0.7;
-   * private static final double CAMERA_Z_POS_METERS_FRONT = -0.223;
-   * private static final double CAMERA_Z_POS_METERS_BACK = -0.737;
-   * private static final double CAMERA_ROLL_FRONT = 0;
-   * private static final double CAMERA_ROLL_BACK = Units.degreesToRadians(180);
-   * private static final double CAMERA_PITCH_FRONT = Units.degreesToRadians(-20);
-   * private static final double CAMERA_PITCH_BACK = Units.degreesToRadians(-20);
-   * private static final double CAMERA_YAW_FRONT = Units.degreesToRadians(20);
-   * private static final double CAMERA_YAW_BACK = Units.degreesToRadians(180);
-   */
+
+  private static final double CAMERA_X_POS_METERS_FRONT = 0.25;
+  private static final double CAMERA_X_POS_METERS_BACK = 0.154;
+  private static final double CAMERA_Y_POS_METERS_FRONT = -0.289;
+  private static final double CAMERA_Y_POS_METERS_BACK = -0.7;
+  private static final double CAMERA_Z_POS_METERS_FRONT = -0.223;
+  private static final double CAMERA_Z_POS_METERS_BACK = -0.737;
+  private static final double CAMERA_ROLL_FRONT = 0;
+  private static final double CAMERA_ROLL_BACK = Units.degreesToRadians(180);
+  private static final double CAMERA_PITCH_FRONT = Units.degreesToRadians(-20);
+  private static final double CAMERA_PITCH_BACK = Units.degreesToRadians(-20);
+  private static final double CAMERA_YAW_FRONT = Units.degreesToRadians(20);
+  private static final double CAMERA_YAW_BACK = Units.degreesToRadians(180);
 
   // for testing on only drivebase bot
-  private static final double CAMERA_X_POS_METERS_FRONT = 0;
-  private static final double CAMERA_X_POS_METERS_BACK = 0;
-  private static final double CAMERA_Y_POS_METERS_FRONT = 0;
-  private static final double CAMERA_Y_POS_METERS_BACK = 0;
-  private static final double CAMERA_Z_POS_METERS_FRONT = 0;
-  private static final double CAMERA_Z_POS_METERS_BACK = 0;
-  private static final double CAMERA_ROLL_FRONT = 0;
-  private static final double CAMERA_ROLL_BACK = 0;
-  private static final double CAMERA_PITCH_FRONT = 0;
-  private static final double CAMERA_PITCH_BACK = 0;
-  private static final double CAMERA_YAW_FRONT = 0;
-  private static final double CAMERA_YAW_BACK = 0;
+  /*
+   * private static final double CAMERA_X_POS_METERS_FRONT = 0;
+   * private static final double CAMERA_X_POS_METERS_BACK = 0;
+   * private static final double CAMERA_Y_POS_METERS_FRONT = 0;
+   * private static final double CAMERA_Y_POS_METERS_BACK = 0;
+   * private static final double CAMERA_Z_POS_METERS_FRONT = 0;
+   * private static final double CAMERA_Z_POS_METERS_BACK = 0;
+   * private static final double CAMERA_ROLL_FRONT = 0;
+   * private static final double CAMERA_ROLL_BACK = 0;
+   * private static final double CAMERA_PITCH_FRONT = 0;
+   * private static final double CAMERA_PITCH_BACK = 0;
+   * private static final double CAMERA_YAW_FRONT = 0;
+   * private static final double CAMERA_YAW_BACK = 0;
+   */
 
   public static final Transform3d ROBOT_TO_CAM_FRONT = new Transform3d(
       CAMERA_X_POS_METERS_FRONT,
