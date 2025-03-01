@@ -221,9 +221,9 @@ public class Controls {
             Commands.select(
                     Map.of(
                         ScoringMode.CORAL,
-                        superStructure.coralStow(),
+                        superStructure.coralStow().asProxy(),
                         ScoringMode.ALGAE,
-                        superStructure.algaeStow()),
+                        superStructure.algaeStow().asProxy()),
                     () -> scoringMode)
                 .withName("Stow"));
     driverController
@@ -232,14 +232,14 @@ public class Controls {
             Commands.select(
                     Map.of(
                         ScoringMode.CORAL,
-                        superStructure.coralIntake(),
+                        superStructure.coralIntake().asProxy(),
                         ScoringMode.ALGAE,
                         Commands.select(
                             Map.of(
                                 AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR,
-                                superStructure.algaeLevelThreeFourFling(),
+                                superStructure.algaeLevelThreeFourFling().asProxy(),
                                 AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE,
-                                superStructure.algaeLevelTwoThreeFling()),
+                                superStructure.algaeLevelTwoThreeFling().asProxy()),
                             () -> algaeIntakeHeight)),
                     () -> scoringMode)
                 .withName("Driver Intake"));
@@ -249,22 +249,22 @@ public class Controls {
             Commands.select(
                     Map.of(
                         AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR,
-                        superStructure.algaeLevelThreeFourPop(),
+                        superStructure.algaeLevelThreeFourPop().asProxy(),
                         AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE,
-                        superStructure.algaeLevelTwoThreePop()),
+                        superStructure.algaeLevelTwoThreePop().asProxy()),
                     () -> algaeIntakeHeight)
-                .withName("Driver algae Intake Pop"));
+                .withName("Driver algae intake pop"));
     driverController // just for testing
         .y()
         .onTrue(
             Commands.select(
                     Map.of(
                         AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR,
-                        superStructure.algaeLevelThreeFourIntake(),
+                        superStructure.algaeLevelThreeFourIntake().asProxy(),
                         AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE,
-                        superStructure.algaeLevelTwoThreeIntake()),
+                        superStructure.algaeLevelTwoThreeIntake().asProxy()),
                     () -> algaeIntakeHeight)
-                .withName("Driver algae Intake"));
+                .withName("Driver algae intake"));
     if (sensors.armSensor != null) {
       sensors.armSensor.inTrough().onTrue(superStructure.coralIntake());
     }
@@ -278,16 +278,16 @@ public class Controls {
                         Commands.select(
                             Map.of(
                                 BranchHeight.LEVEL_FOUR,
-                                superStructure.coralLevelFour(driverController.rightBumper()),
+                                superStructure.coralLevelFour(driverController.rightBumper()).asProxy(),
                                 BranchHeight.LEVEL_THREE,
-                                superStructure.coralLevelThree(driverController.rightBumper()),
+                                superStructure.coralLevelThree(driverController.rightBumper()).asProxy(),
                                 BranchHeight.LEVEL_TWO,
-                                superStructure.coralLevelTwo(driverController.rightBumper()),
+                                superStructure.coralLevelTwo(driverController.rightBumper()).asProxy(),
                                 BranchHeight.LEVEL_ONE,
-                                superStructure.coralLevelOne(driverController.rightBumper())),
+                                superStructure.coralLevelOne(driverController.rightBumper()).asProxy()),
                             () -> branchHeight),
                         ScoringMode.ALGAE,
-                        superStructure.algaeProcessorScore()),
+                        superStructure.algaeProcessorScore().asProxy()),
                     () -> scoringMode)
                 .withName("score"));
   }
@@ -303,7 +303,7 @@ public class Controls {
         .whileTrue(
             s.elevatorSubsystem
                 .startMovingVoltage(() -> Volts.of(3 * -operatorController.getLeftY()))
-                .withName("Manually Control Elevator"));
+                .withName("Elevator Manual Control"));
     s.elevatorSubsystem.setRumble(
         (rumble) -> {
           elevatorTestController.setRumble(RumbleType.kBothRumble, rumble);
@@ -389,58 +389,58 @@ public class Controls {
         .whileTrue(
             s.armPivotSubsystem
                 .startMovingVoltage(() -> Volts.of(3 * operatorController.getRightY()))
-                .withName("ManuallyMoveArm"));
+                .withName("Arm Manual Control"));
     armPivotSpinnyClawController // Untested :p
         .rightStick()
         .whileTrue(
             s.armPivotSubsystem
                 .startMovingVoltage(() -> Volts.of(3 * armPivotSpinnyClawController.getRightY()))
-                .withName("ManuallyMoveArm"));
+                .withName("Arm Manual Control"));
     armPivotSpinnyClawController
         .povRight()
         .onTrue(
             s.armPivotSubsystem
                 .moveToPosition(ArmPivot.CORAL_PRESET_L4)
-                .withName("SetArmPresetL4"));
+                .withName("Arm L4 Preset"));
     armPivotSpinnyClawController
         .povLeft()
         .onTrue(
             s.armPivotSubsystem
                 .moveToPosition(ArmPivot.CORAL_PRESET_L2_L3)
-                .withName("SetArmPresetL2_3"));
+                .withName("Arm L2-L3 Preset"));
     armPivotSpinnyClawController
         .povUp()
         .onTrue(
             s.armPivotSubsystem
                 .moveToPosition(ArmPivot.CORAL_PRESET_UP)
-                .withName("SetArmPresetUp"));
+                .withName("Arm Preset Up"));
     armPivotSpinnyClawController
         .povDown()
         .onTrue(
             s.armPivotSubsystem
                 .moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
-                .withName("SetArmPresetDown"));
+                .withName("Arm Preset Down"));
     operatorController
         .povRight()
-        .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_OUT).withName("ArmPivotOut"));
+        .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_OUT).withName("Arm Preset Out"));
     armPivotSpinnyClawController
         .y()
         .onTrue(
             s.armPivotSubsystem
                 .moveToPosition(ArmPivot.ALGAE_REMOVE)
-                .withName("SetAlgaePresetRemove"));
+                .withName("Algae Preset Remove"));
     armPivotSpinnyClawController
         .b()
         .onTrue(
             s.armPivotSubsystem
                 .moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE)
-                .withName("SetAlgaePresetScore"));
+                .withName("Algae Preset Score"));
     armPivotSpinnyClawController
         .a()
         .onTrue(
             s.armPivotSubsystem
                 .moveToPosition(ArmPivot.ALGAE_STOWED)
-                .withName("SetAlgaePresetStowed"));
+                .withName("Algae Preset Stowed"));
   }
 
   private void configureClimbPivotBindings() {

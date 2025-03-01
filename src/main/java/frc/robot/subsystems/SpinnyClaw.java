@@ -87,18 +87,18 @@ public class SpinnyClaw extends SubsystemBase {
 
   // algae stuff
   public Command algaeIntakePower() {
-    return setPower(ALGAE_INTAKE_SPEED).withName("Algae Intake power");
+    return setPower(ALGAE_INTAKE_SPEED).withName("Algae intake power");
   }
 
   public Command algaeExtakePower() {
-    return setPower(ALGAE_EXTAKE_SPEED).withName("Algae Extake power");
+    return setPower(ALGAE_EXTAKE_SPEED).withName("Algae extake power");
   }
 
-  public Command algaeHoldIntakePower() { // tbh idk if it works
+  public Command algaeHoldIntakePower() {
     return holdPower(ALGAE_INTAKE_SPEED).withName("Algae hold intake power");
   }
 
-  public Command algaeHoldExtakePower() { // tbh idk if it works
+  public Command algaeHoldExtakePower() {
     return holdPower(ALGAE_EXTAKE_SPEED).withName("Algae hold extake power");
   }
 
