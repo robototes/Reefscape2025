@@ -319,6 +319,12 @@ public class Controls {
                         .withTimeout(0.3))
                 .ignoringDisable(true)
                 .withName("Reset elevator zero"));
+    elevatorTestController
+        .leftBumper()
+        .whileTrue(
+            Commands.startEnd(() -> s.elevatorSubsystem.setCoastMode(), () -> s.elevatorSubsystem.setBrakeMode())
+            .ignoringDisable(true).withName("Coast to Brake Mode")
+        );
   }
 
   private void configureArmPivotBindings() {

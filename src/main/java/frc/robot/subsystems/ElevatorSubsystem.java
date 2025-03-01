@@ -1,8 +1,10 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.Units;
@@ -237,6 +239,20 @@ public class ElevatorSubsystem extends SubsystemBase {
             })
         .andThen(Commands.waitUntil(() -> Math.abs(getCurrentPosition() - pos) < POS_TOLERANCE))
         .withName("setLevel" + pos);
+  }
+
+  public Command setBrakeMode(){
+    return runOnce(
+      () -> {
+        m_motor.setControl(new StaticBrake());
+      });
+  }
+
+  public Command setCoastMode(){
+    return runOnce(
+      () -> {
+        m_motor.setControl(new CoastOut());
+      });
   }
 
   public Command goUp() {
