@@ -278,13 +278,21 @@ public class Controls {
                         Commands.select(
                             Map.of(
                                 BranchHeight.LEVEL_FOUR,
-                                superStructure.coralLevelFour(driverController.rightBumper()).asProxy(),
+                                superStructure
+                                    .coralLevelFour(driverController.rightBumper())
+                                    .asProxy(),
                                 BranchHeight.LEVEL_THREE,
-                                superStructure.coralLevelThree(driverController.rightBumper()).asProxy(),
+                                superStructure
+                                    .coralLevelThree(driverController.rightBumper())
+                                    .asProxy(),
                                 BranchHeight.LEVEL_TWO,
-                                superStructure.coralLevelTwo(driverController.rightBumper()).asProxy(),
+                                superStructure
+                                    .coralLevelTwo(driverController.rightBumper())
+                                    .asProxy(),
                                 BranchHeight.LEVEL_ONE,
-                                superStructure.coralLevelOne(driverController.rightBumper()).asProxy()),
+                                superStructure
+                                    .coralLevelOne(driverController.rightBumper())
+                                    .asProxy()),
                             () -> branchHeight),
                         ScoringMode.ALGAE,
                         superStructure.algaeProcessorScore().asProxy()),
@@ -399,9 +407,7 @@ public class Controls {
     armPivotSpinnyClawController
         .povRight()
         .onTrue(
-            s.armPivotSubsystem
-                .moveToPosition(ArmPivot.CORAL_PRESET_L4)
-                .withName("Arm L4 Preset"));
+            s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_L4).withName("Arm L4 Preset"));
     armPivotSpinnyClawController
         .povLeft()
         .onTrue(
@@ -411,9 +417,7 @@ public class Controls {
     armPivotSpinnyClawController
         .povUp()
         .onTrue(
-            s.armPivotSubsystem
-                .moveToPosition(ArmPivot.CORAL_PRESET_UP)
-                .withName("Arm Preset Up"));
+            s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_UP).withName("Arm Preset Up"));
     armPivotSpinnyClawController
         .povDown()
         .onTrue(
