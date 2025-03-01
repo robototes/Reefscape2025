@@ -7,9 +7,13 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
@@ -65,6 +69,14 @@ public class ElevatorSubsystem extends SubsystemBase {
   private DoubleConsumer rumble = (rumble) -> {};
 
   private final MutVoltage m_appliedVoltage = Units.Volts.mutable(0);
+
+  // alerts
+  private final Alert NotConnectedError =
+      new Alert("Elevator", "Motor 1 not connected", AlertType.kError);
+  private final Alert NotConnectedError2 =
+      new Alert("Elevator", "Motor 2 not connected", AlertType.kError);
+  private final Debouncer notConnectedDebouncer = new Debouncer(.1, DebounceType.kBoth);
+
   // Creates a SysIdRoutine
   SysIdRoutine routine =
       new SysIdRoutine(
@@ -305,5 +317,12 @@ public class ElevatorSubsystem extends SubsystemBase {
             })
         .ignoringDisable(true)
         .withName("ElevatorStop");
+  }
+
+  @Override
+  public void periodic() {
+    NotConnectedError.set(notConnectedDebouncer.calculate(!m_motor.getMotorVoltage().hasUpdated()));
+    NotConnectedError2.set(
+        notConnectedDebouncer.calculate(!m_motor2.getMotorVoltage().hasUpdated()));
   }
 }
