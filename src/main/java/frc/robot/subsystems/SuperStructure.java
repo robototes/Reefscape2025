@@ -10,8 +10,7 @@ public class SuperStructure {
   private final ArmPivot armPivot;
   private final SpinnyClaw spinnyClaw;
 
-  public SuperStructure(
-      ElevatorSubsystem elevator, ArmPivot armPivot, SpinnyClaw spinnyClaw) {
+  public SuperStructure(ElevatorSubsystem elevator, ArmPivot armPivot, SpinnyClaw spinnyClaw) {
     this.elevator = elevator;
     this.armPivot = armPivot;
     this.spinnyClaw = spinnyClaw;
