@@ -45,10 +45,12 @@ public class Controls {
   private BranchHeight branchHeight = null;
 
   // Swerve stuff
-  private double MaxSpeed =
+  public static double MaxSpeed =
       RobotType.getCurrent() == RobotType.BONK
           ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
-          : CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+          : RobotType.getCurrent() == RobotType.TESTBASE
+              ? TestBaseTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
+              : CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   private final double MAX_ACCELERATION = 50;
   private final double MAX_ROTATION_ACCELERATION = 50;
   // kSpeedAt12Volts desired top speed
