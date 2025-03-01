@@ -10,14 +10,12 @@ public class SuperStructure {
   private final ElevatorSubsystem elevator;
   private final ArmPivot armPivot;
   private final SpinnyClaw spinnyClaw;
-  private final ArmSensor armSensor;
 
   public SuperStructure(
-      ElevatorSubsystem elevator, ArmPivot armPivot, SpinnyClaw spinnyClaw, ArmSensor armSensor) {
+      ElevatorSubsystem elevator, ArmPivot armPivot, SpinnyClaw spinnyClaw) {
     this.elevator = elevator;
     this.armPivot = armPivot;
     this.spinnyClaw = spinnyClaw;
-    this.armSensor = armSensor;
   }
 
   public Command levelFour(BooleanSupplier score) {
