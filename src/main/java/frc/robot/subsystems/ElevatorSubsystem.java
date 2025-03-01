@@ -299,8 +299,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     NotConnectedError.set(
-      notConnectedDebouncerOne.calculate(!m_motor.getMotorVoltage().hasUpdated()));
+        notConnectedDebouncerOne.calculate(!m_motor.getMotorVoltage().hasUpdated()));
     NotConnectedError2.set(
-      notConnectedDebouncerTwo.calculate(!m_motor2.getMotorVoltage().hasUpdated()));
+        notConnectedDebouncerTwo.calculate(!m_motor2.getMotorVoltage().hasUpdated()));
   }
 }

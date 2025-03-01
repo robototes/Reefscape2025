@@ -44,8 +44,9 @@ public class ClimbPivot extends SubsystemBase {
       new Alert("Climb", "Motor 1 not connected", AlertType.kError);
   private final Alert NotConnectedErrorTwo =
       new Alert("Climb", "Motor 2 not connected", AlertType.kError);
-      private final Debouncer notConnectedDebouncerOne = new Debouncer(.1, DebounceType.kBoth);
-      private final Debouncer notConnectedDebouncerTwo = new Debouncer(.1, DebounceType.kBoth);
+  private final Debouncer notConnectedDebouncerOne = new Debouncer(.1, DebounceType.kBoth);
+  private final Debouncer notConnectedDebouncerTwo = new Debouncer(.1, DebounceType.kBoth);
+
   public ClimbPivot() {
     motorOne = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_ONE_ID);
     motorTwo = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_TWO_ID);
