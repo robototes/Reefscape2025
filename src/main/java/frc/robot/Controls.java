@@ -348,7 +348,9 @@ public class Controls {
             s.elevatorSubsystem
                 .setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE)
                 .withName("Elevator Processor"));
-    elevatorTestController.leftBumper().whileTrue(s.elevatorSubsystem.holdCoastMode().withName("elevatortest hold coast mode"));
+    elevatorTestController
+        .leftBumper()
+        .whileTrue(s.elevatorSubsystem.holdCoastMode().withName("elevatortest hold coast mode"));
     operatorController
         .back()
         .onTrue(
