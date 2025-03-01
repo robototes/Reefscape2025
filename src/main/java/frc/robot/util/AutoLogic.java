@@ -21,13 +21,14 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import java.io.IOException;
 import java.util.List;
+import java.util.jar.Attributes.Name;
+
 import org.json.simple.parser.ParseException;
 
 public class AutoLogic {
@@ -137,17 +138,13 @@ public class AutoLogic {
         .withPosition(0, 1)
         .withSize(2, 1);
 
-    tab.addString("Current AutoElevatorCommand(s)", () -> autoAction.getSelected())
-        .withPosition(3, 1)
-        .withSize(2, 1);
-
     tab.add("Tested Autos", testedAutos)
         .withWidget(BuiltInWidgets.kComboBoxChooser)
         .withPosition(3, 0)
         .withSize(2, 1);
 
-    autoAction.setDefaultOption("EXTEND AND WAIT", "raiseElevatorandWait");
-    autoAction.addOption("EXTEND WHILE MOVING", "raiseElevator");
+    autoAction.setDefaultOption("EXTEND WHILE MOVING", "raiseElevator");
+    autoAction.addOption("EXTEND AND WAIT", "raiseElevatorandWait");
   }
 
   public static <T> String[] toStringArray(List<T> dataList) {
@@ -178,6 +175,9 @@ public class AutoLogic {
 
   public static void addAutoOptions() {
     autoPicker.setDefaultOption("DEFAULT PATH", "PreLoadAuto");
+    autoPicker.addOption("LOW TWO PIECE", "OppsidetoDandC");
+    autoPicker.addOption("TEST LOW TWO PIECE", "Copy of OppsidetoDandC");
+    autoPicker.addOption("INTAKE TEST", "INTAKE TEST");
     autoPicker.addOption("Mid 3 Piece", "Mid3Piece");
     autoPicker.addOption("Low 3 Piece", "Low3Piece");
     autoPicker.addOption("DRIVE ONLY", "SideWall");
@@ -195,13 +195,6 @@ public class AutoLogic {
 
   public static void addTestedAutos() {}
 
-  public static Command lowerElevator() {
-    if (r.superStructure != null) {
-      return r.superStructure.intake();
-    }
-    return Commands.none().withName("lowerElevator");
-  }
-
   public static Command raiseElevator() {
     if (r.superStructure != null) {
       return r.superStructure.levelFour(() -> true);
@@ -209,32 +202,31 @@ public class AutoLogic {
     return Commands.none().withName("raiseElevator");
   }
 
-  public static Command lowerElevatorandWait() {
-
-    return Commands.sequence(new WaitCommand(0.8), lowerElevator())
-        .withName("lowerElevatorandWAIT");
-  }
-
-  public static Command raiseElevatorandWait() {
-    return Commands.sequence(new WaitCommand(0.8), raiseElevator())
-        .withName("raiseElevatorandWAIT");
-  }
-
   public static Command autoAlignmentCommand() {
-    return AutoAlign.autoAlign(s.drivebaseSubsystem).withName("AutoAlign");
+    return AutoAlign.autoAlign(s.drivebaseSubsystem).withName("autoAlign");
   }
+  public static Command intakeCommand() {
+    if (r.superStructure != null) {
+      return   r.superStructure.intake().withName("intake");
+    }
+    return Commands.none().withName("intake");
+  }
+  
 
   public static void registerCommand() {
 
     if (RobotState.isDisabled()) {
       if (autoAction.getSelected().equals("raiseElevatorandWait")) {
-        NamedCommands.registerCommand("lowerElevator", lowerElevatorandWait());
-        NamedCommands.registerCommand("raiseElevator", raiseElevatorandWait());
-        NamedCommands.registerCommand("AutoAlign", autoAlignmentCommand());
-      } else if (autoAction.getSelected().equals("raiseElevator")) {
-        NamedCommands.registerCommand("lowerElevator", lowerElevator());
+
+        NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
         NamedCommands.registerCommand("raiseElevator", raiseElevator());
-        NamedCommands.registerCommand("AutoAlign", autoAlignmentCommand());
+        NamedCommands.registerCommand("intake", intakeCommand());
+      } else if (autoAction.getSelected().equals("raiseElevator")) {
+
+        NamedCommands.registerCommand("raiseElevator", raiseElevator());
+        NamedCommands.registerCommand("intake", intakeCommand());
+        NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
+        
 
       } else {
         System.out.println("FAILED?" + autoAction.getSelected());

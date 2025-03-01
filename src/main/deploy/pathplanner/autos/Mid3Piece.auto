@@ -13,6 +13,12 @@
         {
           "type": "named",
           "data": {
+            "name": "autoAlign"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "raiseElevator"
           }
         },
@@ -20,12 +26,6 @@
           "type": "path",
           "data": {
             "pathName": "Preload to far station"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "lowerElevator"
           }
         },
         {
@@ -37,13 +37,13 @@
         {
           "type": "named",
           "data": {
-            "name": "raiseElevator"
+            "name": "autoAlign"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "CtoRightSideFar"
+            "name": "raiseElevator"
           }
         },
         {
@@ -55,13 +55,31 @@
         {
           "type": "path",
           "data": {
+            "pathName": "CtoRightSideFar"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
             "pathName": "RightsideclosetoD"
           }
         },
         {
           "type": "named",
           "data": {
+            "name": "autoAlign"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "raiseElevator"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "lowerElevator"
           }
         }
       ]

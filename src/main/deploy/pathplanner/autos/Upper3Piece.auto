@@ -13,6 +13,12 @@
         {
           "type": "named",
           "data": {
+            "name": "autoAlign"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "raiseElevator"
           }
         },
@@ -20,12 +26,6 @@
           "type": "path",
           "data": {
             "pathName": "J to Leftsidefar"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "lowerElevator"
           }
         },
         {
@@ -37,13 +37,13 @@
         {
           "type": "named",
           "data": {
-            "name": "raiseElevator"
+            "name": "autoAlign"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "KToLeftSideFar"
+            "name": "raiseElevator"
           }
         },
         {
@@ -55,7 +55,19 @@
         {
           "type": "path",
           "data": {
+            "pathName": "KToLeftSideFar"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
             "pathName": "Leftsidefar to K"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoAlign"
           }
         },
         {

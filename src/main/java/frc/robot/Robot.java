@@ -112,7 +112,6 @@ public class Robot extends TimedRobot {
     // Checks if FMS is attatched and enables joystick warning if true
     DriverStation.silenceJoystickConnectionWarning(!DriverStation.isFMSAttached());
 
-    AutoLogic.configureAuto(subsystems.drivebaseSubsystem);
     Command autoCommand = AutoLogic.getAutoCommand(AutoLogic.getSelectedAutoName());
     Shuffleboard.startRecording();
 

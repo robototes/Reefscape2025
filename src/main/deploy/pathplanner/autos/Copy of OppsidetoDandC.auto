@@ -9,18 +9,24 @@
           "data": {
             "commands": [
               {
+                "type": "path",
+                "data": {
+                  "pathName": "OppSideWalltoD"
+                }
+              },
+              {
                 "type": "named",
                 "data": {
                   "name": "raiseElevator"
                 }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "MidPreLoad"
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "DtoRightSideFar"
           }
         }
       ]

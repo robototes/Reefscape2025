@@ -11,44 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": " OppSideWalltoE"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "raiseElevator"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "EtoRightSideFar"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.8
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intake"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "RightsideclosetoD"
+                  "pathName": "OppSideWalltoD"
                 }
               },
               {
@@ -85,7 +48,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RightsideclosetoC"
+                  "pathName": "RightSideFarToC"
                 }
               },
               {
