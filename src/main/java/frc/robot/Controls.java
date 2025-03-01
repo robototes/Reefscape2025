@@ -184,6 +184,25 @@ public class Controls {
             Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("algae level 2-3"));
     ;
+    driverController
+        .povUp()
+        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_FOUR).withName("level 4"))
+        .onTrue(
+            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
+                .withName("algae level 3-4"));
+    driverController
+        .povLeft()
+        .onTrue(
+            Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"));
+    driverController
+        .povRight()
+        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO).withName("level 2"));
+    driverController
+        .povDown()
+        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE).withName("level 1"))
+        .onTrue(
+            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
+                .withName("algae level 2-3"));
 
     /*operatorController
     .a()
@@ -196,15 +215,24 @@ public class Controls {
         .rightTrigger()
         .onTrue(
             Commands.runOnce(() -> scoringMode = ScoringMode.CORAL).withName("Coral Scoring Mode"));
-    operatorController.povLeft().onTrue(superStructure.stow().withName("Stow"));
-    // .onTrue(superStructure.algaeStow().withName("Algae Stow"));
+    operatorController
+        .povLeft()
+        .onTrue(
+            Commands.select(
+                    Map.of(
+                        ScoringMode.CORAL,
+                        superStructure.coralStow(),
+                        ScoringMode.ALGAE,
+                        superStructure.algaeStow()),
+                    () -> scoringMode)
+                .withName("Stow"));
     driverController
         .a()
         .onTrue(
             Commands.select(
                     Map.of(
                         ScoringMode.CORAL,
-                        superStructure.intake(),
+                        superStructure.coralIntake(),
                         ScoringMode.ALGAE,
                         Commands.select(
                             Map.of(
@@ -215,11 +243,33 @@ public class Controls {
                             () -> algaeIntakeHeight)),
                     () -> scoringMode)
                 .withName("Driver Intake"));
+    driverController // just for testing
+        .x()
+        .onTrue(
+            Commands.select(
+                    Map.of(
+                        AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR,
+                        superStructure.algaeLevelThreeFourPop(),
+                        AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE,
+                        superStructure.algaeLevelTwoThreePop()),
+                    () -> algaeIntakeHeight)
+                .withName("Driver algae Intake Pop"));
+    driverController // just for testing
+        .y()
+        .onTrue(
+            Commands.select(
+                    Map.of(
+                        AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR,
+                        superStructure.algaeLevelThreeFourIntake(),
+                        AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE,
+                        superStructure.algaeLevelTwoThreeIntake()),
+                    () -> algaeIntakeHeight)
+                .withName("Driver algae Intake"));
     if (sensors.armSensor != null) {
-      sensors.armSensor.inTrough().onTrue(superStructure.intake());
+      sensors.armSensor.inTrough().onTrue(superStructure.coralIntake());
     }
     driverController
-        .leftBumper()
+        .rightTrigger()
         .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
         .onTrue(
             Commands.select(
@@ -228,13 +278,13 @@ public class Controls {
                         Commands.select(
                             Map.of(
                                 BranchHeight.LEVEL_FOUR,
-                                superStructure.levelFour(driverController.rightBumper()),
+                                superStructure.coralLevelFour(driverController.rightBumper()),
                                 BranchHeight.LEVEL_THREE,
-                                superStructure.levelThree(driverController.rightBumper()),
+                                superStructure.coralLevelThree(driverController.rightBumper()),
                                 BranchHeight.LEVEL_TWO,
-                                superStructure.levelTwo(driverController.rightBumper()),
+                                superStructure.coralLevelTwo(driverController.rightBumper()),
                                 BranchHeight.LEVEL_ONE,
-                                superStructure.levelOne(driverController.rightBumper())),
+                                superStructure.coralLevelOne(driverController.rightBumper())),
                             () -> branchHeight),
                         ScoringMode.ALGAE,
                         superStructure.algaeProcessorScore()),
@@ -313,6 +363,7 @@ public class Controls {
             s.elevatorSubsystem
                 .setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE)
                 .withName("Elevator Processor"));
+    elevatorTestController.leftBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
     operatorController
         .back()
         .onTrue(
@@ -324,14 +375,7 @@ public class Controls {
                         .withTimeout(0.3))
                 .ignoringDisable(true)
                 .withName("Reset elevator zero"));
-    elevatorTestController
-        .leftBumper()
-        .whileTrue(
-            Commands.startEnd(
-                    () -> s.elevatorSubsystem.setCoastMode(),
-                    () -> s.elevatorSubsystem.setBrakeMode())
-                .ignoringDisable(true)
-                .withName("Coast to Brake Mode"));
+    operatorController.rightBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
   }
 
   private void configureArmPivotBindings() {
@@ -405,6 +449,7 @@ public class Controls {
     }
     climbTestController.back().onTrue(s.climbPivotSubsystem.toggleClimb());
     climbTestController.start().onTrue(s.climbPivotSubsystem.zeroClimb());
+    operatorController.start().onTrue(s.climbPivotSubsystem.toggleClimb());
   }
 
   private void configureSpinnyClawBindings() {
@@ -412,26 +457,28 @@ public class Controls {
       return;
     }
     // Claw controls bindings go here
-    armPivotSpinnyClawController.leftBumper().whileTrue(s.spinnyClawSubsytem.holdExtakePower());
-    armPivotSpinnyClawController.rightBumper().whileTrue(s.spinnyClawSubsytem.holdIntakePower());
+    armPivotSpinnyClawController
+        .leftBumper()
+        .whileTrue(s.spinnyClawSubsytem.coralHoldExtakePower());
+    armPivotSpinnyClawController
+        .rightBumper()
+        .whileTrue(s.spinnyClawSubsytem.coralHoldIntakePower());
     armPivotSpinnyClawController
         .leftTrigger()
         .whileTrue(s.spinnyClawSubsytem.algaeHoldExtakePower());
     armPivotSpinnyClawController
         .rightTrigger()
         .whileTrue(s.spinnyClawSubsytem.algaeHoldIntakePower());
-    driverController.leftTrigger().whileTrue(s.spinnyClawSubsytem.holdExtakePower());
-    driverController.rightTrigger().whileTrue(s.spinnyClawSubsytem.holdIntakePower());
   }
 
   private void configureElevatorLEDBindings() {
     if (s.elevatorLEDSubsystem == null) {
       return;
     }
-    operatorController
+    elevatorTestController
         .back()
         .onTrue(s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.larsonAnim));
-    operatorController
+    elevatorTestController
         .start()
         .onTrue(s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.rainbowAnim));
     if (s.elevatorSubsystem != null) {

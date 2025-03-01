@@ -77,11 +77,11 @@ public class SpinnyClaw extends SubsystemBase {
     return setPower(CORAL_EXTAKE_SPEED).withName("Extake power");
   }
 
-  public Command holdIntakePower() {
+  public Command coralHoldIntakePower() {
     return holdPower(CORAL_INTAKE_SPEED).withName("Hold intake power");
   }
 
-  public Command holdExtakePower() {
+  public Command coralHoldExtakePower() {
     return holdPower(CORAL_EXTAKE_SPEED).withName("Hold extake power");
   }
 

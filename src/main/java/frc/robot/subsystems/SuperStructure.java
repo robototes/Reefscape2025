@@ -19,7 +19,7 @@ public class SuperStructure {
     this.armSensor = armSensor;
   }
 
-  public Command levelFour(BooleanSupplier score) {
+  public Command coralLevelFour(BooleanSupplier score) {
     return Commands.sequence(
         Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS),
@@ -30,11 +30,11 @@ public class SuperStructure {
         Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_POS),
             armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L4)),
-        spinnyClaw.holdExtakePower().withTimeout(0.2),
-        stow());
+        spinnyClaw.coralHoldExtakePower().withTimeout(0.2),
+        coralStow());
   }
 
-  public Command levelThree(BooleanSupplier score) {
+  public Command coralLevelThree(BooleanSupplier score) {
     return Commands.sequence(
         Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS),
@@ -43,11 +43,11 @@ public class SuperStructure {
         armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L2_L3),
         Commands.waitUntil(score),
         elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_POS),
-        spinnyClaw.holdExtakePower().withTimeout(0.15),
-        stow());
+        spinnyClaw.coralHoldExtakePower().withTimeout(0.15),
+        coralStow());
   }
 
-  public Command levelTwo(BooleanSupplier score) {
+  public Command coralLevelTwo(BooleanSupplier score) {
     return Commands.sequence(
         Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS),
@@ -56,11 +56,11 @@ public class SuperStructure {
         armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L2_L3),
         Commands.waitUntil(score),
         elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_POS),
-        spinnyClaw.holdExtakePower().withTimeout(0.15),
-        stow());
+        spinnyClaw.coralHoldExtakePower().withTimeout(0.15),
+        coralStow());
   }
 
-  public Command levelOne(BooleanSupplier score) {
+  public Command coralLevelOne(BooleanSupplier score) {
     return Commands.sequence(
         Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_ONE_POS),
@@ -68,18 +68,18 @@ public class SuperStructure {
             spinnyClaw.stop()),
         Commands.waitUntil(score),
         elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_POS),
-        spinnyClaw.holdExtakePower().withTimeout(0.15),
-        stow());
+        spinnyClaw.coralHoldExtakePower().withTimeout(0.15),
+        coralStow());
   }
 
-  public Command stow() {
+  public Command coralStow() {
     return Commands.parallel(
         elevator.setLevel(ElevatorSubsystem.CORAL_STOWED),
         armPivot.moveToPosition(ArmPivot.CORAL_PRESET_STOWED),
         spinnyClaw.stop());
   }
 
-  public Command intake() {
+  public Command coralIntake() {
     return Commands.sequence(
             Commands.parallel(
                 elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
@@ -90,7 +90,7 @@ public class SuperStructure {
             Commands.waitSeconds(0.1),
             spinnyClaw.stop(),
             elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
-            stow())
+            coralStow())
         .withName("Intake");
   }
 
@@ -100,6 +100,7 @@ public class SuperStructure {
             spinnyClaw.algaeIntakePower(),
             armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
             elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
+        // add a wait command here
         algaeStow());
   }
 
@@ -109,6 +110,7 @@ public class SuperStructure {
             spinnyClaw.algaeIntakePower(),
             armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
             elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
+        // add a wait command here
         algaeStow());
   }
 
@@ -127,6 +129,24 @@ public class SuperStructure {
             spinnyClaw.algaeFlingPower(),
             armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
             elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
+        algaeStow());
+  }
+
+  public Command algaeLevelThreeFourPop() {
+    return Commands.sequence(
+        Commands.parallel(
+            armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE_PREPOS),
+            elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
+        armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
+        algaeStow());
+  }
+
+  public Command algaeLevelTwoThreePop() { // theoretically
+    return Commands.sequence(
+        Commands.parallel(
+            armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE_PREPOS),
+            elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
+        armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
         algaeStow());
   }
 

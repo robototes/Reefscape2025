@@ -241,18 +241,16 @@ public class ElevatorSubsystem extends SubsystemBase {
         .withName("setLevel" + pos);
   }
 
-  public Command setBrakeMode() {
-    return runOnce(
-        () -> {
-          m_motor.setControl(new StaticBrake());
-        });
-  }
-
-  public Command setCoastMode() {
-    return runOnce(
-        () -> {
-          m_motor.setControl(new CoastOut());
-        });
+  public Command holdCoastMode() {
+    return startEnd(
+            () -> {
+              m_motor.setControl(new CoastOut());
+            },
+            () -> {
+              m_motor.setControl(new StaticBrake());
+            })
+        .ignoringDisable(true)
+        .withName("Hold elevator coast");
   }
 
   public Command goUp() {
