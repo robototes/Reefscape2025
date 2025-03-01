@@ -68,7 +68,8 @@ public class ElevatorSubsystem extends SubsystemBase {
       new Alert("Elevator", "Motor 1 not connected", AlertType.kError);
   private final Alert NotConnectedError2 =
       new Alert("Elevator", "Motor 2 not connected", AlertType.kError);
-  private final Debouncer notConnectedDebouncer = new Debouncer(.1, DebounceType.kBoth);
+  private final Debouncer notConnectedDebouncerOne = new Debouncer(.1, DebounceType.kBoth);
+  private final Debouncer notConnectedDebouncerTwo = new Debouncer(.1, DebounceType.kBoth);
 
   // Creates a SysIdRoutine
   SysIdRoutine routine =
@@ -297,8 +298,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    NotConnectedError.set(notConnectedDebouncer.calculate(!m_motor.getMotorVoltage().hasUpdated()));
+    NotConnectedError.set(
+      notConnectedDebouncerOne.calculate(!m_motor.getMotorVoltage().hasUpdated()));
     NotConnectedError2.set(
-        notConnectedDebouncer.calculate(!m_motor2.getMotorVoltage().hasUpdated()));
+      notConnectedDebouncerTwo.calculate(!m_motor2.getMotorVoltage().hasUpdated()));
   }
 }
