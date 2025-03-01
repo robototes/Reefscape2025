@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": " OppSideWalltoE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "EtoRightSideFar"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightsideclosetoD"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "DtoRightSideFar"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightsideclosetoC"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

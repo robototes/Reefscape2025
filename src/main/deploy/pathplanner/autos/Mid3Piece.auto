@@ -1,0 +1,91 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MidPreLoad"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoAlign"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "raiseElevator"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Preload to far station"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightSideFarToC"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoAlign"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "raiseElevator"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "lowerElevator"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CtoRightSideFar"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightsideclosetoD"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoAlign"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "raiseElevator"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "lowerElevator"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

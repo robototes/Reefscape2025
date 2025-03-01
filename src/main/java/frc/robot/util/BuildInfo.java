@@ -96,8 +96,17 @@ public class BuildInfo {
     String[] untrackedFiles = {};
     if (buildInfo.isPresent()) {
       try (Scanner scanner = new Scanner(buildInfo.get())) {
+        // Read to project path
+        readToHeader(scanner, "Project path", (line) -> {});
+        // Skip project path
+        scanner.nextLine();
+        // Check commit hash header
+        String commitHashHeader = scanner.nextLine();
+        if (!lineIsHeader(commitHashHeader, "Commit hash")) {
+          System.out.println("No git!");
+          throw new InvalidFormatException();
+        }
         // Read the commit hash
-        readToHeader(scanner, "Commit hash", (line) -> {});
         commitHash = scanner.nextLine();
         // Read the commit refs
         expectLineIsHeader(scanner.nextLine(), "Refs to latest commit");

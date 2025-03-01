@@ -5,7 +5,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 public enum RobotType {
   BONK(0x38, 0xd9, 0x93),
   CRANE(0x22, 0xb0, 0x92),
-  COMPETITION(0x33, 0x9d, 0xe7);
+  COMPETITION(0, 0, 0),
+  TESTBASE(0x33, 0x9d, 0xe7);
 
   @SuppressWarnings("ImmutableEnumChecker")
   private final MACAddress macAddress;

@@ -4,6 +4,7 @@ import static frc.robot.Subsystems.SubsystemConstants.*;
 
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
+import frc.robot.generated.TestBaseTunerConstants;
 import frc.robot.sensors.ElevatorLight;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ClimbPivot;
@@ -43,6 +44,8 @@ public class Subsystems {
     if (DRIVEBASE_ENABLED) {
       if (RobotType.getCurrent() == RobotType.BONK) {
         drivebaseSubsystem = BonkTunerConstants.createDrivetrain();
+      } else if (RobotType.getCurrent() == RobotType.TESTBASE) {
+        drivebaseSubsystem = TestBaseTunerConstants.createDrivetrain();
       } else {
         drivebaseSubsystem = CompTunerConstants.createDrivetrain();
       }
