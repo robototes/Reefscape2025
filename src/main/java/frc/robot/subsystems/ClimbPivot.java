@@ -40,12 +40,12 @@ public class ClimbPivot extends SubsystemBase {
   private boolean nextMoveOut = true;
 
   // alerts
-  private final Alert NotConnectedError =
+  private final Alert NotConnectedErrorOne =
       new Alert("Climb", "Motor 1 not connected", AlertType.kError);
-  private final Alert NotConnectedError2 =
+  private final Alert NotConnectedErrorTwo =
       new Alert("Climb", "Motor 2 not connected", AlertType.kError);
-  private final Debouncer notConnectedDebouncer = new Debouncer(.1, DebounceType.kBoth);
-
+      private final Debouncer notConnectedDebouncerOne = new Debouncer(.1, DebounceType.kBoth);
+      private final Debouncer notConnectedDebouncerTwo = new Debouncer(.1, DebounceType.kBoth);
   public ClimbPivot() {
     motorOne = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_ONE_ID);
     motorTwo = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_TWO_ID);
@@ -174,9 +174,9 @@ public class ClimbPivot extends SubsystemBase {
     } else {
       isClimbIn = false;
     }
-    NotConnectedError.set(
-        notConnectedDebouncer.calculate(!motorOne.getMotorVoltage().hasUpdated()));
-    NotConnectedError2.set(
-        notConnectedDebouncer.calculate(!motorTwo.getMotorVoltage().hasUpdated()));
+    NotConnectedErrorOne.set(
+        notConnectedDebouncerOne.calculate(!motorOne.getMotorVoltage().hasUpdated()));
+    NotConnectedErrorTwo.set(
+        notConnectedDebouncerTwo.calculate(!motorTwo.getMotorVoltage().hasUpdated()));
   }
 }
