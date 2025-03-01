@@ -21,20 +21,20 @@ import java.util.function.DoubleSupplier;
 
 public class ElevatorSubsystem extends SubsystemBase {
   // Maximum is 38.34
-  public static final double LEVEL_FOUR_PRE_POS = 37.5;
-  public static final double LEVEL_FOUR_POS = 36.5;
-  public static final double LEVEL_THREE_PRE_POS = 16.8;
-  public static final double LEVEL_THREE_POS = 14;
-  public static final double LEVEL_TWO_PRE_POS = 4.8;
-  public static final double LEVEL_TWO_POS = 4.4;
-  public static final double LEVEL_ONE_POS = 8.06;
+  public static final double CORAL_LEVEL_FOUR_PRE_POS = 37.5;
+  public static final double CORAL_LEVEL_FOUR_POS = 36.5;
+  public static final double CORAL_LEVEL_THREE_PRE_POS = 16.8;
+  public static final double CORAL_LEVEL_THREE_POS = 14;
+  public static final double CORAL_LEVEL_TWO_PRE_POS = 4.8;
+  public static final double CORAL_LEVEL_TWO_POS = 4.4;
+  public static final double CORAL_LEVEL_ONE_POS = 8.06;
   public static final double ALGAE_LEVEL_TWO_THREE = 8; // untested
   public static final double ALGAE_LEVEL_THREE_FOUR = 16; // untested
   public static final double ALGAE_STOWED = 16; // untested
   public static final double ALGAE_PROCESSOR_SCORE = 2; // untested
-  public static final double STOWED = 2;
-  public static final double INTAKE_POS = 0.1;
-  public static final double PRE_INTAKE = 2;
+  public static final double CORAL_STOWED = 2;
+  public static final double CORAL_INTAKE_POS = 0.1;
+  public static final double CORAL_PRE_INTAKE = 2;
   public static final double MANUAL = 0.1;
   private static final double POS_TOLERANCE = 0.1;
   private final double ELEVATOR_KP = 13.804;
