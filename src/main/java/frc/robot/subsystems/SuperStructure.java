@@ -77,12 +77,10 @@ public class SuperStructure {
   }
 
   public Command preIntake() {
-    return Commands.sequence(
-        stow(),
-        Commands.parallel(
-            elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
-            armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
-            spinnyClaw.intakePower()));
+    return Commands.parallel(
+        elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
+        armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
+        spinnyClaw.intakePower());
   }
 
   public Trigger inPreIntakePosition() {
