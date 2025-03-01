@@ -83,7 +83,6 @@ public class Controls {
     configureArmPivotBindings();
     configureClimbPivotBindings();
     configureSpinnyClawBindings();
-    configureAlignBindings();
     configureSuperStructureBindings();
     configureElevatorLEDBindings();
   }
@@ -137,6 +136,14 @@ public class Controls {
                       .withRotationalRate(newSpeeds.omegaRadiansPerSecond);
                 })
             .withName("Drive"));
+    driveController
+        .leftBumper()
+        .whileTrue(
+            AutoAlign.aim(
+                s.drivebaseSubsystem,
+                () -> -driveController.getLeftY()*MaxSpeed,
+                () -> -driverController.getLeftX()*MaxSpeed));
+    driverController.rightTrigger().onTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
     s.drivebaseSubsystem
         .applyRequest(() -> brake)
         .ignoringDisable(true)
@@ -364,13 +371,6 @@ public class Controls {
       hasBeen0ed.onFalse(
           s.elevatorLEDSubsystem.colorSet(50, 0, 0).withName("LED red").ignoringDisable(false));
     }
-  }
-
-  private void configureAlignBindings() {
-    if (s.drivebaseSubsystem == null) {
-      return;
-    }
-    driverController.leftBumper().onTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
   }
 
   public void vibrateDriveController(double vibration) {
