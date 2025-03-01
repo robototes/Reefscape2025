@@ -13,6 +13,7 @@ public class Hardware {
   public static final int ELEVATOR_MOTOR_TWO = 21;
 
   // branch sensors [25-29] (mounted on elevator)
+  // fixed it for u connor ;) - mech
   public static final int BRANCH_SENSOR_LEFT = 25;
   public static final int BRANCH_SENSOR_RIGHT = 26;
 
