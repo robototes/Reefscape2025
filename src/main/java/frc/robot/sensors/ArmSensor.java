@@ -15,8 +15,8 @@ public class ArmSensor {
 
   private final LaserCan mainSensor;
   // VALUES ARE IN METERES
-  private static final double TROUGH_LOWER_LIMIT = 0.15;
-  private static final double TROUGH_UPPER_LIMIT = 0.25;
+  private static final double TROUGH_LOWER_LIMIT = 0.18;
+  private static final double TROUGH_UPPER_LIMIT = 0.28;
   private static final double CLAW_LOWER_LIMIT = 0.06;
   private static final double CLAW_UPPER_LIMIT = 0.08;
 
