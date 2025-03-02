@@ -370,8 +370,8 @@ public class Controls {
           s.elevatorLEDSubsystem.colorSet(0, 50, 0).withName("LED green").ignoringDisable(true));
       hasBeen0ed.onFalse(
           s.elevatorLEDSubsystem.colorSet(50, 0, 0).withName("LED red").ignoringDisable(false));
+        }
     }
-  }
 
   public void vibrateDriveController(double vibration) {
     if (!DriverStation.isAutonomous()) {
