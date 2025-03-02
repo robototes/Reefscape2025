@@ -25,6 +25,7 @@ import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
+import frc.robot.util.AutoAlign;
 import java.io.IOException;
 import java.util.List;
 import java.util.jar.Attributes.Name;
@@ -203,7 +204,11 @@ public class AutoLogic {
   }
 
   public static Command autoAlignmentCommand() {
+<<<<<<< Updated upstream
     return AutoAlign.autoAlign(s.drivebaseSubsystem).withName("autoAlign");
+=======
+    return Commands.sequence(new WaitCommand(0.5), autoPathAlign().withName("auto"));
+>>>>>>> Stashed changes
   }
   public static Command intakeCommand() {
     if (r.superStructure != null) {
@@ -217,6 +222,7 @@ public class AutoLogic {
 
     if (RobotState.isDisabled()) {
       if (autoAction.getSelected().equals("raiseElevatorandWait")) {
+<<<<<<< Updated upstream
 
         NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
         NamedCommands.registerCommand("raiseElevator", raiseElevator());
@@ -227,6 +233,15 @@ public class AutoLogic {
         NamedCommands.registerCommand("intake", intakeCommand());
         NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
         
+=======
+        NamedCommands.registerCommand("lowerElevator", lowerElevatorandWait());
+        NamedCommands.registerCommand("raiseElevator", raiseElevatorandWait());
+        NamedCommands.registerCommand("autoAlign", AutoAlign.autoAlign(subsystems.drivebaseSubsystem));
+      } else if (autoAction.getSelected().equals("raiseElevator")) {
+        NamedCommands.registerCommand("lowerElevator", lowerElevator());
+        NamedCommands.registerCommand("raiseElevator", raiseElevator());
+        NamedCommands.registerCommand("autoAlign", AutoAlign.autoAlign(subsystems.drivebaseSubsystem));
+>>>>>>> Stashed changes
 
       } else {
         System.out.println("FAILED?" + autoAction.getSelected());
