@@ -204,19 +204,7 @@ public class AutoLogic {
   }
 
   public static Command autoAlignmentCommand() {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
     return AutoAlign.autoAlign(s.drivebaseSubsystem).withName("autoAlign");
-=======
-    return Commands.sequence(new WaitCommand(0.5), autoPathAlign().withName("auto"));
->>>>>>> Stashed changes
-=======
-    return Commands.sequence(new WaitCommand(0.5), autoPathAlign().withName("auto"));
->>>>>>> Stashed changes
-=======
-    return Commands.sequence(new WaitCommand(0.5), autoPathAlign().withName("auto"));
->>>>>>> Stashed changes
   }
   public static Command intakeCommand() {
     if (r.superStructure != null) {
@@ -230,8 +218,6 @@ public class AutoLogic {
 
     if (RobotState.isDisabled()) {
       if (autoAction.getSelected().equals("raiseElevatorandWait")) {
-<<<<<<< Updated upstream
-
         NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
         NamedCommands.registerCommand("raiseElevator", raiseElevator());
         NamedCommands.registerCommand("intake", intakeCommand());
@@ -240,23 +226,6 @@ public class AutoLogic {
         NamedCommands.registerCommand("raiseElevator", raiseElevator());
         NamedCommands.registerCommand("intake", intakeCommand());
         NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
-        
-=======
-        NamedCommands.registerCommand("lowerElevator", lowerElevatorandWait());
-        NamedCommands.registerCommand("raiseElevator", raiseElevatorandWait());
-        NamedCommands.registerCommand("autoAlign", AutoAlign.autoAlign(subsystems.drivebaseSubsystem));
-      } else if (autoAction.getSelected().equals("raiseElevator")) {
-        NamedCommands.registerCommand("lowerElevator", lowerElevator());
-        NamedCommands.registerCommand("raiseElevator", raiseElevator());
-        NamedCommands.registerCommand("autoAlign", AutoAlign.autoAlign(subsystems.drivebaseSubsystem));
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-
       } else {
         System.out.println("FAILED?" + autoAction.getSelected());
       }
