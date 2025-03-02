@@ -136,13 +136,13 @@ public class Controls {
                       .withRotationalRate(newSpeeds.omegaRadiansPerSecond);
                 })
             .withName("Drive"));
-    driveController
+    driverController
         .leftBumper()
         .whileTrue(
             AutoAlign.aim(
                 s.drivebaseSubsystem,
-                () -> -driveController.getLeftY()*MaxSpeed,
-                () -> -driverController.getLeftX()*MaxSpeed));
+                () -> -driverController.getLeftY() * MaxSpeed,
+                () -> -driverController.getLeftX() * MaxSpeed));
     driverController.rightTrigger().onTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
     s.drivebaseSubsystem
         .applyRequest(() -> brake)

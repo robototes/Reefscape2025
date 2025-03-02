@@ -1,5 +1,7 @@
 package frc.robot.subsystems.auto;
 
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
@@ -15,7 +17,7 @@ import frc.robot.Controls;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import java.util.Arrays;
 import java.util.List;
-import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
+import java.util.function.DoubleSupplier;
 
 public class AutoAlign {
   private static final double MaxAcceleration = 1;
@@ -98,10 +100,15 @@ public class AutoAlign {
           BRANCH_R_K,
           BRANCH_R_L);
 
-  private static Pose2d robotPose = drivebaseSubsystem.getState().Pose;
-
   private static Command autoPathAlign(CommandSwerveDrivetrain drivebaseSubsystem) {
+    Pose2d robotPose = drivebaseSubsystem.getState().Pose;
     Pose2d branchPose = getClosestBranch(drivebaseSubsystem);
+    boolean isBlue;
+    if (!DriverStation.getAlliance().isEmpty()) {
+      isBlue = DriverStation.getAlliance().get().equals(Alliance.Blue);
+    } else {
+      isBlue = false;
+    }
     // sets the point for the path to go to
     List<Waypoint> waypointsPoeses = PathPlannerPath.waypointsFromPoses(robotPose, branchPose);
     // creates path
@@ -129,6 +136,7 @@ public class AutoAlign {
   }
 
   private static Pose2d getClosestBranch(CommandSwerveDrivetrain drivebaseSubsystem) {
+    Pose2d robotPose = drivebaseSubsystem.getState().Pose;
     boolean isBlue;
     if (!DriverStation.getAlliance().isEmpty()) {
       isBlue = DriverStation.getAlliance().get().equals(Alliance.Blue);
@@ -141,24 +149,26 @@ public class AutoAlign {
   }
 
   private static final SwerveRequest.FieldCentricFacingAngle angle =
-    new SwerveRequest.FieldCentricFacingAngle()
-        .withDeadband(MaxSpeed * 0.1)
-        .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-        .withDriveRequestType(
-            DriveRequestType.OpenLoopVoltage);
+      new SwerveRequest.FieldCentricFacingAngle()
+          .withDeadband(Controls.MaxSpeed * 0.1)
+          .withRotationalDeadband(Controls.MaxAngularRate * 0.1) // Add a 10% deadband
+          .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
   public static Command aim(CommandSwerveDrivetrain drivebase, DoubleSupplier x, DoubleSupplier y) {
-    return drivebase.applyRequest(() -> {
-      // use the other method to calculate target pose
-      Pose2d targetPose = getClosestBranch(drivebase);
-      // calculate Rotation2d that's the angle from current Translation2d and target pose Translation2d
-      Translation2d distance = targetPose.getTranslation().minus(robotPose.getTranslation());
-      Rotation2d targetRotation = distance.getAngle();
-      // apply request
-      return angle
-        .withVelocityX(x.getAsDouble())
-        .withVelocityY(y.getAsDouble())
-        .withTargetDirection(targetRotation);
-      });
+    return drivebase.applyRequest(
+        () -> {
+          // use the other method to calculate target pose
+          Pose2d targetPose = getClosestBranch(drivebase);
+          // calculate Rotation2d that's the angle from current Translation2d and target pose
+          // Translation2d
+          Pose2d currentPose = drivebase.getState().Pose;
+          Translation2d distance = targetPose.getTranslation().minus(currentPose.getTranslation());
+          Rotation2d targetRotation = distance.getAngle();
+          // apply request
+          return angle
+              .withVelocityX(x.getAsDouble())
+              .withVelocityY(y.getAsDouble())
+              .withTargetDirection(targetRotation);
+        });
   }
 }
