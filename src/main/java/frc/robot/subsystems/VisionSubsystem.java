@@ -51,7 +51,7 @@ public class VisionSubsystem extends SubsystemBase {
   private static final double CAMERA_YAW_FRONT = Units.degreesToRadians(20);
   private static final double CAMERA_YAW_BACK = Units.degreesToRadians(180);
 
-  // for testing on only drivebase bot
+  // for testing only
   /*
    * private static final double CAMERA_X_POS_METERS_FRONT = 0;
    * private static final double CAMERA_X_POS_METERS_BACK = 0;
