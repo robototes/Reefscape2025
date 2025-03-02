@@ -205,7 +205,11 @@ public class AutoLogic {
 
   public static Command autoAlignmentCommand() {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     return AutoAlign.autoAlign(s.drivebaseSubsystem).withName("autoAlign");
+=======
+    return Commands.sequence(new WaitCommand(0.5), autoPathAlign().withName("auto"));
+>>>>>>> Stashed changes
 =======
     return Commands.sequence(new WaitCommand(0.5), autoPathAlign().withName("auto"));
 >>>>>>> Stashed changes
@@ -241,6 +245,9 @@ public class AutoLogic {
         NamedCommands.registerCommand("lowerElevator", lowerElevator());
         NamedCommands.registerCommand("raiseElevator", raiseElevator());
         NamedCommands.registerCommand("autoAlign", AutoAlign.autoAlign(subsystems.drivebaseSubsystem));
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
       } else {
