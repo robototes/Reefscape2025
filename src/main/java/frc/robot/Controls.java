@@ -297,6 +297,7 @@ public class Controls {
     if (s.climbPivotSubsystem == null) {
       return;
     }
+    s.climbPivotSubsystem.setDefaultCommand(s.climbPivotSubsystem.holdPosition());
     climbTestController.back().onTrue(s.climbPivotSubsystem.toggleClimb());
     climbTestController.start().onTrue(s.climbPivotSubsystem.zeroClimb());
   }
