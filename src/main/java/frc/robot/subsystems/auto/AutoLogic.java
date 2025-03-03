@@ -281,7 +281,7 @@ public class AutoLogic {
     if (r.superStructure != null) {
       return r.superStructure.levelFour(() -> true);
     }
-    return Commands.none().withName("raiseElevator");
+    return Commands.none().withName("scoreCommand");
   }
 
   public static Command autoBranchAlign() {

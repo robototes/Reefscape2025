@@ -17,6 +17,7 @@ import frc.robot.Sensors.SensorConstants;
 import frc.robot.Subsystems.SubsystemConstants;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoLogic;
+import frc.robot.subsystems.auto.AutonomousField;
 import frc.robot.util.BuildInfo;
 import frc.robot.util.RobotType;
 
@@ -83,6 +84,9 @@ public class Robot extends TimedRobot {
     BuildInfo.logBuildInfo();
 
     DriverStation.silenceJoystickConnectionWarning(true);
+    AutoLogic.registerCommands();
+    AutonomousField.initShuffleBoard("Field", 0, 0, this::addPeriodic);
+    AutoLogic.initShuffleBoard();
   }
 
   @Override
@@ -102,8 +106,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     Shuffleboard.startRecording();
-    AutoLogic.registerCommands();
-    AutoLogic.initShuffleBoard();
     DriverStation.silenceJoystickConnectionWarning(!DriverStation.isFMSAttached());
     if (AutoLogic.getSelectedAuto() != null && SubsystemConstants.DRIVEBASE_ENABLED) {
       AutoLogic.getSelectedAuto().schedule();
