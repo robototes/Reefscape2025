@@ -122,7 +122,9 @@ public class AutoLogic {
         new AutoPath("YSMLSF_K-L-A", "YSWLSF_K-L-A"));
 
   private static List<AutoPath> fourPiecePaths =
-      List.of(new AutoPath("YSWLSF_I-J-K-L", "YSWLSF_I-J-K-L", true));
+      List.of(
+        new AutoPath("YSWLSF_I-J-K-L", "YSWLSF_I-J-K-L"),
+        new AutoPath("YSWLSF_J-K-L-A", "YSWLSF_J-K-L-A"));
   // map (gulp)
   private static Map<Integer, List<AutoPath>> commandsMap =
       Map.of(
