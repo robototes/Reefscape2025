@@ -171,8 +171,8 @@ public class VisionSubsystem extends SubsystemBase {
         lastTimestampSeconds = TimestampSeconds;
         lastFieldPose = FieldPose;
         rawVisionFieldObject.setPose(lastFieldPose);
+        this.Distance = Distance;
       }
-      this.Distance = Distance;
     }
   }
 
