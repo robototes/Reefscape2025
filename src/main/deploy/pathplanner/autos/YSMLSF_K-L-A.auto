@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "YSM to K"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "K to LSF"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LSF to L"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L to LSF"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LSF to A"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
