@@ -131,6 +131,16 @@ public class Controls {
                 .runOnce(() -> s.drivebaseSubsystem.seedFieldCentric())
                 .withName("Reset gyro"));
     s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
+    driverController.leftTrigger().whileTrue(s.drivebaseSubsystem.sysIdDynamic(Direction.kForward));
+    driverController
+        .leftBumper()
+        .whileTrue(s.drivebaseSubsystem.sysIdQuasistatic(Direction.kForward));
+    driverController
+        .rightTrigger()
+        .whileTrue(s.drivebaseSubsystem.sysIdDynamic(Direction.kReverse));
+    driverController
+        .rightBumper()
+        .whileTrue(s.drivebaseSubsystem.sysIdQuasistatic(Direction.kReverse));
   }
 
   private void configureSuperStructureBindings() {
