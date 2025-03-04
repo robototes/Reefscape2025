@@ -96,9 +96,11 @@ public class SuperStructure {
 
   public Command intake() {
     return Commands.sequence(
-            spinnyClaw.intakePower(),
-            elevator.setLevel(ElevatorSubsystem.INTAKE),
-            Commands.waitUntil(armSensor.inClaw()),
+            Commands.sequence(
+                    spinnyClaw.intakePower(),
+                    elevator.setLevel(ElevatorSubsystem.INTAKE),
+                    Commands.idle())
+                .until(armSensor.inClaw()),
             spinnyClaw.stop(),
             elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
             stow())
