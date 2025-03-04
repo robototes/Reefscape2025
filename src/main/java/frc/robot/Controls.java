@@ -243,7 +243,11 @@ public class Controls {
                     () -> algaeIntakeHeight)
                 .withName("Driver algae intake"));
     if (sensors.armSensor != null) {
-      sensors.armSensor.inTrough().onTrue(superStructure.coralIntake());
+      sensors
+          .armSensor
+          .inTrough()
+          .and(superStructure.inPreIntakePosition())
+          .onTrue(superStructure.coralIntake());
     }
     driverController
         .rightTrigger()
@@ -430,6 +434,7 @@ public class Controls {
     if (s.climbPivotSubsystem == null) {
       return;
     }
+    s.climbPivotSubsystem.setDefaultCommand(s.climbPivotSubsystem.holdPosition());
     climbTestController.back().onTrue(s.climbPivotSubsystem.toggleClimb());
     climbTestController.start().onTrue(s.climbPivotSubsystem.zeroClimb());
     operatorController.start().onTrue(s.climbPivotSubsystem.toggleClimb());

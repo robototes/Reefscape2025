@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.sensors.ArmSensor;
 import java.util.function.BooleanSupplier;
 
@@ -31,7 +32,7 @@ public class SuperStructure {
                 elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_POS),
                 armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L4)),
             spinnyClaw.coralHoldExtakePower().withTimeout(0.2),
-            coralStow())
+            preIntake())
         .withName("Coral Level 4");
   }
 
@@ -45,7 +46,7 @@ public class SuperStructure {
         Commands.waitUntil(score),
         elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_POS),
         spinnyClaw.coralHoldExtakePower().withTimeout(0.15),
-        coralStow().withName("Coral Level 3"));
+        preIntake().withName("Coral Level 3"));
   }
 
   public Command coralLevelTwo(BooleanSupplier score) {
@@ -58,7 +59,7 @@ public class SuperStructure {
             Commands.waitUntil(score),
             elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_POS),
             spinnyClaw.coralHoldExtakePower().withTimeout(0.15),
-            coralStow())
+            preIntake())
         .withName("Coral Level 2");
   }
 
@@ -71,7 +72,7 @@ public class SuperStructure {
             Commands.waitUntil(score),
             elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_POS),
             spinnyClaw.coralHoldExtakePower().withTimeout(0.15),
-            coralStow())
+            preIntake())
         .withName("Coral Level 1");
   }
 
@@ -83,15 +84,27 @@ public class SuperStructure {
         .withName("Coral Stow");
   }
 
+  public Command preIntake() {
+    return Commands.parallel(
+        elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
+        armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN),
+        spinnyClaw.stop());
+  }
+
+  public Trigger inPreIntakePosition() {
+    return new Trigger(
+        () ->
+            elevator.atPosition(ElevatorSubsystem.CORAL_PRE_INTAKE)
+                && armPivot.atPosition(ArmPivot.CORAL_PRESET_DOWN));
+  }
+
   public Command coralIntake() {
     return Commands.sequence(
-            Commands.parallel(
-                elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
-                armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN),
-                spinnyClaw.intakePower()),
-            // Commands.waitUntil(armSensor.inTrough()),
-            elevator.setLevel(ElevatorSubsystem.CORAL_INTAKE_POS),
-            Commands.waitSeconds(0.1),
+            Commands.sequence(
+                    spinnyClaw.intakePower(),
+                    elevator.setLevel(ElevatorSubsystem.CORAL_INTAKE_POS),
+                    Commands.idle())
+                .until(armSensor.inClaw()),
             spinnyClaw.stop(),
             elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
             coralStow())

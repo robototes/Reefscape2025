@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.Units;
@@ -38,10 +39,10 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double ALGAE_LEVEL_TWO_THREE = 8; // untested
   public static final double ALGAE_LEVEL_THREE_FOUR = 16; // untested
   public static final double ALGAE_STOWED = 16; // untested
-  public static final double ALGAE_PROCESSOR_SCORE = 2; // untested
+  public static final double ALGAE_PROCESSOR_SCORE = 3; // untested
   public static final double CORAL_STOWED = 2;
   public static final double CORAL_INTAKE_POS = 0.1;
-  public static final double CORAL_PRE_INTAKE = 2;
+  public static final double CORAL_PRE_INTAKE = 3;
   public static final double MANUAL = 0.1;
   private static final double POS_TOLERANCE = 0.1;
   private final double ELEVATOR_KP = 13.804;
@@ -75,7 +76,8 @@ public class ElevatorSubsystem extends SubsystemBase {
       new Alert("Elevator", "Motor 1 not connected", AlertType.kError);
   private final Alert NotConnectedError2 =
       new Alert("Elevator", "Motor 2 not connected", AlertType.kError);
-  private final Debouncer notConnectedDebouncer = new Debouncer(.1, DebounceType.kBoth);
+  private final Debouncer notConnectedDebouncerOne = new Debouncer(.1, DebounceType.kBoth);
+  private final Debouncer notConnectedDebouncerTwo = new Debouncer(.1, DebounceType.kBoth);
 
   // Creates a SysIdRoutine
   SysIdRoutine routine =
@@ -212,6 +214,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     this.rumble = rumble;
   }
 
+  public boolean atPosition(double position) {
+    return MathUtil.isNear(position, getCurrentPosition(), POS_TOLERANCE);
+  }
+
   public boolean getHasBeenZeroed() {
     return hasBeenZeroed;
   }
@@ -249,7 +255,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                 rumble.accept(0.2);
               }
             })
-        .andThen(Commands.waitUntil(() -> Math.abs(getCurrentPosition() - pos) < POS_TOLERANCE))
+        .andThen(Commands.waitUntil(() -> atPosition(pos)))
         .withName("setLevel" + pos);
   }
 
@@ -321,8 +327,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    NotConnectedError.set(notConnectedDebouncer.calculate(!m_motor.getMotorVoltage().hasUpdated()));
+    NotConnectedError.set(
+        notConnectedDebouncerOne.calculate(!m_motor.getMotorVoltage().hasUpdated()));
     NotConnectedError2.set(
-        notConnectedDebouncer.calculate(!m_motor2.getMotorVoltage().hasUpdated()));
+        notConnectedDebouncerTwo.calculate(!m_motor2.getMotorVoltage().hasUpdated()));
   }
 }
