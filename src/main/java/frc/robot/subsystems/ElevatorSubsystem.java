@@ -5,6 +5,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.Units;
@@ -32,9 +33,9 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double LEVEL_TWO_PRE_POS = 4.8;
   public static final double LEVEL_TWO_POS = 4.4;
   public static final double LEVEL_ONE_POS = 8.06;
-  public static final double STOWED = 2;
+  public static final double STOWED = 3;
   public static final double INTAKE = 0.1;
-  public static final double PRE_INTAKE = 2;
+  public static final double PRE_INTAKE = 3;
   public static final double MANUAL = 0.1;
   private static final double POS_TOLERANCE = 0.1;
   private final double ELEVATOR_KP = 13.804;
@@ -206,6 +207,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     this.rumble = rumble;
   }
 
+  public boolean atPosition(double position) {
+    return MathUtil.isNear(position, getCurrentPosition(), POS_TOLERANCE);
+  }
+
   public boolean getHasBeenZeroed() {
     return hasBeenZeroed;
   }
@@ -243,7 +248,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                 rumble.accept(0.2);
               }
             })
-        .andThen(Commands.waitUntil(() -> Math.abs(getCurrentPosition() - pos) < POS_TOLERANCE))
+        .andThen(Commands.waitUntil(() -> atPosition(pos)))
         .withName("setLevel" + pos);
   }
 
