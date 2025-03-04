@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.led.Animation;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.sensors.ArmSensor;
@@ -34,17 +36,17 @@ public class SuperStructure {
     return elevatorLight.animate(animation);
   }
 
-  private Command colorSet(int r, int g, int b) {
+  private Command colorSet(Color color, String name) {
     if (elevatorLight == null) {
       return Commands.none();
     }
-    return elevatorLight.colorSet(r, g, b);
+    return elevatorLight.animate(LEDPattern.solid(color), name);
   }
 
   public Command levelFour(BooleanSupplier score) {
     return Commands.sequence(
         Commands.parallel(
-            colorSet(0, 255, 0),
+            colorSet(new Color(0, 255, 0), null),
             elevator.setLevel(ElevatorSubsystem.LEVEL_FOUR_PRE_POS),
             armPivot.moveToPosition(ArmPivot.PRESET_UP),
             spinnyClaw.stop()),
@@ -69,6 +71,11 @@ public class SuperStructure {
         elevator.setLevel(ElevatorSubsystem.LEVEL_THREE_POS),
         spinnyClaw.holdExtakePower().withTimeout(0.15),
         stow());
+  }
+
+  private Command colorSet(int i, int j, int k) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'colorSet'");
   }
 
   public Command levelTwo(BooleanSupplier score) {

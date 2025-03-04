@@ -15,9 +15,11 @@ import com.ctre.phoenix.led.TwinkleAnimation;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
+import java.util.function.DoubleSupplier;
 
 public class ElevatorLight extends SubsystemBase {
 
@@ -94,5 +96,12 @@ public class ElevatorLight extends SubsystemBase {
           }
         })
         .withName("Animate" + name);
+  }
+
+  public LEDPattern greenProgress(DoubleSupplier progress) {
+    LEDPattern base = LEDPattern.solid(Color.kGreen);
+    LEDPattern mask = LEDPattern.progressMaskLayer(progress);
+    LEDPattern heightDisplay = base.mask(mask);
+    return heightDisplay;
   }
 }
