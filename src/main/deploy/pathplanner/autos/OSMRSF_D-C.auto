@@ -21,6 +21,12 @@
           "data": {
             "pathName": "RSF to C"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCommand"
+          }
         }
       ]
     }

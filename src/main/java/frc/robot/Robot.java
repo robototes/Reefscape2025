@@ -47,6 +47,7 @@ public class Robot extends TimedRobot {
 
     subsystems = new Subsystems();
     sensors = new Sensors();
+    AutoLogic.buildAuto(subsystems.drivebaseSubsystem);
     autoLogic = new AutoLogic();
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
@@ -80,7 +81,6 @@ public class Robot extends TimedRobot {
         .onCommandFinish(command -> System.out.println("Command finished: " + command.getName()));
 
     SmartDashboard.putData(CommandScheduler.getInstance());
-    AutoLogic.buildAuto(subsystems.drivebaseSubsystem);
     BuildInfo.logBuildInfo();
 
     DriverStation.silenceJoystickConnectionWarning(true);

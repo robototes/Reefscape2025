@@ -97,34 +97,34 @@ public class AutoLogic {
           new AutoPath("OSW_F", "OSW_F"),
           new AutoPath("OSW_E", "OSW_E"));
 
-  private static List<AutoPath> twoPiecePaths = 
+  private static List<AutoPath> twoPiecePaths =
       List.of(
-        new AutoPath("YSWLSF_I-J", "YSWKSF_I-J"),
-        new AutoPath("YSWLSF_J-K", "YSWKSF_J-K"),
-        new AutoPath("YSWLSF_K-L", "YSWKSF_K-L"),
-        new AutoPath("YSMLSF_I-J", "YSWKSF_I-J"),
-        new AutoPath("YSMLSF_J-K", "YSWKSF_J-K"),
-        new AutoPath("YSMLSF_K-L", "YSWKSF_K-L"),
-        new AutoPath("OSMLSF_F-E", "YSWKSF_F-E"),
-        new AutoPath("OSMLSF_E-D", "YSWKSF_E-D"),
-        new AutoPath("OSMLSF_D-C", "YSWKSF_D-C"),
-        new AutoPath("OSWLSF_F-E", "YSWKSF_F-E"),
-        new AutoPath("OSWLSF_E-D", "YSWKSF_E-D"),
-        new AutoPath("OSWLSF_D-C", "YSWKSF_D-C"));
+          new AutoPath("YSWLSF_I-J", "YSWKSF_I-J"),
+          new AutoPath("YSWLSF_J-K", "YSWKSF_J-K"),
+          new AutoPath("YSWLSF_K-L", "YSWKSF_K-L"),
+          new AutoPath("YSMLSF_I-J", "YSWKSF_I-J"),
+          new AutoPath("YSMLSF_J-K", "YSWKSF_J-K"),
+          new AutoPath("YSMLSF_K-L", "YSWKSF_K-L"),
+          new AutoPath("OSMLSF_F-E", "YSWKSF_F-E"),
+          new AutoPath("OSMLSF_E-D", "YSWKSF_E-D"),
+          new AutoPath("OSMLSF_D-C", "YSWKSF_D-C"),
+          new AutoPath("OSWLSF_F-E", "YSWKSF_F-E"),
+          new AutoPath("OSWLSF_E-D", "YSWKSF_E-D"),
+          new AutoPath("OSWLSF_D-C", "YSWKSF_D-C"));
 
   private static List<AutoPath> threePiecePaths =
       List.of(
-        new AutoPath("YSWLSF_I-J-K", "YSWLSF_I-J-K"),
-        new AutoPath("YSWLSF_J-K-L", "YSWLSF_J-K-L"),
-        new AutoPath("YSWLSF_K-L-A", "YSWLSF_K-L-A"),
-        new AutoPath("YSMLSF_I-J-K", "YSWLSF_I-J-K"),
-        new AutoPath("YSMLSF_J-K-L", "YSWLSF_J-K-L"),
-        new AutoPath("YSMLSF_K-L-A", "YSWLSF_K-L-A"));
+          new AutoPath("YSWLSF_I-J-K", "YSWLSF_I-J-K"),
+          new AutoPath("YSWLSF_J-K-L", "YSWLSF_J-K-L"),
+          new AutoPath("YSWLSF_K-L-A", "YSWLSF_K-L-A"),
+          new AutoPath("YSMLSF_I-J-K", "YSWLSF_I-J-K"),
+          new AutoPath("YSMLSF_J-K-L", "YSWLSF_J-K-L"),
+          new AutoPath("YSMLSF_K-L-A", "YSWLSF_K-L-A"));
 
   private static List<AutoPath> fourPiecePaths =
       List.of(
-        new AutoPath("YSWLSF_I-J-K-L", "YSWLSF_I-J-K-L"),
-        new AutoPath("YSWLSF_J-K-L-A", "YSWLSF_J-K-L-A"));
+          new AutoPath("YSWLSF_I-J-K-L", "YSWLSF_I-J-K-L"),
+          new AutoPath("YSWLSF_J-K-L-A", "YSWLSF_J-K-L-A"));
   // map (gulp)
   private static Map<Integer, List<AutoPath>> commandsMap =
       Map.of(

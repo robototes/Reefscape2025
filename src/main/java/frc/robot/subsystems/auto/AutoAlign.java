@@ -27,9 +27,9 @@ public class AutoAlign {
   private static final Pose2d BRANCH_B_B =
       new Pose2d(new Translation2d(3.117, 3.855), Rotation2d.fromDegrees(0));
   private static final Pose2d BRANCH_B_C =
-      new Pose2d(new Translation2d(3.668, 2.910), Rotation2d.fromDegrees(60));
+      new Pose2d(new Translation2d(3.680, 2.970), Rotation2d.fromDegrees(60));
   private static final Pose2d BRANCH_B_D =
-      new Pose2d(new Translation2d(3.920, 2.706), Rotation2d.fromDegrees(60));
+      new Pose2d(new Translation2d(3.975, 2.812), Rotation2d.fromDegrees(60));
   private static final Pose2d BRANCH_B_E =
       new Pose2d(new Translation2d(5.035, 2.706), Rotation2d.fromDegrees(120));
   private static final Pose2d BRANCH_B_F =
