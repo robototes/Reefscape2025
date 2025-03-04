@@ -14,7 +14,7 @@ import frc.robot.Hardware;
 public class ArmSensor {
 
   private final LaserCan mainSensor;
-  // VALUES ARE IN METERES
+  // VALUES ARE IN METERS
   private static final double TROUGH_LOWER_LIMIT = 0.18;
   private static final double TROUGH_UPPER_LIMIT = 0.28;
   private static final double CLAW_LOWER_LIMIT = 0.06;
@@ -50,25 +50,19 @@ public class ArmSensor {
 
   public Trigger inTrough() {
     return new Trigger(
-        () -> {
-          if (getSensorDistance().in(Meters) > TROUGH_LOWER_LIMIT
-              && getSensorDistance().in(Meters) < TROUGH_UPPER_LIMIT) {
-            return true;
-          } else {
-            return false;
-          }
-        }).debounce(0.1);
+            () -> {
+              double distance = getSensorDistance().in(Meters);
+              return distance > TROUGH_LOWER_LIMIT && distance < TROUGH_UPPER_LIMIT;
+            })
+        .debounce(0.1);
   }
 
   public Trigger inClaw() {
     return new Trigger(
-        () -> {
-          if (getSensorDistance().in(Meters) > CLAW_LOWER_LIMIT
-              && getSensorDistance().in(Meters) < CLAW_UPPER_LIMIT) {
-            return true;
-          } else {
-            return false;
-          }
-        }).debounce(0.1);
+            () -> {
+              double distance = getSensorDistance().in(Meters);
+              return distance > CLAW_LOWER_LIMIT && distance < CLAW_UPPER_LIMIT;
+            })
+        .debounce(0.1);
   }
 }
