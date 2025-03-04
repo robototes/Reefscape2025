@@ -13,6 +13,7 @@ public class Hardware {
   public static final int ELEVATOR_MOTOR_TWO = 21;
 
   // branch sensors [25-29] (mounted on elevator)
+  // fixed it for u connor ;) - mech
   public static final int BRANCH_SENSOR_LEFT = 25;
   public static final int BRANCH_SENSOR_RIGHT = 26;
 
@@ -23,6 +24,7 @@ public class Hardware {
   // climb [50-59]
   public static final int CLIMB_PIVOT_MOTOR_ONE_ID = 50;
   public static final int CLIMB_PIVOT_MOTOR_TWO_ID = 51;
+  public static final int CLIMB_PIVOT_CANDI_ID = 52;
 
   // climb DIO
   public static final int CLIMB_SENSOR = 1;
