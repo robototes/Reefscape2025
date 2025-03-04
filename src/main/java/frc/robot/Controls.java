@@ -185,11 +185,11 @@ public class Controls {
     .a()
     .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.ALGAE_STOWED).withName("algae stow"));*/
     operatorController
-        .leftTrigger()
+        .leftBumper()
         .onTrue(
             Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE).withName("Algae Scoring Mode"));
     operatorController
-        .rightTrigger()
+        .leftTrigger()
         .onTrue(
             Commands.runOnce(() -> scoringMode = ScoringMode.CORAL).withName("Coral Scoring Mode"));
     operatorController
