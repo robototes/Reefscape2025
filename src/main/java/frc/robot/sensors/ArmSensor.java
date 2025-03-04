@@ -57,7 +57,7 @@ public class ArmSensor {
           } else {
             return false;
           }
-        });
+        }).debounce(0.1);
   }
 
   public Trigger inClaw() {
@@ -69,6 +69,6 @@ public class ArmSensor {
           } else {
             return false;
           }
-        });
+        }).debounce(0.1);
   }
 }
