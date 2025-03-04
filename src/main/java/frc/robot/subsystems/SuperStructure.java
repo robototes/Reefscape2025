@@ -132,22 +132,24 @@ public class SuperStructure {
         algaeStow().withName("Algae L2-L3 Intake"));
   }
 
-  public Command algaeLevelThreeFourFling() {
+  public Command algaeLevelThreeFourFling(BooleanSupplier finish) {
     return Commands.sequence(
             Commands.parallel(
                 spinnyClaw.algaeFlingPower(),
-                armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
+                armPivot.moveToPosition(ArmPivot.ALGAE_FLING),
+                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR_FLING)),
+            Commands.waitUntil(finish),
             algaeStow())
         .withName("Algae L3-L4 Fling");
   }
 
-  public Command algaeLevelTwoThreeFling() { // theoretically
+  public Command algaeLevelTwoThreeFling(BooleanSupplier finish) { // theoretically
     return Commands.sequence(
             Commands.parallel(
                 spinnyClaw.algaeFlingPower(),
-                armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
+                armPivot.moveToPosition(ArmPivot.ALGAE_FLING),
+                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE_FLING)),
+            Commands.waitUntil(finish),
             algaeStow())
         .withName("Algae L2-L3 Fling");
   }

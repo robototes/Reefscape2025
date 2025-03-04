@@ -205,6 +205,7 @@ public class Controls {
                 .withName("Stow"));
     driverController
         .a()
+        .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
         .onTrue(
             Commands.select(
                     Map.of(
@@ -214,9 +215,13 @@ public class Controls {
                         Commands.select(
                             Map.of(
                                 AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR,
-                                superStructure.algaeLevelThreeFourFling().asProxy(),
+                                superStructure
+                                    .algaeLevelThreeFourFling(driverController.rightBumper())
+                                    .asProxy(),
                                 AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE,
-                                superStructure.algaeLevelTwoThreeFling().asProxy()),
+                                superStructure
+                                    .algaeLevelTwoThreeFling(driverController.rightBumper())
+                                    .asProxy()),
                             () -> algaeIntakeHeight)),
                     () -> scoringMode)
                 .withName("Driver Intake"));
