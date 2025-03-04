@@ -126,12 +126,6 @@ public class Controls {
                 () -> -driverController.getLeftY() * MaxSpeed,
                 () -> -driverController.getLeftX() * MaxSpeed));
     driverController.rightTrigger().onTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
-    s.drivebaseSubsystem
-        .applyRequest(() -> brake)
-        .ignoringDisable(true)
-        .withName("Brake")
-        .schedule();
-
     // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
     // brake));
     // driveController.b().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
