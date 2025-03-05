@@ -216,19 +216,6 @@ public class Controls {
                         })
                 .withName("Driver Intake"));
 
-    /*
-    driverController // just for testing
-        .x()
-        .onTrue(
-            Commands.select(
-                    Map.of(
-                        AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR,
-                        superStructure.algaeLevelThreeFourPop().asProxy(),
-                        AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE,
-                        superStructure.algaeLevelTwoThreePop().asProxy()),
-                    () -> algaeIntakeHeight)
-                .withName("Driver algae intake pop"));
-                */
     driverController
         .rightTrigger()
         .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
