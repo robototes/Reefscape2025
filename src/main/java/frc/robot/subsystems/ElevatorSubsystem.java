@@ -313,7 +313,14 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public Command startMovingVoltage(Supplier<Voltage> speedControl) {
     return runEnd(
-        () -> m_motor.setVoltage(speedControl.get().in(Units.Volts)), () -> m_motor.stopMotor());
+        () -> {
+          m_motor.setVoltage(speedControl.get().in(Units.Volts));
+          m_motor2.setVoltage(-speedControl.get().in(Units.Volts));
+        },
+        () -> {
+          m_motor.stopMotor();
+          m_motor2.stopMotor();
+        });
   }
 
   /** Stop the control loop and motor output. */
