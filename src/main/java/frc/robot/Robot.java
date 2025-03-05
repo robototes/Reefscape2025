@@ -37,8 +37,7 @@ public class Robot extends TimedRobot {
   public final Sensors sensors;
   public final AutoLogic autoLogic;
   public final SuperStructure superStructure;
-  public final AutoBuilderConfig autoBuilderConfig;
-
+  
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
     instance = this;
@@ -49,7 +48,7 @@ public class Robot extends TimedRobot {
 
     subsystems = new Subsystems();
     sensors = new Sensors();
-    autoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
+    AutoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
     autoLogic = new AutoLogic();
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
