@@ -204,7 +204,17 @@ public class Controls {
         .a()
         .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
         .onTrue(
-            Commands.select(
+            Commands.deferredProxy(() -> 
+            switch (scoringMode) {
+                case CORAL -> superStructure.coralIntake();
+                case ALGAE -> switch (algaeIntakeHeight) {
+                    case ALGAE_LEVEL_THREE_FOUR -> superStructure
+                    .coralLevelFour(driverController.rightBumper());
+                    case ALGAE_LEVEL_TWO_THREE -> superStructure
+                    .coralLevelFour(driverController.rightBumper());
+                };
+  }).withName("Driver Intake"));
+            /*Commands.select(
                     Map.of(
                         ScoringMode.CORAL,
                         superStructure.coralIntake().asProxy(),
@@ -221,7 +231,7 @@ public class Controls {
                                     .asProxy()),
                             () -> algaeIntakeHeight)),
                     () -> scoringMode)
-                .withName("Driver Intake"));
+                .withName("Driver Intake")); */
 /* 
     driverController // just for testing
         .x()
@@ -242,8 +252,7 @@ public class Controls {
             Commands.deferredProxy(() -> 
             switch (scoringMode) {
                 case CORAL -> switch (branchHeight) {
-                    case LEVEL_FOUR -> superStructure
-                    .coralLevelFour(driverController.rightBumper());
+                    case LEVEL_FOUR -> superStructure.coralLevelFour(driverController.rightBumper());
                     case LEVEL_THREE -> superStructure
                     .coralLevelFour(driverController.rightBumper());
                     case LEVEL_TWO -> superStructure
@@ -252,7 +261,7 @@ public class Controls {
                     .coralLevelFour(driverController.rightBumper());
                 };
                 case ALGAE -> superStructure.algaeProcessorScore();
-      }    ).withName("score"));
+        }).withName("score"));
   }
 
   private void configureElevatorBindings() {
