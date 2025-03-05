@@ -325,7 +325,7 @@ public class Controls {
 
     Command setClimbLEDs;
     if (s.elevatorLEDSubsystem != null) {
-      setClimbLEDs = s.elevatorLEDSubsystem.colorSet(0, 255, 0);
+      setClimbLEDs = s.elevatorLEDSubsystem.colorSet(0, 255, 0, "green");
     } else {
       setClimbLEDs = Commands.none();
     }
@@ -359,12 +359,18 @@ public class Controls {
       Trigger hasBeen0ed = new Trigger(s.elevatorSubsystem::getHasBeenZeroed);
       Commands.waitSeconds(1)
           .andThen(
-              s.elevatorLEDSubsystem.colorSet(50, 0, 0).withName("LED red").ignoringDisable(true))
+              s.elevatorLEDSubsystem
+                  .colorSet(255, 0, 0, "Red - Elevator Not Zeroed")
+                  .ignoringDisable(true))
           .schedule();
       hasBeen0ed.onTrue(
-          s.elevatorLEDSubsystem.colorSet(0, 50, 0).withName("LED green").ignoringDisable(true));
+          s.elevatorLEDSubsystem
+              .colorSet(0, 255, 0, "Green - Elevator Zeroed")
+              .ignoringDisable(true));
       hasBeen0ed.onFalse(
-          s.elevatorLEDSubsystem.colorSet(50, 0, 0).withName("LED red").ignoringDisable(false));
+          s.elevatorLEDSubsystem
+              .colorSet(255, 0, 0, "Red - Elevator Not Zeroed")
+              .ignoringDisable(false));
     }
     RobotModeTriggers.autonomous()
         .whileTrue(s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.rainbowAnim));

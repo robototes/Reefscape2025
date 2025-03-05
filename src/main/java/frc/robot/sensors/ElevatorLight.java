@@ -86,6 +86,10 @@ public class ElevatorLight extends SubsystemBase {
     return runOnce(() -> candle.animate(animation));
   }
 
+  public Command colorSet(int r, int g, int b, String name) {
+    return animate(LEDPattern.solid(new Color(r, g, b)), name);
+  }
+
   public Command animate(LEDPattern animation, String name) {
     return run(() -> {
           for (AddressableLEDBufferView section : sections) {

@@ -1,8 +1,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.led.Animation;
-import edu.wpi.first.wpilibj.LEDPattern;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.sensors.ArmSensor;
@@ -36,17 +34,17 @@ public class SuperStructure {
     return elevatorLight.animate(animation);
   }
 
-  private Command colorSet(Color color, String name) {
+  private Command colorSet(int r, int g, int b, String name) {
     if (elevatorLight == null) {
       return Commands.none();
     }
-    return elevatorLight.animate(LEDPattern.solid(color), name);
+    return elevatorLight.colorSet(r, g, b, name);
   }
 
   public Command levelFour(BooleanSupplier score) {
     return Commands.sequence(
         Commands.parallel(
-            colorSet(new Color(0, 255, 0), null),
+            colorSet(0, 255, 0, "Green - Aligned With L4"),
             elevator.setLevel(ElevatorSubsystem.LEVEL_FOUR_PRE_POS),
             armPivot.moveToPosition(ArmPivot.PRESET_UP),
             spinnyClaw.stop()),
@@ -62,7 +60,7 @@ public class SuperStructure {
   public Command levelThree(BooleanSupplier score) {
     return Commands.sequence(
         Commands.parallel(
-            colorSet(0, 255, 0),
+            colorSet(0, 255, 0, "Green - Aligned With L3"),
             elevator.setLevel(ElevatorSubsystem.LEVEL_THREE_PRE_POS),
             armPivot.moveToPosition(ArmPivot.PRESET_UP),
             spinnyClaw.stop()),
@@ -81,7 +79,7 @@ public class SuperStructure {
   public Command levelTwo(BooleanSupplier score) {
     return Commands.sequence(
         Commands.parallel(
-            colorSet(0, 255, 0),
+            colorSet(0, 255, 0, "Green - Aligned With L2"),
             elevator.setLevel(ElevatorSubsystem.LEVEL_TWO_PRE_POS),
             armPivot.moveToPosition(ArmPivot.PRESET_UP),
             spinnyClaw.stop()),
@@ -95,7 +93,7 @@ public class SuperStructure {
   public Command levelOne(BooleanSupplier score) {
     return Commands.sequence(
         Commands.parallel(
-            colorSet(0, 255, 0),
+            colorSet(0, 255, 0, "Green - Aligned With L1"),
             elevator.setLevel(ElevatorSubsystem.LEVEL_ONE_POS),
             armPivot.moveToPosition(ArmPivot.PRESET_L1),
             spinnyClaw.stop()),
@@ -107,7 +105,7 @@ public class SuperStructure {
 
   public Command stow() {
     return Commands.parallel(
-        colorSet(255, 255, 255),
+        colorSet(255, 255, 255, "White - Stowed"),
         elevator.setLevel(ElevatorSubsystem.STOWED),
         armPivot.moveToPosition(ArmPivot.PRESET_STOWED),
         spinnyClaw.stop());
@@ -116,12 +114,12 @@ public class SuperStructure {
   public Command intake() {
     return Commands.sequence(
             Commands.parallel(
-                colorSet(255, 92, 0),
+                colorSet(255, 92, 0, "Orange - Intake"),
                 elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
                 armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
                 spinnyClaw.intakePower()),
             // Commands.waitUntil(armSensor.inTrough()),
-            colorSet(255, 255, 0),
+            colorSet(255, 255, 0, "Yellow - Coral Pick Up"),
             elevator.setLevel(ElevatorSubsystem.INTAKE),
             Commands.waitSeconds(0.1),
             spinnyClaw.stop(),
