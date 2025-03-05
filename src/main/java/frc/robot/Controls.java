@@ -6,7 +6,6 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -47,13 +46,12 @@ public class Controls {
   private BranchHeight branchHeight = null;
 
   // Swerve stuff
-
-  public static double MaxSpeed =
+  private double MaxSpeed =
       RobotType.getCurrent() == RobotType.BONK
           ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
-          : RobotType.getCurrent() == RobotType.TESTBASE
-              ? TestBaseTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
-              : CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+          : CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+  private final double MAX_ACCELERATION = 50;
+  private final double MAX_ROTATION_ACCELERATION = 50;
   // kSpeedAt12Volts desired top speed
   public static double MaxAngularRate =
       RotationsPerSecond.of(0.75)
@@ -62,12 +60,10 @@ public class Controls {
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
-          .withDeadband(MaxSpeed * 0.1)
-          .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+          .withDeadband(0.0001)
+          .withRotationalDeadband(0.0001)
           .withDriveRequestType(
               DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -81,11 +77,11 @@ public class Controls {
     this.sensors = sensors;
     this.superStructure = superStructure;
     configureDrivebaseBindings();
+    configureSuperStructureBindings();
     configureElevatorBindings();
     configureArmPivotBindings();
     configureClimbPivotBindings();
     configureSpinnyClawBindings();
-    configureSuperStructureBindings();
     configureElevatorLEDBindings();
     configureAlignBindings();
   }
@@ -95,6 +91,7 @@ public class Controls {
       // Stop running this method
       return;
     }
+
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
     s.drivebaseSubsystem.setDefaultCommand(
@@ -102,48 +99,23 @@ public class Controls {
         s.drivebaseSubsystem
             .applyRequest(
                 () -> {
-                  ChassisSpeeds speed = s.drivebaseSubsystem.returnSpeeds();
-                  ChassisSpeeds targetSpeeds =
-                      new ChassisSpeeds(
-                          -driverController.getLeftY()
-                              * MaxSpeed, // Drive forward with negative Y (forward)
-                          -driverController.getLeftX()
-                              * MaxSpeed, // Drive left with negative X (left)
-                          -driverController.getRightX()
-                              * MaxAngularRate); // Drive counterclockwise with negative X (left)
-                  ChassisSpeeds diff = targetSpeeds.minus(speed);
-                  double dt = 0.02;
-                  // Vx Vy and Omega are really accelerations and not velocities.
-                  ChassisSpeeds acceleration = diff.div(dt);
-                  // double translationAccelMagnitude =
-                  //     Math.hypot(acceleration.vxMetersPerSecond, acceleration.vyMetersPerSecond);
-                  // ChassisSpeeds translationLimit =
-                  //     acceleration.times(
-                  //         Math.min(1, Math.abs(MAX_ACCELERATION / translationAccelMagnitude)));
-                  // ChassisSpeeds rotationLimit =
-                  //     translationLimit.times(
-                  //         Math.min(
-                  //             1,
-                  //             Math.abs(
-                  //                 MAX_ROTATION_ACCELERATION
-                  //                     / translationLimit.omegaRadiansPerSecond)));
-                  // This *should* be rotationLimit, but the acceleration limiting causes the
-                  // commanded speed to fall into the deadband. The proper fix is to do the deadband
-                  // first, which relies on us doing the deadband ourselves, which is being
-                  // difficult.
-                  ChassisSpeeds newSpeeds = speed.plus(acceleration.times(dt));
-
+                  double getLeftX = MathUtil.applyDeadband(driverController.getLeftX(), 0.1);
+                  double getLeftY = MathUtil.applyDeadband(driverController.getLeftY(), 0.1);
+                  double getRightX = MathUtil.applyDeadband(driverController.getRightX(), 0.1);
+                  double inputScale = driverController.start().getAsBoolean() ? 0.5 : 1;
                   return drive
-                      .withVelocityX(newSpeeds.vxMetersPerSecond)
-                      .withVelocityY(newSpeeds.vyMetersPerSecond)
-                      .withRotationalRate(newSpeeds.omegaRadiansPerSecond);
+                      .withVelocityX(
+                          -getLeftY
+                              * MaxSpeed
+                              * inputScale) // Drive forward with negative Y (forward)
+                      .withVelocityY(
+                          -getLeftX * MaxSpeed * inputScale) // Drive left with negative X (left)
+                      .withRotationalRate(
+                          -getRightX
+                              * MaxAngularRate
+                              * inputScale); // Drive counterclockwise with negative X (left)
                 })
             .withName("Drive"));
-    s.drivebaseSubsystem
-        .applyRequest(() -> brake)
-        .ignoringDisable(true)
-        .withName("Brake")
-        .schedule();
 
     // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
     // brake));
@@ -182,8 +154,13 @@ public class Controls {
         .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE).withName("level 1"));
     operatorController.rightBumper().onTrue(superStructure.stow().withName("Stow"));
     driverController.a().onTrue(superStructure.intake());
+    operatorController.povLeft().onTrue(superStructure.preIntake());
     if (sensors.armSensor != null) {
-      sensors.armSensor.inTrough().onTrue(superStructure.intake());
+      sensors
+          .armSensor
+          .inTrough()
+          .and(superStructure.inPreIntakePosition())
+          .onTrue(superStructure.intake());
     }
     driverController
         .leftBumper()
@@ -326,7 +303,7 @@ public class Controls {
     if (s.climbPivotSubsystem == null) {
       return;
     }
-    // Idk if this is great code or horrible code
+    s.climbPivotSubsystem.setDefaultCommand(s.climbPivotSubsystem.holdPosition());
     climbTestController.back().onTrue(s.climbPivotSubsystem.toggleClimb());
     climbTestController.start().onTrue(s.climbPivotSubsystem.zeroClimb());
   }
@@ -346,9 +323,6 @@ public class Controls {
     if (s.elevatorLEDSubsystem == null) {
       return;
     }
-
-    // s.elevatorLEDSubsystem.setDefaultCommand(
-    // s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.rainbowAnim));
     operatorController
         .back()
         .onTrue(s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.larsonAnim));
@@ -356,7 +330,7 @@ public class Controls {
         .start()
         .onTrue(s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.rainbowAnim));
     if (s.elevatorSubsystem != null) {
-      Trigger hasBeen0ed = new Trigger(s.elevatorSubsystem::getHasBeen0ed);
+      Trigger hasBeen0ed = new Trigger(s.elevatorSubsystem::getHasBeenZeroed);
       Commands.waitSeconds(1)
           .andThen(
               s.elevatorLEDSubsystem.colorSet(50, 0, 0).withName("LED red").ignoringDisable(true))
