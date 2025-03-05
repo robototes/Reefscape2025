@@ -6,6 +6,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -13,6 +14,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -42,15 +44,15 @@ public class VisionSubsystem extends SubsystemBase {
 
   private static final double CAMERA_X_POS_METERS_FRONT = 0.25;
   private static final double CAMERA_X_POS_METERS_BACK = 0.154;
-  private static final double CAMERA_Y_POS_METERS_FRONT = -0.289;
-  private static final double CAMERA_Y_POS_METERS_BACK = -0.7;
-  private static final double CAMERA_Z_POS_METERS_FRONT = -0.223;
-  private static final double CAMERA_Z_POS_METERS_BACK = -0.737;
+  private static final double CAMERA_Y_POS_METERS_FRONT = 0.289;
+  private static final double CAMERA_Y_POS_METERS_BACK = 0.7;
+  private static final double CAMERA_Z_POS_METERS_FRONT = 0.223;
+  private static final double CAMERA_Z_POS_METERS_BACK = 0.737;
   private static final double CAMERA_ROLL_FRONT = Units.degreesToRadians(180);
   private static final double CAMERA_ROLL_BACK = 0;
   private static final double CAMERA_PITCH_FRONT = Units.degreesToRadians(-20);
   private static final double CAMERA_PITCH_BACK = Units.degreesToRadians(-20);
-  private static final double CAMERA_YAW_FRONT = Units.degreesToRadians(20);
+  private static final double CAMERA_YAW_FRONT = Units.degreesToRadians(-20);
   private static final double CAMERA_YAW_BACK = Units.degreesToRadians(180);
 
   // for testing only
@@ -103,6 +105,11 @@ public class VisionSubsystem extends SubsystemBase {
   private double lastRawTimestampSeconds = 0;
   private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
   private double Distance = 0;
+
+  private final StructPublisher<Pose3d> fieldPose3dEntry =
+      NetworkTableInstance.getDefault()
+          .getStructTopic("vision/fieldPose3d", Pose3d.struct)
+          .publish();
 
   private static final AprilTagFieldLayout fieldLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
@@ -170,7 +177,8 @@ public class VisionSubsystem extends SubsystemBase {
     var estimatedPose = estimator.update(result);
     if (estimatedPose.isPresent()) {
       var TimestampSeconds = estimatedPose.get().timestampSeconds;
-      var FieldPose = estimatedPose.get().estimatedPose.toPose2d();
+      var FieldPose3d = estimatedPose.get().estimatedPose;
+      var FieldPose = FieldPose3d.toPose2d();
       var Distance =
           PhotonUtils.getDistanceToPose(
               FieldPose,
@@ -178,6 +186,7 @@ public class VisionSubsystem extends SubsystemBase {
       aprilTagsHelper.addVisionMeasurement(FieldPose, TimestampSeconds, STANDARD_DEVS);
       robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       if (RawTimestampSeconds > lastRawTimestampSeconds) {
+        fieldPose3dEntry.set(FieldPose3d);
         lastRawTimestampSeconds = RawTimestampSeconds;
         lastTimestampSeconds = TimestampSeconds;
         lastFieldPose = FieldPose;
