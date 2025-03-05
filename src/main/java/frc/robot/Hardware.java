@@ -36,7 +36,7 @@ public class Hardware {
   public static final int SPINNY_CLAW_MOTOR_ID = 40;
 
   // vision
-  public static final String PHOTON_IP = "10.24.12.3";
-  public static final String FRONT_CAM = "Arducam_OV9281B";
+  public static final String PHOTON_IP = "10.24.12.11";
+  public static final String FRONT_CAM = "Arducam_OV9782B";
   public static final String BACK_CAM = "Arducam_OV9281A";
 }
