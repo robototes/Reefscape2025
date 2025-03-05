@@ -208,9 +208,9 @@ public class Controls {
                         switch (scoringMode) {
                           case CORAL -> superStructure.coralIntake();
                           case ALGAE -> switch (algaeIntakeHeight) {
-                            case ALGAE_LEVEL_THREE_FOUR -> superStructure.coralLevelFour(
+                            case ALGAE_LEVEL_THREE_FOUR -> superStructure.algaeLevelThreeFourFling(
                                 driverController.rightBumper());
-                            case ALGAE_LEVEL_TWO_THREE -> superStructure.coralLevelFour(
+                            case ALGAE_LEVEL_TWO_THREE -> superStructure.algaeLevelTwoThreeFling(
                                 driverController.rightBumper());
                           };
                         })
