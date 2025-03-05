@@ -226,11 +226,11 @@ public class Controls {
                           case CORAL -> switch (branchHeight) {
                             case LEVEL_FOUR -> superStructure.coralLevelFour(
                                 driverController.rightBumper());
-                            case LEVEL_THREE -> superStructure.coralLevelFour(
+                            case LEVEL_THREE -> superStructure.coralLevelThree(
                                 driverController.rightBumper());
-                            case LEVEL_TWO -> superStructure.coralLevelFour(
+                            case LEVEL_TWO -> superStructure.coralLevelTwo(
                                 driverController.rightBumper());
-                            case LEVEL_ONE -> superStructure.coralLevelFour(
+                            case LEVEL_ONE -> superStructure.coralLevelOne(
                                 driverController.rightBumper());
                           };
                           case ALGAE -> superStructure.algaeProcessorScore();
