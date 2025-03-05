@@ -88,7 +88,7 @@ public class SuperStructure {
     return Commands.parallel(
         elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
         armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN),
-        spinnyClaw.stop());
+        spinnyClaw.stop()).withName("PreIntake");
   }
 
   public Trigger inPreIntakePosition() {
@@ -119,7 +119,7 @@ public class SuperStructure {
                 elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
             // add a wait command here
             algaeStow())
-        .withName("Alage L3-L4 Intake");
+        .withName("Algae L3-L4 Intake");
   }
 
   public Command algaeLevelTwoThreeIntake() { // theoretically
@@ -129,7 +129,7 @@ public class SuperStructure {
             armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
             elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
         // add a wait command here
-        algaeStow().withName("Algae L2-L3 Intake"));
+        algaeStow()).withName("Algae L2-L3 Intake");
   }
 
   public Command algaeLevelThreeFourFling(BooleanSupplier finish) {
