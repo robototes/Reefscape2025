@@ -196,14 +196,7 @@ public class Controls {
             case CORAL -> superStructure.coralStow();
             case ALGAE -> superStructure.algaeStow();
         }).withName("Stow"));
-            /*Commands.select(
-                    Map.of(
-                        ScoringMode.CORAL,
-                        superStructure.coralStow().asProxy(),
-                        ScoringMode.ALGAE,
-                        superStructure.algaeStow().asProxy()),
-                    () -> scoringMode)
-                .withName("Stow"));*/
+        
     driverController
         .a()
         .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
