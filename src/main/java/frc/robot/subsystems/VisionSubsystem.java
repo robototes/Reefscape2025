@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -12,6 +13,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -83,10 +85,10 @@ public class VisionSubsystem extends SubsystemBase {
 
   // TODO Measure these
   private static final Vector<N3> STANDARD_DEVS =
-      VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5));
+      VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(20));
 
-  private final PhotonCamera photonCamera;
-  private final PhotonCamera photonCamera2;
+  private final PhotonCamera frontCamera;
+  private final PhotonCamera backCamera;
   private final PhotonPoseEstimator photonPoseEstimatorFrontCamera;
   private final PhotonPoseEstimator photonPoseEstimatorBackCamera;
   private final Field2d robotField;
@@ -110,8 +112,8 @@ public class VisionSubsystem extends SubsystemBase {
     SmartDashboard.putData(robotField);
     this.aprilTagsHelper = aprilTagsHelper;
     rawVisionFieldObject = robotField.getObject("RawVision");
-    photonCamera = new PhotonCamera(Hardware.FRONT_CAM);
-    photonCamera2 = new PhotonCamera(Hardware.BACK_CAM);
+    frontCamera = new PhotonCamera(Hardware.FRONT_CAM);
+    backCamera = new PhotonCamera(Hardware.BACK_CAM);
     photonPoseEstimatorFrontCamera =
         new PhotonPoseEstimator(
             fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_FRONT);
@@ -152,25 +154,28 @@ public class VisionSubsystem extends SubsystemBase {
 
   private void update() {
 
-    for (PhotonPipelineResult result : photonCamera.getAllUnreadResults()) {
+    for (PhotonPipelineResult result : frontCamera.getAllUnreadResults()) {
       process(result, photonPoseEstimatorFrontCamera);
     }
-    for (PhotonPipelineResult result : photonCamera2.getAllUnreadResults()) {
+    for (PhotonPipelineResult result : backCamera.getAllUnreadResults()) {
       process(result, photonPoseEstimatorBackCamera);
     }
   }
 
   private void process(PhotonPipelineResult result, PhotonPoseEstimator estimator) {
+    var RawTimestampSeconds = result.getTimestampSeconds();
+    if (!MathUtil.isNear(Timer.getFPGATimestamp(), RawTimestampSeconds, 5.0)) {
+      return;
+    }
     var estimatedPose = estimator.update(result);
     if (estimatedPose.isPresent()) {
-      var RawTimestampSeconds = result.getTimestampSeconds();
       var TimestampSeconds = estimatedPose.get().timestampSeconds;
       var FieldPose = estimatedPose.get().estimatedPose.toPose2d();
       var Distance =
           PhotonUtils.getDistanceToPose(
               FieldPose,
               fieldLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d());
-      aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastTimestampSeconds, STANDARD_DEVS);
+      aprilTagsHelper.addVisionMeasurement(FieldPose, TimestampSeconds, STANDARD_DEVS);
       robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       if (RawTimestampSeconds > lastRawTimestampSeconds) {
         lastRawTimestampSeconds = RawTimestampSeconds;
