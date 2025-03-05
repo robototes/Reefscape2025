@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.Utils;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -57,7 +58,9 @@ public class DrivebaseWrapper {
    */
   public DrivebaseWrapper(CommandSwerveDrivetrain swerveDrive) {
     poseSupplier = () -> swerveDrive.getState().Pose;
-    visionMeasurementAdder = swerveDrive::addVisionMeasurement;
+    visionMeasurementAdder =
+        (pose, fpgaTimestamp, stdDevs) ->
+            swerveDrive.addVisionMeasurement(pose, Utils.fpgaToCurrentTime(fpgaTimestamp), stdDevs);
   }
 
   /**
