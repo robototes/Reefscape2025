@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.sensors.ArmSensor;
 import java.util.function.BooleanSupplier;
 
@@ -31,7 +32,7 @@ public class SuperStructure {
             elevator.setLevel(ElevatorSubsystem.LEVEL_FOUR_POS),
             armPivot.moveToPosition(ArmPivot.PRESET_L4)),
         spinnyClaw.holdExtakePower().withTimeout(0.2),
-        stow());
+        preIntake());
   }
 
   public Command levelThree(BooleanSupplier score) {
@@ -44,7 +45,7 @@ public class SuperStructure {
         Commands.waitUntil(score),
         elevator.setLevel(ElevatorSubsystem.LEVEL_THREE_POS),
         spinnyClaw.holdExtakePower().withTimeout(0.15),
-        stow());
+        preIntake());
   }
 
   public Command levelTwo(BooleanSupplier score) {
@@ -57,7 +58,7 @@ public class SuperStructure {
         Commands.waitUntil(score),
         elevator.setLevel(ElevatorSubsystem.LEVEL_TWO_POS),
         spinnyClaw.holdExtakePower().withTimeout(0.15),
-        stow());
+        preIntake());
   }
 
   public Command levelOne(BooleanSupplier score) {
@@ -69,7 +70,7 @@ public class SuperStructure {
         Commands.waitUntil(score),
         elevator.setLevel(ElevatorSubsystem.LEVEL_TWO_POS),
         spinnyClaw.holdExtakePower().withTimeout(0.15),
-        stow());
+        preIntake());
   }
 
   public Command stow() {
@@ -79,15 +80,27 @@ public class SuperStructure {
         spinnyClaw.stop());
   }
 
+  public Command preIntake() {
+    return Commands.parallel(
+        elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
+        armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
+        spinnyClaw.stop());
+  }
+
+  public Trigger inPreIntakePosition() {
+    return new Trigger(
+        () ->
+            elevator.atPosition(ElevatorSubsystem.PRE_INTAKE)
+                && armPivot.atPosition(ArmPivot.PRESET_DOWN));
+  }
+
   public Command intake() {
     return Commands.sequence(
-            Commands.parallel(
-                elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
-                armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
-                spinnyClaw.intakePower()),
-            // Commands.waitUntil(armSensor.inClaw()),
-            elevator.setLevel(ElevatorSubsystem.INTAKE),
-            Commands.waitSeconds(0.1),
+            Commands.sequence(
+                    spinnyClaw.intakePower(),
+                    elevator.setLevel(ElevatorSubsystem.INTAKE),
+                    Commands.idle())
+                .until(armSensor.inClaw()),
             spinnyClaw.stop(),
             elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
             stow())

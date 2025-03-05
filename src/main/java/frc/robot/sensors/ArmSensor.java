@@ -1,26 +1,32 @@
 package frc.robot.sensors;
 
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Millimeter;
-import static edu.wpi.first.units.Units.Millimeters;
 
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Hardware;
-import java.util.function.BooleanSupplier;
 
 public class ArmSensor {
 
   private final LaserCan mainSensor;
-  private static final double TROUGH_LOWER_LIMIT = 250; // untested guess value (in millimeters)
-  private static final double TROUGH_UPPER_LIMIT = 350; // untested guess value
-  private static final double CLAW_LOWER_LIMIT = 30; // untested guess value
-  private static final double CLAW_UPPER_LIMIT = 130; // untested guess value
+  // VALUES ARE IN METERS
+  private static final double TROUGH_LOWER_LIMIT = 0.18;
+  private static final double TROUGH_UPPER_LIMIT = 0.28;
+  private static final double CLAW_LOWER_LIMIT = 0.06;
+  private static final double CLAW_UPPER_LIMIT = 0.08;
 
   public ArmSensor() {
     mainSensor = new LaserCan(Hardware.MAIN_ARM_SENSOR);
     ConfigureSensor(mainSensor);
+    ShuffleboardTab tab = Shuffleboard.getTab("ArmSensor");
+    tab.addBoolean("inTrough", inTrough());
+    tab.addBoolean("inClaw", inClaw());
+    tab.addDouble("Distance(m)", () -> getSensorDistance().in(Meters));
   }
 
   private void ConfigureSensor(LaserCan Sensor) {
@@ -44,24 +50,19 @@ public class ArmSensor {
 
   public Trigger inTrough() {
     return new Trigger(
-        () -> {
-          if (getSensorDistance().in(Millimeters) > TROUGH_LOWER_LIMIT
-              && getSensorDistance().in(Millimeters) < TROUGH_UPPER_LIMIT) {
-            return true;
-          } else {
-            return false;
-          }
-        });
+            () -> {
+              double distance = getSensorDistance().in(Meters);
+              return distance > TROUGH_LOWER_LIMIT && distance < TROUGH_UPPER_LIMIT;
+            })
+        .debounce(0.1);
   }
 
-  public BooleanSupplier inClaw() {
-    return () -> {
-      if (getSensorDistance().in(Millimeters) > CLAW_LOWER_LIMIT
-          && getSensorDistance().in(Millimeters) < CLAW_UPPER_LIMIT) {
-        return true;
-      } else {
-        return false;
-      }
-    };
+  public Trigger inClaw() {
+    return new Trigger(
+            () -> {
+              double distance = getSensorDistance().in(Meters);
+              return distance > CLAW_LOWER_LIMIT && distance < CLAW_UPPER_LIMIT;
+            })
+        .debounce(0.1);
   }
 }

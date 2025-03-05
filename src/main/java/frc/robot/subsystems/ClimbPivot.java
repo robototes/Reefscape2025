@@ -2,10 +2,16 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -17,9 +23,11 @@ import frc.robot.Hardware;
 
 public class ClimbPivot extends SubsystemBase {
 
-  private final TalonFX climbPivotMotorOne;
-  private final TalonFX climbPivotMotorTwo;
-  private final DigitalInput climbSensor;
+  private final TalonFX motorOne;
+  private final TalonFX motorTwo;
+  private CANdi encoder;
+
+  private final DigitalInput sensor;
   // entry for isClimbIn/out
   private GenericEntry climbstateEntry;
   private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Climb");
@@ -31,23 +39,46 @@ public class ClimbPivot extends SubsystemBase {
   private final double CLIMB_IN_SPEED = 0.2;
   private final double CLIMB_OUT_SPEED = -0.2;
   private final double BOOLEAN_TOLERANCE = 2;
+  // relative to eachother, likely not accurately zero'ed when obtained.x
+  private static final double MIN_ROTOR_POSITION = -50.45;
+  private static final double MAX_ROTOR_POSITION = 14.456;
+  private static final double MIN_ENCODER_POSITION = 0.611;
+  private static final double MAX_ENCODER_POSITION = 0.915;
+  private static final double GEARING_RATIO =
+      (MAX_ROTOR_POSITION - MIN_ROTOR_POSITION) / (MAX_ENCODER_POSITION - MIN_ENCODER_POSITION);
+
   private boolean isClimbOut = false;
   private boolean isClimbIn = true;
   private boolean nextMoveOut = true;
 
+  // alerts
+  private final Alert NotConnectedErrorOne =
+      new Alert("Climb", "Motor 1 not connected", AlertType.kError);
+  private final Alert NotConnectedErrorTwo =
+      new Alert("Climb", "Motor 2 not connected", AlertType.kError);
+  private final Debouncer notConnectedDebouncerOne = new Debouncer(.1, DebounceType.kBoth);
+  private final Debouncer notConnectedDebouncerTwo = new Debouncer(.1, DebounceType.kBoth);
+
   public ClimbPivot() {
-    climbPivotMotorOne = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_ONE_ID);
-    climbPivotMotorTwo = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_TWO_ID);
-    climbSensor = new DigitalInput(Hardware.CLIMB_SENSOR);
-    configureMotors();
+    motorOne = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_ONE_ID);
+    motorTwo = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_TWO_ID);
+    encoder = new CANdi(Hardware.CLIMB_PIVOT_CANDI_ID);
+    sensor = new DigitalInput(Hardware.CLIMB_SENSOR);
+    configure();
     setupLogging();
-    climbPivotMotorTwo.setControl(new Follower(climbPivotMotorOne.getDeviceID(), true));
+    motorTwo.setControl(new Follower(motorOne.getDeviceID(), true));
   }
 
-  private void configureMotors() {
-    var talonFXConfigurator = climbPivotMotorOne.getConfigurator();
-    var talonFXConfigurator2 = climbPivotMotorTwo.getConfigurator();
+  private void configure() {
+    var talonFXConfigurator = motorOne.getConfigurator();
+    var talonFXConfigurator2 = motorTwo.getConfigurator();
+
     TalonFXConfiguration configuration = new TalonFXConfiguration();
+
+    configuration.Feedback.FeedbackRemoteSensorID = Hardware.CLIMB_PIVOT_CANDI_ID;
+    configuration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANdiPWM1;
+    configuration.Feedback.RotorToSensorRatio =
+        (MAX_ROTOR_POSITION - MIN_ROTOR_POSITION) / (MAX_ENCODER_POSITION - MIN_ENCODER_POSITION);
     // Set and enable current limit
     configuration.CurrentLimits.StatorCurrentLimit = 150;
     configuration.CurrentLimits.StatorCurrentLimitEnable = true;
@@ -68,11 +99,11 @@ public class ClimbPivot extends SubsystemBase {
 
   public Command moveClimbMotor(double speed) {
     return run(() -> {
-          climbPivotMotorOne.set(speed);
+          motorOne.set(speed);
         })
         .finallyDo(
             () -> {
-              climbPivotMotorOne.stopMotor();
+              motorOne.stopMotor();
             });
   }
 
@@ -82,40 +113,44 @@ public class ClimbPivot extends SubsystemBase {
                     () -> {
                       // climb out
                       nextMoveOut = false;
-                      climbPivotMotorOne.set(CLIMB_OUT_SPEED);
+                      motorOne.set(CLIMB_OUT_SPEED);
                     },
                     () -> {
-                      climbPivotMotorOne.stopMotor();
+                      motorOne.stopMotor();
                     })
                 .until(() -> isClimbOut),
             startEnd(
                     () -> {
                       // climb in
                       nextMoveOut = true;
-                      climbPivotMotorOne.set(CLIMB_IN_SPEED);
+                      motorOne.set(CLIMB_IN_SPEED);
                     },
                     () -> {
-                      climbPivotMotorOne.stopMotor();
+                      motorOne.stopMotor();
                     })
                 .until(() -> isClimbIn),
             () -> nextMoveOut)
         .withName("toggleClimb");
   }
 
+  public Command holdPosition() {
+    return run(() -> motorOne.set(0));
+  }
+
   public boolean checkClimbSensor() {
-    return climbSensor.get();
+    return sensor.get();
   }
 
   public double getClimbVelocity() {
-    return climbPivotMotorOne.getVelocity().getValueAsDouble();
+    return motorOne.getVelocity().getValueAsDouble();
   }
 
   public double getClimbPosition() {
-    return climbPivotMotorOne.getPosition().getValueAsDouble();
+    return motorOne.getPosition().getValueAsDouble();
   }
 
   public void setPosition(double pos) {
-    climbPivotMotorOne.setPosition(pos);
+    motorOne.setPosition(pos);
   }
 
   public Command zeroClimb() {
@@ -152,16 +187,20 @@ public class ClimbPivot extends SubsystemBase {
   @Override
   public void periodic() {
     if (MathUtil.isNear(
-        climbPivotMotorOne.getPosition().getValueAsDouble(), CLIMB_OUT_PRESET, BOOLEAN_TOLERANCE)) {
+        motorOne.getPosition().getValueAsDouble(), CLIMB_OUT_PRESET, BOOLEAN_TOLERANCE)) {
       isClimbOut = true;
     } else {
       isClimbOut = false;
     }
     if (MathUtil.isNear(
-        climbPivotMotorOne.getPosition().getValueAsDouble(), CLIMB_IN_PRESET, BOOLEAN_TOLERANCE)) {
+        motorOne.getPosition().getValueAsDouble(), CLIMB_IN_PRESET, BOOLEAN_TOLERANCE)) {
       isClimbIn = true;
     } else {
       isClimbIn = false;
     }
+    NotConnectedErrorOne.set(
+        notConnectedDebouncerOne.calculate(!motorOne.getMotorVoltage().hasUpdated()));
+    NotConnectedErrorTwo.set(
+        notConnectedDebouncerTwo.calculate(!motorTwo.getMotorVoltage().hasUpdated()));
   }
 }

@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import au.grapplerobotics.CanBridge;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -36,6 +37,7 @@ public class Robot extends TimedRobot {
     // non public for singleton. Protected so test class can subclass
     instance = this;
     robotType = RobotType.getCurrent();
+    CanBridge.runTCP();
 
     LiveWindow.disableAllTelemetry();
 
