@@ -191,15 +191,19 @@ public class Controls {
             Commands.runOnce(() -> scoringMode = ScoringMode.CORAL).withName("Coral Scoring Mode"));
     operatorController
         .povLeft()
-        .onTrue(
-            Commands.select(
+        .onTrue(Commands.deferredProxy(() -> 
+        switch (scoringMode) {
+            case CORAL -> superStructure.coralStow();
+            case ALGAE -> superStructure.algaeStow();
+        }).withName("Stow"));
+            /*Commands.select(
                     Map.of(
                         ScoringMode.CORAL,
                         superStructure.coralStow().asProxy(),
                         ScoringMode.ALGAE,
                         superStructure.algaeStow().asProxy()),
                     () -> scoringMode)
-                .withName("Stow"));
+                .withName("Stow"));*/
     driverController
         .a()
         .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
@@ -214,24 +218,7 @@ public class Controls {
                     .coralLevelFour(driverController.rightBumper());
                 };
   }).withName("Driver Intake"));
-            /*Commands.select(
-                    Map.of(
-                        ScoringMode.CORAL,
-                        superStructure.coralIntake().asProxy(),
-                        ScoringMode.ALGAE,
-                        Commands.select(
-                            Map.of(
-                                AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR,
-                                superStructure
-                                    .algaeLevelThreeFourFling(driverController.rightBumper())
-                                    .asProxy(),
-                                AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE,
-                                superStructure
-                                    .algaeLevelTwoThreeFling(driverController.rightBumper())
-                                    .asProxy()),
-                            () -> algaeIntakeHeight)),
-                    () -> scoringMode)
-                .withName("Driver Intake")); */
+            
 /* 
     driverController // just for testing
         .x()
