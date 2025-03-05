@@ -22,7 +22,7 @@ public class SuperStructure {
 
   public Command levelFour(BooleanSupplier score) {
     return Commands.sequence(
-      Commands.print("Running L4"),
+        Commands.print("Running L4"),
         Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.LEVEL_FOUR_PRE_POS),
             armPivot.moveToPosition(ArmPivot.PRESET_UP),

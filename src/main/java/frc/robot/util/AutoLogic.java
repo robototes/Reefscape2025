@@ -25,11 +25,8 @@ import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
-import frc.robot.util.AutoAlign;
 import java.io.IOException;
 import java.util.List;
-import java.util.jar.Attributes.Name;
-
 import org.json.simple.parser.ParseException;
 
 public class AutoLogic {
@@ -198,7 +195,7 @@ public class AutoLogic {
 
   public static Command raiseElevator() {
     if (r.superStructure != null) {
-      return r.superStructure.levelFour(() -> true);
+      return r.superStructure.levelFour(() -> true).asProxy();
     }
     return Commands.none().withName("raiseElevator");
   }
@@ -206,13 +203,13 @@ public class AutoLogic {
   public static Command autoAlignmentCommand() {
     return AutoAlign.autoAlign(s.drivebaseSubsystem).withName("autoAlign");
   }
+
   public static Command intakeCommand() {
     if (r.superStructure != null) {
-      return   r.superStructure.intake().withName("intake");
+      return r.superStructure.intake().withName("intake").asProxy();
     }
     return Commands.none().withName("intake");
   }
-  
 
   public static void registerCommand() {
 
