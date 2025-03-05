@@ -181,9 +181,6 @@ public class Controls {
             Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("algae level 2-3"));
 
-    /*operatorController
-    .a()
-    .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.ALGAE_STOWED).withName("algae stow"));*/
     operatorController
         .leftBumper()
         .onTrue(
@@ -242,32 +239,20 @@ public class Controls {
         .rightTrigger()
         .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
         .onTrue(
-            Commands.select(
-                    Map.of(
-                        ScoringMode.CORAL,
-                        Commands.select(
-                            Map.of(
-                                BranchHeight.LEVEL_FOUR,
-                                superStructure
-                                    .coralLevelFour(driverController.rightBumper())
-                                    .asProxy(),
-                                BranchHeight.LEVEL_THREE,
-                                superStructure
-                                    .coralLevelThree(driverController.rightBumper())
-                                    .asProxy(),
-                                BranchHeight.LEVEL_TWO,
-                                superStructure
-                                    .coralLevelTwo(driverController.rightBumper())
-                                    .asProxy(),
-                                BranchHeight.LEVEL_ONE,
-                                superStructure
-                                    .coralLevelOne(driverController.rightBumper())
-                                    .asProxy()),
-                            () -> branchHeight),
-                        ScoringMode.ALGAE,
-                        superStructure.algaeProcessorScore().asProxy()),
-                    () -> scoringMode)
-                .withName("score"));
+            Commands.deferredProxy(() -> 
+            switch (scoringMode) {
+                case CORAL -> switch (branchHeight) {
+                    case LEVEL_FOUR -> superStructure
+                    .coralLevelFour(driverController.rightBumper());
+                    case LEVEL_THREE -> superStructure
+                    .coralLevelFour(driverController.rightBumper());
+                    case LEVEL_TWO -> superStructure
+                    .coralLevelFour(driverController.rightBumper());
+                    case LEVEL_ONE -> superStructure
+                    .coralLevelFour(driverController.rightBumper());
+                };
+                case ALGAE -> superStructure.algaeProcessorScore();
+      }    ).withName("score"));
   }
 
   private void configureElevatorBindings() {
@@ -280,7 +265,7 @@ public class Controls {
         .leftStick()
         .whileTrue(
             s.elevatorSubsystem
-                .startMovingVoltage(() -> Volts.of(3 * -operatorController.getLeftY()))
+                .startMovingVoltage(() -> Volts.of(ElevatorSubsystem.UP_VOLTAGE * -operatorController.getLeftY()))
                 .withName("Elevator Manual Control"));
     s.elevatorSubsystem.setRumble(
         (rumble) -> {
@@ -364,13 +349,13 @@ public class Controls {
     }
 
     // Arm Controls binding goes here
-    operatorController // Untested :p
+    operatorController 
         .rightStick()
         .whileTrue(
             s.armPivotSubsystem
                 .startMovingVoltage(() -> Volts.of(3 * operatorController.getRightY()))
                 .withName("Arm Manual Control"));
-    armPivotSpinnyClawController // Untested :p
+    armPivotSpinnyClawController 
         .rightStick()
         .whileTrue(
             s.armPivotSubsystem

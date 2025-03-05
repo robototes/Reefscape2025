@@ -55,7 +55,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private final double ELEVATOR_KA = 0.0070325;
   private final double REVERSE_SOFT_LIMIT = -0.05;
   private final double FORWARD_SOFT_LIMIT = 38;
-  private final double UP_VOLTAGE = 5;
+  public static final double UP_VOLTAGE = 5;
   private final double DOWN_VOLTAGE = -3;
   private final double HOLD_VOLTAGE = 0.6;
   // create a Motion Magic request, voltage output
