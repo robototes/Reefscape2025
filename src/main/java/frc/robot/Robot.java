@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Sensors.SensorConstants;
 import frc.robot.Subsystems.SubsystemConstants;
 import frc.robot.subsystems.SuperStructure;
+import frc.robot.subsystems.auto.AutoBuilderConfig;
 import frc.robot.subsystems.auto.AutoLogic;
 import frc.robot.subsystems.auto.AutonomousField;
 import frc.robot.util.BuildInfo;
@@ -36,6 +37,7 @@ public class Robot extends TimedRobot {
   public final Sensors sensors;
   public final AutoLogic autoLogic;
   public final SuperStructure superStructure;
+  public final AutoBuilderConfig autoBuilderConfig;
 
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
@@ -47,7 +49,7 @@ public class Robot extends TimedRobot {
 
     subsystems = new Subsystems();
     sensors = new Sensors();
-    AutoLogic.buildAuto(subsystems.drivebaseSubsystem);
+    autoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
     autoLogic = new AutoLogic();
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
