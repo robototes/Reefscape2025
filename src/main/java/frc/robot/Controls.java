@@ -225,6 +225,7 @@ public class Controls {
                             () -> algaeIntakeHeight)),
                     () -> scoringMode)
                 .withName("Driver Intake"));
+/* 
     driverController // just for testing
         .x()
         .onTrue(
@@ -236,24 +237,7 @@ public class Controls {
                         superStructure.algaeLevelTwoThreePop().asProxy()),
                     () -> algaeIntakeHeight)
                 .withName("Driver algae intake pop"));
-    driverController // just for testing
-        .y()
-        .onTrue(
-            Commands.select(
-                    Map.of(
-                        AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR,
-                        superStructure.algaeLevelThreeFourIntake().asProxy(),
-                        AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE,
-                        superStructure.algaeLevelTwoThreeIntake().asProxy()),
-                    () -> algaeIntakeHeight)
-                .withName("Driver algae intake"));
-    if (sensors.armSensor != null) {
-      sensors
-          .armSensor
-          .inTrough()
-          .and(superStructure.inPreIntakePosition())
-          .onTrue(superStructure.coralIntake());
-    }
+                */
     driverController
         .rightTrigger()
         .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
