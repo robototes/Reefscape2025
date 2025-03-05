@@ -2,9 +2,11 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -12,6 +14,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -23,6 +27,7 @@ import java.util.EnumSet;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 /*
@@ -36,40 +41,56 @@ import org.photonvision.targeting.PhotonPipelineResult;
  * means that from the (red) driver's perspective +X is away and +Y is to the right.
  */
 public class VisionSubsystem extends SubsystemBase {
-  // don't mind the value is never used part it is used
-  private static final double CAMERA_X_POS_METERS_FRONT =
-      Units.inchesToMeters(27.0 / 2.0 - 0.94996);
-  private static final double CAMERA_X_POS_METERS_BACK =
-      Units.inchesToMeters(27.0 / 2.0 - 0.94996) - 0.62;
-  private static final double CAMERA_Y_POS_METERS = 0;
-  private static final double CAMERA_Z_POS_METERS = Units.inchesToMeters(8.12331);
-  private static final double CAMERA_ROLL = 0;
-  // don't know the exact pitch for the cameras but know its around here
-  private static final double CAMERA_PITCH_FRONT = Units.degreesToRadians(0);
-  private static final double CAMERA_PITCH_BACK = Units.degreesToRadians(-45);
-  private static final double CAMERA_YAW_FRONT = 0;
+
+  private static final double CAMERA_X_POS_METERS_FRONT = 0.25;
+  private static final double CAMERA_X_POS_METERS_BACK = 0.154;
+  private static final double CAMERA_Y_POS_METERS_FRONT = 0.289;
+  private static final double CAMERA_Y_POS_METERS_BACK = 0.7;
+  private static final double CAMERA_Z_POS_METERS_FRONT = 0.223;
+  private static final double CAMERA_Z_POS_METERS_BACK = 0.737;
+  private static final double CAMERA_ROLL_FRONT = Units.degreesToRadians(180);
+  private static final double CAMERA_ROLL_BACK = 0;
+  private static final double CAMERA_PITCH_FRONT = Units.degreesToRadians(-20);
+  private static final double CAMERA_PITCH_BACK = Units.degreesToRadians(-20);
+  private static final double CAMERA_YAW_FRONT = Units.degreesToRadians(-20);
   private static final double CAMERA_YAW_BACK = Units.degreesToRadians(180);
 
-  public static final Transform3d ROBOT_TO_CAM =
+  // for testing only
+  /*
+   * private static final double CAMERA_X_POS_METERS_FRONT = 0;
+   * private static final double CAMERA_X_POS_METERS_BACK = 0;
+   * private static final double CAMERA_Y_POS_METERS_FRONT = 0;
+   * private static final double CAMERA_Y_POS_METERS_BACK = 0;
+   * private static final double CAMERA_Z_POS_METERS_FRONT = 0;
+   * private static final double CAMERA_Z_POS_METERS_BACK = 0;
+   * private static final double CAMERA_ROLL_FRONT = 0;
+   * private static final double CAMERA_ROLL_BACK = 0;
+   * private static final double CAMERA_PITCH_FRONT = 0;
+   * private static final double CAMERA_PITCH_BACK = 0;
+   * private static final double CAMERA_YAW_FRONT = 0;
+   * private static final double CAMERA_YAW_BACK = 0;
+   */
+
+  public static final Transform3d ROBOT_TO_CAM_FRONT =
       new Transform3d(
           CAMERA_X_POS_METERS_FRONT,
-          CAMERA_Y_POS_METERS,
-          CAMERA_Z_POS_METERS,
-          new Rotation3d(CAMERA_ROLL, CAMERA_PITCH_FRONT, CAMERA_YAW_FRONT));
+          CAMERA_Y_POS_METERS_FRONT,
+          CAMERA_Z_POS_METERS_FRONT,
+          new Rotation3d(CAMERA_ROLL_FRONT, CAMERA_PITCH_FRONT, CAMERA_YAW_FRONT));
 
   public static final Transform3d ROBOT_TO_CAM_BACK =
       new Transform3d(
           CAMERA_X_POS_METERS_BACK,
-          CAMERA_Y_POS_METERS,
-          CAMERA_Z_POS_METERS,
-          new Rotation3d(CAMERA_ROLL, CAMERA_PITCH_BACK, CAMERA_YAW_BACK));
+          CAMERA_Y_POS_METERS_BACK,
+          CAMERA_Z_POS_METERS_BACK,
+          new Rotation3d(CAMERA_ROLL_BACK, CAMERA_PITCH_BACK, CAMERA_YAW_BACK));
 
   // TODO Measure these
   private static final Vector<N3> STANDARD_DEVS =
-      VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5));
+      VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(20));
 
-  private final PhotonCamera photonCamera;
-  private final PhotonCamera photonCamera2;
+  private final PhotonCamera frontCamera;
+  private final PhotonCamera backCamera;
   private final PhotonPoseEstimator photonPoseEstimatorFrontCamera;
   private final PhotonPoseEstimator photonPoseEstimatorBackCamera;
   private final Field2d robotField;
@@ -83,6 +104,12 @@ public class VisionSubsystem extends SubsystemBase {
   private double lastTimestampSeconds = 0;
   private double lastRawTimestampSeconds = 0;
   private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
+  private double Distance = 0;
+
+  private final StructPublisher<Pose3d> fieldPose3dEntry =
+      NetworkTableInstance.getDefault()
+          .getStructTopic("vision/fieldPose3d", Pose3d.struct)
+          .publish();
 
   private static final AprilTagFieldLayout fieldLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
@@ -92,11 +119,11 @@ public class VisionSubsystem extends SubsystemBase {
     SmartDashboard.putData(robotField);
     this.aprilTagsHelper = aprilTagsHelper;
     rawVisionFieldObject = robotField.getObject("RawVision");
-    photonCamera = new PhotonCamera(Hardware.FRONT_CAM);
-    photonCamera2 = new PhotonCamera(Hardware.BACK_CAM);
+    frontCamera = new PhotonCamera(Hardware.FRONT_CAM);
+    backCamera = new PhotonCamera(Hardware.BACK_CAM);
     photonPoseEstimatorFrontCamera =
         new PhotonPoseEstimator(
-            fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM);
+            fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_FRONT);
     photonPoseEstimatorBackCamera =
         new PhotonPoseEstimator(
             fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_BACK);
@@ -126,31 +153,45 @@ public class VisionSubsystem extends SubsystemBase {
         .addDouble("Last timestamp", this::getLastTimestampSeconds)
         .withPosition(1, 0)
         .withSize(1, 1);
+    shuffleboardTab
+        .addDouble("april tag distance", this::getDistanceToTarget)
+        .withPosition(1, 1)
+        .withSize(1, 1);
   }
 
   private void update() {
 
-    for (PhotonPipelineResult result : photonCamera.getAllUnreadResults()) {
+    for (PhotonPipelineResult result : frontCamera.getAllUnreadResults()) {
       process(result, photonPoseEstimatorFrontCamera);
     }
-    for (PhotonPipelineResult result : photonCamera2.getAllUnreadResults()) {
+    for (PhotonPipelineResult result : backCamera.getAllUnreadResults()) {
       process(result, photonPoseEstimatorBackCamera);
     }
   }
 
   private void process(PhotonPipelineResult result, PhotonPoseEstimator estimator) {
+    var RawTimestampSeconds = result.getTimestampSeconds();
+    if (!MathUtil.isNear(Timer.getFPGATimestamp(), RawTimestampSeconds, 5.0)) {
+      return;
+    }
     var estimatedPose = estimator.update(result);
     if (estimatedPose.isPresent()) {
-      var RawTimestampSeconds = result.getTimestampSeconds();
       var TimestampSeconds = estimatedPose.get().timestampSeconds;
-      var FieldPose = estimatedPose.get().estimatedPose.toPose2d();
-      aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastTimestampSeconds, STANDARD_DEVS);
+      var FieldPose3d = estimatedPose.get().estimatedPose;
+      var FieldPose = FieldPose3d.toPose2d();
+      var Distance =
+          PhotonUtils.getDistanceToPose(
+              FieldPose,
+              fieldLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d());
+      aprilTagsHelper.addVisionMeasurement(FieldPose, TimestampSeconds, STANDARD_DEVS);
       robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       if (RawTimestampSeconds > lastRawTimestampSeconds) {
+        fieldPose3dEntry.set(FieldPose3d);
         lastRawTimestampSeconds = RawTimestampSeconds;
         lastTimestampSeconds = TimestampSeconds;
         lastFieldPose = FieldPose;
         rawVisionFieldObject.setPose(lastFieldPose);
+        this.Distance = Distance;
       }
     }
   }
@@ -170,5 +211,9 @@ public class VisionSubsystem extends SubsystemBase {
 
   public double getLastRawTimestampSeconds() {
     return lastRawTimestampSeconds;
+  }
+
+  public double getDistanceToTarget() {
+    return (double) Math.round(Units.metersToInches(Distance) * 10) / 10;
   }
 }
