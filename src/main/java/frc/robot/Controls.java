@@ -20,7 +20,6 @@ import frc.robot.util.AlgaeIntakeHeight;
 import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
 import frc.robot.util.ScoringMode;
-import java.util.Map;
 
 public class Controls {
   private static final int DRIVER_CONTROLLER_PORT = 0;
@@ -191,28 +190,33 @@ public class Controls {
             Commands.runOnce(() -> scoringMode = ScoringMode.CORAL).withName("Coral Scoring Mode"));
     operatorController
         .povLeft()
-        .onTrue(Commands.deferredProxy(() -> 
-        switch (scoringMode) {
-            case CORAL -> superStructure.coralStow();
-            case ALGAE -> superStructure.algaeStow();
-        }).withName("Stow"));
-        
+        .onTrue(
+            Commands.deferredProxy(
+                    () ->
+                        switch (scoringMode) {
+                          case CORAL -> superStructure.coralStow();
+                          case ALGAE -> superStructure.algaeStow();
+                        })
+                .withName("Stow"));
+
     driverController
         .a()
         .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
         .onTrue(
-            Commands.deferredProxy(() -> 
-            switch (scoringMode) {
-                case CORAL -> superStructure.coralIntake();
-                case ALGAE -> switch (algaeIntakeHeight) {
-                    case ALGAE_LEVEL_THREE_FOUR -> superStructure
-                    .coralLevelFour(driverController.rightBumper());
-                    case ALGAE_LEVEL_TWO_THREE -> superStructure
-                    .coralLevelFour(driverController.rightBumper());
-                };
-  }).withName("Driver Intake"));
-            
-/* 
+            Commands.deferredProxy(
+                    () ->
+                        switch (scoringMode) {
+                          case CORAL -> superStructure.coralIntake();
+                          case ALGAE -> switch (algaeIntakeHeight) {
+                            case ALGAE_LEVEL_THREE_FOUR -> superStructure.coralLevelFour(
+                                driverController.rightBumper());
+                            case ALGAE_LEVEL_TWO_THREE -> superStructure.coralLevelFour(
+                                driverController.rightBumper());
+                          };
+                        })
+                .withName("Driver Intake"));
+
+    /*
     driverController // just for testing
         .x()
         .onTrue(
@@ -229,19 +233,22 @@ public class Controls {
         .rightTrigger()
         .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
         .onTrue(
-            Commands.deferredProxy(() -> 
-            switch (scoringMode) {
-                case CORAL -> switch (branchHeight) {
-                    case LEVEL_FOUR -> superStructure.coralLevelFour(driverController.rightBumper());
-                    case LEVEL_THREE -> superStructure
-                    .coralLevelFour(driverController.rightBumper());
-                    case LEVEL_TWO -> superStructure
-                    .coralLevelFour(driverController.rightBumper());
-                    case LEVEL_ONE -> superStructure
-                    .coralLevelFour(driverController.rightBumper());
-                };
-                case ALGAE -> superStructure.algaeProcessorScore();
-        }).withName("score"));
+            Commands.deferredProxy(
+                    () ->
+                        switch (scoringMode) {
+                          case CORAL -> switch (branchHeight) {
+                            case LEVEL_FOUR -> superStructure.coralLevelFour(
+                                driverController.rightBumper());
+                            case LEVEL_THREE -> superStructure.coralLevelFour(
+                                driverController.rightBumper());
+                            case LEVEL_TWO -> superStructure.coralLevelFour(
+                                driverController.rightBumper());
+                            case LEVEL_ONE -> superStructure.coralLevelFour(
+                                driverController.rightBumper());
+                          };
+                          case ALGAE -> superStructure.algaeProcessorScore();
+                        })
+                .withName("score"));
   }
 
   private void configureElevatorBindings() {
@@ -254,7 +261,8 @@ public class Controls {
         .leftStick()
         .whileTrue(
             s.elevatorSubsystem
-                .startMovingVoltage(() -> Volts.of(ElevatorSubsystem.UP_VOLTAGE * -operatorController.getLeftY()))
+                .startMovingVoltage(
+                    () -> Volts.of(ElevatorSubsystem.UP_VOLTAGE * -operatorController.getLeftY()))
                 .withName("Elevator Manual Control"));
     s.elevatorSubsystem.setRumble(
         (rumble) -> {
@@ -338,13 +346,13 @@ public class Controls {
     }
 
     // Arm Controls binding goes here
-    operatorController 
+    operatorController
         .rightStick()
         .whileTrue(
             s.armPivotSubsystem
                 .startMovingVoltage(() -> Volts.of(3 * operatorController.getRightY()))
                 .withName("Arm Manual Control"));
-    armPivotSpinnyClawController 
+    armPivotSpinnyClawController
         .rightStick()
         .whileTrue(
             s.armPivotSubsystem
