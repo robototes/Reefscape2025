@@ -36,19 +36,13 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "intake"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RightsideclosetoD"
+                  "pathName": "RightsideFartoD"
                 }
               },
               {
@@ -70,12 +64,6 @@
           "type": "wait",
           "data": {
             "waitTime": 0.8
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intake"
           }
         },
         {
