@@ -9,15 +9,15 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "raiseElevator"
+                  "pathName": "MidtoG"
                 }
               },
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "MidPreLoad"
+                  "name": "raiseElevator"
                 }
               }
             ]

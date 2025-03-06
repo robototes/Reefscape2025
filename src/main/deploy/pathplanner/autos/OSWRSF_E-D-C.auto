@@ -5,9 +5,16 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": " OppSideWalltoE"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RightsideFartoD"
+                }
+              }
+            ]
           }
         },
         {
@@ -19,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightsideclosetoD"
+            "pathName": "RightsideFartoD"
           }
         },
         {
@@ -32,6 +39,48 @@
           "type": "path",
           "data": {
             "pathName": "RightsideclosetoC"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": []
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": []
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": []
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": []
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": " OppSideWalltoE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": null
           }
         }
       ]

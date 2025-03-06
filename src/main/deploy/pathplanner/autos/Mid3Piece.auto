@@ -5,51 +5,53 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "MidPreLoad"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "autoAlign"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "raiseElevator"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Preload to far station"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "MidtoG"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "raiseElevator"
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "RightSideFarToC"
+            "pathName": "GtoRightSidefar"
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "autoAlign"
+            "waitTime": 0.8
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "raiseElevator"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "lowerElevator"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RightSideFarToC"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "raiseElevator"
+                }
+              }
+            ]
           }
         },
         {
@@ -59,27 +61,28 @@
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "RightsideclosetoD"
+            "waitTime": 0.8
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "autoAlign"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "raiseElevator"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "lowerElevator"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RightsideFartoD"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "raiseElevator"
+                }
+              }
+            ]
           }
         }
       ]
