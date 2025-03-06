@@ -188,7 +188,7 @@ public class AutoLogic {
 
   public static Command raiseElevator() {
     if (r.superStructure != null) {
-      return r.superStructure.levelFour(() -> true).asProxy();
+      return r.superStructure.coralLevelFour(() -> true).asProxy();
     }
     return Commands.none().withName("raiseElevator");
   }
@@ -199,7 +199,7 @@ public class AutoLogic {
 
   public static Command intakeCommand() {
     if (r.superStructure != null) {
-      return r.superStructure.intake().withName("intake").asProxy();
+      return r.superStructure.coralIntake().withName("intake").asProxy();
     }
     return Commands.none().withName("intake");
   }
