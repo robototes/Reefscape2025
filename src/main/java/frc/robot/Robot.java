@@ -109,7 +109,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
 
-    // Checks if FMS is attatched and enables joystick warning if true
+    // Checks if FMS is attached and enables joystick warning if true
     DriverStation.silenceJoystickConnectionWarning(!DriverStation.isFMSAttached());
 
     Command autoCommand = AutoLogic.getAutoCommand(AutoLogic.getSelectedAutoName());

@@ -14,7 +14,6 @@ import com.pathplanner.lib.util.FileVersionException;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -135,7 +134,6 @@ public class AutoLogic {
         .withWidget(BuiltInWidgets.kComboBoxChooser)
         .withPosition(3, 0)
         .withSize(2, 1);
-
   }
 
   public static <T> String[] toStringArray(List<T> dataList) {
@@ -206,29 +204,24 @@ public class AutoLogic {
 
   public static void registerCommand() {
 
-  
-      if (NamedCommands.hasCommand("intake")) {
-        
-        NamedCommands.registerCommand("intake", intakeCommand());
-      } else {
-        NamedCommands.registerCommand("intake", intakeCommand());
-       
+    if (NamedCommands.hasCommand("intake")) {
+
+      NamedCommands.registerCommand("intake", intakeCommand());
+    } else {
+      NamedCommands.registerCommand("intake", intakeCommand());
     }
     if (NamedCommands.hasCommand("raiseElevator")) {
-        
-     
+
     } else {
-      
+
       NamedCommands.registerCommand("raiseElevator", raiseElevator());
-  }
-  if (NamedCommands.hasCommand("autoAlign")) {
-        
-  
-  } else {
-    
-    NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
-    
-}
+    }
+    if (NamedCommands.hasCommand("autoAlign")) {
+
+    } else {
+
+      NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
+    }
   }
 
   public static String getSelectedAutoName() {
