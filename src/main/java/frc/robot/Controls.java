@@ -48,7 +48,7 @@ public class Controls {
 
   // Swerve stuff
 
-  public static double MaxSpeed =
+  public static final double  MaxSpeed =
       RobotType.getCurrent() == RobotType.BONK
           ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
           : RobotType.getCurrent() == RobotType.TESTBASE
@@ -185,7 +185,7 @@ public class Controls {
     if (sensors.armSensor != null) {
       sensors.armSensor.inTrough().onTrue(superStructure.intake());
     }
-    driverController
+    driverController 
         .leftBumper()
         .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
         .onTrue(

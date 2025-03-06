@@ -21,7 +21,6 @@ public class SuperStructure {
 
   public Command levelFour(BooleanSupplier score) {
     return Commands.sequence(
-      Commands.print("Running L4"),
         Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.LEVEL_FOUR_PRE_POS),
             armPivot.moveToPosition(ArmPivot.PRESET_UP),
@@ -83,7 +82,6 @@ public class SuperStructure {
   public Command intake() {
     return Commands.sequence(
             Commands.parallel(
-              Commands.print("Running Intake"),
                 elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
                 armPivot.moveToPosition(ArmPivot.PRESET_DOWN),
                 spinnyClaw.intakePower()),
@@ -92,7 +90,7 @@ public class SuperStructure {
             Commands.waitSeconds(0.1),
             spinnyClaw.stop(),
             elevator.setLevel(ElevatorSubsystem.PRE_INTAKE),
-            stow())
-        .withName("intake");
+            stow());
+        
   }
 }

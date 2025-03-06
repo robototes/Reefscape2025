@@ -38,7 +38,6 @@ public class AutoLogic {
   private static final Controls controls = r.controls;
 
   private static SendableChooser<String> autoPicker = new SendableChooser<String>();
-  private static SendableChooser<String> autoAction = new SendableChooser<String>();
   private static SendableChooser<String> testedAutos = new SendableChooser<String>();
 
   private static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
@@ -82,6 +81,7 @@ public class AutoLogic {
     } catch (IOException | ParseException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
+      DriverStation.reportError("INVALID AUTO", true);
     }
   }
 
@@ -130,11 +130,6 @@ public class AutoLogic {
         .withPosition(0, 0)
         .withSize(2, 1);
 
-    tab.add("Elevator Commands", autoAction)
-        .withWidget(BuiltInWidgets.kComboBoxChooser)
-        .withPosition(3, 2)
-        .withSize(2, 1);
-
     tab.addString("Current Selected path", () -> getSelectedAutoName())
         .withPosition(0, 1)
         .withSize(2, 1);
@@ -144,8 +139,6 @@ public class AutoLogic {
         .withPosition(3, 0)
         .withSize(2, 1);
 
-    autoAction.setDefaultOption("EXTEND WHILE MOVING", "raiseElevator");
-    autoAction.addOption("EXTEND AND WAIT", "raiseElevatorandWait");
   }
 
   public static <T> String[] toStringArray(List<T> dataList) {
@@ -216,20 +209,29 @@ public class AutoLogic {
 
   public static void registerCommand() {
 
-    if (RobotState.isDisabled()) {
-      if (autoAction.getSelected().equals("raiseElevatorandWait")) {
-        NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
-        NamedCommands.registerCommand("raiseElevator", raiseElevator());
+  
+      if (NamedCommands.hasCommand("intake")) {
+        
         NamedCommands.registerCommand("intake", intakeCommand());
-      } else if (autoAction.getSelected().equals("raiseElevator")) {
-
-        NamedCommands.registerCommand("raiseElevator", raiseElevator());
-        NamedCommands.registerCommand("intake", intakeCommand());
-        NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
       } else {
-        System.out.println("FAILED?" + autoAction.getSelected());
-      }
+        NamedCommands.registerCommand("intake", intakeCommand());
+       
     }
+    if (NamedCommands.hasCommand("raiseElevator")) {
+        
+     
+    } else {
+      
+      NamedCommands.registerCommand("raiseElevator", raiseElevator());
+  }
+  if (NamedCommands.hasCommand("autoAlign")) {
+        
+  
+  } else {
+    
+    NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
+    
+}
   }
 
   public static String getSelectedAutoName() {
