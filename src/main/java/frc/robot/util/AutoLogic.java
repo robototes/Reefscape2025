@@ -186,7 +186,7 @@ public class AutoLogic {
 
   public static Command raiseElevator() {
     if (r.superStructure != null) {
-      return r.superStructure.coralLevelFour(() -> true).asProxy();
+      return r.superStructure.coralLevelFour(() -> true);
     }
     return Commands.none().withName("raiseElevator");
   }
@@ -197,7 +197,7 @@ public class AutoLogic {
 
   public static Command intakeCommand() {
     if (r.superStructure != null) {
-      return r.superStructure.coralIntake().withName("intake").asProxy();
+      return r.superStructure.coralIntake().withName("intake");
     }
     return Commands.none().withName("intake");
   }
@@ -206,21 +206,22 @@ public class AutoLogic {
 
     if (NamedCommands.hasCommand("intake")) {
 
-      NamedCommands.registerCommand("intake", intakeCommand());
+     
     } else {
-      NamedCommands.registerCommand("intake", intakeCommand());
+      NamedCommands.registerCommand("intake", intakeCommand().asProxy());
+      
     }
-    if (NamedCommands.hasCommand("raiseElevator")) {
+    if (NamedCommands.hasCommand("raiseElevator") ) {
 
     } else {
 
-      NamedCommands.registerCommand("raiseElevator", raiseElevator());
+      NamedCommands.registerCommand("raiseElevator", raiseElevator().asProxy());
     }
     if (NamedCommands.hasCommand("autoAlign")) {
 
     } else {
 
-      NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
+      NamedCommands.registerCommand("autoAlign", autoAlignmentCommand().asProxy());
     }
   }
 
