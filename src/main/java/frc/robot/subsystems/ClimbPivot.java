@@ -106,8 +106,9 @@ public class ClimbPivot extends SubsystemBase {
               motorOne.stopMotor();
             });
   }
-  public Command stopMotor(){
-    return runOnce( () -> motorOne.stopMotor());
+
+  public Command stopMotor() {
+    return runOnce(() -> motorOne.stopMotor());
   }
 
   public Command toggleClimb(Command setClimbLEDs) {
@@ -160,7 +161,8 @@ public class ClimbPivot extends SubsystemBase {
   public Command zeroClimb() {
     return runOnce(() -> setPosition(0));
   }
-  public Command moveClimbManual(double amount){
+
+  public Command moveClimbManual(double amount) {
     return runEnd(() -> moveClimbMotor(amount), () -> stopMotor());
   }
 
