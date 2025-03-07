@@ -32,13 +32,18 @@ public class ClimbPivot extends SubsystemBase {
   private GenericEntry climbstateEntry;
   private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Climb");
 
-  private final double CLIMB_IN_PRESET = -0.09;
+  private final double CLIMB_IN_PRESET = -0.24;
   private final double CLIMB_OUT_PRESET = -0.40;
   private final double FORWARD_SOFT_STOP = 1;
   private final double REVERSE_SOFT_STOP = -78;
   private final double CLIMB_IN_SPEED = 0.2;
-  private final double CLIMB_OUT_SPEED = -0.2;
-  private final double BOOLEAN_TOLERANCE = 0.05;
+  private final double CLIMB_OUT_SPEED = -0.5;
+  private final double BOOLEAN_TOLERANCE = 0.01;
+
+  // Tristans variable
+  private final double HOLD_POSITION_UNLOADED_VOLTAGE = 0.25;
+  private boolean climbing = false;
+
   // relative to eachother, likely not accurately zero'ed when obtained.x
   private static final double MIN_ROTOR_POSITION = -50.45;
   private static final double MAX_ROTOR_POSITION = 14.456;
@@ -106,8 +111,9 @@ public class ClimbPivot extends SubsystemBase {
               motorOne.stopMotor();
             });
   }
-  public Command stopMotor(){
-    return runOnce( () -> motorOne.stopMotor());
+
+  public Command stopMotor() {
+    return runOnce(() -> motorOne.stopMotor());
   }
 
   public Command toggleClimb(Command setClimbLEDs) {
@@ -115,6 +121,7 @@ public class ClimbPivot extends SubsystemBase {
             startEnd(
                     () -> {
                       // climb out
+                      climbing = true;
                       nextMoveOut = false;
                       motorOne.set(CLIMB_OUT_SPEED);
                     },
@@ -122,23 +129,36 @@ public class ClimbPivot extends SubsystemBase {
                       motorOne.stopMotor();
                     })
                 .alongWith(setClimbLEDs)
-                .until(() -> isClimbOut),
+                .until(() -> isClimbOut)
+                .andThen(
+                    () -> {
+                      climbing = false;
+                    }),
             startEnd(
                     () -> {
                       // climb in
                       nextMoveOut = true;
+                      climbing = true;
                       motorOne.set(CLIMB_IN_SPEED);
                     },
                     () -> {
                       motorOne.stopMotor();
                     })
-                .until(() -> isClimbIn),
+                .until(() -> isClimbIn)
+                .andThen(
+                    () -> {
+                      climbing = false;
+                    }),
             () -> nextMoveOut)
         .withName("toggleClimb");
   }
 
   public Command holdPosition() {
     return run(() -> motorOne.set(0));
+  }
+
+  public Command climbDoNothing() {
+    return run(() -> Commands.print("doing nothing lol"));
   }
 
   public boolean checkClimbSensor() {
@@ -160,7 +180,8 @@ public class ClimbPivot extends SubsystemBase {
   public Command zeroClimb() {
     return runOnce(() -> setPosition(0));
   }
-  public Command moveClimbManual(double amount){
+
+  public Command moveClimbManual(double amount) {
     return runEnd(() -> moveClimbMotor(amount), () -> stopMotor());
   }
 
@@ -199,6 +220,17 @@ public class ClimbPivot extends SubsystemBase {
     } else {
       isClimbOut = false;
     }
+
+    if (!climbing) {
+      if (motorOne.getPosition().getValueAsDouble() > -0.08) {
+        motorOne.setVoltage(HOLD_POSITION_UNLOADED_VOLTAGE);
+      } else if (motorOne.getPosition().getValueAsDouble() > -0.32) {
+        motorOne.set(CLIMB_IN_SPEED * 0.5);
+      } else {
+        motorOne.setVoltage(0);
+      }
+    }
+
     if (MathUtil.isNear(
         motorOne.getPosition().getValueAsDouble(), CLIMB_IN_PRESET, BOOLEAN_TOLERANCE)) {
       isClimbIn = true;

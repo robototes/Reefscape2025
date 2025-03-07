@@ -426,14 +426,16 @@ public class Controls {
       setClimbLEDsOperatorController = Commands.none();
     }
 
-    s.climbPivotSubsystem.setDefaultCommand(s.climbPivotSubsystem.holdPosition());
+    s.climbPivotSubsystem.setDefaultCommand(s.climbPivotSubsystem.climbDoNothing());
     climbTestController
         .back()
         .onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDsClimbController));
     climbTestController.start().onTrue(s.climbPivotSubsystem.zeroClimb());
+
     operatorController
         .start()
         .onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDsOperatorController));
+
     climbTestController
         .leftStick()
         .whileTrue(
