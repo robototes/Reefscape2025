@@ -200,6 +200,7 @@ public class Controls {
                           case ALGAE -> superStructure.algaeStow();
                         })
                 .withName("Stow"));
+    operatorController.povDown().onTrue(superStructure.preIntake().withName("pre-intake"));
 
     driverController
         .a()
@@ -412,17 +413,33 @@ public class Controls {
       return;
     }
 
-    Command setClimbLEDs;
+    // Two commands to avoid double composition
+    Command setClimbLEDsClimbController;
+    Command setClimbLEDsOperatorController;
     if (s.elevatorLEDSubsystem != null) {
-      setClimbLEDs = s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
+      setClimbLEDsClimbController =
+          s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
+      setClimbLEDsOperatorController =
+          s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
     } else {
-      setClimbLEDs = Commands.none();
+      setClimbLEDsClimbController = Commands.none();
+      setClimbLEDsOperatorController = Commands.none();
     }
 
     s.climbPivotSubsystem.setDefaultCommand(s.climbPivotSubsystem.holdPosition());
-    climbTestController.back().onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDs));
+    climbTestController
+        .back()
+        .onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDsClimbController));
     climbTestController.start().onTrue(s.climbPivotSubsystem.zeroClimb());
-    operatorController.start().onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDs));
+    operatorController
+        .start()
+        .onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDsOperatorController));
+    climbTestController
+        .leftStick()
+        .whileTrue(
+            s.climbPivotSubsystem
+                .moveClimbManual(-climbTestController.getLeftY())
+                .withName("Climb Manual Control"));
   }
 
   private void configureSpinnyClawBindings() {
