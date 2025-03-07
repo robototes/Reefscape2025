@@ -23,8 +23,8 @@ public class ElevatorLight extends SubsystemBase {
   private CANdle candle;
 
   // private String curAnimation = "default";
-  private final AddressableLEDBuffer buffer = new AddressableLEDBuffer(62);
-  private final AddressableLEDBufferView[] sections = {buffer.createView(0, 62)};
+  private final AddressableLEDBuffer buffer = new AddressableLEDBuffer(71);
+  private final AddressableLEDBufferView[] sections = {buffer.createView(0, 70)};
 
   // LED modes
   public RainbowAnimation rainbowAnim = new RainbowAnimation(.5, .89, 64);
