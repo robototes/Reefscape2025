@@ -11,8 +11,13 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -31,14 +36,19 @@ public class ArmPivot extends SubsystemBase {
   private final double ARMPIVOT_KV = 0.69;
   private final double ARMPIVOT_KG = 0.18;
   private final double ARMPIVOT_KA = 0.0;
-  public static final double PRESET_L1 = -1.0 / 16;
-  public static final double PRESET_L2_L3 = Units.degreesToRotations(55);
-  public static final double PRESET_L4 = 0.0;
-  public static final double PRESET_PRE_L4 = 1.0 / 16.0;
-  public static final double PRESET_STOWED = 0.125;
+  public static final double CORAL_PRESET_L1 = -1.0 / 16;
+  public static final double CORAL_PRESET_L2_L3 = Units.degreesToRotations(55);
+  public static final double CORAL_PRESET_L4 = 0.0;
+  public static final double CORAL_PRESET_PRE_L4 = 1.0 / 16.0;
+  public static final double ALGAE_REMOVE_PREPOS = 0; // untested
+  public static final double ALGAE_REMOVE = 0; // untested
+  public static final double ALGAE_FLING = -0.08;
+  public static final double ALGAE_STOWED = 0; // untested
+  public static final double ALGAE_PROCESSOR_SCORE = 0.125; // untested
+  public static final double CORAL_PRESET_STOWED = 0.125;
   public static final double PRESET_OUT = 0;
-  public static final double PRESET_UP = 0.25; // Pointing directly upwards
-  public static final double PRESET_DOWN = -0.25;
+  public static final double CORAL_PRESET_UP = 0.25; // Pointing directly upwards
+  public static final double CORAL_PRESET_DOWN = -0.25;
   public static final double HARDSTOP_HIGH = 0.32;
   public static final double HARDSTOP_LOW = -0.26;
   public static final double POS_TOLERANCE = 0.01;
@@ -50,6 +60,11 @@ public class ArmPivot extends SubsystemBase {
 
   // TalonFX
   private final TalonFX motor;
+
+  // alerts
+  private final Alert NotConnectedError =
+      new Alert("ArmPivot", "Motor not connected", AlertType.kError);
+  private final Debouncer notConnectedDebouncer = new Debouncer(.1, DebounceType.kBoth);
 
   private final SysIdRoutine routine;
 
@@ -87,6 +102,10 @@ public class ArmPivot extends SubsystemBase {
           motor.setControl(m_request.withPosition(pos));
           targetPos = pos;
         });
+  }
+
+  public boolean atPosition(double position) {
+    return MathUtil.isNear(position, getCurrentPosition(), POS_TOLERANCE);
   }
 
   private double getTargetPosition() {
@@ -160,5 +179,11 @@ public class ArmPivot extends SubsystemBase {
         1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
     cfg.apply(talonFXConfiguration);
+  }
+
+  // alert
+  @Override
+  public void periodic() {
+    NotConnectedError.set(notConnectedDebouncer.calculate(!motor.getMotorVoltage().hasUpdated()));
   }
 }
