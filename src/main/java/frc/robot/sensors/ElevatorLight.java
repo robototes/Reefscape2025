@@ -1,5 +1,7 @@
 package frc.robot.sensors;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdleConfiguration;
@@ -53,6 +55,11 @@ public class ElevatorLight extends SubsystemBase {
 
   public Command colorSet(int r, int g, int b, String name) {
     return animate(LEDPattern.solid(new Color(r, g, b)), name);
+  }
+
+  public Command tripleBlink(int r, int g, int b, String name) {
+    return animate(LEDPattern.solid(new Color(r, g, b)).blink(Seconds.of(1.0 / 6.0)), name)
+        .withTimeout(Seconds.of(1.0));
   }
 
   public Command animate(LEDPattern animation, String name) {
