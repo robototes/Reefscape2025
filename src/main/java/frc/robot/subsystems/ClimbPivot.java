@@ -32,13 +32,13 @@ public class ClimbPivot extends SubsystemBase {
   private GenericEntry climbstateEntry;
   private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Climb");
 
-  private final double CLIMB_OUT_PRESET = -72;
+  private final double CLIMB_IN_PRESET = -0.09;
+  private final double CLIMB_OUT_PRESET = -0.40;
   private final double FORWARD_SOFT_STOP = 1;
   private final double REVERSE_SOFT_STOP = -78;
-  private final double CLIMB_IN_PRESET = 0;
   private final double CLIMB_IN_SPEED = 0.2;
   private final double CLIMB_OUT_SPEED = -0.2;
-  private final double BOOLEAN_TOLERANCE = 2;
+  private final double BOOLEAN_TOLERANCE = 0.05;
   // relative to eachother, likely not accurately zero'ed when obtained.x
   private static final double MIN_ROTOR_POSITION = -50.45;
   private static final double MAX_ROTOR_POSITION = 14.456;
@@ -106,6 +106,9 @@ public class ClimbPivot extends SubsystemBase {
               motorOne.stopMotor();
             });
   }
+  public Command stopMotor(){
+    return runOnce( () -> motorOne.stopMotor());
+  }
 
   public Command toggleClimb(Command setClimbLEDs) {
     return Commands.either(
@@ -156,6 +159,9 @@ public class ClimbPivot extends SubsystemBase {
 
   public Command zeroClimb() {
     return runOnce(() -> setPosition(0));
+  }
+  public Command moveClimbManual(double amount){
+    return runEnd(() -> moveClimbMotor(amount), () -> stopMotor());
   }
 
   public void setupLogging() {
