@@ -211,7 +211,7 @@ public class Controls {
                           case CORAL -> superStructure
                               .coralIntake()
                               .alongWith(
-                                  s.elevatorLEDSubsystem.colorSet(
+                                  s.elevatorLEDSubsystem.tripleBlink(
                                       255, 92, 0, "Orange - Manual Coral Intake"))
                               .withName("Manual Coral Intake");
                           case ALGAE -> switch (algaeIntakeHeight) {
@@ -231,7 +231,7 @@ public class Controls {
               superStructure
                   .coralIntake()
                   .alongWith(
-                      s.elevatorLEDSubsystem.colorSet(255, 255, 0, "Yellow - Automatic Intake"))
+                      s.elevatorLEDSubsystem.tripleBlink(255, 255, 0, "Yellow - Automatic Intake"))
                   .withName("Automatic Intake"));
     }
 
