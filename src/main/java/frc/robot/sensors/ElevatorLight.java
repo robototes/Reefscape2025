@@ -63,10 +63,9 @@ public class ElevatorLight extends SubsystemBase {
   }
 
   public Command pulse(int r, int g, int b, String name) {
-    return animate(LEDPattern.solid(new Color(r, g, b)).blink(Seconds.of(1.0 / 2.0)), name)
-        .withTimeout(Seconds.of(1.0));
-  }
-
+    return animate(LEDPattern.solid(new Color(r, g, b)).breathe(Seconds.of(1.0)), name);
+      }
+      
   public Command animate(LEDPattern animation, String name) {
     return run(() -> {
           for (AddressableLEDBufferView section : sections) {
