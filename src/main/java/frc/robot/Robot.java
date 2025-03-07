@@ -10,11 +10,15 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Sensors.SensorConstants;
 import frc.robot.Subsystems.SubsystemConstants;
 import frc.robot.subsystems.SuperStructure;
+import frc.robot.util.AutoLogic;
+import frc.robot.util.AutonomousField;
 import frc.robot.util.BuildInfo;
 import frc.robot.util.RobotType;
 
@@ -31,10 +35,12 @@ public class Robot extends TimedRobot {
   public final Controls controls;
   public final Subsystems subsystems;
   public final Sensors sensors;
+
   public final SuperStructure superStructure;
 
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
+
     instance = this;
     robotType = RobotType.getCurrent();
     CanBridge.runTCP();
@@ -43,6 +49,7 @@ public class Robot extends TimedRobot {
 
     subsystems = new Subsystems();
     sensors = new Sensors();
+
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
         && SubsystemConstants.SPINNYCLAW_ENABLED
@@ -75,10 +82,14 @@ public class Robot extends TimedRobot {
         .onCommandFinish(command -> System.out.println("Command finished: " + command.getName()));
 
     SmartDashboard.putData(CommandScheduler.getInstance());
+    AutoLogic.configureAuto(subsystems.drivebaseSubsystem);
 
     BuildInfo.logBuildInfo();
 
     DriverStation.silenceJoystickConnectionWarning(true);
+    AutoLogic.initShuffleBoard();
+    AutonomousField.initShuffleBoard("Field", 0, 0, this::addPeriodic);
+    AutoLogic.registerCommand();
   }
 
   @Override
@@ -96,7 +107,21 @@ public class Robot extends TimedRobot {
   public void disabledExit() {}
 
   @Override
-  public void autonomousInit() {}
+  public void autonomousInit() {
+
+    // Checks if FMS is attatched and enables joystick warning if true
+    DriverStation.silenceJoystickConnectionWarning(!DriverStation.isFMSAttached());
+
+    Command autoCommand = AutoLogic.getAutoCommand(AutoLogic.getSelectedAutoName());
+    Shuffleboard.startRecording();
+
+    if (autoCommand != null) {
+      autoCommand.schedule();
+
+    } else {
+      DriverStation.reportError("Auto command not found!", false);
+    }
+  }
 
   @Override
   public void autonomousPeriodic() {}
