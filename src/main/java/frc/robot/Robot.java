@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.util.function.Supplier;
-
 import au.grapplerobotics.CanBridge;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -23,6 +21,7 @@ import frc.robot.util.AutoLogic;
 import frc.robot.util.AutonomousField;
 import frc.robot.util.BuildInfo;
 import frc.robot.util.RobotType;
+import java.util.function.Supplier;
 
 public class Robot extends TimedRobot {
   /** Singleton Stuff */

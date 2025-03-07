@@ -6,7 +6,6 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -227,10 +226,10 @@ public class Controls {
                 .withName("Driver Intake"));
     if (sensors.armSensor != null) {
       sensors
-      
           .armSensor
           .inTrough()
-          .and(superStructure.inPreIntakePosition()).and((RobotModeTriggers.teleop()))
+          .and(superStructure.inPreIntakePosition())
+          .and(RobotModeTriggers.teleop())
           .onTrue(
               superStructure
                   .coralIntake()
