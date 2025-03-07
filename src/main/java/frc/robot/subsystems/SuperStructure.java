@@ -23,6 +23,7 @@ public class SuperStructure {
   public Command coralLevelFour(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
+                Commands.print("Pre position"),
                 elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS),
                 armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
                 spinnyClaw.stop()),

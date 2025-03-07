@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": " OppSideWalltoE"
+                  "pathName": "OppSideMidE"
                 }
               },
               {
@@ -33,6 +33,12 @@
           "type": "wait",
           "data": {
             "waitTime": 0.8
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake"
           }
         },
         {
@@ -64,6 +70,12 @@
           "type": "wait",
           "data": {
             "waitTime": 0.8
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake"
           }
         },
         {

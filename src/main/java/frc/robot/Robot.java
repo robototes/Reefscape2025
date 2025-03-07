@@ -121,7 +121,7 @@ public class Robot extends TimedRobot {
       autoCommand.schedule();
 
       Supplier<String> sys = () -> autoCommand.getRequirements().toString();
-      AutoLogic.tab.add("Subsystems used", sys);
+      AutoLogic.tab.addString("Subsystems used", sys);
     } else {
       DriverStation.reportError("Auto command not found!", false);
     }

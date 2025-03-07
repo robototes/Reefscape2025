@@ -26,6 +26,8 @@ import frc.robot.Subsystems;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Supplier;
+
 import org.json.simple.parser.ParseException;
 
 public class AutoLogic {
@@ -134,6 +136,7 @@ public class AutoLogic {
         .withWidget(BuiltInWidgets.kComboBoxChooser)
         .withPosition(3, 0)
         .withSize(2, 1);
+        
   }
 
   public static <T> String[] toStringArray(List<T> dataList) {
@@ -186,7 +189,10 @@ public class AutoLogic {
 
   public static Command raiseElevator() {
     if (r.superStructure != null) {
-      return r.superStructure.coralLevelFour(() -> true);
+      return Commands.sequence(
+        Commands.print("Pre raise elevator"),
+        r.superStructure.coralLevelFour(() -> true),
+        Commands.print("Pose raise elevator"));
     }
     return Commands.none().withName("raiseElevator");
   }
@@ -197,7 +203,7 @@ public class AutoLogic {
 
   public static Command intakeCommand() {
     if (r.superStructure != null) {
-      return r.superStructure.coralIntake().withName("intake");
+      return  r.superStructure.preIntake().andThen(r.superStructure.coralIntake().withName("intake"));
     }
     return Commands.none().withName("intake");
   }
@@ -208,20 +214,20 @@ public class AutoLogic {
 
      
     } else {
-      NamedCommands.registerCommand("intake", intakeCommand().asProxy());
+      NamedCommands.registerCommand("intake", intakeCommand());
       
     }
     if (NamedCommands.hasCommand("raiseElevator") ) {
 
     } else {
 
-      NamedCommands.registerCommand("raiseElevator", raiseElevator().asProxy());
+      NamedCommands.registerCommand("raiseElevator", raiseElevator());
     }
     if (NamedCommands.hasCommand("autoAlign")) {
 
     } else {
 
-      NamedCommands.registerCommand("autoAlign", autoAlignmentCommand().asProxy());
+      NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
     }
   }
 

@@ -5,21 +5,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "YourSideMidtoJ"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "autoAlign"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "raiseElevator"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "YourSideMidtoJ"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "raiseElevator"
+                }
+              }
+            ]
           }
         },
         {
@@ -29,27 +30,34 @@
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "LeftSideCloseToK"
+            "waitTime": 0.8
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "autoAlign"
+            "name": "intake"
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "raiseElevator"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "lowerElevator"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LeftSideCloseToK"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "raiseElevator"
+                }
+              }
+            ]
           }
         },
         {
@@ -59,15 +67,34 @@
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "Leftsidefar to K"
+            "waitTime": 0.8
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "autoAlign"
+            "name": "intake"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Leftsidefar to K"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "raiseElevator"
+                }
+              }
+            ]
           }
         },
         {
