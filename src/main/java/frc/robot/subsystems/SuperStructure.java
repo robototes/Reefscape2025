@@ -27,13 +27,6 @@ public class SuperStructure {
     this.armSensor = armSensor;
   }
 
-  private Command animate(Animation animation) {
-    if (elevatorLight == null) {
-      return Commands.none();
-    }
-    return elevatorLight.animate(animation);
-  }
-
   private Command colorSet(int r, int g, int b, String name) {
     if (elevatorLight == null) {
       return Commands.none();
@@ -69,11 +62,6 @@ public class SuperStructure {
         elevator.setLevel(ElevatorSubsystem.LEVEL_THREE_POS),
         spinnyClaw.holdExtakePower().withTimeout(0.15),
         stow());
-  }
-
-  private Command colorSet(int i, int j, int k) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'colorSet'");
   }
 
   public Command levelTwo(BooleanSupplier score) {
