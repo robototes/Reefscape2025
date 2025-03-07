@@ -6,6 +6,8 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -206,7 +208,12 @@ public class Controls {
             Commands.deferredProxy(
                     () ->
                         switch (scoringMode) {
-                          case CORAL -> superStructure.coralIntake();
+                          case CORAL -> superStructure
+                              .coralIntake()
+                              .alongWith(
+                                  s.elevatorLEDSubsystem.tripleBlink(
+                                      255, 92, 0, "Orange - Manual Coral Intake"))
+                              .withName("Manual Coral Intake");
                           case ALGAE -> switch (algaeIntakeHeight) {
                             case ALGAE_LEVEL_THREE_FOUR -> superStructure.algaeLevelThreeFourFling(
                                 driverController.rightBumper());
@@ -220,7 +227,12 @@ public class Controls {
           .armSensor
           .inTrough()
           .and(superStructure.inPreIntakePosition())
-          .onTrue(superStructure.coralIntake());
+          .onTrue(
+              superStructure
+                  .coralIntake()
+                  .alongWith(
+                      s.elevatorLEDSubsystem.tripleBlink(255, 255, 0, "Yellow - Automatic Intake"))
+                  .withName("Automatic Intake"));
     }
 
     driverController
@@ -399,10 +411,18 @@ public class Controls {
     if (s.climbPivotSubsystem == null) {
       return;
     }
+
+    Command setClimbLEDs;
+    if (s.elevatorLEDSubsystem != null) {
+      setClimbLEDs = s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
+    } else {
+      setClimbLEDs = Commands.none();
+    }
+
     s.climbPivotSubsystem.setDefaultCommand(s.climbPivotSubsystem.holdPosition());
-    climbTestController.back().onTrue(s.climbPivotSubsystem.toggleClimb());
+    climbTestController.back().onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDs));
     climbTestController.start().onTrue(s.climbPivotSubsystem.zeroClimb());
-    operatorController.start().onTrue(s.climbPivotSubsystem.toggleClimb());
+    operatorController.start().onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDs));
   }
 
   private void configureSpinnyClawBindings() {
@@ -428,22 +448,25 @@ public class Controls {
     if (s.elevatorLEDSubsystem == null) {
       return;
     }
-    elevatorTestController
-        .back()
-        .onTrue(s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.larsonAnim));
-    elevatorTestController
-        .start()
-        .onTrue(s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.rainbowAnim));
+
     if (s.elevatorSubsystem != null) {
       Trigger hasBeenZeroed = new Trigger(s.elevatorSubsystem::getHasBeenZeroed);
       Commands.waitSeconds(1)
           .andThen(
-              s.elevatorLEDSubsystem.colorSet(50, 0, 0).withName("LED red").ignoringDisable(true))
+              s.elevatorLEDSubsystem
+                  .colorSet(255, 0, 0, "Red - Elevator Not Zeroed")
+                  .ignoringDisable(true))
           .schedule();
       hasBeenZeroed.onTrue(
-          s.elevatorLEDSubsystem.colorSet(0, 50, 0).withName("LED green").ignoringDisable(true));
+          s.elevatorLEDSubsystem
+              .colorSet(0, 255, 0, "Green - Elevator Zeroed")
+              .ignoringDisable(true));
       hasBeenZeroed.onFalse(
-          s.elevatorLEDSubsystem.colorSet(50, 0, 0).withName("LED red").ignoringDisable(false));
+          s.elevatorLEDSubsystem
+              .colorSet(255, 0, 0, "Red - Elevator Not Zeroed")
+              .ignoringDisable(false));
     }
+    RobotModeTriggers.autonomous()
+        .whileTrue(s.elevatorLEDSubsystem.animate(LEDPattern.rainbow(255, 255), "Auto Rainbow"));
   }
 }

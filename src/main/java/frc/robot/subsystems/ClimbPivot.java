@@ -107,7 +107,7 @@ public class ClimbPivot extends SubsystemBase {
             });
   }
 
-  public Command toggleClimb() {
+  public Command toggleClimb(Command setClimbLEDs) {
     return Commands.either(
             startEnd(
                     () -> {
@@ -118,6 +118,7 @@ public class ClimbPivot extends SubsystemBase {
                     () -> {
                       motorOne.stopMotor();
                     })
+                .alongWith(setClimbLEDs)
                 .until(() -> isClimbOut),
             startEnd(
                     () -> {
