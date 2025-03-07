@@ -14,7 +14,6 @@ import com.pathplanner.lib.util.FileVersionException;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -35,10 +34,9 @@ public class AutoLogic {
   private static final Controls controls = r.controls;
 
   private static SendableChooser<String> autoPicker = new SendableChooser<String>();
-  private static SendableChooser<String> autoAction = new SendableChooser<String>();
   private static SendableChooser<String> testedAutos = new SendableChooser<String>();
 
-  private static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
+  public static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
 
   public static void configureAuto(CommandSwerveDrivetrain drivebase) {
 
@@ -79,6 +77,7 @@ public class AutoLogic {
     } catch (IOException | ParseException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
+      DriverStation.reportError("INVALID AUTO", true);
     }
   }
 
@@ -127,11 +126,6 @@ public class AutoLogic {
         .withPosition(0, 0)
         .withSize(2, 1);
 
-    tab.add("Elevator Commands", autoAction)
-        .withWidget(BuiltInWidgets.kComboBoxChooser)
-        .withPosition(3, 2)
-        .withSize(2, 1);
-
     tab.addString("Current Selected path", () -> getSelectedAutoName())
         .withPosition(0, 1)
         .withSize(2, 1);
@@ -140,9 +134,6 @@ public class AutoLogic {
         .withWidget(BuiltInWidgets.kComboBoxChooser)
         .withPosition(3, 0)
         .withSize(2, 1);
-
-    autoAction.setDefaultOption("EXTEND WHILE MOVING", "raiseElevator");
-    autoAction.addOption("EXTEND AND WAIT", "raiseElevatorandWait");
   }
 
   public static <T> String[] toStringArray(List<T> dataList) {
@@ -195,7 +186,7 @@ public class AutoLogic {
 
   public static Command raiseElevator() {
     if (r.superStructure != null) {
-      return r.superStructure.coralLevelFour(() -> true).asProxy();
+      return r.superStructure.coralLevelFour(() -> true);
     }
     return Commands.none().withName("raiseElevator");
   }
@@ -204,19 +195,33 @@ public class AutoLogic {
     return AutoAlign.autoAlign(s.drivebaseSubsystem).withName("autoAlign");
   }
 
+  public static Command intakeCommand() {
+    if (r.superStructure != null) {
+      return r.superStructure.coralIntake().withName("intake");
+    }
+    return Commands.none().withName("intake");
+  }
+
   public static void registerCommand() {
 
-    if (RobotState.isDisabled()) {
-      if (autoAction.getSelected().equals("raiseElevatorandWait")) {
-        NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
-        NamedCommands.registerCommand("raiseElevator", raiseElevator());
-      } else if (autoAction.getSelected().equals("raiseElevator")) {
+    if (NamedCommands.hasCommand("intake")) {
 
-        NamedCommands.registerCommand("raiseElevator", raiseElevator());
-        NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
-      } else {
-        System.out.println("FAILED?" + autoAction.getSelected());
-      }
+     
+    } else {
+      NamedCommands.registerCommand("intake", intakeCommand().asProxy());
+      
+    }
+    if (NamedCommands.hasCommand("raiseElevator") ) {
+
+    } else {
+
+      NamedCommands.registerCommand("raiseElevator", raiseElevator().asProxy());
+    }
+    if (NamedCommands.hasCommand("autoAlign")) {
+
+    } else {
+
+      NamedCommands.registerCommand("autoAlign", autoAlignmentCommand().asProxy());
     }
   }
 

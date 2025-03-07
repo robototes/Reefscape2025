@@ -47,7 +47,8 @@ public class Controls {
   private AlgaeIntakeHeight algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
 
   // Swerve stuff
-  public static double MaxSpeed =
+
+  public static final double MaxSpeed =
       RobotType.getCurrent() == RobotType.BONK
           ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
           : CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);

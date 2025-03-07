@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.function.Supplier;
+
 import au.grapplerobotics.CanBridge;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -109,7 +111,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
 
-    // Checks if FMS is attatched and enables joystick warning if true
+    // Checks if FMS is attached and enables joystick warning if true
     DriverStation.silenceJoystickConnectionWarning(!DriverStation.isFMSAttached());
 
     Command autoCommand = AutoLogic.getAutoCommand(AutoLogic.getSelectedAutoName());
@@ -118,6 +120,8 @@ public class Robot extends TimedRobot {
     if (autoCommand != null) {
       autoCommand.schedule();
 
+      Supplier<String> sys = () -> autoCommand.getRequirements().toString();
+      AutoLogic.tab.add("Subsystems used", sys);
     } else {
       DriverStation.reportError("Auto command not found!", false);
     }
@@ -134,6 +138,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     CommandScheduler.getInstance().cancelAll();
+    Shuffleboard.startRecording();
   }
 
   @Override
