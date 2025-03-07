@@ -39,6 +39,7 @@ public class ClimbPivot extends SubsystemBase {
   private final double CLIMB_IN_SPEED = 0.2;
   private final double CLIMB_OUT_SPEED = -0.2;
   private final double BOOLEAN_TOLERANCE = 0.05;
+  public final double CLIMB_HOlD = 0.02;
   // relative to eachother, likely not accurately zero'ed when obtained.x
   private static final double MIN_ROTOR_POSITION = -50.45;
   private static final double MAX_ROTOR_POSITION = 14.456;
@@ -139,7 +140,7 @@ public class ClimbPivot extends SubsystemBase {
   }
 
   public Command holdPosition() {
-    return run(() -> motorOne.set(0));
+    return run(() -> motorOne.set(CLIMB_HOlD));
   }
 
   public boolean checkClimbSensor() {
@@ -206,6 +207,9 @@ public class ClimbPivot extends SubsystemBase {
       isClimbIn = true;
     } else {
       isClimbIn = false;
+    }
+    if (nextMoveOut = true) {
+      holdPosition();
     }
     NotConnectedErrorOne.set(
         notConnectedDebouncerOne.calculate(!motorOne.getMotorVoltage().hasUpdated()));
