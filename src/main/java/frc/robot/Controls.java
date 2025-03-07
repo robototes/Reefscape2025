@@ -5,8 +5,8 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -208,7 +208,12 @@ public class Controls {
             Commands.deferredProxy(
                     () ->
                         switch (scoringMode) {
-                          case CORAL -> superStructure.coralIntake();
+                          case CORAL -> superStructure
+                              .coralIntake()
+                              .alongWith(
+                                  s.elevatorLEDSubsystem.colorSet(
+                                      255, 92, 0, "Orange - Manual Coral Intake"))
+                              .withName("Manual Coral Intake");
                           case ALGAE -> switch (algaeIntakeHeight) {
                             case ALGAE_LEVEL_THREE_FOUR -> superStructure.algaeLevelThreeFourFling(
                                 driverController.rightBumper());
@@ -222,7 +227,12 @@ public class Controls {
           .armSensor
           .inTrough()
           .and(superStructure.inPreIntakePosition())
-          .onTrue(superStructure.coralIntake());
+          .onTrue(
+              superStructure
+                  .coralIntake()
+                  .alongWith(
+                      s.elevatorLEDSubsystem.colorSet(255, 255, 0, "Yellow - Automatic Intake"))
+                  .withName("Automatic Intake"));
     }
 
     driverController
@@ -438,7 +448,7 @@ public class Controls {
     if (s.elevatorLEDSubsystem == null) {
       return;
     }
-    
+
     if (s.elevatorSubsystem != null) {
       Trigger hasBeenZeroed = new Trigger(s.elevatorSubsystem::getHasBeenZeroed);
       Commands.waitSeconds(1)
@@ -458,6 +468,5 @@ public class Controls {
     }
     RobotModeTriggers.autonomous()
         .whileTrue(s.elevatorLEDSubsystem.animate(LEDPattern.rainbow(255, 255), "Auto Rainbow"));
-
   }
 }

@@ -1,17 +1,12 @@
 package frc.robot.sensors;
 
-import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdleConfiguration;
-import com.ctre.phoenix.led.ColorFlowAnimation;
 import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.LarsonAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
-import com.ctre.phoenix.led.RgbFadeAnimation;
-import com.ctre.phoenix.led.SingleFadeAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
-import com.ctre.phoenix.led.TwinkleAnimation;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.LEDPattern;
@@ -36,12 +31,11 @@ public class ElevatorLight extends SubsystemBase {
   };
 
   // LED modes
-  public RainbowAnimation rainbowAnim = 
-      new RainbowAnimation(.5, .89, 64);
+  public RainbowAnimation rainbowAnim = new RainbowAnimation(.5, .89, 64);
   public LarsonAnimation larsonAnim =
-      new LarsonAnimation(177, 156, 217); // try again with full string, looks like annoying flashing
-  public FireAnimation fireAnim = 
-      new FireAnimation(); // oioioioi
+      new LarsonAnimation(
+          177, 156, 217); // try again with full string, looks like annoying flashing
+  public FireAnimation fireAnim = new FireAnimation(); // oioioioi
   public StrobeAnimation strobeAnim =
       new StrobeAnimation(24, 15, 204); // idk it just shows as a single color, test again?
 
