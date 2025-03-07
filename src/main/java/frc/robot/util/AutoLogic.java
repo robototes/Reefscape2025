@@ -195,7 +195,7 @@ public class AutoLogic {
 
   public static Command raiseElevator() {
     if (r.superStructure != null) {
-      return r.superStructure.levelFour(() -> true).asProxy();
+      return r.superStructure.coralLevelFour(() -> true).asProxy();
     }
     return Commands.none().withName("raiseElevator");
   }
@@ -204,24 +204,15 @@ public class AutoLogic {
     return AutoAlign.autoAlign(s.drivebaseSubsystem).withName("autoAlign");
   }
 
-  public static Command intakeCommand() {
-    if (r.superStructure != null) {
-      return r.superStructure.intake().withName("intake").asProxy();
-    }
-    return Commands.none().withName("intake");
-  }
-
   public static void registerCommand() {
 
     if (RobotState.isDisabled()) {
       if (autoAction.getSelected().equals("raiseElevatorandWait")) {
         NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
         NamedCommands.registerCommand("raiseElevator", raiseElevator());
-        NamedCommands.registerCommand("intake", intakeCommand());
       } else if (autoAction.getSelected().equals("raiseElevator")) {
 
         NamedCommands.registerCommand("raiseElevator", raiseElevator());
-        NamedCommands.registerCommand("intake", intakeCommand());
         NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
       } else {
         System.out.println("FAILED?" + autoAction.getSelected());
