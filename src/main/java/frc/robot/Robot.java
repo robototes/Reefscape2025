@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.function.Supplier;
+
 import au.grapplerobotics.CanBridge;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -118,6 +120,8 @@ public class Robot extends TimedRobot {
     if (autoCommand != null) {
       autoCommand.schedule();
 
+      Supplier<String> sys = () -> autoCommand.getRequirements().toString();
+      AutoLogic.tab.add("Subsystems used", sys);
     } else {
       DriverStation.reportError("Auto command not found!", false);
     }

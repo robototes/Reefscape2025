@@ -36,7 +36,7 @@ public class AutoLogic {
   private static SendableChooser<String> autoPicker = new SendableChooser<String>();
   private static SendableChooser<String> testedAutos = new SendableChooser<String>();
 
-  private static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
+  public static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
 
   public static void configureAuto(CommandSwerveDrivetrain drivebase) {
 
