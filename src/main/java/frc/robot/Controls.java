@@ -414,7 +414,7 @@ public class Controls {
 
     Command setClimbLEDs;
     if (s.elevatorLEDSubsystem != null) {
-      setClimbLEDs = s.elevatorLEDSubsystem.colorSet(0, 255, 0, "green");
+      setClimbLEDs = s.elevatorLEDSubsystem.colorSet(0, 0, 255, "Blue - Climb Extended");
     } else {
       setClimbLEDs = Commands.none();
     }
