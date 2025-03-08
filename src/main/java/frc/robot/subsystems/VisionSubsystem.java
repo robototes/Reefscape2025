@@ -46,7 +46,7 @@ public class VisionSubsystem extends SubsystemBase {
   private static final double CAMERA_ROLL_FRONT = Units.degreesToRadians(180);
   private static final double CAMERA_ROLL_BACK = 0;
   private static final double CAMERA_PITCH_FRONT = Units.degreesToRadians(-10);
-  private static final double CAMERA_PITCH_BACK = Units.degreesToRadians(-10);
+  private static final double CAMERA_PITCH_BACK = Units.degreesToRadians(-20);
   private static final double CAMERA_YAW_FRONT = Units.degreesToRadians(-28.1);
   private static final double CAMERA_YAW_BACK = Units.degreesToRadians(180);
 
