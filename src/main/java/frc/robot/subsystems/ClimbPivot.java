@@ -37,9 +37,9 @@ public class ClimbPivot extends SubsystemBase {
   private final double CLIMB_OUT_PRESET = -0.40;
   private final double FORWARD_SOFT_STOP = -0.07;
   private final double REVERSE_SOFT_STOP = -78;
-  private final double CLIMB_IN_SPEED = 0.2;
-  private final double CLIMB_OUT_SPEED = -0.2;
-  private final double BOOLEAN_TOLERANCE = 0.05;
+  private final double CLIMB_IN_SPEED = 0.4;
+  private final double CLIMB_OUT_SPEED = -0.3;
+  private final double BOOLEAN_TOLERANCE = 0.02;
   private final double CLIMB_HOLD = 0.02;
   // relative to eachother, likely not accurately zero'ed when obtained.x
   private static final double MIN_ROTOR_POSITION = -50.45;
