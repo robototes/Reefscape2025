@@ -69,14 +69,17 @@ public class ElevatorLight extends SubsystemBase {
 
   public Command animate(LEDPattern animation, String name) {
     return run(() -> {
-          for (AddressableLEDBufferView section : sections) {
-            animation.applyTo(section);
-            for (int i = 0; i < section.getLength(); ++i) {
-              candle.setLEDs(section.getRed(i), section.getGreen(i), section.getBlue(i), 0, i, 1);
-            }
-          }
-        })
+          updateLEDs(animation);
+          })
         .withName("Animate" + name);
+  }
+
+  private void updateLEDs(LEDPattern animation) {
+    for (AddressableLEDBufferView section : sections) {
+      animation.applyTo(section);
+      for (int i = 0; i < section.getLength(); ++i) {
+        candle.setLEDs(section.getRed(i), section.getGreen(i), section.getBlue(i), 0, i, 1);
+      }
   }
 
   public LEDPattern greenProgress(DoubleSupplier progress) {
