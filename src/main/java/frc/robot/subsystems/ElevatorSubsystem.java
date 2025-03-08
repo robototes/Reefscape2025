@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 public class ElevatorSubsystem extends SubsystemBase {
   // Maximum is 38.34
   public static final double CORAL_LEVEL_FOUR_PRE_POS = 37.5;
-  public static final double CORAL_LEVEL_FOUR_POS = 36.5;
+  public static final double CORAL_LEVEL_FOUR_POS = 36;
   public static final double CORAL_LEVEL_THREE_PRE_POS = 16.8;
   public static final double CORAL_LEVEL_THREE_POS = 14;
   public static final double CORAL_LEVEL_TWO_PRE_POS = 4.8;

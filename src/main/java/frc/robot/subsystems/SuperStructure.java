@@ -48,7 +48,7 @@ public class SuperStructure {
                     elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_POS),
                     armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L4))
                 .withTimeout(2.0),
-            spinnyClaw.coralHoldExtakePower().withTimeout(0.2),
+            spinnyClaw.coralHoldExtakeL4Power().withTimeout(0.2),
             Commands.print("Pre preIntake()"),
             preIntake(),
             Commands.print("Post preIntake()"))
