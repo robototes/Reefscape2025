@@ -70,13 +70,18 @@ public class ElevatorLight extends SubsystemBase {
   }
 
   public Command animate(LEDPattern animation, String name) {
+    // Always proxy so that compositions using LEDs will not get interrupted by another composition
+    // using LEDs
     return run(() -> {
           updateLEDs(animation);
         })
+        .asProxy()
         .withName("Animate" + name);
   }
 
   public Command showScoringMode(Supplier<ScoringMode> scoringMode) {
+    // Always proxy so that compositions using LEDs will not get interrupted by another composition
+    // using LEDs
     return run(() -> {
           ScoringMode currentMode = scoringMode.get();
           if (currentMode == ScoringMode.ALGAE) {
@@ -85,6 +90,7 @@ public class ElevatorLight extends SubsystemBase {
             updateLEDs(LEDPattern.solid(Color.kWhite));
           }
         })
+        .asProxy()
         .withName("Animate Scoring Mode");
   }
 
