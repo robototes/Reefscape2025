@@ -186,9 +186,9 @@ public class AutoLogic {
   public static Command raiseElevator() {
     if (r.superStructure != null) {
       return Commands.sequence(
-          Commands.print("Pre raise elevator"),
-          r.superStructure.coralLevelFour(() -> true),
-          Commands.print("Pose raise elevator"))
+              Commands.print("Pre raise elevator"),
+              r.superStructure.coralLevelFour(() -> true),
+              Commands.print("Pose raise elevator"))
           .withName("raiseElevator");
     }
     return Commands.none().withName("raiseElevator");
@@ -202,7 +202,8 @@ public class AutoLogic {
     if (r.superStructure != null) {
       return r.superStructure
           .preIntake()
-          .andThen(r.superStructure.coralIntake()).withName("intake");
+          .andThen(r.superStructure.coralIntake())
+          .withName("intake");
     }
     return Commands.none().withName("intake");
   }
