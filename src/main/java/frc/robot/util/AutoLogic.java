@@ -86,7 +86,7 @@ public class AutoLogic {
     // Load the path you want to follow using its name in the GUI
     try {
 
-      return AutoBuilder.buildAuto(autoName);
+      return AutoBuilder.buildAuto(autoName).withName("Auto " + autoName);
 
     } catch (FileVersionException e) {
       // TODO: handle exception
