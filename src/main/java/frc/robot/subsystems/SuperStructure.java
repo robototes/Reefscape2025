@@ -93,7 +93,6 @@ public class SuperStructure {
                 armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L1),
                 spinnyClaw.stop()),
             Commands.waitUntil(score),
-            elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_POS),
             spinnyClaw.coralHoldExtakePower().withTimeout(0.15),
             preIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L1"))
