@@ -37,15 +37,17 @@ public class SuperStructure {
   public Command coralLevelFour(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
-                Commands.print("Pre position"),
-                elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS),
-                armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
-                spinnyClaw.stop()),
-            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_PRE_L4),
+                    Commands.print("Pre position"),
+                    elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
+                    spinnyClaw.stop())
+                .withTimeout(2.0),
+            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_PRE_L4).withTimeout(1.0),
             Commands.waitUntil(score),
             Commands.parallel(
-                elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_POS),
-                armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L4)),
+                    elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_POS),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L4))
+                .withTimeout(2.0),
             spinnyClaw.coralHoldExtakePower().withTimeout(0.2),
             preIntake())
         .alongWith(colorSet(0, 255, 0, "Green - Aligned With L4"))
