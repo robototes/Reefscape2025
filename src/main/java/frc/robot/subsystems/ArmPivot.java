@@ -51,7 +51,7 @@ public class ArmPivot extends SubsystemBase {
   public static final double CORAL_PRESET_DOWN = -0.25;
   public static final double HARDSTOP_HIGH = 0.32;
   public static final double HARDSTOP_LOW = -0.26;
-  public static final double POS_TOLERANCE = 0.01;
+  public static final double POS_TOLERANCE = Units.degreesToRotations(5);
   public static final double PLACEHOLDER_CORAL_WEIGHT_KG = 0.8;
   // Constant for gear ratio (the power that one motor gives to gear)
   private static final double ARM_RATIO = (12.0 / 60.0) * (20.0 / 60.0) * (18.0 / 48.0);
