@@ -375,8 +375,8 @@ public class Controls {
         .povLeft()
         .onTrue(
             s.armPivotSubsystem
-                .moveToPosition(ArmPivot.CORAL_PRESET_L2_L3)
-                .withName("Arm L2-L3 Preset"));
+                .moveToPosition(ArmPivot.CORAL_PRESET_L3)
+                .withName("Arm L3 Preset"));
     armPivotSpinnyClawController
         .povUp()
         .onTrue(
