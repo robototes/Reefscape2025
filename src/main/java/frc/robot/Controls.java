@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -14,11 +15,11 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
-import frc.robot.generated.TestBaseTunerConstants;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.util.AlgaeIntakeHeight;
+import frc.robot.util.AutoAlign;
 import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
 import frc.robot.util.ScoringMode;
@@ -48,16 +49,15 @@ public class Controls {
   private AlgaeIntakeHeight algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
 
   // Swerve stuff
-  private static final double MaxSpeed =
+
+  public static final double MaxSpeed =
       RobotType.getCurrent() == RobotType.BONK
           ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
-          : RobotType.getCurrent() == RobotType.TESTBASE
-              ? TestBaseTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
-              : CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+          : CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   private final double MAX_ACCELERATION = 50;
   private final double MAX_ROTATION_ACCELERATION = 50;
   // kSpeedAt12Volts desired top speed
-  private double MaxAngularRate =
+  public static double MaxAngularRate =
       RotationsPerSecond.of(0.75)
           .in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
@@ -87,6 +87,7 @@ public class Controls {
     configureClimbPivotBindings();
     configureSpinnyClawBindings();
     configureElevatorLEDBindings();
+    configureAlignBindings();
   }
 
   private void configureDrivebaseBindings() {
@@ -228,6 +229,7 @@ public class Controls {
           .armSensor
           .inTrough()
           .and(superStructure.inPreIntakePosition())
+          .and(RobotModeTriggers.teleop())
           .onTrue(
               superStructure
                   .coralIntake()
@@ -485,5 +487,24 @@ public class Controls {
     }
     RobotModeTriggers.autonomous()
         .whileTrue(s.elevatorLEDSubsystem.animate(LEDPattern.rainbow(255, 255), "Auto Rainbow"));
+  }
+
+  private void configureAlignBindings() {
+    if (s.drivebaseSubsystem == null) {
+      return;
+    }
+    driverController.leftBumper().onTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
+  }
+
+  public void vibrateDriveController(double vibration) {
+    if (!DriverStation.isAutonomous()) {
+      driverController.getHID().setRumble(RumbleType.kBothRumble, vibration);
+    }
+  }
+
+  public void vibrateCoDriveController(double vibration) {
+    if (!DriverStation.isAutonomous()) {
+      operatorController.getHID().setRumble(RumbleType.kBothRumble, vibration);
+    }
   }
 }

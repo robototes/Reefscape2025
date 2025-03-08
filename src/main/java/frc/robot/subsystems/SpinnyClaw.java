@@ -44,7 +44,8 @@ public class SpinnyClaw extends SubsystemBase {
   // (+) is to move arm up, and (-) is down
   public Command movingVoltage(Supplier<Voltage> speedControl) {
     return run(() -> motor.setVoltage(speedControl.get().in(Volts)))
-        .finallyDo(() -> motor.setVoltage(0));
+        .finallyDo(() -> motor.setVoltage(0))
+        .withName("Spinny claw moving voltage");
   }
 
   // Log tabs to shuffleboard, temperature, and motor speed
