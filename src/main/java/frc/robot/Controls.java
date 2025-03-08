@@ -432,7 +432,6 @@ public class Controls {
     climbTestController
         .back()
         .onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDsClimbController));
-    climbTestController.start().onTrue(s.climbPivotSubsystem.zeroClimb());
     operatorController
         .start()
         .onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDsOperatorController));
