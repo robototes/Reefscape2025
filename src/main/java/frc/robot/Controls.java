@@ -508,6 +508,6 @@ public class Controls {
   public void vibrateCoDriveController(double vibration) {
     if (!DriverStation.isAutonomous()) {
       operatorController.getHID().setRumble(RumbleType.kBothRumble, vibration);
-    }
+        }
   }
 }

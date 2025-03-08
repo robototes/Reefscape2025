@@ -37,7 +37,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double CORAL_LEVEL_THREE_POS = 14;
   public static final double CORAL_LEVEL_TWO_PRE_POS = 4.8;
   public static final double CORAL_LEVEL_TWO_POS = 4.4;
-  public static final double CORAL_LEVEL_ONE_POS = 8.06;
+  public static final double CORAL_LEVEL_ONE_POS = 11; //changed from 8.06
   public static final double ALGAE_LEVEL_TWO_THREE = 8; // untested
   public static final double ALGAE_LEVEL_TWO_THREE_FLING = 16;
   public static final double ALGAE_LEVEL_THREE_FOUR = 16; // untested
@@ -107,7 +107,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         .addDouble("M1 supply current", () -> m_motor.getSupplyCurrent().getValueAsDouble());
     Shuffleboard.getTab("Elevator")
         .addDouble("M2 supply current", () -> m_motor2.getSupplyCurrent().getValueAsDouble());
-    Shuffleboard.getTab("Elevator").addBoolean("Is zero'd", () -> getHasBeenZeroed());
+    Shuffleboard.getTab("Elevator").addBoolean("Is Zeroed", () -> getHasBeenZeroed());
     Shuffleboard.getTab("Elevator")
         .addDouble("M1 temp", () -> m_motor.getDeviceTemp().getValueAsDouble());
     Shuffleboard.getTab("Elevator")
