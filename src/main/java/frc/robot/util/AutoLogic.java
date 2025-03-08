@@ -188,7 +188,7 @@ public class AutoLogic {
       return Commands.sequence(
               Commands.print("Pre raise elevator"),
               r.superStructure.coralLevelFour(() -> true),
-              Commands.print("Pose raise elevator"))
+              Commands.print("Post raise elevator"))
           .withName("raiseElevator");
     }
     return Commands.none().withName("raiseElevator");
