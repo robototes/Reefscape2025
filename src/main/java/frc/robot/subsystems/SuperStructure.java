@@ -52,7 +52,7 @@ public class SuperStructure {
             Commands.print("Pre preIntake()"),
             preIntake(),
             Commands.print("Post preIntake()"))
-        .alongWith(colorSet(0, 255, 0, "Green - Aligned With L4"))
+        .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L4"))
         .withName("Coral Level 4");
   }
 
