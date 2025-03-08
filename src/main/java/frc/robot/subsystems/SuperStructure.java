@@ -37,17 +37,22 @@ public class SuperStructure {
   public Command coralLevelFour(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
-                elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS),
-                armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
-                spinnyClaw.stop()),
-            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_PRE_L4),
+                    Commands.print("Pre position"),
+                    elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
+                    spinnyClaw.stop())
+                .withTimeout(2.0),
+            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_PRE_L4).withTimeout(1.0),
             Commands.waitUntil(score),
             Commands.parallel(
-                elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_POS),
-                armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L4)),
+                    elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_POS),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L4))
+                .withTimeout(2.0),
             spinnyClaw.coralHoldExtakePower().withTimeout(0.2),
-            preIntake())
-        .alongWith(colorSet(0, 255, 0, "Green - Aligned With L4"))
+            Commands.print("Pre preIntake()"),
+            preIntake(),
+            Commands.print("Post preIntake()"))
+        .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L4"))
         .withName("Coral Level 4");
   }
 
@@ -62,7 +67,7 @@ public class SuperStructure {
             elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_POS),
             spinnyClaw.coralHoldExtakePower().withTimeout(0.15),
             preIntake())
-        .alongWith(colorSet(0, 255, 0, "Green - Aligned With L3"))
+        .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L3"))
         .withName("Coral Level 3");
   }
 
@@ -77,7 +82,7 @@ public class SuperStructure {
             elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_POS),
             spinnyClaw.coralHoldExtakePower().withTimeout(0.15),
             preIntake())
-        .alongWith(colorSet(0, 255, 0, "Green - Aligned With L2"))
+        .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L2"))
         .withName("Coral Level 2");
   }
 
@@ -91,7 +96,7 @@ public class SuperStructure {
             elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_POS),
             spinnyClaw.coralHoldExtakePower().withTimeout(0.15),
             preIntake())
-        .alongWith(colorSet(0, 255, 0, "Green - Aligned With L1"))
+        .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L1"))
         .withName("Coral Level 1");
   }
 
@@ -108,6 +113,7 @@ public class SuperStructure {
             elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
             armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN),
             spinnyClaw.stop())
+        .andThen(Commands.print("end of preIntake()"))
         .withName("PreIntake");
   }
 
@@ -200,7 +206,7 @@ public class SuperStructure {
             elevator.setLevel(ElevatorSubsystem.ALGAE_STOWED),
             armPivot.moveToPosition(ArmPivot.ALGAE_STOWED),
             spinnyClaw.algaeIntakePower())
-        .alongWith(colorSet(255, 255, 255, "White - Stowed"))
+        .deadlineFor(colorSet(255, 255, 255, "White - Stowed"))
         .withName("Algae Stow");
   }
 

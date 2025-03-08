@@ -106,7 +106,8 @@ public class ClimbPivot extends SubsystemBase {
         .finallyDo(
             () -> {
               motorOne.stopMotor();
-            });
+            })
+        .withName("Climb moveClimbMotor(" + speed + ")");
   }
 
   public Command stopMotor() {

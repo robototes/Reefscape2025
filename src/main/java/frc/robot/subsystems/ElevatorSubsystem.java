@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
@@ -15,6 +16,7 @@ import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
@@ -65,6 +67,9 @@ public class ElevatorSubsystem extends SubsystemBase {
   private TalonFX m_motor;
   private TalonFX m_motor2;
 
+  private final TalonFXSimState m_motorOneSimState;
+  private final TalonFXSimState m_motorTwoSimState;
+
   private double curPos;
   private double targetPos;
   private boolean hasBeenZeroed;
@@ -92,6 +97,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     // m_encoder.setDistancePerPulse(Constants.kElevatorEncoderDistPerPulse);
     m_motor = new TalonFX(Hardware.ELEVATOR_MOTOR_ONE, "Drivebase");
     m_motor2 = new TalonFX(Hardware.ELEVATOR_MOTOR_TWO, "Drivebase");
+    m_motorOneSimState = m_motor.getSimState();
+    m_motorTwoSimState = m_motor2.getSimState();
     motorConfigs();
 
     Shuffleboard.getTab("Elevator").addDouble("Motor Current Position", () -> getCurrentPosition());
@@ -340,5 +347,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         notConnectedDebouncerOne.calculate(!m_motor.getMotorVoltage().hasUpdated()));
     NotConnectedError2.set(
         notConnectedDebouncerTwo.calculate(!m_motor2.getMotorVoltage().hasUpdated()));
+    if (RobotBase.isSimulation()) {
+      m_motorOneSimState.setRawRotorPosition(targetPos);
+      m_motorTwoSimState.setRawRotorPosition(targetPos);
+    }
   }
 }
