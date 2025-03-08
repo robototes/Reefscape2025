@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Hardware;
 
 public class ClimbPivot extends SubsystemBase {
@@ -34,11 +35,12 @@ public class ClimbPivot extends SubsystemBase {
 
   private final double CLIMB_IN_PRESET = -0.09;
   private final double CLIMB_OUT_PRESET = -0.40;
-  private final double FORWARD_SOFT_STOP = 1;
+  private final double FORWARD_SOFT_STOP = -0.07;
   private final double REVERSE_SOFT_STOP = -78;
-  private final double CLIMB_IN_SPEED = 0.2;
-  private final double CLIMB_OUT_SPEED = -0.2;
-  private final double BOOLEAN_TOLERANCE = 0.05;
+  private final double CLIMB_IN_SPEED = 0.4;
+  private final double CLIMB_OUT_SPEED = -0.3;
+  private final double BOOLEAN_TOLERANCE = 0.02;
+  private final double CLIMB_HOLD = 0; // 0 because only 1 spring
   // relative to eachother, likely not accurately zero'ed when obtained.x
   private static final double MIN_ROTOR_POSITION = -50.45;
   private static final double MAX_ROTOR_POSITION = 14.456;
@@ -140,7 +142,12 @@ public class ClimbPivot extends SubsystemBase {
   }
 
   public Command holdPosition() {
-    return run(() -> motorOne.set(0)).withName("Climb hold position");
+    return run(
+        () -> {
+          if (isClimbIn) {
+            motorOne.set(CLIMB_HOLD);
+          }
+        });
   }
 
   public boolean checkClimbSensor() {
@@ -157,10 +164,6 @@ public class ClimbPivot extends SubsystemBase {
 
   public void setPosition(double pos) {
     motorOne.setPosition(pos);
-  }
-
-  public Command zeroClimb() {
-    return runOnce(() -> setPosition(0));
   }
 
   public Command moveClimbManual(double amount) {
@@ -192,6 +195,9 @@ public class ClimbPivot extends SubsystemBase {
         .addDouble("Motor Speed", () -> getClimbVelocity())
         .withWidget(BuiltInWidgets.kTextView);
     shuffleboardTab.addDouble("Motor Position", () -> getClimbPosition());
+    var climbDownEntry =
+        shuffleboardTab.add("MOVE DOWN", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    new Trigger(() -> climbDownEntry.getBoolean(false)).whileTrue(moveClimbManual(0.1));
   }
 
   @Override
@@ -208,6 +214,7 @@ public class ClimbPivot extends SubsystemBase {
     } else {
       isClimbIn = false;
     }
+
     NotConnectedErrorOne.set(
         notConnectedDebouncerOne.calculate(!motorOne.getMotorVoltage().hasUpdated()));
     NotConnectedErrorTwo.set(
