@@ -21,7 +21,6 @@ import frc.robot.util.AutoLogic;
 import frc.robot.util.AutonomousField;
 import frc.robot.util.BuildInfo;
 import frc.robot.util.RobotType;
-import java.util.function.Supplier;
 
 public class Robot extends TimedRobot {
   /** Singleton Stuff */
@@ -38,6 +37,7 @@ public class Robot extends TimedRobot {
   public final Sensors sensors;
 
   public final SuperStructure superStructure;
+  private String autoCommandRequirements = "UNKNOWN";
 
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
@@ -92,6 +92,7 @@ public class Robot extends TimedRobot {
     AutoLogic.initShuffleBoard();
     AutonomousField.initShuffleBoard("Field", 0, 0, this::addPeriodic);
     AutoLogic.registerCommand();
+    AutoLogic.tab.addString("Subsystems used", () -> autoCommandRequirements);
   }
 
   @Override
@@ -118,10 +119,8 @@ public class Robot extends TimedRobot {
     Shuffleboard.startRecording();
 
     if (autoCommand != null) {
+      autoCommandRequirements = autoCommand.getRequirements().toString();
       autoCommand.schedule();
-
-      Supplier<String> sys = () -> autoCommand.getRequirements().toString();
-      AutoLogic.tab.addString("Subsystems used", sys);
     } else {
       DriverStation.reportError("Auto command not found!", false);
     }
