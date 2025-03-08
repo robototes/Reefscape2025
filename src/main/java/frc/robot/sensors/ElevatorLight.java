@@ -80,8 +80,8 @@ public class ElevatorLight extends SubsystemBase {
   }
 
   public Command showScoringMode(Supplier<ScoringMode> scoringMode) {
-    // Always proxy so that compositions using LEDs will not get interrupted by another composition
-    // using LEDs
+    // This is only used as the default command, so don't proxy
+    // If we need to use it elsewhere for some reason, add the proxy there
     return run(() -> {
           ScoringMode currentMode = scoringMode.get();
           if (currentMode == ScoringMode.ALGAE) {
@@ -90,7 +90,6 @@ public class ElevatorLight extends SubsystemBase {
             updateLEDs(LEDPattern.solid(Color.kWhite));
           }
         })
-        .asProxy()
         .withName("Animate Scoring Mode");
   }
 
