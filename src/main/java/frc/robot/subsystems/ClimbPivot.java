@@ -145,7 +145,7 @@ public class ClimbPivot extends SubsystemBase {
     return run(
         () -> {
           if (isClimbIn) {
-            motorOne.set(CLIMB_HOlD);
+            motorOne.set(CLIMB_HOLD);
           }
         });
   }
