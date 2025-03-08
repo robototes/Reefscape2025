@@ -31,14 +31,9 @@ import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 /*
- * All 3D poses and transforms use the NWU (North-West-Up) coordinate system, where +X is
+ * All poses and transforms use the NWU (North-West-Up) coordinate system, where +X is
  * north/forward, +Y is west/left, and +Z is up. On the field, this is based on the blue driver
  * station (+X is forward from blue driver station, +Y is left, +Z is up).
- *
- * <p>2D field poses are different. +X is away from the driver and +Y is toward the opposing loading
- * station. Rotations are CCW+ looking down. When on the blue alliance, this means that from the
- * (blue) driver's perspective +X is away and +Y is to the left. When on the red alliance, this
- * means that from the (red) driver's perspective +X is away and +Y is to the right.
  */
 public class VisionSubsystem extends SubsystemBase {
 
