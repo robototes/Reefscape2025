@@ -128,8 +128,8 @@ public class SuperStructure {
     return Commands.sequence(
             Commands.sequence(
                     Commands.parallel(
-                      spinnyClaw.intakePower(),
-                      armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN)),
+                        spinnyClaw.intakePower(),
+                        armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN)),
                     elevator.setLevel(ElevatorSubsystem.CORAL_INTAKE_POS),
                     Commands.idle())
                 .until(armSensor.inClaw()),
