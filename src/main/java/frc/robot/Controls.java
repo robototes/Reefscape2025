@@ -468,6 +468,9 @@ public class Controls {
       return;
     }
 
+    s.elevatorLEDSubsystem.setDefaultCommand(
+        s.elevatorLEDSubsystem.showScoringMode(() -> scoringMode));
+
     if (s.elevatorSubsystem != null) {
       Trigger hasBeenZeroed = new Trigger(s.elevatorSubsystem::getHasBeenZeroed);
       Commands.waitSeconds(1)

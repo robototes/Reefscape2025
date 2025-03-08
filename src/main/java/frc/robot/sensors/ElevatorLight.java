@@ -16,7 +16,9 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
+import frc.robot.util.ScoringMode;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 public class ElevatorLight extends SubsystemBase {
 
@@ -70,8 +72,20 @@ public class ElevatorLight extends SubsystemBase {
   public Command animate(LEDPattern animation, String name) {
     return run(() -> {
           updateLEDs(animation);
-          })
+        })
         .withName("Animate" + name);
+  }
+
+  public Command showScoringMode(Supplier<ScoringMode> scoringMode) {
+    return run(() -> {
+          ScoringMode currentMode = scoringMode.get();
+          if (currentMode == ScoringMode.ALGAE) {
+            updateLEDs(LEDPattern.solid(Color.kTeal));
+          } else {
+            updateLEDs(LEDPattern.solid(Color.kWhite));
+          }
+        })
+        .withName("Animate Scoring Mode");
   }
 
   private void updateLEDs(LEDPattern animation) {
@@ -80,6 +94,7 @@ public class ElevatorLight extends SubsystemBase {
       for (int i = 0; i < section.getLength(); ++i) {
         candle.setLEDs(section.getRed(i), section.getGreen(i), section.getBlue(i), 0, i, 1);
       }
+    }
   }
 
   public LEDPattern greenProgress(DoubleSupplier progress) {
