@@ -72,7 +72,7 @@ public class ElevatorLight extends SubsystemBase {
           for (AddressableLEDBufferView section : sections) {
             animation.applyTo(section);
             for (int i = 0; i < section.getLength(); ++i) {
-              candle.setLEDs(section.getRed(i), section.getBlue(i), section.getGreen(i), 0, i, 1);
+              candle.setLEDs(section.getRed(i), section.getGreen(i), section.getBlue(i), 0, i, 1);
             }
           }
         })
