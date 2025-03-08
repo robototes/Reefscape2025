@@ -127,7 +127,9 @@ public class SuperStructure {
   public Command coralIntake() {
     return Commands.sequence(
             Commands.sequence(
-                    spinnyClaw.intakePower(),
+                    Commands.parallel(
+                      spinnyClaw.intakePower(),
+                      armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN)),
                     elevator.setLevel(ElevatorSubsystem.CORAL_INTAKE_POS),
                     Commands.idle())
                 .until(armSensor.inClaw()),
