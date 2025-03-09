@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Hardware;
+import java.util.function.DoubleSupplier;
 
 public class ClimbPivot extends SubsystemBase {
 
@@ -40,9 +41,9 @@ public class ClimbPivot extends SubsystemBase {
   private final double REVERSE_SOFT_STOP = -78;
   private final double CLIMB_OUT_SPEED = -0.3;
   private final double BOOLEAN_TOLERANCE = 0.02;
-  private final double CLIMB_HOLD_STOWED = 0.05;
-  private final double CLIMB_HOLD_CLIMBOUT = 0.0;
-  private final double CLIMB_HOLD_CLIMBED = 0.02;
+  private final double CLIMB_HOLD_STOWED = -0.05;
+  private final double CLIMB_HOLD_CLIMBOUT = -0.0;
+  private final double CLIMB_HOLD_CLIMBED = -0.02;
 
   // relative to eachother, likely not accurately zero'ed when obtained.x
   private static final double MIN_ROTOR_POSITION = -50.45;
@@ -56,6 +57,9 @@ public class ClimbPivot extends SubsystemBase {
   private TargetPositions selectedPos = TargetPositions.STOWED;
   private double targetPos = STOWED_PRESET;
   private double holdSpeed = CLIMB_HOLD_STOWED;
+
+  private double setSpeed = 0;
+
   // alerts
   private final Alert NotConnectedErrorOne =
       new Alert("Climb", "Motor 1 not connected", AlertType.kError);
@@ -160,8 +164,8 @@ public class ClimbPivot extends SubsystemBase {
     motorOne.setPosition(pos);
   }
 
-  public Command moveClimbManual(double amount) {
-    return runEnd(() -> moveClimbMotor(amount), () -> stopMotor());
+  public Command moveClimbManual(DoubleSupplier amount) {
+    return runEnd(() -> motorOne.set(amount.getAsDouble()), () -> stopMotor());
   }
 
   public void setupLogging() {
@@ -209,6 +213,7 @@ public class ClimbPivot extends SubsystemBase {
               }
             })
         .withWidget(BuiltInWidgets.kTextView);
+    shuffleboardTab.addDouble("Set speed", () -> setSpeed);
     shuffleboardTab
         .addBoolean("Cage Detected", () -> checkClimbSensor())
         .withWidget(BuiltInWidgets.kBooleanBox);
@@ -218,17 +223,17 @@ public class ClimbPivot extends SubsystemBase {
     shuffleboardTab.addDouble("Motor Position", () -> getClimbPosition());
     var climbDownEntry =
         shuffleboardTab.add("MOVE DOWN", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    new Trigger(() -> climbDownEntry.getBoolean(false)).whileTrue(moveClimbManual(0.1));
+    new Trigger(() -> climbDownEntry.getBoolean(false)).whileTrue(moveClimbManual(() -> 0.1));
   }
 
   @Override
   public void periodic() {
     double currentPos = getClimbPosition();
-    if (MathUtil.isNear(targetPos, currentPos, BOOLEAN_TOLERANCE)) {
-      motorOne.set(holdSpeed);
-    } else {
-      motorOne.set(CLIMB_OUT_SPEED);
-    }
+    // if (MathUtil.isNear(targetPos, currentPos, BOOLEAN_TOLERANCE)) {
+    //   motorOne.set(holdSpeed);
+    // } else {
+    //   motorOne.set(CLIMB_OUT_SPEED);
+    // }
 
     if (MathUtil.isNear(currentPos, CLIMB_OUT_PRESET, BOOLEAN_TOLERANCE)) {
       isClimbOut = true;

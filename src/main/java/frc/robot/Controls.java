@@ -434,7 +434,7 @@ public class Controls {
         .leftStick()
         .whileTrue(
             s.climbPivotSubsystem
-                .moveClimbManual(-climbTestController.getLeftY())
+                .moveClimbManual(() -> -climbTestController.getLeftY())
                 .withName("Climb Manual Control"));
   }
 
