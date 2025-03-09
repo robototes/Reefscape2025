@@ -106,6 +106,11 @@ public class VisionSubsystem extends SubsystemBase {
           .getStructTopic("vision/fieldPose3d", Pose3d.struct)
           .publish();
 
+  private final StructPublisher<Pose3d> RawfieldPose3dEntry =
+      NetworkTableInstance.getDefault()
+          .getStructTopic("vision/rawfieldPose3d", Pose3d.struct)
+          .publish();
+
   private static final AprilTagFieldLayout fieldLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
@@ -174,6 +179,7 @@ public class VisionSubsystem extends SubsystemBase {
     if (estimatedPose.isPresent()) {
       var TimestampSeconds = estimatedPose.get().timestampSeconds;
       var FieldPose3d = estimatedPose.get().estimatedPose;
+      RawfieldPose3dEntry.set(FieldPose3d);
       if (!MathUtil.isNear(0, FieldPose3d.getZ(), 0.02)
           || !MathUtil.isNear(0, FieldPose3d.getRotation().getX(), Units.degreesToRadians(3))
           || MathUtil.isNear(0, FieldPose3d.getRotation().getY(), Units.degreesToRadians(3))) {
