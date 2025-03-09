@@ -115,8 +115,10 @@ public class AutoAlign {
                 MaxAngularAcceleraition),
             null,
             new GoalEndState(0.0, branchPose.getRotation()));
-    // path.flipPath(); Returns path except it's flipped
-    // this unflips it
+    // Theoretically:
+    //   The supplier we give to AutoBuilder tells it to flip paths when we are red. (This way, the
+    //   same path works for auto on either alliance.) However, in this case, we don't want to flip
+    //   the path when we are red, so we flip it now to cancel it out.
     if (isRed) {
       path = path.flipPath();
     }
