@@ -424,9 +424,12 @@ public class Controls {
       setClimbLEDs = Commands.none();
     }
 
-    s.climbPivotSubsystem.setDefaultCommand(s.climbPivotSubsystem.holdPosition());
-    climbTestController.back().onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDs.asProxy()));
-    operatorController.start().onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDs.asProxy()));
+    climbTestController
+        .start()
+        .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
+    operatorController
+        .start()
+        .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
     climbTestController
         .leftStick()
         .whileTrue(
