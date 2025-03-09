@@ -486,7 +486,7 @@ public class Controls {
     if (s.drivebaseSubsystem == null) {
       return;
     }
-    driverController.leftBumper().onTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
+    driverController.leftBumper().whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
   }
 
   public void vibrateDriveController(double vibration) {
