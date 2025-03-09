@@ -213,8 +213,9 @@ public class Controls {
                           case CORAL -> superStructure
                               .coralIntake()
                               .alongWith(
-                                  s.elevatorLEDSubsystem.tripleBlink(
-                                      255, 92, 0, "Orange - Manual Coral Intake"))
+                                  s.elevatorLEDSubsystem
+                                      .tripleBlink(255, 92, 0, "Orange - Manual Coral Intake")
+                                      .asProxy())
                               .withName("Manual Coral Intake");
                           case ALGAE -> switch (algaeIntakeHeight) {
                             case ALGAE_LEVEL_THREE_FOUR -> superStructure.algaeLevelThreeFourFling(
@@ -234,7 +235,9 @@ public class Controls {
               superStructure
                   .coralIntake()
                   .alongWith(
-                      s.elevatorLEDSubsystem.tripleBlink(255, 255, 0, "Yellow - Automatic Intake"))
+                      s.elevatorLEDSubsystem
+                          .tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
+                          .asProxy())
                   .withName("Automatic Intake"));
     }
 
@@ -374,9 +377,7 @@ public class Controls {
     armPivotSpinnyClawController
         .povLeft()
         .onTrue(
-            s.armPivotSubsystem
-                .moveToPosition(ArmPivot.CORAL_PRESET_L3)
-                .withName("Arm L3 Preset"));
+            s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_L3).withName("Arm L3 Preset"));
     armPivotSpinnyClawController
         .povUp()
         .onTrue(
@@ -415,26 +416,16 @@ public class Controls {
       return;
     }
 
-    // Two commands to avoid double composition
-    Command setClimbLEDsClimbController;
-    Command setClimbLEDsOperatorController;
+    Command setClimbLEDs;
     if (s.elevatorLEDSubsystem != null) {
-      setClimbLEDsClimbController =
-          s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
-      setClimbLEDsOperatorController =
-          s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
+      setClimbLEDs = s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
     } else {
-      setClimbLEDsClimbController = Commands.none();
-      setClimbLEDsOperatorController = Commands.none();
+      setClimbLEDs = Commands.none();
     }
 
     s.climbPivotSubsystem.setDefaultCommand(s.climbPivotSubsystem.holdPosition());
-    climbTestController
-        .back()
-        .onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDsClimbController));
-    operatorController
-        .start()
-        .onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDsOperatorController));
+    climbTestController.back().onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDs.asProxy()));
+    operatorController.start().onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDs.asProxy()));
     climbTestController
         .leftStick()
         .whileTrue(

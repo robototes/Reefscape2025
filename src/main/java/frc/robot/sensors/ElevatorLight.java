@@ -70,18 +70,13 @@ public class ElevatorLight extends SubsystemBase {
   }
 
   public Command animate(LEDPattern animation, String name) {
-    // Always proxy so that compositions using LEDs will not get interrupted by another composition
-    // using LEDs
     return run(() -> {
           updateLEDs(animation);
         })
-        .asProxy()
         .withName("Animate" + name);
   }
 
   public Command showScoringMode(Supplier<ScoringMode> scoringMode) {
-    // This is only used as the default command, so don't proxy
-    // If we need to use it elsewhere for some reason, add the proxy there
     return run(() -> {
           ScoringMode currentMode = scoringMode.get();
           if (currentMode == ScoringMode.ALGAE) {
