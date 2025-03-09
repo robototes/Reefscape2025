@@ -37,7 +37,8 @@ public class ArmPivot extends SubsystemBase {
   private final double ARMPIVOT_KG = 0.18;
   private final double ARMPIVOT_KA = 0.0;
   public static final double CORAL_PRESET_L1 = -1.0 / 16;
-  public static final double CORAL_PRESET_L2_L3 = Units.degreesToRotations(55);
+  public static final double CORAL_PRESET_L2 = Units.degreesToRotations(55);
+  public static final double CORAL_PRESET_L3 = Units.degreesToRotations(50);
   public static final double CORAL_PRESET_L4 = 0.0;
   public static final double CORAL_PRESET_PRE_L4 = 1.0 / 16.0;
   public static final double ALGAE_REMOVE_PREPOS = 0; // untested

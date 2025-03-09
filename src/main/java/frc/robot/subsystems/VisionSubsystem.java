@@ -45,9 +45,9 @@ public class VisionSubsystem extends SubsystemBase {
   private static final double CAMERA_Z_POS_METERS_BACK = 0.737;
   private static final double CAMERA_ROLL_FRONT = Units.degreesToRadians(180);
   private static final double CAMERA_ROLL_BACK = 0;
-  private static final double CAMERA_PITCH_FRONT = Units.degreesToRadians(-20);
+  private static final double CAMERA_PITCH_FRONT = Units.degreesToRadians(-10);
   private static final double CAMERA_PITCH_BACK = Units.degreesToRadians(-20);
-  private static final double CAMERA_YAW_FRONT = Units.degreesToRadians(-20);
+  private static final double CAMERA_YAW_FRONT = Units.degreesToRadians(-28.1);
   private static final double CAMERA_YAW_BACK = Units.degreesToRadians(180);
 
   // for testing only
@@ -129,10 +129,11 @@ public class VisionSubsystem extends SubsystemBase {
         EnumSet.of(NetworkTableEvent.Kind.kValueAll),
         event -> update());
 
-    networkTables.addListener(
-        networkTables.getTable("photonvision").getSubTable(Hardware.BACK_CAM).getEntry("rawBytes"),
-        EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-        event -> update());
+    // networkTables.addListener(
+    //
+    // networkTables.getTable("photonvision").getSubTable(Hardware.BACK_CAM).getEntry("rawBytes"),
+    //     EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+    //     event -> update());
 
     ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("AprilTags");
 
@@ -159,9 +160,9 @@ public class VisionSubsystem extends SubsystemBase {
     for (PhotonPipelineResult result : frontCamera.getAllUnreadResults()) {
       process(result, photonPoseEstimatorFrontCamera);
     }
-    for (PhotonPipelineResult result : backCamera.getAllUnreadResults()) {
-      process(result, photonPoseEstimatorBackCamera);
-    }
+    // for (PhotonPipelineResult result : backCamera.getAllUnreadResults()) {
+    //   process(result, photonPoseEstimatorBackCamera);
+    // }
   }
 
   private void process(PhotonPipelineResult result, PhotonPoseEstimator estimator) {
