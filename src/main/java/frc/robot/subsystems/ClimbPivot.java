@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Hardware;
 import java.util.function.DoubleSupplier;
 
@@ -105,16 +104,16 @@ public class ClimbPivot extends SubsystemBase {
     // on opposite side
   }
 
-  public Command moveClimbMotor(double speed) {
-    return run(() -> {
-          motorOne.set(speed);
-        })
-        .finallyDo(
-            () -> {
-              motorOne.stopMotor();
-            })
-        .withName("Climb moveClimbMotor(" + speed + ")");
-  }
+  // public Command moveClimbMotor(double speed) {
+  //   return run(() -> {
+  //         motorOne.set(speed);
+  //       })
+  //       .finallyDo(
+  //           () -> {
+  //             motorOne.stopMotor();
+  //           })
+  //       .withName("Climb moveClimbMotor(" + speed + ")");
+  // }
 
   public Command stopMotor() {
     return runOnce(() -> motorOne.stopMotor());
@@ -221,9 +220,10 @@ public class ClimbPivot extends SubsystemBase {
         .addDouble("Motor Speed", () -> getClimbVelocity())
         .withWidget(BuiltInWidgets.kTextView);
     shuffleboardTab.addDouble("Motor Position", () -> getClimbPosition());
-    var climbDownEntry =
-        shuffleboardTab.add("MOVE DOWN", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    new Trigger(() -> climbDownEntry.getBoolean(false)).whileTrue(moveClimbManual(() -> 0.1));
+    // var climbDownEntry =
+    //     shuffleboardTab.add("MOVE DOWN",
+    // false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    // new Trigger(() -> climbDownEntry.getBoolean(false)).whileTrue(moveClimbManual(() -> 0.1));
   }
 
   @Override
