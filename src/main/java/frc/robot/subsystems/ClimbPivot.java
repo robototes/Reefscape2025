@@ -35,7 +35,7 @@ public class ClimbPivot extends SubsystemBase {
 
   private final double STOWED_PRESET = -0.09;
   private final double CLIMB_OUT_PRESET = -0.40;
-  private final double CLIMBED_PRESET = -0.2;
+  private final double CLIMBED_PRESET = -0.18;
   private final double FORWARD_SOFT_STOP = -0.07;
   private final double REVERSE_SOFT_STOP = -78;
   private final double CLIMB_OUT_SPEED = -0.3;

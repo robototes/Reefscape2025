@@ -42,7 +42,7 @@ public class ElevatorLight extends SubsystemBase {
     candle = new CANdle(Hardware.ELEVATOR_LED);
     configureCandle();
     candle.clearAnimation(0);
-    candle.setLEDs(255, 255, 255);
+    candle.setLEDs(128, 128, 128);
     // candle.animate(larsonAnim);
     // candle.animate(rainbowAnim);
     // candle.animate(fireAnim);
