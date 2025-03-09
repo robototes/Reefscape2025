@@ -129,10 +129,11 @@ public class VisionSubsystem extends SubsystemBase {
         EnumSet.of(NetworkTableEvent.Kind.kValueAll),
         event -> update());
 
-    networkTables.addListener(
-        networkTables.getTable("photonvision").getSubTable(Hardware.BACK_CAM).getEntry("rawBytes"),
-        EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-        event -> update());
+    // networkTables.addListener(
+    //
+    // networkTables.getTable("photonvision").getSubTable(Hardware.BACK_CAM).getEntry("rawBytes"),
+    //     EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+    //     event -> update());
 
     ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("AprilTags");
 
@@ -159,9 +160,9 @@ public class VisionSubsystem extends SubsystemBase {
     for (PhotonPipelineResult result : frontCamera.getAllUnreadResults()) {
       process(result, photonPoseEstimatorFrontCamera);
     }
-    for (PhotonPipelineResult result : backCamera.getAllUnreadResults()) {
-      process(result, photonPoseEstimatorBackCamera);
-    }
+    // for (PhotonPipelineResult result : backCamera.getAllUnreadResults()) {
+    //   process(result, photonPoseEstimatorBackCamera);
+    // }
   }
 
   private void process(PhotonPipelineResult result, PhotonPoseEstimator estimator) {
@@ -173,11 +174,11 @@ public class VisionSubsystem extends SubsystemBase {
     if (estimatedPose.isPresent()) {
       var TimestampSeconds = estimatedPose.get().timestampSeconds;
       var FieldPose3d = estimatedPose.get().estimatedPose;
-      /*if (!MathUtil.isNear(0, FieldPose3d.getZ(), 0.02)
+      if (!MathUtil.isNear(0, FieldPose3d.getZ(), 0.02)
           || !MathUtil.isNear(0, FieldPose3d.getRotation().getX(), Units.degreesToRadians(3))
           || MathUtil.isNear(0, FieldPose3d.getRotation().getY(), Units.degreesToRadians(3))) {
         return;
-      }*/
+      }
       var FieldPose = FieldPose3d.toPose2d();
       var Distance =
           PhotonUtils.getDistanceToPose(
