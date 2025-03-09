@@ -173,11 +173,11 @@ public class VisionSubsystem extends SubsystemBase {
     if (estimatedPose.isPresent()) {
       var TimestampSeconds = estimatedPose.get().timestampSeconds;
       var FieldPose3d = estimatedPose.get().estimatedPose;
-      if (!MathUtil.isNear(0, FieldPose3d.getZ(), 0.02)
+      /*if (!MathUtil.isNear(0, FieldPose3d.getZ(), 0.02)
           || !MathUtil.isNear(0, FieldPose3d.getRotation().getX(), Units.degreesToRadians(3))
           || MathUtil.isNear(0, FieldPose3d.getRotation().getY(), Units.degreesToRadians(3))) {
         return;
-      }
+      }*/
       var FieldPose = FieldPose3d.toPose2d();
       var Distance =
           PhotonUtils.getDistanceToPose(
