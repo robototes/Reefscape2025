@@ -190,7 +190,8 @@ public class Controls {
     operatorController
         .leftTrigger()
         .onTrue(
-            Commands.runOnce(() -> scoringMode = ScoringMode.CORAL).withName("Coral Scoring Mode"));
+            Commands.runOnce(() -> scoringMode = ScoringMode.CORAL).withName("Coral Scoring Mode"))
+        .onTrue(superStructure.preIntake());
     operatorController
         .povLeft()
         .onTrue(
