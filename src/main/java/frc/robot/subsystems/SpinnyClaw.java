@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 public class SpinnyClaw extends SubsystemBase {
   public static final double CORAL_INTAKE_SPEED = -4;
   public static final double CORAL_EXTAKE_SPEED = 2;
+  public static final double CORAL_L4_EXTAKE_SPEED = 1;
   public static final double ALGAE_INTAKE_SPEED = -2; // untested
   public static final double ALGAE_EXTAKE_SPEED = 2; // untested
   public static final double ALGAE_FLING_SPEED = 4;
@@ -93,6 +94,10 @@ public class SpinnyClaw extends SubsystemBase {
 
   public Command coralHoldExtakePower() {
     return holdPower(CORAL_EXTAKE_SPEED).withName("Hold extake power");
+  }
+
+  public Command coralHoldExtakeL4Power() {
+    return holdPower(CORAL_L4_EXTAKE_SPEED).withName("Hold extake power L4");
   }
 
   // algae stuff

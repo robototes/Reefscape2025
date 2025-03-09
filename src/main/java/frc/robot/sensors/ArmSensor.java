@@ -54,7 +54,7 @@ public class ArmSensor {
               double distance = getSensorDistance().in(Meters);
               return distance > TROUGH_LOWER_LIMIT && distance < TROUGH_UPPER_LIMIT;
             })
-        .debounce(0.1);
+        .debounce(0.5);
   }
 
   public Trigger inClaw() {
