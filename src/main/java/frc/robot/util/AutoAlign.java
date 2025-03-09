@@ -8,8 +8,6 @@ import com.pathplanner.lib.path.Waypoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Controls;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
@@ -100,14 +98,9 @@ public class AutoAlign {
   private static Command autoPathAlign(CommandSwerveDrivetrain drivebaseSubsystem) {
 
     Pose2d robotPose = drivebaseSubsystem.getState().Pose;
-    boolean isBlue;
-    if (!DriverStation.getAlliance().isEmpty()) {
-      isBlue = DriverStation.getAlliance().get().equals(Alliance.Blue);
-    } else {
-      isBlue = false;
-    }
+    boolean isRed = AutoLogic.isRed();
     // figures out which branch to go to
-    List<Pose2d> branchesPoses = isBlue ? blueBranchesPoses : redBranchesPoses;
+    List<Pose2d> branchesPoses = isRed ? redBranchesPoses : blueBranchesPoses;
     Pose2d branchPose = robotPose.nearest(branchesPoses);
     // sets the point for the path to go to
     List<Waypoint> waypointsPoeses = PathPlannerPath.waypointsFromPoses(robotPose, branchPose);
@@ -124,7 +117,7 @@ public class AutoAlign {
             new GoalEndState(0.0, branchPose.getRotation()));
     // path.flipPath(); Returns path except it's flipped
     // this unflips it
-    if (!isBlue) {
+    if (isRed) {
       path = path.flipPath();
     }
 
