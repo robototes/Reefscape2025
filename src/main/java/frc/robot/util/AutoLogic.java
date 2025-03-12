@@ -38,6 +38,14 @@ public class AutoLogic {
 
   public static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
 
+  public static boolean isRed() {
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      return alliance.get() == DriverStation.Alliance.Red;
+    }
+    return false;
+  }
+
   public static void configureAuto(CommandSwerveDrivetrain drivebase) {
 
     try {
@@ -64,12 +72,7 @@ public class AutoLogic {
             // Boolean supplier that controls when the path will be mirrored for the red alliance
             // This will flip the path being followed to the red side of the field.
             // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-            var alliance = DriverStation.getAlliance();
-            if (alliance.isPresent()) {
-              return alliance.get() == DriverStation.Alliance.Red;
-            }
-            return false;
+            return isRed();
           },
           s.drivebaseSubsystem // Reference to this subsystem to set requirements
           );

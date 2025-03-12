@@ -190,7 +190,8 @@ public class Controls {
     operatorController
         .leftTrigger()
         .onTrue(
-            Commands.runOnce(() -> scoringMode = ScoringMode.CORAL).withName("Coral Scoring Mode"));
+            Commands.runOnce(() -> scoringMode = ScoringMode.CORAL).withName("Coral Scoring Mode"))
+        .onTrue(superStructure.preIntake());
     operatorController
         .povLeft()
         .onTrue(
@@ -213,8 +214,9 @@ public class Controls {
                           case CORAL -> superStructure
                               .coralIntake()
                               .alongWith(
-                                  s.elevatorLEDSubsystem.tripleBlink(
-                                      255, 92, 0, "Orange - Manual Coral Intake"))
+                                  s.elevatorLEDSubsystem
+                                      .tripleBlink(255, 92, 0, "Orange - Manual Coral Intake")
+                                      .asProxy())
                               .withName("Manual Coral Intake");
                           case ALGAE -> switch (algaeIntakeHeight) {
                             case ALGAE_LEVEL_THREE_FOUR -> superStructure.algaeLevelThreeFourFling(
@@ -234,7 +236,9 @@ public class Controls {
               superStructure
                   .coralIntake()
                   .alongWith(
-                      s.elevatorLEDSubsystem.tripleBlink(255, 255, 0, "Yellow - Automatic Intake"))
+                      s.elevatorLEDSubsystem
+                          .tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
+                          .asProxy())
                   .withName("Automatic Intake"));
     }
 
@@ -374,9 +378,7 @@ public class Controls {
     armPivotSpinnyClawController
         .povLeft()
         .onTrue(
-            s.armPivotSubsystem
-                .moveToPosition(ArmPivot.CORAL_PRESET_L2_L3)
-                .withName("Arm L2-L3 Preset"));
+            s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_L3).withName("Arm L3 Preset"));
     armPivotSpinnyClawController
         .povUp()
         .onTrue(
@@ -415,32 +417,25 @@ public class Controls {
       return;
     }
 
-    // Two commands to avoid double composition
-    Command setClimbLEDsClimbController;
-    Command setClimbLEDsOperatorController;
+    Command setClimbLEDs;
     if (s.elevatorLEDSubsystem != null) {
-      setClimbLEDsClimbController =
-          s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
-      setClimbLEDsOperatorController =
-          s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
+      setClimbLEDs = s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
     } else {
-      setClimbLEDsClimbController = Commands.none();
-      setClimbLEDsOperatorController = Commands.none();
+      setClimbLEDs = Commands.none();
     }
 
-    s.climbPivotSubsystem.setDefaultCommand(s.climbPivotSubsystem.holdPosition());
     climbTestController
-        .back()
-        .onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDsClimbController));
-    climbTestController.start().onTrue(s.climbPivotSubsystem.zeroClimb());
-    operatorController
         .start()
-        .onTrue(s.climbPivotSubsystem.toggleClimb(setClimbLEDsOperatorController));
-    climbTestController
-        .leftStick()
+        .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
+    // operatorController
+    //     .start()
+    //     .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
+    operatorController
+        .rightTrigger(0.1)
         .whileTrue(
             s.climbPivotSubsystem
-                .moveClimbManual(-climbTestController.getLeftY())
+                .moveClimbManual(
+                    () -> -MathUtil.applyDeadband(operatorController.getRightTriggerAxis(), 0.1))
                 .withName("Climb Manual Control"));
   }
 
@@ -468,6 +463,9 @@ public class Controls {
       return;
     }
 
+    s.elevatorLEDSubsystem.setDefaultCommand(
+        s.elevatorLEDSubsystem.showScoringMode(() -> scoringMode));
+
     if (s.elevatorSubsystem != null) {
       Trigger hasBeenZeroed = new Trigger(s.elevatorSubsystem::getHasBeenZeroed);
       Commands.waitSeconds(1)
@@ -493,7 +491,7 @@ public class Controls {
     if (s.drivebaseSubsystem == null) {
       return;
     }
-    driverController.leftBumper().onTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
+    driverController.leftBumper().whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
   }
 
   public void vibrateDriveController(double vibration) {
