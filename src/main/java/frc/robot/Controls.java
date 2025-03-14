@@ -430,12 +430,23 @@ public class Controls {
     // operatorController
     //     .start()
     //     .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
-    operatorController
+    climbTestController
         .rightTrigger(0.1)
         .whileTrue(
             s.climbPivotSubsystem
                 .moveClimbManual(
-                    () -> -MathUtil.applyDeadband(operatorController.getRightTriggerAxis(), 0.1))
+                    () ->
+                        0.2
+                            * -MathUtil.applyDeadband(
+                                climbTestController.getRightTriggerAxis(), 0.1))
+                .withName("Climb Manual Control"));
+    climbTestController
+        .leftTrigger(0.1)
+        .whileTrue(
+            s.climbPivotSubsystem
+                .moveClimbManual(
+                    () ->
+                        0.2 * MathUtil.applyDeadband(climbTestController.getLeftTriggerAxis(), 0.1))
                 .withName("Climb Manual Control"));
   }
 

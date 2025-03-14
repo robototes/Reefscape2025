@@ -35,14 +35,14 @@ public class ClimbPivot extends SubsystemBase {
 
   private final double STOWED_PRESET = -0.09;
   private final double CLIMB_OUT_PRESET = -0.40;
-  private final double CLIMBED_PRESET = -0.18;
+  private final double CLIMBED_PRESET = -0.208;
   private final double FORWARD_SOFT_STOP = -0.07;
   private final double REVERSE_SOFT_STOP = -78;
   private final double CLIMB_OUT_SPEED = -0.3;
   private final double BOOLEAN_TOLERANCE = 0.02;
   private final double CLIMB_HOLD_STOWED = -0.05;
   private final double CLIMB_HOLD_CLIMBOUT = -0.0;
-  private final double CLIMB_HOLD_CLIMBED = -0.02;
+  private final double CLIMB_HOLD_CLIMBED = -0.0705;
 
   // relative to eachother, likely not accurately zero'ed when obtained.x
   private static final double MIN_ROTOR_POSITION = -50.45;
@@ -164,7 +164,13 @@ public class ClimbPivot extends SubsystemBase {
   }
 
   public Command moveClimbManual(DoubleSupplier amount) {
-    return runEnd(() -> motorOne.set(amount.getAsDouble()), () -> stopMotor());
+    return runEnd(
+        () -> {
+          double printAmt = amount.getAsDouble();
+          motorOne.set(printAmt);
+          System.out.println(printAmt);
+        },
+        () -> motorOne.stopMotor());
   }
 
   public void setupLogging() {
