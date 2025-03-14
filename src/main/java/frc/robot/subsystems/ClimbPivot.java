@@ -34,6 +34,7 @@ public class ClimbPivot extends SubsystemBase {
   private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Climb");
 
   private final double STOWED_PRESET = -0.09;
+  private final double STOWED_PRESET = -0.09;
   private final double CLIMB_OUT_PRESET = -0.40;
   private final double CLIMBED_PRESET = -0.208;
   private final double FORWARD_SOFT_STOP = -0.07;
@@ -51,6 +52,13 @@ public class ClimbPivot extends SubsystemBase {
   private static final double MAX_ENCODER_POSITION = 0.915;
 
   private boolean isClimbOut = false;
+  private boolean isStowed = true;
+
+  private TargetPositions selectedPos = TargetPositions.STOWED;
+  private double targetPos = STOWED_PRESET;
+  private double holdSpeed = CLIMB_HOLD_STOWED;
+
+  private double setSpeed = 0;
   private boolean isStowed = true;
 
   private TargetPositions selectedPos = TargetPositions.STOWED;
