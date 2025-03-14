@@ -219,7 +219,7 @@ public class Controls {
                 .withName("Driver Intake"));
     if (sensors.armSensor != null) {
       sensors
-      
+
           .armSensor
           .inTrough()
           .and(superStructure.inPreIntakePosition()).and((RobotModeTriggers.teleop()))
