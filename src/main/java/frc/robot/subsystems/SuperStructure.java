@@ -34,7 +34,8 @@ public class SuperStructure {
     return elevatorLight.colorSet(r, g, b, name);
   }
 
-  public Command coralLevelFour(BooleanSupplier score) {
+  public Command coralLevelFour(
+      BooleanSupplier score) { // when we change L4, add repeating score sequence
     return Commands.sequence(
             Commands.parallel(
                     Commands.print("Pre position"),
@@ -62,9 +63,11 @@ public class SuperStructure {
                 elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS),
                 armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
                 spinnyClaw.stop()),
-            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L3),
-            Commands.waitUntil(score),
-            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN),
+            Commands.repeatingSequence(
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L3),
+                    Commands.waitUntil(score),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN))
+                .onlyWhile(armSensor.inClaw()),
             preIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L3").asProxy())
         .withName("Coral Level 3");
@@ -76,9 +79,11 @@ public class SuperStructure {
                 elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS),
                 armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
                 spinnyClaw.stop()),
-            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L2),
-            Commands.waitUntil(score),
-            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN),
+            Commands.repeatingSequence(
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L2),
+                    Commands.waitUntil(score),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN))
+                .onlyWhile(armSensor.inClaw()),
             preIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L2").asProxy())
         .withName("Coral Level 2");
