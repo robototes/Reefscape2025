@@ -1,5 +1,6 @@
 package frc.robot.util;
 
+import static frc.robot.Sensors.SensorConstants.ARMSENSOR_ENABLED;
 import static frc.robot.Subsystems.SubsystemConstants.*;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -23,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
+import frc.robot.sensors.ArmSensor;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import java.io.IOException;
 import java.util.List;
@@ -203,16 +205,18 @@ public class AutoLogic {
   public static Command autoAlignmentCommand() {
     return AutoAlign.autoAlign(s.drivebaseSubsystem).withName("autoAlign");
   }
-
   public static Command intakeCommand() {
-    if (r.superStructure != null) {
-      return r.superStructure
-          .preIntake()
-          .andThen(r.superStructure.coralIntake())
-          .withName("intake");
-    }
-    return Commands.none().withName("intake");
+    if (ARMSENSOR_ENABLED) {
+      return Commands.waitUntil(r.sensors.armSensor.inClaw()).andThen(r.superStructure
+      .preIntake()
+      .andThen(r.superStructure.coralIntake()))
+      .withName("intake");
+}
+    
+return r.superStructure.preIntake().andThen(r.superStructure.coralIntake()).withName("intake");
   }
+
+ 
 
   public static void registerCommand() {
 
