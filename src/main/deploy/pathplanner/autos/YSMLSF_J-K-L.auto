@@ -48,7 +48,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftSideCloseToK"
+                  "pathName": "LeftSideFarToK"
                 }
               },
               {
@@ -85,7 +85,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Leftsidefar to K"
+                  "pathName": "Leftsidefar to L"
                 }
               },
               {
