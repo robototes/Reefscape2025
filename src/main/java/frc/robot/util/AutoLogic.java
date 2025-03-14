@@ -40,6 +40,14 @@ public class AutoLogic {
 
   public static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
 
+  public static boolean isRed() {
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      return alliance.get() == DriverStation.Alliance.Red;
+    }
+    return false;
+  }
+
   public static void configureAuto(CommandSwerveDrivetrain drivebase) {
 
     try {
@@ -66,12 +74,7 @@ public class AutoLogic {
             // Boolean supplier that controls when the path will be mirrored for the red alliance
             // This will flip the path being followed to the red side of the field.
             // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-            var alliance = DriverStation.getAlliance();
-            if (alliance.isPresent()) {
-              return alliance.get() == DriverStation.Alliance.Red;
-            }
-            return false;
+            return isRed();
           },
           s.drivebaseSubsystem // Reference to this subsystem to set requirements
           );
@@ -88,7 +91,7 @@ public class AutoLogic {
     // Load the path you want to follow using its name in the GUI
     try {
 
-      return AutoBuilder.buildAuto(autoName);
+      return AutoBuilder.buildAuto(autoName).withName("Auto " + autoName);
 
     } catch (FileVersionException e) {
       // TODO: handle exception
@@ -176,12 +179,12 @@ public class AutoLogic {
     autoPicker.addOption("High PreLoad", "ONE PIECE HIGH");
 
     /* CHOREO AUTOS(IGNORE)
-    autoPicker.addOption("CHOREO CRAZY TEST?(IGNORE)", "4 L4 Coral");
-    autoPicker.addOption("CHOREO 3 PIECE?(IGNORE)", "New Choreo");
-   autoPicker.addOption("CHOREO 3 PIECE LESS CRAZY?(IGNORE)", "Triple7");
-    autoPicker.addOption("High 1 L4", "SideToJ");
-    autoPicker.addOption("CHOREO High 4 L4(IGNORE)", "HighL4"); */
-   
+     autoPicker.addOption("CHOREO CRAZY TEST?(IGNORE)", "4 L4 Coral");
+     autoPicker.addOption("CHOREO 3 PIECE?(IGNORE)", "New Choreo");
+    autoPicker.addOption("CHOREO 3 PIECE LESS CRAZY?(IGNORE)", "Triple7");
+     autoPicker.addOption("High 1 L4", "SideToJ");
+     autoPicker.addOption("CHOREO High 4 L4(IGNORE)", "HighL4"); */
+
   }
 
   public static void addTestedAutos() {}
@@ -189,9 +192,10 @@ public class AutoLogic {
   public static Command raiseElevator() {
     if (r.superStructure != null) {
       return Commands.sequence(
-        Commands.print("Pre raise elevator"),
-        r.superStructure.coralLevelFour(() -> true),
-        Commands.print("Pose raise elevator"));
+              Commands.print("Pre raise elevator"),
+              r.superStructure.coralLevelFour(() -> true),
+              Commands.print("Post raise elevator"))
+          .withName("raiseElevator");
     }
     return Commands.none().withName("raiseElevator");
   }
@@ -202,7 +206,10 @@ public class AutoLogic {
 
   public static Command intakeCommand() {
     if (r.superStructure != null) {
-      return  r.superStructure.preIntake().andThen(r.superStructure.coralIntake().withName("intake"));
+      return r.superStructure
+          .preIntake()
+          .andThen(r.superStructure.coralIntake())
+          .withName("intake");
     }
     return Commands.none().withName("intake");
   }
@@ -210,22 +217,17 @@ public class AutoLogic {
   public static void registerCommand() {
 
     if (NamedCommands.hasCommand("intake")) {
-
-     
     } else {
-      NamedCommands.registerCommand("intake", intakeCommand());
-      
+      NamedCommands.registerCommand("intake", intakeCommand().asProxy());
     }
-    if (NamedCommands.hasCommand("raiseElevator") ) {
 
+    if (NamedCommands.hasCommand("raiseElevator")) {
     } else {
-
-      NamedCommands.registerCommand("raiseElevator", raiseElevator());
+      NamedCommands.registerCommand("raiseElevator", raiseElevator().asProxy());
     }
+
     if (NamedCommands.hasCommand("autoAlign")) {
-
     } else {
-
       NamedCommands.registerCommand("autoAlign", autoAlignmentCommand());
     }
   }

@@ -31,14 +31,9 @@ import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 /*
- * All 3D poses and transforms use the NWU (North-West-Up) coordinate system, where +X is
+ * All poses and transforms use the NWU (North-West-Up) coordinate system, where +X is
  * north/forward, +Y is west/left, and +Z is up. On the field, this is based on the blue driver
  * station (+X is forward from blue driver station, +Y is left, +Z is up).
- *
- * <p>2D field poses are different. +X is away from the driver and +Y is toward the opposing loading
- * station. Rotations are CCW+ looking down. When on the blue alliance, this means that from the
- * (blue) driver's perspective +X is away and +Y is to the left. When on the red alliance, this
- * means that from the (red) driver's perspective +X is away and +Y is to the right.
  */
 public class VisionSubsystem extends SubsystemBase {
 
@@ -50,9 +45,9 @@ public class VisionSubsystem extends SubsystemBase {
   private static final double CAMERA_Z_POS_METERS_BACK = 0.737;
   private static final double CAMERA_ROLL_FRONT = Units.degreesToRadians(180);
   private static final double CAMERA_ROLL_BACK = 0;
-  private static final double CAMERA_PITCH_FRONT = Units.degreesToRadians(-20);
+  private static final double CAMERA_PITCH_FRONT = Units.degreesToRadians(-10);
   private static final double CAMERA_PITCH_BACK = Units.degreesToRadians(-20);
-  private static final double CAMERA_YAW_FRONT = Units.degreesToRadians(-20);
+  private static final double CAMERA_YAW_FRONT = Units.degreesToRadians(-28.1);
   private static final double CAMERA_YAW_BACK = Units.degreesToRadians(180);
 
   // for testing only
@@ -111,6 +106,11 @@ public class VisionSubsystem extends SubsystemBase {
           .getStructTopic("vision/fieldPose3d", Pose3d.struct)
           .publish();
 
+  private final StructPublisher<Pose3d> RawfieldPose3dEntry =
+      NetworkTableInstance.getDefault()
+          .getStructTopic("vision/rawfieldPose3d", Pose3d.struct)
+          .publish();
+
   private static final AprilTagFieldLayout fieldLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
@@ -134,10 +134,11 @@ public class VisionSubsystem extends SubsystemBase {
         EnumSet.of(NetworkTableEvent.Kind.kValueAll),
         event -> update());
 
-    networkTables.addListener(
-        networkTables.getTable("photonvision").getSubTable(Hardware.BACK_CAM).getEntry("rawBytes"),
-        EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-        event -> update());
+    // networkTables.addListener(
+    //
+    // networkTables.getTable("photonvision").getSubTable(Hardware.BACK_CAM).getEntry("rawBytes"),
+    //     EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+    //     event -> update());
 
     ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("AprilTags");
 
@@ -164,9 +165,9 @@ public class VisionSubsystem extends SubsystemBase {
     for (PhotonPipelineResult result : frontCamera.getAllUnreadResults()) {
       process(result, photonPoseEstimatorFrontCamera);
     }
-    for (PhotonPipelineResult result : backCamera.getAllUnreadResults()) {
-      process(result, photonPoseEstimatorBackCamera);
-    }
+    // for (PhotonPipelineResult result : backCamera.getAllUnreadResults()) {
+    //   process(result, photonPoseEstimatorBackCamera);
+    // }
   }
 
   private void process(PhotonPipelineResult result, PhotonPoseEstimator estimator) {
@@ -178,6 +179,12 @@ public class VisionSubsystem extends SubsystemBase {
     if (estimatedPose.isPresent()) {
       var TimestampSeconds = estimatedPose.get().timestampSeconds;
       var FieldPose3d = estimatedPose.get().estimatedPose;
+      RawfieldPose3dEntry.set(FieldPose3d);
+      if (!MathUtil.isNear(0, FieldPose3d.getZ(), 0.10)
+          || !MathUtil.isNear(0, FieldPose3d.getRotation().getX(), Units.degreesToRadians(3))
+          || MathUtil.isNear(0, FieldPose3d.getRotation().getY(), Units.degreesToRadians(3))) {
+        return;
+      }
       var FieldPose = FieldPose3d.toPose2d();
       var Distance =
           PhotonUtils.getDistanceToPose(

@@ -1,41 +1,39 @@
 package frc.robot.sensors;
 
-import com.ctre.phoenix.led.Animation;
+import static edu.wpi.first.units.Units.Seconds;
+
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdleConfiguration;
-import com.ctre.phoenix.led.ColorFlowAnimation;
 import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.LarsonAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
-import com.ctre.phoenix.led.RgbFadeAnimation;
-import com.ctre.phoenix.led.SingleFadeAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
-import com.ctre.phoenix.led.TwinkleAnimation;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.AddressableLEDBufferView;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
+import frc.robot.util.ScoringMode;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 public class ElevatorLight extends SubsystemBase {
 
   private CANdle candle;
 
   // private String curAnimation = "default";
+  private final AddressableLEDBuffer buffer = new AddressableLEDBuffer(71);
+  private final AddressableLEDBufferView[] sections = {buffer.createView(0, 70)};
 
   // LED modes
   public RainbowAnimation rainbowAnim = new RainbowAnimation(.5, .89, 64);
   public LarsonAnimation larsonAnim =
       new LarsonAnimation(
           177, 156, 217); // try again with full string, looks like annoying flashing
-  public TwinkleAnimation twinkleAnim =
-      new TwinkleAnimation(135, 30, 270); // cool ig idk test on full string, it twinkle
-  public ColorFlowAnimation colorFlowAnim =
-      new ColorFlowAnimation(40, 14, 15); // uh, it just flashes idk man
-  public FireAnimation fireAnim = new FireAnimation(); // dont just dont bruzz
-  public RgbFadeAnimation rgbFadeAnim =
-      new RgbFadeAnimation(); // can we change it? annoying ngl just use rainbow, literally RBG
-  public SingleFadeAnimation singleFadeAnim =
-      new SingleFadeAnimation(40, 14, 15); // one color lowkey boring, more of a blink than a flash
+  public FireAnimation fireAnim = new FireAnimation(); // oioioioi
   public StrobeAnimation strobeAnim =
       new StrobeAnimation(24, 15, 204); // idk it just shows as a single color, test again?
 
@@ -44,14 +42,10 @@ public class ElevatorLight extends SubsystemBase {
     candle = new CANdle(Hardware.ELEVATOR_LED);
     configureCandle();
     candle.clearAnimation(0);
-    candle.setLEDs(255, 255, 255);
+    candle.setLEDs(128, 128, 128);
     // candle.animate(larsonAnim);
     // candle.animate(rainbowAnim);
-    // candle.animate(twinkleAnim);
-    // candle.animate(colorFlowAnim);
     // candle.animate(fireAnim);
-    // candle.animate(rgbFadeAnim);
-    // candle.animate(singleFadeAnim);
     // candle.animate(strobeAnim);
   }
 
@@ -61,15 +55,52 @@ public class ElevatorLight extends SubsystemBase {
     candle.configAllSettings(config);
   }
 
-  public Command colorSet(int r, int g, int b) {
-    return runOnce(
-        () -> {
-          candle.clearAnimation(0);
-          candle.setLEDs(r, g, b);
-        });
+  public Command colorSet(int r, int g, int b, String name) {
+    return animate(LEDPattern.solid(new Color(r, g, b)), name);
   }
 
-  public Command animate(Animation animation) {
-    return runOnce(() -> candle.animate(animation));
+  public Command tripleBlink(int r, int g, int b, String name) {
+    return animate(LEDPattern.solid(new Color(r, g, b)).blink(Seconds.of(1.0 / 6.0)), name)
+        .withTimeout(Seconds.of(1.0))
+        .withName("Animate" + name);
+  }
+
+  public Command pulse(int r, int g, int b, String name) {
+    return animate(LEDPattern.solid(new Color(r, g, b)).breathe(Seconds.of(1.0)), name);
+  }
+
+  public Command animate(LEDPattern animation, String name) {
+    return run(() -> {
+          updateLEDs(animation);
+        })
+        .withName("Animate" + name);
+  }
+
+  public Command showScoringMode(Supplier<ScoringMode> scoringMode) {
+    return run(() -> {
+          ScoringMode currentMode = scoringMode.get();
+          if (currentMode == ScoringMode.ALGAE) {
+            updateLEDs(LEDPattern.solid(Color.kTeal));
+          } else {
+            updateLEDs(LEDPattern.solid(Color.kWhite));
+          }
+        })
+        .withName("Animate Scoring Mode");
+  }
+
+  private void updateLEDs(LEDPattern animation) {
+    for (AddressableLEDBufferView section : sections) {
+      animation.applyTo(section);
+      for (int i = 0; i < section.getLength(); ++i) {
+        candle.setLEDs(section.getRed(i), section.getGreen(i), section.getBlue(i), 0, i, 1);
+      }
+    }
+  }
+
+  public LEDPattern greenProgress(DoubleSupplier progress) {
+    LEDPattern base = LEDPattern.solid(Color.kGreen);
+    LEDPattern mask = LEDPattern.progressMaskLayer(progress);
+    LEDPattern heightDisplay = base.mask(mask);
+    return heightDisplay;
   }
 }

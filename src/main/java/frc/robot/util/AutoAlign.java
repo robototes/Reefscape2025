@@ -100,14 +100,9 @@ public class AutoAlign {
   private static Command autoPathAlign(CommandSwerveDrivetrain drivebaseSubsystem) {
 
     Pose2d robotPose = drivebaseSubsystem.getState().Pose;
-    boolean isBlue;
-    if (!DriverStation.getAlliance().isEmpty()) {
-      isBlue = DriverStation.getAlliance().get().equals(Alliance.Blue);
-    } else {
-      isBlue = false;
-    }
+    boolean isRed = AutoLogic.isRed();
     // figures out which branch to go to
-    List<Pose2d> branchesPoses = isBlue ? blueBranchesPoses : redBranchesPoses;
+    List<Pose2d> branchesPoses = isRed ? redBranchesPoses : blueBranchesPoses;
     Pose2d branchPose = robotPose.nearest(branchesPoses);
     // sets the point for the path to go to
     List<Waypoint> waypointsPoeses = PathPlannerPath.waypointsFromPoses(robotPose, branchPose);
@@ -122,9 +117,11 @@ public class AutoAlign {
                 MaxAngularAcceleraition),
             null,
             new GoalEndState(0.0, branchPose.getRotation()));
-    // path.flipPath(); Returns path except it's flipped
-    // this unflips it
-    if (!isBlue) {
+    // Theoretically:
+    //   The supplier we give to AutoBuilder tells it to flip paths when we are red. (This way, the
+    //   same path works for auto on either alliance.) However, in this case, we don't want to flip
+    //   the path when we are red, so we flip it now to cancel it out.
+    if (isRed) {
       path = path.flipPath();
     }
 
