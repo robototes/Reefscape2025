@@ -42,7 +42,11 @@ public class SpinnyClaw extends SubsystemBase {
     logTabs();
   }
 
-  // (+) is to move arm up, and (-) is down
+  private Command stopMotorCommand() {
+    return runOnce(() -> {motor.stopMotor();});
+  }
+
+  // (+) is to intake in, and (-) is out
   public Command movingVoltage(Supplier<Voltage> speedControl) {
     return run(() -> motor.setVoltage(speedControl.get().in(Volts)))
         .finallyDo(() -> motor.setVoltage(0))

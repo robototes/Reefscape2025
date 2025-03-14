@@ -444,6 +444,9 @@ public class Controls {
       return;
     }
     // Claw controls bindings go here
+    if (sensors.armSensor != null) {
+        sensors.armSensor.inClaw().onTrue(s.spinnyClawSubsytem.stop());
+    }
     armPivotSpinnyClawController
         .leftBumper()
         .whileTrue(s.spinnyClawSubsytem.coralHoldExtakePower());
