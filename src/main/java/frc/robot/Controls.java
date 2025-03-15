@@ -231,7 +231,7 @@ public class Controls {
               superStructure
                   .coralIntake()
                   .alongWith(
-                      s.elevatorLEDSubsystem.tripleBlink(255, 255, 0, "Yellow - Automatic Intake"))
+                      s.elevatorLEDSubsystem.tripleBlink(170, 170, 0, "Yellow - Automatic Intake"))
                   .withName("Automatic Intake"));
     }
 
