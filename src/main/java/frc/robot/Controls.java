@@ -2,8 +2,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.function.BooleanSupplier;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
@@ -252,14 +250,18 @@ public class Controls {
                     () ->
                         switch (scoringMode) {
                           case CORAL -> switch (branchHeight) {
-                            case LEVEL_FOUR -> superStructure.coralLevelFour(
-                                driverController.rightBumper()).onlyIf(sensors.armSensor.booleanSupplierInClaw());
-                            case LEVEL_THREE -> superStructure.coralLevelThree(
-                                driverController.rightBumper()).onlyIf(sensors.armSensor.booleanSupplierInClaw());
-                            case LEVEL_TWO -> superStructure.coralLevelTwo(
-                                driverController.rightBumper()).onlyIf(sensors.armSensor.booleanSupplierInClaw());
-                            case LEVEL_ONE -> superStructure.coralLevelOne(
-                                driverController.rightBumper()).onlyIf(sensors.armSensor.booleanSupplierInClaw());
+                            case LEVEL_FOUR -> superStructure
+                                .coralLevelFour(driverController.rightBumper())
+                                .onlyIf(sensors.armSensor.booleanSupplierInClaw());
+                            case LEVEL_THREE -> superStructure
+                                .coralLevelThree(driverController.rightBumper())
+                                .onlyIf(sensors.armSensor.booleanSupplierInClaw());
+                            case LEVEL_TWO -> superStructure
+                                .coralLevelTwo(driverController.rightBumper())
+                                .onlyIf(sensors.armSensor.booleanSupplierInClaw());
+                            case LEVEL_ONE -> superStructure
+                                .coralLevelOne(driverController.rightBumper())
+                                .onlyIf(sensors.armSensor.booleanSupplierInClaw());
                           };
                           case ALGAE -> superStructure.algaeProcessorScore();
                         })
