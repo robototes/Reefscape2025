@@ -5,33 +5,84 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Your side wall to I"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "YSW to I"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "scoreCommand"
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "I to Left side far"
+            "pathName": "I to LSF"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LSF to J"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "scoreCommand"
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Leftsidefar to J"
+            "pathName": "J to LSF"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "J to Leftsidefar"
+            "name": "intake"
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Leftsidefar to K"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LSF to K"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "scoreCommand"
+                }
+              }
+            ]
           }
         }
       ]
