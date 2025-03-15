@@ -78,7 +78,12 @@ public class Robot extends TimedRobot {
             command -> System.out.println("Command initialized: " + command.getName()));
     CommandScheduler.getInstance()
         .onCommandInterrupt(
-            command -> System.out.println("Command interrupted: " + command.getName()));
+            (command, interruptor) ->
+                System.out.println(
+                    "Command interrupted: "
+                        + command.getName()
+                        + "; Cause: "
+                        + interruptor.map(cmd -> cmd.getName()).orElse("<none>")));
     CommandScheduler.getInstance()
         .onCommandFinish(command -> System.out.println("Command finished: " + command.getName()));
 
