@@ -76,26 +76,34 @@ public class SpinnyClaw extends SubsystemBase {
   }
 
   private Command setPower(double pow) {
-    return runOnce(
-        () -> {
-          if (armSensor.booleanInClaw()) {
-            motor.stopMotor();
-          } else {
-            motor.setVoltage(pow);
-          }
-        });
+    if (armSensor != null) {
+      return runOnce(
+          () -> {
+            if (armSensor.booleanInClaw()) {
+              motor.stopMotor();
+            } else {
+              motor.setVoltage(pow);
+            }
+          });
+    } else {
+      return runOnce(() -> motor.setVoltage(pow));
+    }
   }
 
   private Command holdPower(double pow) {
-    return startEnd(
-        () -> {
-          if (armSensor.booleanInClaw()) {
-            motor.stopMotor();
-          } else {
-            motor.setVoltage(pow);
-          }
-        },
-        () -> motor.stopMotor());
+    if (armSensor != null) {
+      return startEnd(
+          () -> {
+            if (armSensor.booleanInClaw()) {
+              motor.stopMotor();
+            } else {
+              motor.setVoltage(pow);
+            }
+          },
+          () -> motor.stopMotor());
+    } else {
+      return startEnd(() -> motor.setVoltage(pow), () -> motor.stopMotor());
+    }
   }
 
   public Command coralIntakePower() {
