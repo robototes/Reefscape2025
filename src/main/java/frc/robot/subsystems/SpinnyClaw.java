@@ -16,33 +16,36 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
+import frc.robot.sensors.ArmSensor;
 import java.util.function.Supplier;
 
 public class SpinnyClaw extends SubsystemBase {
-  public static final double CORAL_INTAKE_SPEED = -4;
-  public static final double CORAL_EXTAKE_SPEED = 2;
-  public static final double CORAL_L4_EXTAKE_SPEED = 1;
-  public static final double ALGAE_INTAKE_SPEED = -2; // untested
+  public static final double CORAL_INTAKE_SPEED = -6;
+  public static final double CORAL_EXTAKE_SPEED = 4;
+  public static final double CORAL_L4_EXTAKE_SPEED = 2;
+  public static final double ALGAE_INTAKE_SPEED = -4; // untested
   public static final double ALGAE_EXTAKE_SPEED = 2; // untested
-  public static final double ALGAE_FLING_SPEED = 4;
+  public static final double ALGAE_FLING_SPEED = 10;
   // Remove once we implement PID speed
   public static int placeholderPIDSpeed;
 
   // TalonFX
   private final TalonFX motor;
+  private final ArmSensor armSensor;
 
   // alerts
   private final Alert NotConnectedError =
       new Alert("Spinny Claw", "Motor not connected", AlertType.kError);
   private final Debouncer notConnectedDebouncer = new Debouncer(.1, DebounceType.kBoth);
 
-  public SpinnyClaw() {
+  public SpinnyClaw(ArmSensor armSensor) {
     motor = new TalonFX(Hardware.SPINNY_CLAW_MOTOR_ID);
+    this.armSensor = armSensor;
     configMotors();
     logTabs();
   }
 
-  // (+) is to move arm up, and (-) is down
+  // (+) is to intake out, and (-) is in
   public Command movingVoltage(Supplier<Voltage> speedControl) {
     return run(() -> motor.setVoltage(speedControl.get().in(Volts)))
         .finallyDo(() -> motor.setVoltage(0))
@@ -73,18 +76,41 @@ public class SpinnyClaw extends SubsystemBase {
   }
 
   private Command setPower(double pow) {
-    return runOnce(() -> motor.setVoltage(pow));
+    if (armSensor != null) {
+      return runOnce(
+          () -> {
+            if (armSensor.booleanInClaw()) {
+              motor.stopMotor();
+            } else {
+              motor.setVoltage(pow);
+            }
+          });
+    } else {
+      return runOnce(() -> motor.setVoltage(pow));
+    }
   }
 
   private Command holdPower(double pow) {
-    return startEnd(() -> motor.setVoltage(pow), () -> motor.stopMotor());
+    if (armSensor != null) {
+      return startEnd(
+          () -> {
+            if (armSensor.booleanInClaw()) {
+              motor.stopMotor();
+            } else {
+              motor.setVoltage(pow);
+            }
+          },
+          () -> motor.stopMotor());
+    } else {
+      return startEnd(() -> motor.setVoltage(pow), () -> motor.stopMotor());
+    }
   }
 
-  public Command intakePower() {
+  public Command coralIntakePower() {
     return setPower(CORAL_INTAKE_SPEED).withName("Intake power");
   }
 
-  public Command extakePower() {
+  public Command coralExtakePower() {
     return setPower(CORAL_EXTAKE_SPEED).withName("Extake power");
   }
 

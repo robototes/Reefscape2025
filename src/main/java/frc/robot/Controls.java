@@ -250,14 +250,18 @@ public class Controls {
                     () ->
                         switch (scoringMode) {
                           case CORAL -> switch (branchHeight) {
-                            case LEVEL_FOUR -> superStructure.coralLevelFour(
-                                driverController.rightBumper());
-                            case LEVEL_THREE -> superStructure.coralLevelThree(
-                                driverController.rightBumper());
-                            case LEVEL_TWO -> superStructure.coralLevelTwo(
-                                driverController.rightBumper());
-                            case LEVEL_ONE -> superStructure.coralLevelOne(
-                                driverController.rightBumper());
+                            case LEVEL_FOUR -> superStructure
+                                .coralLevelFour(driverController.rightBumper())
+                                .onlyIf(sensors.armSensor.booleanSupplierInClaw());
+                            case LEVEL_THREE -> superStructure
+                                .coralLevelThree(driverController.rightBumper())
+                                .onlyIf(sensors.armSensor.booleanSupplierInClaw());
+                            case LEVEL_TWO -> superStructure
+                                .coralLevelTwo(driverController.rightBumper())
+                                .onlyIf(sensors.armSensor.booleanSupplierInClaw());
+                            case LEVEL_ONE -> superStructure
+                                .coralLevelOne(driverController.rightBumper())
+                                .onlyIf(sensors.armSensor.booleanSupplierInClaw());
                           };
                           case ALGAE -> superStructure.algaeProcessorScore();
                         })

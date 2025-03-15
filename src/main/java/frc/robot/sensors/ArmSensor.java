@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Hardware;
+import java.util.function.BooleanSupplier;
 
 public class ArmSensor {
 
@@ -58,11 +59,15 @@ public class ArmSensor {
   }
 
   public Trigger inClaw() {
-    return new Trigger(
-            () -> {
-              double distance = getSensorDistance().in(Meters);
-              return distance > CLAW_LOWER_LIMIT && distance < CLAW_UPPER_LIMIT;
-            })
-        .debounce(0.1);
+    return new Trigger(() -> booleanInClaw()).debounce(0.1);
+  }
+
+  public boolean booleanInClaw() {
+    double distance = getSensorDistance().in(Meters);
+    return distance > CLAW_LOWER_LIMIT && distance < CLAW_UPPER_LIMIT;
+  }
+
+  public BooleanSupplier booleanSupplierInClaw() {
+    return () -> booleanInClaw();
   }
 }
