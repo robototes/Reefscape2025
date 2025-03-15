@@ -507,7 +507,7 @@ public class Controls {
                 s.drivebaseSubsystem,
                 () -> -driverController.getLeftY() * MaxSpeed,
                 () -> -driverController.getLeftX() * MaxSpeed));
-    driverController.rightTrigger().onTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
+    driverController.rightTrigger().whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
   }
 
   public void vibrateDriveController(double vibration) {
