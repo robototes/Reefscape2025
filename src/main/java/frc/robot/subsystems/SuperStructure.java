@@ -144,7 +144,7 @@ public class SuperStructure {
   public Command algaeLevelThreeFourIntake() {
     return Commands.sequence(
             Commands.parallel(
-                spinnyClaw.algaeIntakePower(),
+                spinnyClaw.algaeIntakePower(),//timeout?
                 armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
             // add a wait command here
@@ -155,7 +155,7 @@ public class SuperStructure {
   public Command algaeLevelTwoThreeIntake() { // theoretically
     return Commands.sequence(
             Commands.parallel(
-                spinnyClaw.algaeIntakePower(),
+                spinnyClaw.algaeIntakePower(),//timeout?
                 armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
             // add a wait command here
@@ -185,31 +185,11 @@ public class SuperStructure {
         .withName("Algae L2-L3 Fling");
   }
 
-  public Command algaeLevelThreeFourPop() {
-    return Commands.sequence(
-            Commands.parallel(
-                armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE_PREPOS),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
-            armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-            algaeStow())
-        .withName("Algae L3-L4 Pop");
-  }
-
-  public Command algaeLevelTwoThreePop() { // theoretically
-    return Commands.sequence(
-            Commands.parallel(
-                armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE_PREPOS),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
-            armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-            algaeStow())
-        .withName("Algae L2-L3 Pop");
-  }
-
   public Command algaeStow() { // Big North + Spider collab on this one
     return Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.ALGAE_STOWED),
             armPivot.moveToPosition(ArmPivot.ALGAE_STOWED),
-            spinnyClaw.algaeIntakePower())
+            spinnyClaw.algaeIntakePower()) //check time
         .deadlineFor(colorSet(255, 255, 255, "White - Stowed").asProxy())
         .withName("Algae Stow");
   }
@@ -219,8 +199,17 @@ public class SuperStructure {
             Commands.parallel(
                 elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE),
                 armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
-                spinnyClaw.algaeIntakePower()),
-            spinnyClaw.algaeExtakePower())
+                spinnyClaw.algaeIntakePower()), //check timeout
+            spinnyClaw.algaeExtakePower().withTimeout(0.25))
+        .withName("Algae Processor Score");
+  }
+  public Command algaeNetScore() { // check intake power time
+    return Commands.sequence(
+            Commands.parallel(
+                elevator.setLevel(ElevatorSubsystem.ALGAE_NET_SCORE),
+                armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE),
+                spinnyClaw.algaeIntakePower()),//check timeout
+            spinnyClaw.algaeExtakePower().withTimeout(0.25))
         .withName("Algae Processor Score");
   }
 }
