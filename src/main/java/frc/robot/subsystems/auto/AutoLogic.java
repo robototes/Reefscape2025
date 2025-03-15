@@ -268,15 +268,15 @@ public class AutoLogic {
   public static Command intakeCommand() {
 
     if (r.superStructure != null) {
+      Command intakeCondition;
       if (ARMSENSOR_ENABLED) {
-        return Commands.waitUntil(r.sensors.armSensor.inClaw()).withName("intake");
+        intakeCondition = Commands.waitUntil(r.sensors.armSensor.inTrough());
       } else {
-        return Commands.sequence(
-                r.superStructure.preIntake(),
-                Commands.waitSeconds(0.5),
-                r.superStructure.coralIntake())
-            .withName("intake");
+        intakeCondition = Commands.waitSeconds(0.5);
       }
+      return Commands.sequence(
+              r.superStructure.preIntake(), intakeCondition, r.superStructure.coralIntake())
+          .withName("intake");
     }
     return Commands.none().withName("intake");
   }
