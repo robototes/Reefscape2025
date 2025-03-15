@@ -2,19 +2,14 @@ package frc.robot.subsystems.auto;
 
 import static frc.robot.Subsystems.SubsystemConstants.*;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -26,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
-import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -46,16 +40,16 @@ public class AutoLogic {
   public static enum StartPosition {
     ALLIANCE_SIDE_WALL(
         "Alliance Side Wall",
-        new Pose2d(7.187, 7.277, new Rotation2d(Units.degreesToRadians(270)))),
+        new Pose2d(7.187, 7.277, new Rotation2d(Units.degreesToRadians(-90)))),
     ALLIANCE_SIDE_MIDDLE(
         "Alliance Side Middle",
-        new Pose2d(7.187, 6.171, new Rotation2d(Units.degreesToRadians(270)))),
+        new Pose2d(7.187, 6.171, new Rotation2d(Units.degreesToRadians(-90)))),
     MIDDLE("MIDDLE", new Pose2d(7.187, 4.044, new Rotation2d(Units.degreesToRadians(180)))),
-    OPPOSITE_ALLIANCE_SIDE_WALL(
-        "Alliance Side Wall", new Pose2d(7.187, 1.908, new Rotation2d(Units.degreesToRadians(90)))),
     OPPOSITE_ALLIANCE_SIDE_MIDDLE(
-        "Alliance Side Middle",
+        "Opposite Alliance Side Middle",
         new Pose2d(7.187, 0.811, new Rotation2d(Units.degreesToRadians(90)))),
+    OPPOSITE_ALLIANCE_SIDE_WALL(
+        "Opposite Alliance Side Wall", new Pose2d(7.187, 1.908, new Rotation2d(Units.degreesToRadians(90)))),
     MISC("Misc", null);
 
     final String title; // for shuffleboard display
@@ -76,7 +70,7 @@ public class AutoLogic {
 
   // paths lists
 
-  private static AutoPath defaultPath = new AutoPath("do nothing", "nothing");
+  private static AutoPath defaultPath = new AutoPath("do nothing", "M0");
 
   private static List<AutoPath> noPiecePaths =
       List.of(
@@ -97,35 +91,35 @@ public class AutoLogic {
           new AutoPath("OSW_F", "OSW_F"),
           new AutoPath("OSW_E", "OSW_E"));
 
-  private static List<AutoPath> twoPiecePaths = 
+  private static List<AutoPath> twoPiecePaths =
       List.of(
-        new AutoPath("YSWLSF_I-J", "YSWKSF_I-J"),
-        new AutoPath("YSWLSF_J-K", "YSWKSF_J-K"),
-        new AutoPath("YSWLSF_K-L", "YSWKSF_K-L"),
-        new AutoPath("YSMLSF_I-J", "YSWKSF_I-J"),
-        new AutoPath("YSMLSF_J-K", "YSWKSF_J-K"),
-        new AutoPath("YSMLSF_K-L", "YSWKSF_K-L"),
-        new AutoPath("OSMLSF_F-E", "YSWKSF_F-E"),
-        new AutoPath("OSMLSF_E-D", "YSWKSF_E-D"),
-        new AutoPath("OSMLSF_D-C", "YSWKSF_D-C"),
-        new AutoPath("OSWLSF_F-E", "YSWKSF_F-E"),
-        new AutoPath("OSWLSF_E-D", "YSWKSF_E-D"),
-        new AutoPath("OSWLSF_D-C", "YSWKSF_D-C"));
+          new AutoPath("YSWLSF_I-J", "YSWLSF_I-J"),
+          new AutoPath("YSWLSF_J-K", "YSWLSF_J-K"),
+          new AutoPath("YSWLSF_K-L", "YSWLSF_K-L"),
+          new AutoPath("YSMLSF_I-J", "YSWLSF_I-J"),
+          new AutoPath("YSMLSF_J-K", "YSWLSF_J-K"),
+          new AutoPath("YSMLSF_K-L", "YSWLSF_K-L"),
+          new AutoPath("OSMLSF_F-E", "OSMRSF_F-E"),
+          new AutoPath("OSMLSF_E-D", "OSMRSF_E-D"),
+          new AutoPath("OSMLSF_D-C", "OSMRSF_D-C"),
+          new AutoPath("OSWLSF_F-E", "OSWRSF_F-E"),
+          new AutoPath("OSWLSF_E-D", "OSWRSF_E-D"),
+          new AutoPath("OSWLSF_D-C", "OSWRSF_D-C"));
 
   private static List<AutoPath> threePiecePaths =
       List.of(
-        new AutoPath("YSWLSF_I-J-K", "YSWLSF_I-J-K"),
-        new AutoPath("YSWLSF_J-K-L", "YSWLSF_J-K-L"),
-        new AutoPath("YSWLSF_K-L-A", "YSWLSF_K-L-A"),
-        new AutoPath("YSMLSF_I-J-K", "YSWLSF_I-J-K"),
-        new AutoPath("YSMLSF_J-K-L", "YSWLSF_J-K-L"),
-        new AutoPath("YSMLSF_K-L-A", "YSWLSF_K-L-A"));
+          new AutoPath("YSWLSF_I-J-K", "YSWLSF_I-J-K"),
+          new AutoPath("YSWLSF_J-K-L", "YSWLSF_J-K-L"),
+          new AutoPath("YSWLSF_K-L-A", "YSWLSF_K-L-A"),
+          new AutoPath("YSMLSF_I-J-K", "YSWLSF_I-J-K"),
+          new AutoPath("YSMLSF_J-K-L", "YSWLSF_J-K-L"),
+          new AutoPath("YSMLSF_K-L-A", "YSWLSF_K-L-A"));
 
   private static List<AutoPath> fourPiecePaths =
       List.of(
-        new AutoPath("YSWLSF_J-K-L-A", "YSWLSF_J-K-L-A"),
-        new AutoPath("YSWLSF_I-J-K-L", "YSWLSF_I-J-K-L"));
-        
+          new AutoPath("YSWLSF_J-K-L-A", "YSWLSF_J-K-L-A"),
+          new AutoPath("YSWLSF_I-J-K-L", "YSWLSF_I-J-K-L"));
+
   // map (gulp)
   private static Map<Integer, List<AutoPath>> commandsMap =
       Map.of(
@@ -150,7 +144,7 @@ public class AutoLogic {
           new InstantCommand(() -> controls.vibrateDriveController(0.0)));
 
   // shuffleboard
-  private static ShuffleboardTab tab = Shuffleboard.getTab("Match");
+  private static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
 
   private static SendableChooser<StartPosition> startPositionChooser =
       new SendableChooser<StartPosition>();

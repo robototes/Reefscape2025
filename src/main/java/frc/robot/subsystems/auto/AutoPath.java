@@ -22,6 +22,7 @@ public class AutoPath {
     this.pathPlannerAutoName = pathPlannerAutoName;
     pathPlannerAuto = new PathPlannerAuto(pathPlannerAutoName);
     startPose2d = pathPlannerAuto.getStartingPose();
+    assert (this.startPose2d != null);
     autoCommand = AutoBuilder.buildAuto(pathPlannerAutoName);
     this.vision = vision;
 
