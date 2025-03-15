@@ -414,7 +414,7 @@ public class Controls {
 
     Command setClimbLEDs;
     if (s.elevatorLEDSubsystem != null) {
-      setClimbLEDs = s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
+      setClimbLEDs = s.elevatorLEDSubsystem.pulse(0, 0, 170, "Blue - Climb Extended");
     } else {
       setClimbLEDs = Commands.none();
     }
@@ -454,16 +454,16 @@ public class Controls {
       Commands.waitSeconds(1)
           .andThen(
               s.elevatorLEDSubsystem
-                  .colorSet(255, 0, 0, "Red - Elevator Not Zeroed")
+                  .colorSet(170, 0, 0, "Red - Elevator Not Zeroed")
                   .ignoringDisable(true))
           .schedule();
       hasBeenZeroed.onTrue(
           s.elevatorLEDSubsystem
-              .colorSet(0, 255, 0, "Green - Elevator Zeroed")
+              .colorSet(0, 170, 0, "Green - Elevator Zeroed")
               .ignoringDisable(true));
       hasBeenZeroed.onFalse(
           s.elevatorLEDSubsystem
-              .colorSet(255, 0, 0, "Red - Elevator Not Zeroed")
+              .colorSet(170, 0, 0, "Red - Elevator Not Zeroed")
               .ignoringDisable(false));
     }
     RobotModeTriggers.autonomous()
