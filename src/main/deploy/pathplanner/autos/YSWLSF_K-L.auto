@@ -5,9 +5,16 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "YSW to K"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "YSW to K"
+                }
+              }
+            ]
           }
         },
         {
@@ -17,9 +24,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "LSF to L"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LSF to L"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "scoreCommand"
+                }
+              }
+            ]
           }
         }
       ]
