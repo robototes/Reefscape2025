@@ -31,24 +31,18 @@ public class SpinnyClaw extends SubsystemBase {
 
   // TalonFX
   private final TalonFX motor;
+  private final ArmSensor armSensor;
 
   // alerts
   private final Alert NotConnectedError =
       new Alert("Spinny Claw", "Motor not connected", AlertType.kError);
   private final Debouncer notConnectedDebouncer = new Debouncer(.1, DebounceType.kBoth);
 
-  public SpinnyClaw() {
+  public SpinnyClaw(ArmSensor armSensor) {
     motor = new TalonFX(Hardware.SPINNY_CLAW_MOTOR_ID);
+    this.armSensor = armSensor;
     configMotors();
     logTabs();
-  }
-
-  // Stops the motor
-  private Command stopMotorCommand() {
-    return runOnce(
-        () -> {
-          motor.stopMotor();
-        });
   }
 
   // (+) is to intake out, and (-) is in
@@ -82,11 +76,10 @@ public class SpinnyClaw extends SubsystemBase {
   }
 
   private Command setPower(double pow) {
-    ArmSensor armSensor = new ArmSensor();
     return runOnce(
         () -> {
           if (armSensor.booleanInClaw()) {
-            stop();
+            motor.stopMotor();
           } else {
             motor.setVoltage(pow);
           }
@@ -94,11 +87,10 @@ public class SpinnyClaw extends SubsystemBase {
   }
 
   private Command holdPower(double pow) {
-    ArmSensor armSensor = new ArmSensor();
     return startEnd(
         () -> {
           if (armSensor.booleanInClaw()) {
-            stop();
+            motor.stopMotor();
           } else {
             motor.setVoltage(pow);
           }

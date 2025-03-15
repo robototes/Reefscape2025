@@ -3,6 +3,8 @@ package frc.robot.sensors;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Millimeter;
 
+import java.util.function.BooleanSupplier;
+
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import edu.wpi.first.units.measure.Distance;
@@ -64,5 +66,9 @@ public class ArmSensor {
   public boolean booleanInClaw() {
     double distance = getSensorDistance().in(Meters);
     return distance > CLAW_LOWER_LIMIT && distance < CLAW_UPPER_LIMIT;
+  }
+
+  public BooleanSupplier booleanSupplierInClaw() {
+    return () -> booleanInClaw();
   }
 }
