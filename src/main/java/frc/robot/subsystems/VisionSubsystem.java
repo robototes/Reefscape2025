@@ -8,14 +8,13 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -38,38 +37,32 @@ import org.photonvision.targeting.PhotonPipelineResult;
  */
 public class VisionSubsystem extends SubsystemBase {
 
-  private static final double CAMERA_X_POS_METERS_FRONT = 0.25;
-  private static final double CAMERA_X_POS_METERS_BACK = 0.154;
-  private static final double CAMERA_Y_POS_METERS_FRONT = 0.289;
-  private static final double CAMERA_Y_POS_METERS_BACK = 0.7;
-  private static final double CAMERA_Z_POS_METERS_FRONT = 0.223;
-  private static final double CAMERA_Z_POS_METERS_BACK = 0.737;
-  private static final double CAMERA_ROLL_FRONT = Units.degreesToRadians(180);
-  private static final double CAMERA_ROLL_BACK = 0;
-  private static final double CAMERA_PITCH_FRONT = Units.degreesToRadians(-10);
-  private static final double CAMERA_PITCH_BACK = Units.degreesToRadians(-20);
-  private static final double CAMERA_YAW_FRONT = Units.degreesToRadians(-28.1);
-  private static final double CAMERA_YAW_BACK = Units.degreesToRadians(180);
+  private static final double CAMERA_X_POS_METERS_LEFT = 0.3;
+  private static final double CAMERA_X_POS_METERS_RIGHT = 0.28;
+  private static final double CAMERA_Y_POS_METERS_LEFT = 0.26;
+  private static final double CAMERA_Y_POS_METERS_RIGHT = -0.25;
+  private static final double CAMERA_Z_POS_METERS_LEFT = 0.22;
+  private static final double CAMERA_Z_POS_METERS_RIGHT = 0.22;
+  private static final double CAMERA_ROLL_LEFT = Units.degreesToRadians(-1.5);
+  private static final double CAMERA_ROLL_RIGHT = Units.degreesToRadians(1.87);
+  private static final double CAMERA_PITCH_LEFT = Units.degreesToRadians(-9.18);
+  private static final double CAMERA_PITCH_RIGHT = Units.degreesToRadians(-6.55);
+  private static final double CAMERA_YAW_LEFT = Units.degreesToRadians(-40);
+  private static final double CAMERA_YAW_RIGHT = Units.degreesToRadians(45);
 
-  // for testing only
-  /*
-   * private static final double CAMERA_X_POS_METERS_FRONT = 0;
-   * private static final double CAMERA_X_POS_METERS_BACK = 0;
-   * private static final double CAMERA_Y_POS_METERS_FRONT = 0;
-   * private static final double CAMERA_Y_POS_METERS_BACK = 0;
-   * private static final double CAMERA_Z_POS_METERS_FRONT = 0;
-   * private static final double CAMERA_Z_POS_METERS_BACK = 0;
-   * private static final double CAMERA_ROLL_FRONT = 0;
-   * private static final double CAMERA_ROLL_BACK = 0;
-   * private static final double CAMERA_PITCH_FRONT = 0;
-   * private static final double CAMERA_PITCH_BACK = 0;
-   * private static final double CAMERA_YAW_FRONT = 0;
-   * private static final double CAMERA_YAW_BACK = 0;
-   */
+  public static final Transform3d ROBOT_TO_CAM_LEFT =
+      new Transform3d(
+          CAMERA_X_POS_METERS_LEFT,
+          CAMERA_Y_POS_METERS_LEFT,
+          CAMERA_Z_POS_METERS_LEFT,
+          new Rotation3d(CAMERA_ROLL_LEFT, CAMERA_PITCH_LEFT, CAMERA_YAW_LEFT));
 
-  public static final Transform3d ROBOT_TO_CAM_LEFT = Transform3d.kZero;
-
-  public static final Transform3d ROBOT_TO_CAM_RIGHT = Transform3d.kZero;
+  public static final Transform3d ROBOT_TO_CAM_RIGHT =
+      new Transform3d(
+          CAMERA_X_POS_METERS_RIGHT,
+          CAMERA_Y_POS_METERS_RIGHT,
+          CAMERA_Z_POS_METERS_RIGHT,
+          new Rotation3d(CAMERA_ROLL_RIGHT, CAMERA_PITCH_RIGHT, CAMERA_YAW_RIGHT));
 
   // TODO Measure these
   private static final Vector<N3> STANDARD_DEVS =
@@ -120,16 +113,16 @@ public class VisionSubsystem extends SubsystemBase {
             fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_RIGHT);
 
     var networkTables = NetworkTableInstance.getDefault();
-    networkTables.addListener(
-        networkTables.getTable("photonvision").getSubTable(Hardware.LEFT_CAM).getEntry("rawBytes"),
-        EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-        event -> update());
-
     // networkTables.addListener(
     //
-    // networkTables.getTable("photonvision").getSubTable(Hardware.BACK_CAM).getEntry("rawBytes"),
+    // networkTables.getTable("photonvision").getSubTable(Hardware.LEFT_CAM).getEntry("rawBytes"),
     //     EnumSet.of(NetworkTableEvent.Kind.kValueAll),
     //     event -> update());
+
+    networkTables.addListener(
+        networkTables.getTable("photonvision").getSubTable(Hardware.RIGHT_CAM).getEntry("rawBytes"),
+        EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+        event -> update());
 
     ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("AprilTags");
 
@@ -153,12 +146,12 @@ public class VisionSubsystem extends SubsystemBase {
 
   private void update() {
 
-    for (PhotonPipelineResult result : leftCamera.getAllUnreadResults()) {
-      process(result, photonPoseEstimatorLeftCamera);
-    }
-    // for (PhotonPipelineResult result : backCamera.getAllUnreadResults()) {
-    //   process(result, photonPoseEstimatorBackCamera);
+    // for (PhotonPipelineResult result : leftCamera.getAllUnreadResults()) {
+    //   process(result, photonPoseEstimatorLeftCamera);
     // }
+    for (PhotonPipelineResult result : rightCamera.getAllUnreadResults()) {
+      process(result, photonPoseEstimatorRightCamera);
+    }
   }
 
   private void process(PhotonPipelineResult result, PhotonPoseEstimator estimator) {
@@ -213,15 +206,5 @@ public class VisionSubsystem extends SubsystemBase {
 
   public double getDistanceToTarget() {
     return (double) Math.round(Units.metersToInches(Distance) * 10) / 10;
-  }
-
-  public static boolean allianceColor(boolean isRed) {
-    if (!DriverStation.getAlliance().isEmpty()) {
-      isRed = DriverStation.getAlliance().get().equals(Alliance.Red);
-      return isRed;
-    } else {
-      isRed = false;
-      return isRed;
-    }
   }
 }
