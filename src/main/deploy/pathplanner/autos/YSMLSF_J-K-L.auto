@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "YourSideMidtoJ"
+                  "pathName": "YSM_J"
                 }
               },
               {
@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "J to Leftsidefar"
+            "pathName": "J_LSF"
           }
         },
         {
@@ -48,7 +48,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftSideFarToK"
+                  "pathName": "LSF_K"
                 }
               },
               {
@@ -63,7 +63,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "KToLeftSideFar"
+            "pathName": "K_LSF"
           }
         },
         {

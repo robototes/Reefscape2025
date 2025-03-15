@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "GtoRightSidefar"
+            "pathName": "G_RSF"
           }
         },
         {
@@ -48,7 +48,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RightSideFarToC"
+                  "pathName": "RSF_C"
                 }
               },
               {
@@ -63,7 +63,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "CtoRightSideFar"
+            "pathName": "C_RSF"
           }
         },
         {
@@ -85,7 +85,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RightsideFartoD"
+                  "pathName": "RSF_D"
                 }
               },
               {

@@ -5,33 +5,84 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Yoursidemiddle to I"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "YSM_I"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "raiseElevator"
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "I to Left side far"
+            "pathName": "I_LSF"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.8
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LSF_J"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "raiseElevator"
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Leftsidefar to J"
+            "pathName": "J_LSF"
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "J to Leftsidefar"
+            "waitTime": 0.8
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Leftsidefar to L"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Leftsidefar to L"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "raiseElevator"
+                }
+              }
+            ]
           }
         }
       ]

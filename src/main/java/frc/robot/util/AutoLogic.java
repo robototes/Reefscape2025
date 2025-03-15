@@ -171,15 +171,16 @@ public class AutoLogic {
   }
 
   public static void addAutoOptions() {
-    autoPicker.setDefaultOption("DEFAULT PATH", "PreLoadAuto");
-    autoPicker.addOption("LOW TWO PIECE", "OppsidetoDandC");
-    autoPicker.addOption("Mid 3 Piece", "Mid3Piece");
-    autoPicker.addOption("Low 3 Piece", "Low3Piece");
-    autoPicker.addOption("Low  1 L4", "OppsidetoD");
-    autoPicker.addOption("Upper 3 Piece", "Upper3Piece");
-    autoPicker.addOption("Low PreLoad", "ONE PIECE LOW");
-    autoPicker.addOption("High PreLoad", "ONE PIECE HIGH");
-
+    autoPicker.setDefaultOption("DEFAULT PATH(M_G/Middle 1 Piece)", "M_G(Preload)");
+    autoPicker.addOption("YSMLSF_I(Upper 1 Piece)", "YSM_I");
+    autoPicker.addOption("OSWRSF_D(Low 1 Piece)", "OSWRSF_D");
+    autoPicker.addOption("OSWRSF_D-C(Low 2 Piece)", "OSWRSF_D-C");
+    autoPicker.addOption("M_G-D-C(Middle 3 Piece)", "M_G-D-C");
+    autoPicker.addOption("YSMLSF_I-J-K(Upper 3 Piece 1)", "YSMLSF_I-J-K");
+    autoPicker.addOption("YSMLSF_J-K-L(UPPER 3 PIECE 2)", "YSMLSF_J-K-L");
+    autoPicker.addOption("OSMRSF_E-D-C(Low 3 Piece)", "OSMRSF_E-D-C");
+    autoPicker.addOption("DRIVE ONLY", "SideWall");
+    
     /* CHOREO AUTOS(IGNORE)
      autoPicker.addOption("CHOREO CRAZY TEST?(IGNORE)", "4 L4 Coral");
      autoPicker.addOption("CHOREO 3 PIECE?(IGNORE)", "New Choreo");

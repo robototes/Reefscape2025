@@ -29,9 +29,9 @@ public class AutonomousField {
         tab.add("Auto display speed", DEFAULT_PLAYBACK_SPEED)
             .withWidget(BuiltInWidgets.kNumberSlider)
             .withProperties(Map.of("Min", lowerPlaybackSpeedLimit, "Max", upperPlaybackSpeedLimit))
-            .withPosition(10, 5) // Offset by height of Field2d display
+            .withPosition(8, 3) // Offset by height of Field2d display
             // .withPosition(columnIndex + 1, rowIndex + 3) // Offset by height of Field2d display
-            .withSize(3, 1)
+            .withSize(2, 1)
             .getEntry();
 
     var autonomousField =
@@ -53,7 +53,7 @@ public class AutonomousField {
     tab.add("Selected auto", autonomousField.getField())
         .withPosition(0, 0)
         // .withPosition(columnIndex, rowIndex)
-        .withSize(10, 6);
+        .withSize(8, 5);
 
     Shuffleboard.getTab("Start Positions(AUTO)")
         .add("Start pose", autonomousField.getStartPose())
@@ -64,7 +64,7 @@ public class AutonomousField {
     tab.addDouble("Est. Time (s)", () -> Math.round(autonomousField.autoTotalTime() * 100) / 100.0)
         .withPosition(columnIndex, rowIndex + 3)
         .withSize(1, 1)
-        .withPosition(10, 4);
+        .withPosition(8, 2);
     // .withPosition(columnIndex, rowIndex + 3).withSize(1,1);
 
   }

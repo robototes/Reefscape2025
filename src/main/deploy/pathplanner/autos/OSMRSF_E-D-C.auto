@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "OppSideMidE"
+                  "pathName": "OSM_E"
                 }
               },
               {
@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "EtoRightSideFar"
+            "pathName": "E_RSF"
           }
         },
         {
@@ -48,7 +48,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RightsideFartoD"
+                  "pathName": "RSF_D"
                 }
               },
               {
@@ -63,7 +63,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "DtoRightSideFar"
+            "pathName": "D_RSF"
           }
         },
         {
