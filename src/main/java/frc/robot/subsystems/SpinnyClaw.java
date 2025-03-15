@@ -19,12 +19,12 @@ import frc.robot.Hardware;
 import java.util.function.Supplier;
 
 public class SpinnyClaw extends SubsystemBase {
-  public static final double CORAL_INTAKE_SPEED = -4;
-  public static final double CORAL_EXTAKE_SPEED = 2;
-  public static final double CORAL_L4_EXTAKE_SPEED = 1;
-  public static final double ALGAE_INTAKE_SPEED = -2; // untested
+  public static final double CORAL_INTAKE_SPEED = -6;
+  public static final double CORAL_EXTAKE_SPEED = 4;
+  public static final double CORAL_L4_EXTAKE_SPEED = 2;
+  public static final double ALGAE_INTAKE_SPEED = -4; // untested
   public static final double ALGAE_EXTAKE_SPEED = 2; // untested
-  public static final double ALGAE_FLING_SPEED = 4;
+  public static final double ALGAE_FLING_SPEED = 10;
   // Remove once we implement PID speed
   public static int placeholderPIDSpeed;
 
@@ -42,6 +42,7 @@ public class SpinnyClaw extends SubsystemBase {
     logTabs();
   }
 
+  // Stops the motor
   private Command stopMotorCommand() {
     return runOnce(() -> {motor.stopMotor();});
   }

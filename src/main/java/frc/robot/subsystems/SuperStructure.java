@@ -49,7 +49,7 @@ public class SuperStructure {
                     elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_POS),
                     armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L4))
                 .withTimeout(2.0),
-            spinnyClaw.coralHoldExtakeL4Power().withTimeout(0.2),
+            spinnyClaw.coralHoldExtakeL4Power().withTimeout(0.3),
             Commands.print("Pre preIntake()"),
             preIntake(),
             Commands.print("Post preIntake()"))
@@ -96,7 +96,7 @@ public class SuperStructure {
                 armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L1),
                 spinnyClaw.stop()),
             Commands.waitUntil(score),
-            spinnyClaw.coralHoldExtakePower().withTimeout(0.15),
+            spinnyClaw.coralHoldExtakePower().withTimeout(0.25),
             preIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L1").asProxy())
         .withName("Coral Level 1");
