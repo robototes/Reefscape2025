@@ -19,8 +19,12 @@ import frc.robot.Hardware;
 import java.util.function.Supplier;
 
 public class SpinnyClaw extends SubsystemBase {
-  public static final double INTAKE_SPEED = -4;
-  public static final double EXTAKE_SPEED = 2;
+  public static final double CORAL_INTAKE_SPEED = -4;
+  public static final double CORAL_EXTAKE_SPEED = 2;
+  public static final double CORAL_L4_EXTAKE_SPEED = 1;
+  public static final double ALGAE_INTAKE_SPEED = -2; // untested
+  public static final double ALGAE_EXTAKE_SPEED = 2; // untested
+  public static final double ALGAE_FLING_SPEED = 4;
   // Remove once we implement PID speed
   public static int placeholderPIDSpeed;
 
@@ -41,7 +45,8 @@ public class SpinnyClaw extends SubsystemBase {
   // (+) is to move arm up, and (-) is down
   public Command movingVoltage(Supplier<Voltage> speedControl) {
     return run(() -> motor.setVoltage(speedControl.get().in(Volts)))
-        .finallyDo(() -> motor.setVoltage(0));
+        .finallyDo(() -> motor.setVoltage(0))
+        .withName("Spinny claw moving voltage");
   }
 
   // Log tabs to shuffleboard, temperature, and motor speed
@@ -67,22 +72,53 @@ public class SpinnyClaw extends SubsystemBase {
     cfg.apply(currentLimits);
   }
 
+  private Command setPower(double pow) {
+    return runOnce(() -> motor.setVoltage(pow));
+  }
+
+  private Command holdPower(double pow) {
+    return startEnd(() -> motor.setVoltage(pow), () -> motor.stopMotor());
+  }
+
   public Command intakePower() {
-    return runOnce(() -> motor.setVoltage(INTAKE_SPEED)).withName("Intake power");
+    return setPower(CORAL_INTAKE_SPEED).withName("Intake power");
   }
 
   public Command extakePower() {
-    return runOnce(() -> motor.setVoltage(EXTAKE_SPEED)).withName("Extake power");
+    return setPower(CORAL_EXTAKE_SPEED).withName("Extake power");
   }
 
-  public Command holdIntakePower() {
-    return startEnd(() -> motor.setVoltage(INTAKE_SPEED), () -> motor.stopMotor())
-        .withName("Hold intake power");
+  public Command coralHoldIntakePower() {
+    return holdPower(CORAL_INTAKE_SPEED).withName("Hold intake power");
   }
 
-  public Command holdExtakePower() {
-    return startEnd(() -> motor.setVoltage(EXTAKE_SPEED), () -> motor.stopMotor())
-        .withName("Hold extake power");
+  public Command coralHoldExtakePower() {
+    return holdPower(CORAL_EXTAKE_SPEED).withName("Hold extake power");
+  }
+
+  public Command coralHoldExtakeL4Power() {
+    return holdPower(CORAL_L4_EXTAKE_SPEED).withName("Hold extake power L4");
+  }
+
+  // algae stuff
+  public Command algaeIntakePower() {
+    return setPower(ALGAE_INTAKE_SPEED).withName("Algae intake power");
+  }
+
+  public Command algaeExtakePower() {
+    return setPower(ALGAE_EXTAKE_SPEED).withName("Algae extake power");
+  }
+
+  public Command algaeHoldIntakePower() {
+    return holdPower(ALGAE_INTAKE_SPEED).withName("Algae hold intake power");
+  }
+
+  public Command algaeHoldExtakePower() {
+    return holdPower(ALGAE_EXTAKE_SPEED).withName("Algae hold extake power");
+  }
+
+  public Command algaeFlingPower() {
+    return setPower(ALGAE_FLING_SPEED).withName("Algae fling power");
   }
 
   public Command stop() {

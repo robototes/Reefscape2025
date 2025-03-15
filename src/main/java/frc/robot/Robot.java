@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Sensors.SensorConstants;
 import frc.robot.Subsystems.SubsystemConstants;
@@ -35,11 +36,12 @@ public class Robot extends TimedRobot {
   public final Controls controls;
   public final Subsystems subsystems;
   public final Sensors sensors;
-  public final AutoLogic autoLogic;
   public final SuperStructure superStructure;
+  private String autoCommandRequirements = "UNKNOWN";
 
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
+
     instance = this;
     robotType = RobotType.getCurrent();
     CanBridge.runTCP();
@@ -49,7 +51,6 @@ public class Robot extends TimedRobot {
     subsystems = new Subsystems();
     sensors = new Sensors();
     AutoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
-    autoLogic = new AutoLogic();
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
         && SubsystemConstants.SPINNYCLAW_ENABLED
@@ -59,6 +60,7 @@ public class Robot extends TimedRobot {
               subsystems.elevatorSubsystem,
               subsystems.armPivotSubsystem,
               subsystems.spinnyClawSubsytem,
+              subsystems.elevatorLEDSubsystem,
               sensors.armSensor);
     } else {
       superStructure = null;
@@ -121,6 +123,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     CommandScheduler.getInstance().cancelAll();
+    Shuffleboard.startRecording();
   }
 
   @Override

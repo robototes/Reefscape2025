@@ -21,6 +21,12 @@ public class Hardware {
   public static final int ARM_PIVOT_MOTOR_ID = 30;
   public static final int ARM_PIVOT_CANDI_ID = 31;
 
+  // arm Sensors [35-39]
+  public static final int MAIN_ARM_SENSOR = 35;
+
+  // spinny claw [40-44]
+  public static final int SPINNY_CLAW_MOTOR_ID = 40;
+
   // climb [50-59]
   public static final int CLIMB_PIVOT_MOTOR_ONE_ID = 50;
   public static final int CLIMB_PIVOT_MOTOR_TWO_ID = 51;
@@ -29,14 +35,8 @@ public class Hardware {
   // climb DIO
   public static final int CLIMB_SENSOR = 1;
 
-  // arm Sensors [35-39]
-  public static final int MAIN_ARM_SENSOR = 35;
-
-  // scoring [40 - 44]
-  public static final int SPINNY_CLAW_MOTOR_ID = 40;
-
   // vision
-  public static final String PHOTON_IP = "10.24.12.3";
-  public static final String FRONT_CAM = "Arducam_OV9281B";
+  public static final String PHOTON_IP = "10.24.12.11";
+  public static final String FRONT_CAM = "Arducam_OV9782B";
   public static final String BACK_CAM = "Arducam_OV9281A";
 }

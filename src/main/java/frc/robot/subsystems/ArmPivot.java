@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
@@ -35,17 +36,23 @@ public class ArmPivot extends SubsystemBase {
   private final double ARMPIVOT_KV = 0.69;
   private final double ARMPIVOT_KG = 0.18;
   private final double ARMPIVOT_KA = 0.0;
-  public static final double PRESET_L1 = -1.0 / 16;
-  public static final double PRESET_L2_L3 = Units.degreesToRotations(55);
-  public static final double PRESET_L4 = 0.0;
-  public static final double PRESET_PRE_L4 = 1.0 / 16.0;
-  public static final double PRESET_STOWED = 0.125;
+  public static final double CORAL_PRESET_L1 = -1.0 / 16;
+  public static final double CORAL_PRESET_L2 = 0.13;
+  public static final double CORAL_PRESET_L3 = 0.13;
+  public static final double CORAL_PRESET_L4 = 0.0;
+  public static final double CORAL_PRESET_PRE_L4 = 1.0 / 16.0;
+  public static final double ALGAE_REMOVE_PREPOS = 0; // untested
+  public static final double ALGAE_REMOVE = 0; // untested
+  public static final double ALGAE_FLING = -0.08;
+  public static final double ALGAE_STOWED = 0; // untested
+  public static final double ALGAE_PROCESSOR_SCORE = 0.125; // untested
+  public static final double CORAL_PRESET_STOWED = 0.125;
   public static final double PRESET_OUT = 0;
-  public static final double PRESET_UP = 0.25; // Pointing directly upwards
-  public static final double PRESET_DOWN = -0.25;
+  public static final double CORAL_PRESET_UP = 0.25; // Pointing directly upwards
+  public static final double CORAL_PRESET_DOWN = -0.25;
   public static final double HARDSTOP_HIGH = 0.32;
   public static final double HARDSTOP_LOW = -0.26;
-  public static final double POS_TOLERANCE = 0.01;
+  public static final double POS_TOLERANCE = Units.degreesToRotations(5);
   public static final double PLACEHOLDER_CORAL_WEIGHT_KG = 0.8;
   // Constant for gear ratio (the power that one motor gives to gear)
   private static final double ARM_RATIO = (12.0 / 60.0) * (20.0 / 60.0) * (18.0 / 48.0);
@@ -96,6 +103,10 @@ public class ArmPivot extends SubsystemBase {
           motor.setControl(m_request.withPosition(pos));
           targetPos = pos;
         });
+  }
+
+  public boolean atPosition(double position) {
+    return MathUtil.isNear(position, getCurrentPosition(), POS_TOLERANCE);
   }
 
   private double getTargetPosition() {
