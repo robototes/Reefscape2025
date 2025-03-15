@@ -58,11 +58,11 @@ public class ArmSensor {
   }
 
   public Trigger inClaw() {
-    return new Trigger(
-            () -> {
-              double distance = getSensorDistance().in(Meters);
-              return distance > CLAW_LOWER_LIMIT && distance < CLAW_UPPER_LIMIT;
-            })
-        .debounce(0.1);
+    return new Trigger(() -> booleanInClaw()).debounce(0.1);
+  }
+
+  public boolean booleanInClaw() {
+    double distance = getSensorDistance().in(Meters);
+    return distance > CLAW_LOWER_LIMIT && distance < CLAW_UPPER_LIMIT;
   }
 }

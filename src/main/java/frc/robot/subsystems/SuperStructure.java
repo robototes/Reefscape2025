@@ -130,7 +130,7 @@ public class SuperStructure {
     return Commands.sequence(
             Commands.sequence(
                     Commands.parallel(
-                        spinnyClaw.intakePower(),
+                        spinnyClaw.coralIntakePower(),
                         armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN)),
                     elevator.setLevel(ElevatorSubsystem.CORAL_INTAKE_POS),
                     Commands.idle())

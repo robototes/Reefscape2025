@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
+import frc.robot.sensors.ArmSensor;
 import java.util.function.Supplier;
 
 public class SpinnyClaw extends SubsystemBase {
@@ -44,10 +45,13 @@ public class SpinnyClaw extends SubsystemBase {
 
   // Stops the motor
   private Command stopMotorCommand() {
-    return runOnce(() -> {motor.stopMotor();});
+    return runOnce(
+        () -> {
+          motor.stopMotor();
+        });
   }
 
-  // (+) is to intake in, and (-) is out
+  // (+) is to intake out, and (-) is in
   public Command movingVoltage(Supplier<Voltage> speedControl) {
     return run(() -> motor.setVoltage(speedControl.get().in(Volts)))
         .finallyDo(() -> motor.setVoltage(0))
@@ -78,18 +82,35 @@ public class SpinnyClaw extends SubsystemBase {
   }
 
   private Command setPower(double pow) {
-    return runOnce(() -> motor.setVoltage(pow));
+    ArmSensor armSensor = new ArmSensor();
+    return runOnce(
+        () -> {
+          if (armSensor.booleanInClaw()) {
+            stop();
+          } else {
+            motor.setVoltage(pow);
+          }
+        });
   }
 
   private Command holdPower(double pow) {
-    return startEnd(() -> motor.setVoltage(pow), () -> motor.stopMotor());
+    ArmSensor armSensor = new ArmSensor();
+    return startEnd(
+        () -> {
+          if (armSensor.booleanInClaw()) {
+            stop();
+          } else {
+            motor.setVoltage(pow);
+          }
+        },
+        () -> motor.stopMotor());
   }
 
-  public Command intakePower() {
+  public Command coralIntakePower() {
     return setPower(CORAL_INTAKE_SPEED).withName("Intake power");
   }
 
-  public Command extakePower() {
+  public Command coralExtakePower() {
     return setPower(CORAL_EXTAKE_SPEED).withName("Extake power");
   }
 
