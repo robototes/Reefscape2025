@@ -90,9 +90,14 @@ public class VisionSubsystem extends SubsystemBase {
           .getStructTopic("vision/fieldPose3d", Pose3d.struct)
           .publish();
 
-  private final StructPublisher<Pose3d> RawfieldPose3dEntry =
+  private final StructPublisher<Pose3d> rawFieldPose3dEntryLeft =
       NetworkTableInstance.getDefault()
-          .getStructTopic("vision/rawfieldPose3d", Pose3d.struct)
+          .getStructTopic("vision/rawFieldPose3dLeft", Pose3d.struct)
+          .publish();
+
+  private final StructPublisher<Pose3d> rawFieldPose3dEntryRight =
+      NetworkTableInstance.getDefault()
+          .getStructTopic("vision/rawFieldPose3dRight", Pose3d.struct)
           .publish();
 
   private static final AprilTagFieldLayout fieldLayout =
@@ -145,16 +150,18 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   private void update() {
-
-    // for (PhotonPipelineResult result : leftCamera.getAllUnreadResults()) {
-    //   process(result, photonPoseEstimatorLeftCamera);
-    // }
+    for (PhotonPipelineResult result : leftCamera.getAllUnreadResults()) {
+      process(result, photonPoseEstimatorLeftCamera, rawFieldPose3dEntryLeft);
+    }
     for (PhotonPipelineResult result : rightCamera.getAllUnreadResults()) {
-      process(result, photonPoseEstimatorRightCamera);
+      process(result, photonPoseEstimatorRightCamera, rawFieldPose3dEntryRight);
     }
   }
 
-  private void process(PhotonPipelineResult result, PhotonPoseEstimator estimator) {
+  private void process(
+      PhotonPipelineResult result,
+      PhotonPoseEstimator estimator,
+      StructPublisher<Pose3d> rawFieldPose3dEntry) {
     var RawTimestampSeconds = result.getTimestampSeconds();
     if (!MathUtil.isNear(Timer.getFPGATimestamp(), RawTimestampSeconds, 5.0)) {
       return;
@@ -163,10 +170,10 @@ public class VisionSubsystem extends SubsystemBase {
     if (estimatedPose.isPresent()) {
       var TimestampSeconds = estimatedPose.get().timestampSeconds;
       var FieldPose3d = estimatedPose.get().estimatedPose;
-      RawfieldPose3dEntry.set(FieldPose3d);
+      rawFieldPose3dEntry.set(FieldPose3d);
       if (!MathUtil.isNear(0, FieldPose3d.getZ(), 0.10)
           || !MathUtil.isNear(0, FieldPose3d.getRotation().getX(), Units.degreesToRadians(3))
-          || MathUtil.isNear(0, FieldPose3d.getRotation().getY(), Units.degreesToRadians(3))) {
+          || !MathUtil.isNear(0, FieldPose3d.getRotation().getY(), Units.degreesToRadians(3))) {
         return;
       }
       var FieldPose = FieldPose3d.toPose2d();
