@@ -168,6 +168,7 @@ public class AutoLogic {
     // Intake
     NamedCommands.registerCommand("Score", scoreCommand());
     NamedCommands.registerCommand("Branch Alignment", autoBranchAlign());
+    NamedCommands.registerCommand("Intake", intakeCommand());
   }
 
   // public Command getConditionalCommand(){}
@@ -259,9 +260,23 @@ public class AutoLogic {
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
-      return r.superStructure.levelFour(() -> true);
+      return Commands.sequence(
+              Commands.print("Pre raise elevator"),
+              r.superStructure.coralLevelFour(() -> true),
+              Commands.print("Post raise elevator"))
+          .withName("scoreCommand");
     }
     return Commands.none().withName("scoreCommand");
+  }
+
+  public static Command intakeCommand() {
+    if (r.superStructure != null) {
+      return r.superStructure
+          .preIntake()
+          .andThen(r.superStructure.coralIntake())
+          .withName("intake");
+    }
+    return Commands.none().withName("intake");
   }
 
   public static Command autoBranchAlign() {
