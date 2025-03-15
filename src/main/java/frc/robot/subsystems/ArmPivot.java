@@ -37,7 +37,8 @@ public class ArmPivot extends SubsystemBase {
   private final double ARMPIVOT_KG = 0.18;
   private final double ARMPIVOT_KA = 0.0;
   public static final double CORAL_PRESET_L1 = -1.0 / 16;
-  public static final double CORAL_PRESET_L2_L3 = Units.degreesToRotations(55);
+  public static final double CORAL_PRESET_L2 = 0.13;
+  public static final double CORAL_PRESET_L3 = 0.13;
   public static final double CORAL_PRESET_L4 = 0.0;
   public static final double CORAL_PRESET_PRE_L4 = 1.0 / 16.0;
   public static final double ALGAE_REMOVE_PREPOS = 0; // untested
@@ -51,7 +52,7 @@ public class ArmPivot extends SubsystemBase {
   public static final double CORAL_PRESET_DOWN = -0.25;
   public static final double HARDSTOP_HIGH = 0.32;
   public static final double HARDSTOP_LOW = -0.26;
-  public static final double POS_TOLERANCE = 0.01;
+  public static final double POS_TOLERANCE = Units.degreesToRotations(5);
   public static final double PLACEHOLDER_CORAL_WEIGHT_KG = 0.8;
   // Constant for gear ratio (the power that one motor gives to gear)
   private static final double ARM_RATIO = (12.0 / 60.0) * (20.0 / 60.0) * (18.0 / 48.0);

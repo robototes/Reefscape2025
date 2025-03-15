@@ -5,18 +5,21 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
-import frc.robot.generated.TestBaseTunerConstants;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.util.AlgaeIntakeHeight;
+import frc.robot.util.AutoAlign;
 import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
 import frc.robot.util.ScoringMode;
@@ -46,16 +49,15 @@ public class Controls {
   private AlgaeIntakeHeight algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
 
   // Swerve stuff
-  private static final double MaxSpeed =
+
+  public static final double MaxSpeed =
       RobotType.getCurrent() == RobotType.BONK
           ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
-          : RobotType.getCurrent() == RobotType.TESTBASE
-              ? TestBaseTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
-              : CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+          : CompTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   private final double MAX_ACCELERATION = 50;
   private final double MAX_ROTATION_ACCELERATION = 50;
   // kSpeedAt12Volts desired top speed
-  private double MaxAngularRate =
+  public static double MaxAngularRate =
       RotationsPerSecond.of(0.75)
           .in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
@@ -85,6 +87,7 @@ public class Controls {
     configureClimbPivotBindings();
     configureSpinnyClawBindings();
     configureElevatorLEDBindings();
+    configureAlignBindings();
   }
 
   private void configureDrivebaseBindings() {
@@ -187,7 +190,8 @@ public class Controls {
     operatorController
         .leftTrigger()
         .onTrue(
-            Commands.runOnce(() -> scoringMode = ScoringMode.CORAL).withName("Coral Scoring Mode"));
+            Commands.runOnce(() -> scoringMode = ScoringMode.CORAL).withName("Coral Scoring Mode"))
+        .onTrue(superStructure.preIntake());
     operatorController
         .povLeft()
         .onTrue(
@@ -198,6 +202,7 @@ public class Controls {
                           case ALGAE -> superStructure.algaeStow();
                         })
                 .withName("Stow"));
+    operatorController.povDown().onTrue(superStructure.preIntake().withName("pre-intake"));
 
     driverController
         .a()
@@ -206,7 +211,13 @@ public class Controls {
             Commands.deferredProxy(
                     () ->
                         switch (scoringMode) {
-                          case CORAL -> superStructure.coralIntake();
+                          case CORAL -> superStructure
+                              .coralIntake()
+                              .alongWith(
+                                  s.elevatorLEDSubsystem
+                                      .tripleBlink(255, 92, 0, "Orange - Manual Coral Intake")
+                                      .asProxy())
+                              .withName("Manual Coral Intake");
                           case ALGAE -> switch (algaeIntakeHeight) {
                             case ALGAE_LEVEL_THREE_FOUR -> superStructure.algaeLevelThreeFourFling(
                                 driverController.rightBumper());
@@ -220,7 +231,15 @@ public class Controls {
           .armSensor
           .inTrough()
           .and(superStructure.inPreIntakePosition())
-          .onTrue(superStructure.coralIntake());
+          .and(RobotModeTriggers.teleop())
+          .onTrue(
+              superStructure
+                  .coralIntake()
+                  .alongWith(
+                      s.elevatorLEDSubsystem
+                          .tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
+                          .asProxy())
+                  .withName("Automatic Intake"));
     }
 
     driverController
@@ -359,9 +378,7 @@ public class Controls {
     armPivotSpinnyClawController
         .povLeft()
         .onTrue(
-            s.armPivotSubsystem
-                .moveToPosition(ArmPivot.CORAL_PRESET_L2_L3)
-                .withName("Arm L2-L3 Preset"));
+            s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_L3).withName("Arm L3 Preset"));
     armPivotSpinnyClawController
         .povUp()
         .onTrue(
@@ -399,10 +416,27 @@ public class Controls {
     if (s.climbPivotSubsystem == null) {
       return;
     }
-    s.climbPivotSubsystem.setDefaultCommand(s.climbPivotSubsystem.holdPosition());
-    climbTestController.back().onTrue(s.climbPivotSubsystem.toggleClimb());
-    climbTestController.start().onTrue(s.climbPivotSubsystem.zeroClimb());
-    operatorController.start().onTrue(s.climbPivotSubsystem.toggleClimb());
+
+    Command setClimbLEDs;
+    if (s.elevatorLEDSubsystem != null) {
+      setClimbLEDs = s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
+    } else {
+      setClimbLEDs = Commands.none();
+    }
+
+    climbTestController
+        .start()
+        .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
+    // operatorController
+    //     .start()
+    //     .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
+    operatorController
+        .rightTrigger(0.1)
+        .whileTrue(
+            s.climbPivotSubsystem
+                .moveClimbManual(
+                    () -> -MathUtil.applyDeadband(operatorController.getRightTriggerAxis(), 0.1))
+                .withName("Climb Manual Control"));
   }
 
   private void configureSpinnyClawBindings() {
@@ -428,22 +462,47 @@ public class Controls {
     if (s.elevatorLEDSubsystem == null) {
       return;
     }
-    elevatorTestController
-        .back()
-        .onTrue(s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.larsonAnim));
-    elevatorTestController
-        .start()
-        .onTrue(s.elevatorLEDSubsystem.animate(s.elevatorLEDSubsystem.rainbowAnim));
+
+    s.elevatorLEDSubsystem.setDefaultCommand(
+        s.elevatorLEDSubsystem.showScoringMode(() -> scoringMode));
+
     if (s.elevatorSubsystem != null) {
       Trigger hasBeenZeroed = new Trigger(s.elevatorSubsystem::getHasBeenZeroed);
       Commands.waitSeconds(1)
           .andThen(
-              s.elevatorLEDSubsystem.colorSet(50, 0, 0).withName("LED red").ignoringDisable(true))
+              s.elevatorLEDSubsystem
+                  .colorSet(255, 0, 0, "Red - Elevator Not Zeroed")
+                  .ignoringDisable(true))
           .schedule();
       hasBeenZeroed.onTrue(
-          s.elevatorLEDSubsystem.colorSet(0, 50, 0).withName("LED green").ignoringDisable(true));
+          s.elevatorLEDSubsystem
+              .colorSet(0, 255, 0, "Green - Elevator Zeroed")
+              .ignoringDisable(true));
       hasBeenZeroed.onFalse(
-          s.elevatorLEDSubsystem.colorSet(50, 0, 0).withName("LED red").ignoringDisable(false));
+          s.elevatorLEDSubsystem
+              .colorSet(255, 0, 0, "Red - Elevator Not Zeroed")
+              .ignoringDisable(false));
+    }
+    RobotModeTriggers.autonomous()
+        .whileTrue(s.elevatorLEDSubsystem.animate(LEDPattern.rainbow(255, 255), "Auto Rainbow"));
+  }
+
+  private void configureAlignBindings() {
+    if (s.drivebaseSubsystem == null) {
+      return;
+    }
+    driverController.leftBumper().whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
+  }
+
+  public void vibrateDriveController(double vibration) {
+    if (!DriverStation.isAutonomous()) {
+      driverController.getHID().setRumble(RumbleType.kBothRumble, vibration);
+    }
+  }
+
+  public void vibrateCoDriveController(double vibration) {
+    if (!DriverStation.isAutonomous()) {
+      operatorController.getHID().setRumble(RumbleType.kBothRumble, vibration);
     }
   }
 }
