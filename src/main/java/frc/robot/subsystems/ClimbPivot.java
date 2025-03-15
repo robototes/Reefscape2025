@@ -21,8 +21,8 @@ import java.util.function.DoubleSupplier;
 
 public class ClimbPivot extends SubsystemBase {
 
-  private final TalonFX motorOne;
-  private final TalonFX motorTwo;
+  private final TalonFX motorLeft;
+  private final TalonFX motorRight;
 
   public enum TargetPositions {
     STOWED,
@@ -34,13 +34,13 @@ public class ClimbPivot extends SubsystemBase {
   private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Climb");
 
   private final double STOWED_PRESET = -0.09;
-  private final double CLIMB_OUT_PRESET = -0.40;
+  private final double CLIMB_OUT_PRESET = -0.405;
   private final double CLIMBED_PRESET = -0.208;
   private final double FORWARD_SOFT_STOP = -0.07;
   private final double REVERSE_SOFT_STOP = -78;
-  private final double CLIMB_OUT_SPEED = -0.3;
+  private final double CLIMB_OUT_SPEED = -0.1;
   private final double BOOLEAN_TOLERANCE = 0.02;
-  private final double CLIMB_HOLD_STOWED = -0.05;
+  private final double CLIMB_HOLD_STOWED = -0.001;
   private final double CLIMB_HOLD_CLIMBOUT = -0.0;
   private final double CLIMB_HOLD_CLIMBED = -0.0705;
 
@@ -68,17 +68,17 @@ public class ClimbPivot extends SubsystemBase {
   private final Debouncer notConnectedDebouncerTwo = new Debouncer(.1, DebounceType.kBoth);
 
   public ClimbPivot() {
-    motorOne = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_ONE_ID);
-    motorTwo = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_TWO_ID);
+    motorLeft = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_LEFT_ID);
+    motorRight = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_RIGHT_ID);
     sensor = new DigitalInput(Hardware.CLIMB_SENSOR);
     configure();
     setupLogging();
-    motorTwo.setControl(new Follower(motorOne.getDeviceID(), true));
+    motorRight.setControl(new Follower(motorLeft.getDeviceID(), true));
   }
 
   private void configure() {
-    var talonFXConfigurator = motorOne.getConfigurator();
-    var talonFXConfigurator2 = motorTwo.getConfigurator();
+    var talonFXConfigurator = motorLeft.getConfigurator();
+    var talonFXConfigurator2 = motorRight.getConfigurator();
 
     TalonFXConfiguration configuration = new TalonFXConfiguration();
 
@@ -116,7 +116,7 @@ public class ClimbPivot extends SubsystemBase {
   // }
 
   public Command stopMotor() {
-    return runOnce(() -> motorOne.stopMotor());
+    return runOnce(() -> motorLeft.stopMotor());
   }
 
   public Command advanceClimbTarget(Command setClimbLEDs) {
@@ -152,25 +152,25 @@ public class ClimbPivot extends SubsystemBase {
   }
 
   public double getClimbVelocity() {
-    return motorOne.getVelocity().getValueAsDouble();
+    return motorLeft.getVelocity().getValueAsDouble();
   }
 
   public double getClimbPosition() {
-    return motorOne.getPosition().getValueAsDouble();
+    return motorLeft.getPosition().getValueAsDouble();
   }
 
   public void setPosition(double pos) {
-    motorOne.setPosition(pos);
+    motorLeft.setPosition(pos);
   }
 
   public Command moveClimbManual(DoubleSupplier amount) {
     return runEnd(
         () -> {
-          double printAmt = amount.getAsDouble();
-          motorOne.set(printAmt);
-          System.out.println(printAmt);
+          setSpeed = amount.getAsDouble();
+          motorLeft.set(setSpeed);
+          System.out.println(setSpeed);
         },
-        () -> motorOne.stopMotor());
+        () -> motorLeft.stopMotor());
   }
 
   public void setupLogging() {
@@ -235,11 +235,13 @@ public class ClimbPivot extends SubsystemBase {
   @Override
   public void periodic() {
     double currentPos = getClimbPosition();
-    // if (MathUtil.isNear(targetPos, currentPos, BOOLEAN_TOLERANCE)) {
-    //   motorOne.set(holdSpeed);
-    // } else {
-    //   motorOne.set(CLIMB_OUT_SPEED);
-    // }
+    if (MathUtil.isNear(targetPos, currentPos, BOOLEAN_TOLERANCE)) {
+      motorLeft.set(holdSpeed);
+      setSpeed = holdSpeed;
+    } else {
+      motorLeft.set(CLIMB_OUT_SPEED);
+      setSpeed = CLIMB_OUT_SPEED;
+    }
 
     if (MathUtil.isNear(currentPos, CLIMB_OUT_PRESET, BOOLEAN_TOLERANCE)) {
       isClimbOut = true;
@@ -253,8 +255,8 @@ public class ClimbPivot extends SubsystemBase {
     }
 
     NotConnectedErrorOne.set(
-        notConnectedDebouncerOne.calculate(!motorOne.getMotorVoltage().hasUpdated()));
+        notConnectedDebouncerOne.calculate(!motorLeft.getMotorVoltage().hasUpdated()));
     NotConnectedErrorTwo.set(
-        notConnectedDebouncerTwo.calculate(!motorTwo.getMotorVoltage().hasUpdated()));
+        notConnectedDebouncerTwo.calculate(!motorRight.getMotorVoltage().hasUpdated()));
   }
 }
