@@ -37,7 +37,7 @@ public class Robot extends TimedRobot {
   public final Sensors sensors;
   public final AutoLogic autoLogic;
   public final SuperStructure superStructure;
-  
+
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
     instance = this;

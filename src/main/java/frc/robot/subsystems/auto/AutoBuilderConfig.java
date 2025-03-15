@@ -1,25 +1,22 @@
 package frc.robot.subsystems.auto;
 
-import java.io.IOException;
-
-import org.json.simple.parser.ParseException;
-
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
+import java.io.IOException;
+import org.json.simple.parser.ParseException;
 
 public class AutoBuilderConfig {
-    public static Robot r = Robot.getInstance();
-    public static final Subsystems s = r.subsystems;
+  public static Robot r = Robot.getInstance();
+  public static final Subsystems s = r.subsystems;
 
-    public static void buildAuto(CommandSwerveDrivetrain drivebase) {
+  public static void buildAuto(CommandSwerveDrivetrain drivebase) {
 
     try {
       AutoBuilder.configure(
@@ -58,6 +55,6 @@ public class AutoBuilderConfig {
     } catch (IOException | ParseException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-    } 
     }
+  }
 }
