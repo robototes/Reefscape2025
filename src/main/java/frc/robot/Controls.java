@@ -86,7 +86,7 @@ public class Controls {
     configureClimbPivotBindings();
     configureSpinnyClawBindings();
     configureElevatorLEDBindings();
-    configureAlignBindings();
+    configureAutoAlignBindings();
   }
 
   private void configureDrivebaseBindings() {
@@ -119,14 +119,6 @@ public class Controls {
                               * inputScale); // Drive counterclockwise with negative X (left)
                 })
             .withName("Drive"));
-    driverController
-        .leftBumper()
-        .whileTrue(
-            AutoAlign.aim(
-                s.drivebaseSubsystem,
-                () -> -driverController.getLeftY() * MaxSpeed,
-                () -> -driverController.getLeftX() * MaxSpeed));
-    driverController.rightTrigger().onTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
     // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
     // brake));
     // driveController.b().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
@@ -493,11 +485,18 @@ public class Controls {
         .whileTrue(s.elevatorLEDSubsystem.animate(LEDPattern.rainbow(255, 255), "Auto Rainbow"));
   }
 
-  private void configureAlignBindings() {
+  private void configureAutoAlignBindings() {
     if (s.drivebaseSubsystem == null) {
       return;
     }
-    driverController.leftBumper().whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
+    driverController
+        .leftBumper()
+        .whileTrue(
+            AutoAlign.aim(
+                s.drivebaseSubsystem,
+                () -> -driverController.getLeftY() * MaxSpeed,
+                () -> -driverController.getLeftX() * MaxSpeed));
+    driverController.rightTrigger().onTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
   }
 
   public void vibrateDriveController(double vibration) {
