@@ -144,7 +144,7 @@ public class SuperStructure {
   public Command algaeLevelThreeFourIntake() {
     return Commands.sequence(
             Commands.parallel(
-                spinnyClaw.algaeIntakePower(),//timeout?
+                spinnyClaw.algaeIntakePower(), // timeout?
                 armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
             // add a wait command here
@@ -155,7 +155,7 @@ public class SuperStructure {
   public Command algaeLevelTwoThreeIntake() { // theoretically
     return Commands.sequence(
             Commands.parallel(
-                spinnyClaw.algaeIntakePower(),//timeout?
+                spinnyClaw.algaeIntakePower(), // timeout?
                 armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
             // add a wait command here
@@ -189,7 +189,7 @@ public class SuperStructure {
     return Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.ALGAE_STOWED),
             armPivot.moveToPosition(ArmPivot.ALGAE_STOWED),
-            spinnyClaw.algaeIntakePower()) //check time
+            spinnyClaw.algaeIntakePower()) // check time
         .deadlineFor(colorSet(255, 255, 255, "White - Stowed").asProxy())
         .withName("Algae Stow");
   }
@@ -199,16 +199,17 @@ public class SuperStructure {
             Commands.parallel(
                 elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE),
                 armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
-                spinnyClaw.algaeIntakePower()), //check timeout
+                spinnyClaw.algaeIntakePower()), // check timeout
             spinnyClaw.algaeExtakePower().withTimeout(0.25))
         .withName("Algae Processor Score");
   }
+
   public Command algaeNetScore() { // check intake power time
     return Commands.sequence(
             Commands.parallel(
                 elevator.setLevel(ElevatorSubsystem.ALGAE_NET_SCORE),
                 armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE),
-                spinnyClaw.algaeIntakePower()),//check timeout
+                spinnyClaw.algaeIntakePower()), // check timeout
             spinnyClaw.algaeExtakePower().withTimeout(0.25))
         .withName("Algae Processor Score");
   }
