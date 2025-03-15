@@ -5,9 +5,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "M to G"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "M to G"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "scoreCommand"
+                }
+              }
+            ]
           }
         }
       ]

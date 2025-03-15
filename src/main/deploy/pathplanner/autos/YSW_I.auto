@@ -5,9 +5,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "YSW to I"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "YSW to I"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "scoreCommand"
+                }
+              }
+            ]
           }
         }
       ]

@@ -30,6 +30,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "intake"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -52,6 +58,12 @@
           "type": "path",
           "data": {
             "pathName": "K to LSF"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake"
           }
         },
         {

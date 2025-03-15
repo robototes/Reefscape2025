@@ -30,6 +30,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "intake"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -55,6 +61,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "intake"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -71,18 +83,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": []
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": []
           }
         }
       ]

@@ -5,9 +5,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "OSM to F"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "OSM to F"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "scoreCommand"
+                }
+              }
+            ]
           }
         }
       ]

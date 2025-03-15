@@ -1,5 +1,6 @@
 package frc.robot.subsystems.auto;
 
+import static frc.robot.Sensors.SensorConstants.ARMSENSOR_ENABLED;
 import static frc.robot.Subsystems.SubsystemConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -49,7 +50,8 @@ public class AutoLogic {
         "Opposite Alliance Side Middle",
         new Pose2d(7.187, 0.811, new Rotation2d(Units.degreesToRadians(90)))),
     OPPOSITE_ALLIANCE_SIDE_WALL(
-        "Opposite Alliance Side Wall", new Pose2d(7.187, 1.908, new Rotation2d(Units.degreesToRadians(90)))),
+        "Opposite Alliance Side Wall",
+        new Pose2d(7.187, 1.908, new Rotation2d(Units.degreesToRadians(90)))),
     MISC("Misc", null);
 
     final String title; // for shuffleboard display
@@ -160,9 +162,9 @@ public class AutoLogic {
     // param: String commandName, Command command
 
     // Intake
-    NamedCommands.registerCommand("Score", scoreCommand());
-    NamedCommands.registerCommand("Branch Alignment", autoBranchAlign());
-    NamedCommands.registerCommand("Intake", intakeCommand());
+    NamedCommands.registerCommand("scoreCommand", scoreCommand());
+    NamedCommands.registerCommand("branchAlign", autoBranchAlign());
+    NamedCommands.registerCommand("intake", intakeCommand());
   }
 
   // public Command getConditionalCommand(){}
@@ -264,11 +266,17 @@ public class AutoLogic {
   }
 
   public static Command intakeCommand() {
+
     if (r.superStructure != null) {
-      return r.superStructure
-          .preIntake()
-          .andThen(r.superStructure.coralIntake())
-          .withName("intake");
+      if (ARMSENSOR_ENABLED) {
+        return Commands.waitUntil(r.sensors.armSensor.inClaw()).withName("intake");
+      } else {
+        return Commands.sequence(
+                r.superStructure.preIntake(),
+                Commands.waitSeconds(0.5),
+                r.superStructure.coralIntake())
+            .withName("intake");
+      }
     }
     return Commands.none().withName("intake");
   }

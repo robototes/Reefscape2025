@@ -30,13 +30,19 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "intake"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "YSW to J"
+                  "pathName": "LSF to J"
                 }
               },
               {

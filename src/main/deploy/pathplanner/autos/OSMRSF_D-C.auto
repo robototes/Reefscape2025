@@ -5,9 +5,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "OSM to D"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "OSM to D"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "scoreCommand"
+                }
+              }
+            ]
           }
         },
         {
@@ -17,15 +30,34 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "RSF to C"
+            "name": "intake"
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "scoreCommand"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RSF to C"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "scoreCommand"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": []
           }
         }
       ]
