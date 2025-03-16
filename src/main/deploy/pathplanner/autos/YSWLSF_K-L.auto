@@ -13,6 +13,12 @@
                 "data": {
                   "pathName": "YSW to K"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "scoreCommand"
+                }
               }
             ]
           }

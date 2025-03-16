@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "OSM to D"
+                  "pathName": "YSM to K"
                 }
               },
               {
@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "D to RSF"
+            "pathName": "K to LSC"
           }
         },
         {
@@ -42,7 +42,38 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RSF to C"
+                  "pathName": "LSC to L"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "scoreCommand"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L to LSC"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LSC to A"
                 }
               },
               {
