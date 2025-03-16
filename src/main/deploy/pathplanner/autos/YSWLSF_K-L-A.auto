@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "YSM to I"
+                  "pathName": "YSW to K"
                 }
               },
               {
@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "I to LSF"
+            "pathName": "K to LSF"
           }
         },
         {
@@ -42,7 +42,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LSF to J"
+                  "pathName": "LSF to L"
                 }
               },
               {
@@ -57,7 +57,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "J to LSF"
+            "pathName": "L to LSF"
           }
         },
         {
@@ -73,7 +73,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LSF to K"
+                  "pathName": "LSF to A"
                 }
               },
               {
