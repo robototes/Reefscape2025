@@ -556,6 +556,7 @@ public class Controls {
                 s.drivebaseSubsystem,
                 () -> -driverController.getLeftY() * MaxSpeed,
                 () -> -driverController.getLeftX() * MaxSpeed));
+    //Auto drive
     driverController.rightTrigger().whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
   }
 
