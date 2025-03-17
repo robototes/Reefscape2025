@@ -31,7 +31,7 @@ import java.util.function.Supplier;
 
 public class ElevatorSubsystem extends SubsystemBase {
   // Maximum is 38.34
-  public static final double CORAL_LEVEL_FOUR_PRE_POS = 37.5;
+  public static final double CORAL_LEVEL_FOUR_PRE_POS = 36.5; //lowered by tristan to go with the higher arm angle, untested
   public static final double CORAL_LEVEL_FOUR_POS = 36;
   public static final double CORAL_LEVEL_THREE_PRE_POS = 18.65;
   public static final double CORAL_LEVEL_THREE_POS = 14;
