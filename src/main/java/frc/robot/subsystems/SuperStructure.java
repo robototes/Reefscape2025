@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.sensors.ArmSensor;
 import frc.robot.sensors.ElevatorLight;
 import java.util.function.BooleanSupplier;
+import frc.robot.util.AlgaeIntakeHeight;
 
 public class SuperStructure {
   private final ElevatorSubsystem elevator;
@@ -136,86 +137,127 @@ public class SuperStructure {
         .withName("Coral Intake");
   }
 
-  public Command algaeLevelThreeFourIntake() {
+  // ALGAE INTAKING
+  public Command algaeGroundIntake() {
     return Commands.sequence(
             Commands.parallel(
-                spinnyClaw.algaeIntakePower(),
-                armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
-            // add a wait command here
+                    spinnyClaw.algaeIntakePower(),
+                    armPivot.moveToPosition(ArmPivot.ALGAE_GROUND_INTAKE),
+                    elevator.setLevel(ElevatorSubsystem.ALGAE_GROUND_INTAKE))
+                .until(armSensor.inClaw()),
             algaeStow())
-        .withName("Algae L3-L4 Intake");
+        .withName("Algae Ground Intake");
   }
 
-  public Command algaeLevelTwoThreeIntake() { // theoretically
+  public Command algaeLevelTwoThreeIntake() {
     return Commands.sequence(
             Commands.parallel(
-                spinnyClaw.algaeIntakePower(),
-                armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
-            // add a wait command here
+                    spinnyClaw.algaeIntakePower(),
+                    armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
+                    elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE))
+                .until(armSensor.inClaw()),
             algaeStow())
         .withName("Algae L2-L3 Intake");
   }
 
-  public Command algaeLevelThreeFourFling(BooleanSupplier finish) {
+  public Command algaeLevelThreeFourIntake() {
     return Commands.sequence(
             Commands.parallel(
-                spinnyClaw.algaeFlingPower(),
-                armPivot.moveToPosition(ArmPivot.ALGAE_FLING),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR_FLING)),
-            Commands.waitUntil(finish),
+                    spinnyClaw.algaeIntakePower(),
+                    armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
+                    elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR))
+                .until(armSensor.inClaw()),
             algaeStow())
-        .withName("Algae L3-L4 Fling");
+        .withName("Algae L3-L4 Intake");
   }
 
-  public Command algaeLevelTwoThreeFling(BooleanSupplier finish) { // theoretically
-    return Commands.sequence(
-            Commands.parallel(
-                spinnyClaw.algaeFlingPower(),
-                armPivot.moveToPosition(ArmPivot.ALGAE_FLING),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE_FLING)),
-            Commands.waitUntil(finish),
-            algaeStow())
-        .withName("Algae L2-L3 Fling");
-  }
+  // public Command algaeLevelThreeFourFling(BooleanSupplier finish) {
+  //   return Commands.sequence(
+  //           Commands.parallel(
+  //               spinnyClaw.algaeFlingPower(),
+  //               armPivot.moveToPosition(ArmPivot.ALGAE_FLING),
+  //               elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR_FLING)),
+  //           Commands.waitUntil(finish),
+  //           algaeStow())
+  //       .withName("Algae L3-L4 Fling");
+  // }
 
-  public Command algaeLevelThreeFourPop() {
-    return Commands.sequence(
-            Commands.parallel(
-                armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE_PREPOS),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
-            armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-            algaeStow())
-        .withName("Algae L3-L4 Pop");
-  }
+  // public Command algaeLevelTwoThreeFling(BooleanSupplier finish) { // theoretically
+  //   return Commands.sequence(
+  //           Commands.parallel(
+  //               spinnyClaw.algaeFlingPower(),
+  //               armPivot.moveToPosition(ArmPivot.ALGAE_FLING),
+  //               elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE_FLING)),
+  //           Commands.waitUntil(finish),
+  //           algaeStow())
+  //       .withName("Algae L2-L3 Fling");
+  // }
 
-  public Command algaeLevelTwoThreePop() { // theoretically
-    return Commands.sequence(
-            Commands.parallel(
-                armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE_PREPOS),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
-            armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-            algaeStow())
-        .withName("Algae L2-L3 Pop");
-  }
+  // public Command algaeLevelThreeFourPop() {
+  //   return Commands.sequence(
+  //           Commands.parallel(
+  //               armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE_PREPOS),
+  //               elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
+  //           armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
+  //           algaeStow())
+  //       .withName("Algae L3-L4 Pop");
+  // }
 
+  // public Command algaeLevelTwoThreePop() { // theoretically
+  //   return Commands.sequence(
+  //           Commands.parallel(
+  //               armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE_PREPOS),
+  //               elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
+  //           armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
+  //           algaeStow())
+  //       .withName("Algae L2-L3 Pop");
+  // }
+
+  //Hold Algae
   public Command algaeStow() { // Big North + Spider collab on this one
     return Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.ALGAE_STOWED),
             armPivot.moveToPosition(ArmPivot.ALGAE_STOWED),
-            spinnyClaw.algaeIntakePower())
+            spinnyClaw.algaeHoldIntakePower())
         .deadlineFor(colorSet(255, 255, 255, "White - Stowed").asProxy())
         .withName("Algae Stow");
   }
 
-  public Command algaeProcessorScore() { // Big North + Spider collab on this one
+  //Processor
+  public Command algaeProcessorScore(BooleanSupplier score, AlgaeIntakeHeight algaeIntakeHeight) { // Big North + Spider collab on this one
     return Commands.sequence(
-            Commands.parallel(
-                elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE),
-                armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
-                spinnyClaw.algaeIntakePower()),
-            spinnyClaw.algaeExtakePower())
-        .withName("Algae Processor Score");
+      Commands.parallel(
+            elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE),
+            armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE)),
+        Commands.waitUntil(score),
+            spinnyClaw.algaeExtakePower(),
+        Commands.waitSeconds(0.7),
+        Commands.deferredProxy(
+          () ->
+              switch (algaeIntakeHeight) {
+                  case ALGAE_LEVEL_THREE_FOUR -> algaeLevelThreeFourIntake();
+                  case ALGAE_LEVEL_TWO_THREE -> algaeLevelTwoThreeIntake();
+                  case ALGAE_LEVEL_GROUND -> algaeGroundIntake();
+                })
+      ).withName("Algae Processor Score");
+  }
+
+  //Net
+  public Command algaeNetScore(BooleanSupplier score, AlgaeIntakeHeight algaeIntakeHeight) {
+    return Commands.sequence(
+      Commands.parallel(
+            elevator.setLevel(ElevatorSubsystem.ALGAE_NET_HEIGHT),
+            armPivot.moveToPosition(ArmPivot.ALGAE_NET_ANGLE)),
+        Commands.waitUntil(score),
+            spinnyClaw.algaeExtakePower(),
+        Commands.waitSeconds(0.7),
+        Commands.deferredProxy(
+          () ->
+              switch (algaeIntakeHeight) {
+                  case ALGAE_LEVEL_THREE_FOUR -> algaeLevelThreeFourIntake();
+                  case ALGAE_LEVEL_TWO_THREE -> algaeLevelTwoThreeIntake();
+                  case ALGAE_LEVEL_GROUND -> algaeGroundIntake();
+                })
+    ).withName("Algae Net Score");
   }
 }

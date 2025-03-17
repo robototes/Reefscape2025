@@ -42,7 +42,9 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double ALGAE_LEVEL_TWO_THREE_FLING = 16;
   public static final double ALGAE_LEVEL_THREE_FOUR = 16; // untested
   public static final double ALGAE_LEVEL_THREE_FOUR_FLING = 25;
-  public static final double ALGAE_STOWED = 16; // untested
+  public static final double ALGAE_STOWED = 9; // untested and changed by tristan lol
+  public static final double ALGAE_NET_HEIGHT = 38;
+  public static final double ALGAE_GROUND_INTAKE = 0; // untested and by tristan lol
   public static final double ALGAE_PROCESSOR_SCORE = 3; // untested
   public static final double CORAL_STOWED = 2;
   public static final double CORAL_INTAKE_POS = 0.1;
