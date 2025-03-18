@@ -37,7 +37,7 @@ public class SuperStructure {
   public Command coralLevelFour(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
-                colorSet(0, 170, 0, "Green - Aligned With L4"),
+                colorSet(0, 255, 0, "Green - Aligned With L4"),
                 elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS),
                 armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
                 spinnyClaw.stop()),
@@ -54,7 +54,7 @@ public class SuperStructure {
   public Command coralLevelThree(BooleanSupplier score) {
     return Commands.sequence(
         Commands.parallel(
-            colorSet(0, 170, 0, "Green - Aligned With L3"),
+            colorSet(0, 255, 0, "Green - Aligned With L3"),
             elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS),
             armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
             spinnyClaw.stop()),
@@ -68,7 +68,7 @@ public class SuperStructure {
   public Command coralLevelTwo(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
-                colorSet(0, 170, 0, "Green - Aligned With L2"),
+                colorSet(0, 255, 0, "Green - Aligned With L2"),
                 elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS),
                 armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
                 spinnyClaw.stop()),
@@ -83,7 +83,7 @@ public class SuperStructure {
   public Command coralLevelOne(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
-                colorSet(0, 170, 0, "Green - Aligned With L1"),
+                colorSet(0, 255, 0, "Green - Aligned With L1"),
                 elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_ONE_POS),
                 armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L1),
                 spinnyClaw.stop()),
@@ -196,7 +196,7 @@ public class SuperStructure {
 
   public Command algaeStow() { // Big North + Spider collab on this one
     return Commands.parallel(
-            colorSet(170, 170, 170, "White - Stowed"),
+            colorSet(170, 170, 170, "White - Stowed"),// ask jospeh aboyt this one cuz idk gang... meow
             elevator.setLevel(ElevatorSubsystem.ALGAE_STOWED),
             armPivot.moveToPosition(ArmPivot.ALGAE_STOWED),
             spinnyClaw.algaeIntakePower())

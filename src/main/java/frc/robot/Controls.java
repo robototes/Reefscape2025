@@ -231,7 +231,7 @@ public class Controls {
               superStructure
                   .coralIntake()
                   .alongWith(
-                      s.elevatorLEDSubsystem.tripleBlink(170, 170, 0, "Yellow - Automatic Intake"))
+                      s.elevatorLEDSubsystem.tripleBlink(255, 255, 0, "Yellow - Automatic Intake"))
                   .withName("Automatic Intake"));
     }
 
@@ -414,7 +414,7 @@ public class Controls {
 
     Command setClimbLEDs;
     if (s.elevatorLEDSubsystem != null) {
-      setClimbLEDs = s.elevatorLEDSubsystem.pulse(0, 0, 170, "Blue - Climb Extended");
+      setClimbLEDs = s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
     } else {
       setClimbLEDs = Commands.none();
     }
@@ -454,16 +454,16 @@ public class Controls {
       Commands.waitSeconds(1)
           .andThen(
               s.elevatorLEDSubsystem
-                  .colorSet(170, 0, 0, "Red - Elevator Not Zeroed")
-                  .ignoringDisable(true))
+                  .blink(120, 0, 0, "Red - Elevator Not Zeroed") // make dimmer and blinky oi oi oi meow
+                  .ignoringDisable(false))
           .schedule();
       hasBeenZeroed.onTrue(
           s.elevatorLEDSubsystem
-              .colorSet(0, 170, 0, "Green - Elevator Zeroed")
-              .ignoringDisable(true));
+              .colorSet(0, 255, 0, "Green - Elevator Zeroed")
+              .ignoringDisable(false));
       hasBeenZeroed.onFalse(
           s.elevatorLEDSubsystem
-              .colorSet(170, 0, 0, "Red - Elevator Not Zeroed")
+              .blink(120, 0, 0, "Red - Elevator Not Zeroed")
               .ignoringDisable(false));
     }
     RobotModeTriggers.autonomous()
