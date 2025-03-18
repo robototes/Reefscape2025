@@ -43,13 +43,19 @@ public class SuperStructure {
                     armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
                     spinnyClaw.stop())
                 .withTimeout(2.0),
-            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_PRE_L4).withTimeout(1.0),
-            Commands.waitUntil(score),
+            armPivot
+                .moveToPosition(ArmPivot.CORAL_PRESET_PRE_L4)
+                .withTimeout(1.0)
+                .withDeadline(Commands.waitUntil(score)),
             Commands.parallel(
                     elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_POS),
-                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L4))
+                    (armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L4)))
                 .withTimeout(2.0),
-            spinnyClaw.coralHoldExtakeL4Power().withTimeout(0.3),
+            Commands.repeatingSequence(
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L4),
+                    Commands.waitUntil(score),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN))
+                .onlyWhile(armSensor.inClaw()),
             Commands.print("Pre preIntake()"),
             preIntake(),
             Commands.print("Post preIntake()"))
@@ -60,12 +66,14 @@ public class SuperStructure {
   public Command coralLevelThree(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
-                elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS),
-                armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
+                elevator
+                    .setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS)
+                    .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
                 spinnyClaw.stop()),
             Commands.repeatingSequence(
-                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L3),
-                    Commands.waitUntil(score),
+                    armPivot
+                        .moveToPosition(ArmPivot.CORAL_PRESET_L3)
+                        .withDeadline(Commands.waitUntil(score)),
                     armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN))
                 .onlyWhile(armSensor.inClaw()),
             preIntake())
@@ -76,12 +84,14 @@ public class SuperStructure {
   public Command coralLevelTwo(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
-                elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS),
-                armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
+                elevator
+                    .setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS)
+                    .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
                 spinnyClaw.stop()),
             Commands.repeatingSequence(
-                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L2),
-                    Commands.waitUntil(score),
+                    armPivot
+                        .moveToPosition(ArmPivot.CORAL_PRESET_L2)
+                        .withDeadline(Commands.waitUntil(score)),
                     armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN))
                 .onlyWhile(armSensor.inClaw()),
             preIntake())
@@ -144,21 +154,21 @@ public class SuperStructure {
   public Command algaeLevelThreeFourIntake() {
     return Commands.sequence(
             Commands.parallel(
-                spinnyClaw.algaeIntakePower(), // timeout?
+                spinnyClaw.algaeIntakePower(),
                 armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
-            // add a wait command here
+            Commands.waitUntil(armSensor.inClaw()),//if statement to check armsensor,
             algaeStow())
         .withName("Algae L3-L4 Intake");
   }
 
-  public Command algaeLevelTwoThreeIntake() { // theoretically
+  public Command algaeLevelTwoThreeIntake() {
     return Commands.sequence(
             Commands.parallel(
-                spinnyClaw.algaeIntakePower(), // timeout?
+                spinnyClaw.algaeIntakePower(),
                 armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
-            // add a wait command here
+            Commands.waitUntil(armSensor.inClaw()), //if statement to check armsensor, if not, then regular wait for 1 sec
             algaeStow())
         .withName("Algae L2-L3 Intake");
   }
@@ -174,7 +184,7 @@ public class SuperStructure {
         .withName("Algae L3-L4 Fling");
   }
 
-  public Command algaeLevelTwoThreeFling(BooleanSupplier finish) { // theoretically
+  public Command algaeLevelTwoThreeFling(BooleanSupplier finish) {
     return Commands.sequence(
             Commands.parallel(
                 spinnyClaw.algaeFlingPower(),
@@ -189,7 +199,7 @@ public class SuperStructure {
     return Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.ALGAE_STOWED),
             armPivot.moveToPosition(ArmPivot.ALGAE_STOWED),
-            spinnyClaw.algaeIntakePower()) // check time
+            spinnyClaw.algaeGripIntakePower())
         .deadlineFor(colorSet(255, 255, 255, "White - Stowed").asProxy())
         .withName("Algae Stow");
   }
@@ -199,18 +209,18 @@ public class SuperStructure {
             Commands.parallel(
                 elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE),
                 armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
-                spinnyClaw.algaeIntakePower()), // check timeout
-            spinnyClaw.algaeExtakePower().withTimeout(0.25))
+                spinnyClaw.algaeIntakePower()),
+            spinnyClaw.algaeHoldExtakePower().withTimeout(0.25))
         .withName("Algae Processor Score");
   }
 
-  public Command algaeNetScore() { // check intake power time
+  public Command algaeNetScore() {
     return Commands.sequence(
             Commands.parallel(
                 elevator.setLevel(ElevatorSubsystem.ALGAE_NET_SCORE),
                 armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE),
-                spinnyClaw.algaeIntakePower()), // check timeout
-            spinnyClaw.algaeExtakePower().withTimeout(0.25))
+                spinnyClaw.algaeIntakePower()),
+            spinnyClaw.algaeHoldExtakePower().withTimeout(0.25))
         .withName("Algae Processor Score");
   }
 }

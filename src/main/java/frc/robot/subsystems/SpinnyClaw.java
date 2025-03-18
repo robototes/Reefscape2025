@@ -23,8 +23,9 @@ public class SpinnyClaw extends SubsystemBase {
   public static final double CORAL_INTAKE_SPEED = -6;
   public static final double CORAL_EXTAKE_SPEED = 4;
   public static final double CORAL_L4_EXTAKE_SPEED = 2;
-  public static final double ALGAE_INTAKE_SPEED = -4; // untested
-  public static final double ALGAE_EXTAKE_SPEED = 2; // untested
+  public static final double ALGAE_INTAKE_SPEED = -3;
+  public static final double ALGAE_GRIP_INTAKE_SPEED = -1;
+  public static final double ALGAE_EXTAKE_SPEED = 12; // untested
   public static final double ALGAE_FLING_SPEED = 10;
   // Remove once we implement PID speed
   public static int placeholderPIDSpeed;
@@ -79,7 +80,7 @@ public class SpinnyClaw extends SubsystemBase {
     if (armSensor != null) {
       return runOnce(
           () -> {
-            if (armSensor.booleanInClaw()) {
+            if (armSensor.booleanInClaw() && pow < 0) {
               motor.stopMotor();
             } else {
               motor.setVoltage(pow);
@@ -94,7 +95,7 @@ public class SpinnyClaw extends SubsystemBase {
     if (armSensor != null) {
       return startEnd(
           () -> {
-            if (armSensor.booleanInClaw()) {
+            if (armSensor.booleanInClaw() && pow < 0) {
               motor.stopMotor();
             } else {
               motor.setVoltage(pow);
@@ -122,10 +123,6 @@ public class SpinnyClaw extends SubsystemBase {
     return holdPower(CORAL_EXTAKE_SPEED).withName("Hold extake power");
   }
 
-  public Command coralHoldExtakeL4Power() {
-    return holdPower(CORAL_L4_EXTAKE_SPEED).withName("Hold extake power L4");
-  }
-
   // algae stuff
   public Command algaeIntakePower() {
     return setPower(ALGAE_INTAKE_SPEED).withName("Algae intake power");
@@ -135,8 +132,8 @@ public class SpinnyClaw extends SubsystemBase {
     return setPower(ALGAE_EXTAKE_SPEED).withName("Algae extake power");
   }
 
-  public Command algaeHoldIntakePower() {
-    return holdPower(ALGAE_INTAKE_SPEED).withName("Algae hold intake power");
+  public Command algaeGripIntakePower() {
+    return setPower(ALGAE_GRIP_INTAKE_SPEED).withName("Algae grip intake power");
   }
 
   public Command algaeHoldExtakePower() {

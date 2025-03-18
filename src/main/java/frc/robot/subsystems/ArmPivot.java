@@ -44,11 +44,12 @@ public class ArmPivot extends SubsystemBase {
   public static final double ALGAE_REMOVE_PREPOS = 0; // untested
   public static final double ALGAE_REMOVE = -0.08; // untested
   public static final double ALGAE_FLING = -0.08;
-  public static final double ALGAE_STOWED = 0; // untested
-  public static final double ALGAE_PROCESSOR_SCORE = 0.125; // untested
-  public static final double ALGAE_NET_SCORE = 0.25; // untested
+  public static final double ALGAE_STOWED = -0.05; // untested
+  public static final double ALGAE_PROCESSOR_SCORE = -.05; // untested
+  public static final double ALGAE_GROUND_INTAKE = -0.1; // unused
+  public static final double ALGAE_NET_SCORE = 0.18; // untested
   public static final double CORAL_PRESET_STOWED = 0.125;
-  public static final double PRESET_OUT = 0;
+  public static final double CORAL_PRESET_OUT = 0;
   public static final double CORAL_PRESET_UP = 0.25; // Pointing directly upwards
   public static final double CORAL_PRESET_DOWN = -0.25;
   public static final double HARDSTOP_HIGH = 0.32;

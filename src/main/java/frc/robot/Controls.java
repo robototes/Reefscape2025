@@ -208,7 +208,7 @@ public class Controls {
         .a()
         .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
         .onTrue(
-            Commands.deferredProxy(
+            Commands.deferredProxy( //make a command factory within controls for this chunk of code
                     () ->
                         switch (scoringMode) {
                           case CORAL -> superStructure
@@ -252,21 +252,28 @@ public class Controls {
                           case CORAL -> switch (branchHeight) {
                             case LEVEL_FOUR -> superStructure
                                 .coralLevelFour(driverController.rightBumper())
-                                .onlyIf(sensors.armSensor.booleanSupplierInClaw());
+                                .onlyIf(sensors.armSensor.inClaw());
                             case LEVEL_THREE -> superStructure
                                 .coralLevelThree(driverController.rightBumper())
-                                .onlyIf(sensors.armSensor.booleanSupplierInClaw());
+                                .onlyIf(sensors.armSensor.inClaw());
                             case LEVEL_TWO -> superStructure
                                 .coralLevelTwo(driverController.rightBumper())
-                                .onlyIf(sensors.armSensor.booleanSupplierInClaw());
+                                .onlyIf(sensors.armSensor.inClaw());
                             case LEVEL_ONE -> superStructure
                                 .coralLevelOne(driverController.rightBumper())
-                                .onlyIf(sensors.armSensor.booleanSupplierInClaw());
+                                .onlyIf(sensors.armSensor.inClaw());
                           };
                           case ALGAE -> superStructure.algaeProcessorScore();
                         })
                 .withName("score"));
   }
+  Commands.deferredProxy(
+                () ->
+                    switch (algaeIntakeHeight) {
+                      case ALGAE_LEVEL_THREE_FOUR -> algaeLevelThreeFourIntake();
+                      case ALGAE_LEVEL_TWO_THREE -> algaeLevelTwoThreeIntake();
+                      case ALGAE_LEVEL_GROUND -> algaeGroundIntake();
+                    }))
 
   private void configureElevatorBindings() {
     if (s.elevatorSubsystem == null) {
@@ -395,7 +402,10 @@ public class Controls {
                 .withName("Arm Preset Down"));
     operatorController
         .povRight()
-        .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_OUT).withName("Arm Preset Out"));
+        .onTrue(
+            s.armPivotSubsystem
+                .moveToPosition(ArmPivot.CORAL_PRESET_OUT)
+                .withName("Arm Preset Out"));
     armPivotSpinnyClawController
         .y()
         .onTrue(
@@ -459,7 +469,7 @@ public class Controls {
         .whileTrue(s.spinnyClawSubsytem.algaeHoldExtakePower());
     armPivotSpinnyClawController
         .rightTrigger()
-        .whileTrue(s.spinnyClawSubsytem.algaeHoldIntakePower());
+        .whileTrue(s.spinnyClawSubsytem.algaeGripIntakePower());
   }
 
   private void configureElevatorLEDBindings() {

@@ -33,8 +33,8 @@ public class Robot extends TimedRobot {
 
   private final RobotType robotType;
   public final Controls controls;
-  public final Subsystems subsystems;
   public final Sensors sensors;
+  public final Subsystems subsystems;
 
   public final SuperStructure superStructure;
   private String autoCommandRequirements = "UNKNOWN";
@@ -48,8 +48,8 @@ public class Robot extends TimedRobot {
 
     LiveWindow.disableAllTelemetry();
 
-    subsystems = new Subsystems();
     sensors = new Sensors();
+    subsystems = new Subsystems(sensors);
 
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
