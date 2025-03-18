@@ -144,7 +144,7 @@ public class VisionSubsystem extends SubsystemBase {
         .withPosition(1, 0)
         .withSize(1, 1);
     shuffleboardTab
-        .addDouble("april tag distance", this::getDistanceToTarget)
+        .addDouble("april tag distance meters", this::getDistanceToTarget)
         .withPosition(1, 1)
         .withSize(1, 1);
   }
@@ -181,6 +181,7 @@ public class VisionSubsystem extends SubsystemBase {
           PhotonUtils.getDistanceToPose(
               FieldPose,
               fieldLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d());
+      if (Distance > 2.0) return;
       aprilTagsHelper.addVisionMeasurement(FieldPose, TimestampSeconds, STANDARD_DEVS);
       robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       if (RawTimestampSeconds > lastRawTimestampSeconds) {
@@ -212,6 +213,6 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public double getDistanceToTarget() {
-    return (double) Math.round(Units.metersToInches(Distance) * 10) / 10;
+    return (double) Math.round(Distance * 10) / 10;
   }
 }

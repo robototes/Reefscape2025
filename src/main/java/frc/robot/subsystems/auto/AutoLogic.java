@@ -7,6 +7,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -48,10 +49,10 @@ public class AutoLogic {
     MIDDLE("MIDDLE", new Pose2d(7.187, 4.044, new Rotation2d(Units.degreesToRadians(180)))),
     OPPOSITE_ALLIANCE_SIDE_MIDDLE(
         "Opposite Alliance Side Middle",
-        new Pose2d(7.187, 0.811, new Rotation2d(Units.degreesToRadians(90)))),
+        new Pose2d(7.187, 1.908, new Rotation2d(Units.degreesToRadians(90)))),
     OPPOSITE_ALLIANCE_SIDE_WALL(
         "Opposite Alliance Side Wall",
-        new Pose2d(7.187, 1.908, new Rotation2d(Units.degreesToRadians(90)))),
+        new Pose2d(7.187, 0.811, new Rotation2d(Units.degreesToRadians(90)))),
     MISC("Misc", null);
 
     final String title; // for shuffleboard display
@@ -124,6 +125,8 @@ public class AutoLogic {
           new AutoPath("YSWLSF_J-K-L-A", "YSWLSF_J-K-L-A"),
           new AutoPath("YSWLSF_I-J-K-L", "YSWLSF_I-J-K-L"));
 
+  private static List<AutoPath> testingPaths = List.of(new AutoPath("PIDTESTING", "PID TESTING"));
+
   // map (gulp)
   private static Map<Integer, List<AutoPath>> commandsMap =
       Map.of(
@@ -136,7 +139,9 @@ public class AutoLogic {
           3,
           threePiecePaths,
           4,
-          fourPiecePaths);
+          fourPiecePaths,
+          5,
+          testingPaths);
 
   // vars
 
@@ -255,12 +260,22 @@ public class AutoLogic {
         .andThen(AutoBuilder.buildAuto(availableAutos.getSelected().getAutoName()));
   }
 
+  private static boolean readyToScore() {
+    var speeds = s.drivebaseSubsystem.getState().Speeds;
+    var rotation = s.drivebaseSubsystem.getRotation3d();
+    return MathUtil.isNear(0, speeds.vxMetersPerSecond, 0.01)
+        && MathUtil.isNear(0, speeds.vyMetersPerSecond, 0.01)
+        && MathUtil.isNear(0, speeds.omegaRadiansPerSecond, Units.degreesToRadians(2))
+        && MathUtil.isNear(0, rotation.getX(), Units.degreesToRadians(2))
+        && MathUtil.isNear(0, rotation.getY(), Units.degreesToRadians(2));
+  }
+
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
       return Commands.sequence(
               Commands.print("Pre raise elevator"),
-              r.superStructure.coralLevelFour(() -> true),
+              r.superStructure.coralLevelFour(() -> readyToScore()),
               Commands.print("Post raise elevator"))
           .withName("scoreCommand");
     }
@@ -272,7 +287,8 @@ public class AutoLogic {
     if (r.superStructure != null) {
       Command waitCommand;
       if (ARMSENSOR_ENABLED) {
-        waitCommand = Commands.waitUntil(r.sensors.armSensor.inTrough());
+        waitCommand =
+            Commands.waitUntil(r.sensors.armSensor.inTrough().or(r.sensors.armSensor.inClaw()));
       } else {
         waitCommand = Commands.waitSeconds(0.5);
       }
