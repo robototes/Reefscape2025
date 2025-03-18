@@ -19,16 +19,16 @@ import frc.robot.Hardware;
 import java.util.function.Supplier;
 
 public class SpinnyClaw extends SubsystemBase {
-  //Speeds in volts i think
-  //-Tristan D
+  // Speeds in volts i think
+  // -Tristan D
   public static final double CORAL_INTAKE_SPEED = -4;
   public static final double CORAL_EXTAKE_SPEED = 2;
   public static final double CORAL_L4_EXTAKE_SPEED = 1;
-  public static final double ALGAE_INTAKE_SPEED = -2; // untested
+  public static final double ALGAE_INTAKE_SPEED = -3; // untested
   public static final double ALGAE_HOLD_INTAKE_SPEED = -1; // untested and by tristan lol
-  public static final double ALGAE_EXTAKE_SPEED = 10; // untested
+  public static final double ALGAE_EXTAKE_SPEED = 12; // untested
   public static final double ALGAE_FLING_SPEED = 4;
-  
+
   // Remove once we implement PID speed
   public static int placeholderPIDSpeed;
 

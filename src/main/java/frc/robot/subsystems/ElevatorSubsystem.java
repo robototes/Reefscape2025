@@ -31,21 +31,21 @@ import java.util.function.Supplier;
 
 public class ElevatorSubsystem extends SubsystemBase {
   // Maximum is 38.34
-  public static final double CORAL_LEVEL_FOUR_PRE_POS = 36.5; //lowered by tristan to go with the higher arm angle, untested
-  public static final double CORAL_LEVEL_FOUR_POS = 36;
-  public static final double CORAL_LEVEL_THREE_PRE_POS = 18.65;
-  public static final double CORAL_LEVEL_THREE_POS = 14;
+  public static final double CORAL_LEVEL_FOUR_PRE_POS = 38.5;
+  public static final double CORAL_LEVEL_FOUR_POS = 28;
+  public static final double CORAL_LEVEL_THREE_PRE_POS = 17.8;
+  public static final double CORAL_LEVEL_THREE_POS = 13;
   public static final double CORAL_LEVEL_TWO_PRE_POS = 6.94;
-  public static final double CORAL_LEVEL_TWO_POS = 4.4;
+  public static final double CORAL_LEVEL_TWO_POS = 4;
   public static final double CORAL_LEVEL_ONE_POS = 8.3;
-  public static final double ALGAE_LEVEL_TWO_THREE = 8; // untested
+  public static final double ALGAE_LEVEL_TWO_THREE = 11;
   public static final double ALGAE_LEVEL_TWO_THREE_FLING = 16;
-  public static final double ALGAE_LEVEL_THREE_FOUR = 16; // untested
+  public static final double ALGAE_LEVEL_THREE_FOUR = 21;
   public static final double ALGAE_LEVEL_THREE_FOUR_FLING = 25;
-  public static final double ALGAE_STOWED = 9; // untested and changed by tristan lol
+  public static final double ALGAE_STOWED = 0;
   public static final double ALGAE_NET_HEIGHT = 38;
-  public static final double ALGAE_GROUND_INTAKE = 0; // untested and by tristan lol
-  public static final double ALGAE_PROCESSOR_SCORE = 3; // untested
+  public static final double ALGAE_GROUND_INTAKE = 0;
+  public static final double ALGAE_PROCESSOR_SCORE = 2;
   public static final double CORAL_STOWED = 2;
   public static final double CORAL_INTAKE_POS = 0.1;
   public static final double CORAL_PRE_INTAKE = 3;

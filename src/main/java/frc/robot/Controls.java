@@ -141,29 +141,28 @@ public class Controls {
       return;
     }
     // operator start button used for climb - bound in climb bindings
-    //L4 setpoint
+    // L4 setpoint
     operatorController
         .y()
         .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_FOUR).withName("level 4"))
         .onTrue(
             Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
                 .withName("algae level 3-4"));
-    //L3 setpoint
+    // L3 setpoint
     operatorController
         .x()
+        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"))
         .onTrue(
-            Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"))
-            .onTrue(
-                Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
-                    .withName("algae level 2-3"));
-    //L2 setpoint
+            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
+                .withName("algae level 3-4"));
+    // L2 setpoint
     operatorController
         .b()
         .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO).withName("level 2"))
         .onTrue(
             Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("algae level 2-3"));
-    //L1 setpoint
+    // L1 setpoint
     operatorController
         .a()
         .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE).withName("level 1"))
@@ -171,29 +170,28 @@ public class Controls {
             Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND)
                 .withName("algae level ground"));
 
-    //L4 Setpoint
+    // L4 Setpoint
     driverController
         .povUp()
         .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_FOUR).withName("level 4"))
         .onTrue(
             Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
                 .withName("algae level 3-4"));
-    //L3 setpoint
+    // L3 setpoint
     driverController
         .povLeft()
+        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"))
         .onTrue(
-            Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"))
-            .onTrue(
-                Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
-                    .withName("algae level 2-3"));
-    //L2 setpoint
+            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
+                .withName("algae level 2-3"));
+    // L2 setpoint
     driverController
         .povRight()
         .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO).withName("level 2"))
         .onTrue(
             Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("algae level 2-3"));
-    //L1 setpoint
+    // L1 setpoint
     driverController
         .povDown()
         .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE).withName("level 1"))
@@ -201,21 +199,21 @@ public class Controls {
             Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND)
                 .withName("algae level ground"));
 
-    //Algae mode
+    // Algae mode
     operatorController
         .leftBumper()
         .onTrue(
             Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE).withName("Algae Scoring Mode"))
         .onTrue(superStructure.algaeStow());
-    
-    //Coral mode
+
+    // Coral mode
     operatorController
         .leftTrigger()
         .onTrue(
             Commands.runOnce(() -> scoringMode = ScoringMode.CORAL).withName("Coral Scoring Mode"))
         .onTrue(superStructure.preIntake());
 
-    //Stop button
+    // Stop button
     operatorController
         .povLeft()
         .onTrue(
@@ -226,10 +224,11 @@ public class Controls {
                           case ALGAE -> superStructure.algaeStow();
                         })
                 .withName("Stow"));
-    
-    //Coral pre-intake button
+
+    // Coral pre-intake button
     operatorController.povDown().onTrue(superStructure.preIntake().withName("pre-intake"));
 
+    // driverController.rightBumper().onTrue(s.spinnyClawSubsytem.algaeExtakePower());
     // Intake button
     driverController
         .a()
@@ -247,7 +246,8 @@ public class Controls {
                               .withName("Manual Coral Intake");
 
                           case ALGAE -> switch (algaeIntakeHeight) {
-                            case ALGAE_LEVEL_THREE_FOUR -> superStructure.algaeLevelThreeFourIntake();
+                            case ALGAE_LEVEL_THREE_FOUR -> superStructure
+                                .algaeLevelThreeFourIntake();
                             case ALGAE_LEVEL_TWO_THREE -> superStructure.algaeLevelTwoThreeIntake();
                             case ALGAE_LEVEL_GROUND -> superStructure.algaeGroundIntake();
                           };
@@ -289,17 +289,13 @@ public class Controls {
                           };
                           case ALGAE -> switch (branchHeight) {
                             case LEVEL_FOUR -> superStructure.algaeNetScore(
-                                driverController.rightBumper(),
-                                algaeIntakeHeight);
+                                driverController.rightBumper(), algaeIntakeHeight);
                             case LEVEL_THREE -> superStructure.algaeNetScore(
-                                driverController.rightBumper(),
-                                algaeIntakeHeight);
+                                driverController.rightBumper(), algaeIntakeHeight);
                             case LEVEL_TWO -> superStructure.algaeNetScore(
-                                driverController.rightBumper(),
-                                algaeIntakeHeight);
+                                driverController.rightBumper(), algaeIntakeHeight);
                             case LEVEL_ONE -> superStructure.algaeProcessorScore(
-                                driverController.rightBumper(),
-                                algaeIntakeHeight);
+                                driverController.rightBumper(), algaeIntakeHeight);
                           };
                         })
                 .withName("score"));
@@ -556,7 +552,7 @@ public class Controls {
                 s.drivebaseSubsystem,
                 () -> -driverController.getLeftY() * MaxSpeed,
                 () -> -driverController.getLeftX() * MaxSpeed));
-    //Auto drive
+    // Auto drive
     driverController.rightTrigger().whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
   }
 
