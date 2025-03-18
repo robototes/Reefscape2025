@@ -9,10 +9,12 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Controls;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import java.util.Arrays;
@@ -103,6 +105,11 @@ public class AutoAlign {
   private static Command autoPathAlign(CommandSwerveDrivetrain drivebaseSubsystem) {
     Pose2d robotPose = drivebaseSubsystem.getState().Pose;
     Pose2d branchPose = getClosestBranch(drivebaseSubsystem);
+    Transform2d robotToBranch = branchPose.minus(robotPose);
+    if (robotToBranch.getTranslation().getNorm() < 0.01
+        && Math.abs(robotToBranch.getRotation().getDegrees()) < 1) {
+      return Commands.none();
+    }
     boolean isBlue;
     if (!DriverStation.getAlliance().isEmpty()) {
       isBlue = DriverStation.getAlliance().get().equals(Alliance.Blue);
