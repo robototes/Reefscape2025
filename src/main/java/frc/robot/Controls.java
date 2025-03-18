@@ -454,7 +454,11 @@ public class Controls {
       Commands.waitSeconds(1)
           .andThen(
               s.elevatorLEDSubsystem
-                  .blink(120, 0, 0, "Red - Elevator Not Zeroed") // make dimmer and blinky oi oi oi meow
+                  .blink(
+                      120,
+                      0,
+                      0,
+                      "Red - Elevator Not Zeroed") // make dimmer and blinky oi oi oi meow
                   .ignoringDisable(false))
           .schedule();
       hasBeenZeroed.onTrue(

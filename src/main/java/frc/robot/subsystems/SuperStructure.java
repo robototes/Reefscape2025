@@ -196,7 +196,8 @@ public class SuperStructure {
 
   public Command algaeStow() { // Big North + Spider collab on this one
     return Commands.parallel(
-            colorSet(170, 170, 170, "White - Stowed"),// ask jospeh aboyt this one cuz idk gang... meow
+            colorSet(
+                170, 170, 170, "White - Stowed"), // ask jospeh aboyt this one cuz idk gang... meow
             elevator.setLevel(ElevatorSubsystem.ALGAE_STOWED),
             armPivot.moveToPosition(ArmPivot.ALGAE_STOWED),
             spinnyClaw.algaeIntakePower())
