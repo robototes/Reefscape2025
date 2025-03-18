@@ -19,6 +19,7 @@ import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.util.AlgaeIntakeHeight;
+import frc.robot.util.AlgaeScoreType;
 import frc.robot.util.AutoAlign;
 import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
@@ -47,6 +48,7 @@ public class Controls {
   private BranchHeight branchHeight = BranchHeight.LEVEL_FOUR;
   private ScoringMode scoringMode = ScoringMode.CORAL;
   private AlgaeIntakeHeight algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
+  private AlgaeScoreType algaeScoreType = AlgaeScoreType.ALGAE_NET_SCORE;
 
   // Swerve stuff
 
@@ -208,9 +210,10 @@ public class Controls {
         .a()
         .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
         .onTrue(
-            Commands.deferredProxy( //make a command factory within controls for this chunk of code
+            Commands.deferredProxy( // make a command factory within controls for this chunk of code
                     () ->
-                        switch (scoringMode) {
+                        switch (scoringMode) { // may need a switch for coral intake with coral
+                            // ground intake when implemented
                           case CORAL -> superStructure
                               .coralIntake()
                               .alongWith(
@@ -218,12 +221,7 @@ public class Controls {
                                       .tripleBlink(255, 92, 0, "Orange - Manual Coral Intake")
                                       .asProxy())
                               .withName("Manual Coral Intake");
-                          case ALGAE -> switch (algaeIntakeHeight) {
-                            case ALGAE_LEVEL_THREE_FOUR -> superStructure.algaeLevelThreeFourFling(
-                                driverController.rightBumper());
-                            case ALGAE_LEVEL_TWO_THREE -> superStructure.algaeLevelTwoThreeFling(
-                                driverController.rightBumper());
-                          };
+                          case ALGAE -> getAlgaeIntakeCommand();
                         })
                 .withName("Driver Intake"));
     if (sensors.armSensor != null) {
@@ -249,31 +247,43 @@ public class Controls {
             Commands.deferredProxy(
                     () ->
                         switch (scoringMode) {
-                          case CORAL -> switch (branchHeight) {
-                            case LEVEL_FOUR -> superStructure
-                                .coralLevelFour(driverController.rightBumper())
-                                .onlyIf(sensors.armSensor.inClaw());
-                            case LEVEL_THREE -> superStructure
-                                .coralLevelThree(driverController.rightBumper())
-                                .onlyIf(sensors.armSensor.inClaw());
-                            case LEVEL_TWO -> superStructure
-                                .coralLevelTwo(driverController.rightBumper())
-                                .onlyIf(sensors.armSensor.inClaw());
-                            case LEVEL_ONE -> superStructure
-                                .coralLevelOne(driverController.rightBumper())
-                                .onlyIf(sensors.armSensor.inClaw());
-                          };
-                          case ALGAE -> superStructure.algaeProcessorScore();
+                          case CORAL -> getCoralBranchHeightCommand();
+                          case ALGAE -> getAlgaeScoreCommand();
                         })
                 .withName("score"));
   }
-  Commands.deferredProxy(
-                () ->
-                    switch (algaeIntakeHeight) {
-                      case ALGAE_LEVEL_THREE_FOUR -> algaeLevelThreeFourIntake();
-                      case ALGAE_LEVEL_TWO_THREE -> algaeLevelTwoThreeIntake();
-                      case ALGAE_LEVEL_GROUND -> algaeGroundIntake();
-                    }))
+
+  private Command getAlgaeIntakeCommand() {
+    return switch (algaeIntakeHeight) {
+      case ALGAE_LEVEL_THREE_FOUR -> superStructure.algaeLevelThreeFourIntake();
+      case ALGAE_LEVEL_TWO_THREE -> superStructure.algaeLevelTwoThreeIntake();
+      case ALGAE_LEVEL_GROUND -> superStructure.algaeGroundIntake();
+    };
+  }
+
+  private Command getAlgaeScoreCommand() {
+    return switch (algaeScoreType) {
+      case ALGAE_PROCESSOR_SCORE -> superStructure.algaeProcessorScore();
+      case ALGAE_NET_SCORE -> superStructure.algaeNetScore();
+    };
+  }
+
+  private Command getCoralBranchHeightCommand() {
+    return switch (branchHeight) {
+      case LEVEL_FOUR -> superStructure
+          .coralLevelFour(driverController.rightBumper())
+          .onlyIf(sensors.armSensor.inClaw());
+      case LEVEL_THREE -> superStructure
+          .coralLevelThree(driverController.rightBumper())
+          .onlyIf(sensors.armSensor.inClaw());
+      case LEVEL_TWO -> superStructure
+          .coralLevelTwo(driverController.rightBumper())
+          .onlyIf(sensors.armSensor.inClaw());
+      case LEVEL_ONE -> superStructure
+          .coralLevelOne(driverController.rightBumper())
+          .onlyIf(sensors.armSensor.inClaw());
+    };
+  }
 
   private void configureElevatorBindings() {
     if (s.elevatorSubsystem == null) {

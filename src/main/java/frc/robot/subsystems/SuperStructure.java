@@ -157,7 +157,7 @@ public class SuperStructure {
                 spinnyClaw.algaeIntakePower(),
                 armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
-            Commands.waitUntil(armSensor.inClaw()),//if statement to check armsensor,
+            Commands.waitUntil(armSensor.inClaw()), // if statement to check armsensor,
             algaeStow())
         .withName("Algae L3-L4 Intake");
   }
@@ -168,9 +168,26 @@ public class SuperStructure {
                 spinnyClaw.algaeIntakePower(),
                 armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
-            Commands.waitUntil(armSensor.inClaw()), //if statement to check armsensor, if not, then regular wait for 1 sec
+            Commands.waitUntil(
+                armSensor
+                    .inClaw()), // add if statement to check armsensor, if not, then regular wait
+            // for 1 sec
             algaeStow())
         .withName("Algae L2-L3 Intake");
+  }
+
+  public Command algaeGroundIntake() {
+    return Commands.sequence(
+            Commands.parallel(
+                spinnyClaw.algaeIntakePower(),
+                armPivot.moveToPosition(ArmPivot.ALGAE_GROUND_INTAKE),
+                elevator.setLevel(ElevatorSubsystem.ALGAE_GROUND_INTAKE)),
+            Commands.waitUntil(
+                armSensor
+                    .inClaw()), // add if statement to check armsensor, if not, then regular wait
+            // for 1 sec
+            algaeStow())
+        .withName("Algae Ground Intake");
   }
 
   public Command algaeLevelThreeFourFling(BooleanSupplier finish) {
