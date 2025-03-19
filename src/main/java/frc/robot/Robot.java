@@ -111,7 +111,10 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {}
 
   @Override
-  public void disabledExit() {}
+  public void disabledExit() {
+    subsystems.drivebaseSubsystem.brakeMotors();
+    subsystems.climbPivotSubsystem.brakeMotors();
+  }
 
   @Override
   public void autonomousInit() {

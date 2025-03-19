@@ -248,4 +248,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         .ignoringDisable(true)
         .withName("Coast Swerve");
   }
+
+  public void brakeMotors() {
+    configNeutralMode(NeutralModeValue.Brake);
+  }
 }

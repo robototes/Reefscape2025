@@ -457,6 +457,13 @@ public class Controls {
                     () ->
                         0.2 * MathUtil.applyDeadband(climbTestController.getLeftTriggerAxis(), 0.1))
                 .withName("Climb Manual Control"));
+    var climbCoastButton =
+        Shuffleboard.getTab("Controls")
+            .add("Climb Coast Mode", false)
+            .withWidget(BuiltInWidgets.kToggleButton)
+            .getEntry();
+    new Trigger(() -> climbCoastButton.getBoolean(false))
+        .whileTrue(s.climbPivotSubsystem.coastMotors());
   }
 
   private void configureSpinnyClawBindings() {
