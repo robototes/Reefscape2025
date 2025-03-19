@@ -20,7 +20,6 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoAlign;
 import frc.robot.util.AlgaeIntakeHeight;
-import frc.robot.util.AlgaeScoreType;
 import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
 import frc.robot.util.ScoringMode;
@@ -45,7 +44,6 @@ public class Controls {
   private BranchHeight branchHeight = BranchHeight.LEVEL_FOUR;
   private ScoringMode scoringMode = ScoringMode.CORAL;
   private AlgaeIntakeHeight algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
-  private AlgaeScoreType algaeScoreType = AlgaeScoreType.ALGAE_NET_SCORE;
 
   // Swerve stuff
   public static final double MaxSpeed =
@@ -169,6 +167,7 @@ public class Controls {
         .onTrue(
             Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND)
                 .withName("algae ground level"));
+
     ;
     driverController
         .povUp()
@@ -194,6 +193,15 @@ public class Controls {
         .onTrue(
             Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND)
                 .withName("algae ground level"));
+    driverController
+        .leftTrigger()
+        .onTrue(Commands.deferredProxy(
+            () ->
+                switch (scoringMode) {
+                  case CORAL -> Commands.none();
+                  case ALGAE -> superStructure.algaeProcessorScore(driverController.rightBumper());
+                })
+        .withName("Processor Score"));
 
     operatorController
         .leftBumper()
@@ -203,7 +211,7 @@ public class Controls {
         .leftTrigger()
         .onTrue(
             Commands.runOnce(() -> scoringMode = ScoringMode.CORAL).withName("Coral Scoring Mode"))
-        .onTrue(superStructure.preIntake());
+        .onTrue(superStructure.coralPreIntake());
     operatorController
         .povLeft()
         .onTrue(
@@ -214,7 +222,7 @@ public class Controls {
                           case ALGAE -> superStructure.algaeStow();
                         })
                 .withName("Stow"));
-    operatorController.povDown().onTrue(superStructure.preIntake().withName("pre-intake"));
+    operatorController.povDown().onTrue(superStructure.coralPreIntake().withName("pre-intake"));
 
     driverController
         .a()
@@ -238,7 +246,7 @@ public class Controls {
       sensors
           .armSensor
           .inTrough()
-          .and(superStructure.inPreIntakePosition())
+          .and(superStructure.inCoralPreIntakePosition())
           .and(RobotModeTriggers.teleop())
           .onTrue(
               superStructure
@@ -258,9 +266,9 @@ public class Controls {
                     () ->
                         switch (scoringMode) {
                           case CORAL -> getCoralBranchHeightCommand();
-                          case ALGAE -> getAlgaeScoreCommand()
+                          case ALGAE -> superStructure.algaeNetScore(driverController.rightBumper())
                               .andThen(getAlgaeIntakeCommand())
-                              .withName("Algae score");
+                              .withName("Algae score then intake");
                         })
                 .withName("score"));
   }
@@ -270,14 +278,6 @@ public class Controls {
       case ALGAE_LEVEL_THREE_FOUR -> superStructure.algaeLevelThreeFourIntake();
       case ALGAE_LEVEL_TWO_THREE -> superStructure.algaeLevelTwoThreeIntake();
       case ALGAE_LEVEL_GROUND -> superStructure.algaeGroundIntake();
-    };
-  }
-
-  private Command getAlgaeScoreCommand() {
-    return switch (algaeScoreType) {
-      case ALGAE_PROCESSOR_SCORE -> superStructure.algaeProcessorScore(
-          driverController.rightBumper());
-      case ALGAE_NET_SCORE -> superStructure.algaeNetScore(driverController.rightBumper());
     };
   }
 
