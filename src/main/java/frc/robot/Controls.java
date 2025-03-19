@@ -198,13 +198,13 @@ public class Controls {
             Commands.deferredProxy(
                     () ->
                         switch (scoringMode) {
-                          case CORAL -> Commands.none();
-                          case ALGAE -> superStructure
-                              .algaeProcessorScore(driverController.rightBumper())
-                              .andThen(Commands.waitSeconds(0.7))
-                              .andThen(getAlgaeIntakeCommand());
+                          case CORAL -> Commands.none().withName("coral mode - no command");
+                          case ALGAE -> Commands.sequence(
+                              superStructure.algaeProcessorScore(driverController.rightBumper()),
+                              Commands.waitSeconds(0.7),
+                              getAlgaeIntakeCommand()).withName("Processor score");
                         })
-                .withName("Processor Score"));
+                .withName("Schedule processor score"));
 
     operatorController
         .leftBumper()
@@ -269,10 +269,10 @@ public class Controls {
                     () ->
                         switch (scoringMode) {
                           case CORAL -> getCoralBranchHeightCommand();
-                          case ALGAE -> superStructure
-                              .algaeNetScore(driverController.rightBumper())
-                              .andThen(Commands.waitSeconds(0.7))
-                              .andThen(getAlgaeIntakeCommand())
+                          case ALGAE -> Commands.sequence(
+                            superStructure.algaeNetScore(driverController.rightBumper()),
+                              Commands.waitSeconds(0.7),
+                              getAlgaeIntakeCommand())
                               .withName("Algae score then intake");
                         })
                 .withName("score"));
