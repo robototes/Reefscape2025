@@ -36,6 +36,7 @@ public class Robot extends TimedRobot {
   private final RobotType robotType;
   public final Controls controls;
   public final Subsystems subsystems;
+
   public final Sensors sensors;
   public final SuperStructure superStructure;
   private String autoCommandRequirements = "UNKNOWN";
@@ -51,8 +52,8 @@ public class Robot extends TimedRobot {
     LiveWindow.disableAllTelemetry();
     LiveWindow.enableTelemetry(PDH);
 
-    subsystems = new Subsystems();
     sensors = new Sensors();
+    subsystems = new Subsystems(sensors);
     AutoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED

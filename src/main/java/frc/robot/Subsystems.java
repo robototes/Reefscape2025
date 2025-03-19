@@ -38,7 +38,7 @@ public class Subsystems {
   public final SpinnyClaw spinnyClawSubsytem;
   public final ElevatorLight elevatorLEDSubsystem;
 
-  public Subsystems() {
+  public Subsystems(Sensors sensors) {
     // Initialize subsystems here (don't forget to check if they're enabled!)
     // Add specification for bonk, Enum? get team number?
     if (DRIVEBASE_ENABLED) {
@@ -80,7 +80,7 @@ public class Subsystems {
     }
 
     if (SPINNYCLAW_ENABLED) {
-      spinnyClawSubsytem = new SpinnyClaw();
+      spinnyClawSubsytem = new SpinnyClaw(sensors.armSensor);
     } else {
       spinnyClawSubsytem = null;
     }
