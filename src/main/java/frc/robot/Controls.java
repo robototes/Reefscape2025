@@ -520,5 +520,26 @@ public class Controls {
     if (!DriverStation.isAutonomous()) {
       operatorController.getHID().setRumble(RumbleType.kBothRumble, vibration);
     }
+    
+  }
+    private void configureGroundIntakeBindings() {
+    if (s.GroundIntake == null) {
+      return;
+    }
+    // Claw controls bindings go here
+    operatorController
+        .rightBumper()
+        .whileTrue(s.groundIntakeSubsystem.movingVoltage(() -> Volts.of(3)));
+    operatorController
+        .leftBumper()
+        .whileTrue(s.groundintakeSubsystem.movingVoltage(() -> Volts.of(-3)));
+  }
+  private void configureGroundPivotBindings() {
+    if (s.groundIntakeSubsystem == null) {
+      return;
+    }
+    // Arm Controls binding goes here
+    s.groundPivotSubsystem.setDefaultCommand(
+        s.groundPivotSubsystem.startMovingVoltage(() -> Volts.of(6 * operatorController.getLeftY())));
   }
 }
