@@ -244,7 +244,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   public Command coastMotors() {
-    return runOnce(() -> configNeutralMode(NeutralModeValue.Coast))
+    return startEnd(
+            () -> {
+              configNeutralMode(NeutralModeValue.Coast);
+            },
+            () -> {
+              configNeutralMode(NeutralModeValue.Brake);
+            })
         .ignoringDisable(true)
         .withName("Coast Swerve");
   }
