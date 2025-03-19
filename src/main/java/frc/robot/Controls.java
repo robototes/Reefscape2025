@@ -199,8 +199,8 @@ public class Controls {
                     () ->
                         switch (scoringMode) {
                           case CORAL -> Commands.none();
-                          case ALGAE -> superStructure.algaeProcessorScore(
-                              driverController.rightBumper())
+                          case ALGAE -> superStructure
+                              .algaeProcessorScore(driverController.rightBumper())
                               .andThen(Commands.waitSeconds(0.7))
                               .andThen(getAlgaeIntakeCommand());
                         })
