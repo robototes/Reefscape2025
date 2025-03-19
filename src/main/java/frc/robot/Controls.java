@@ -8,6 +8,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -120,6 +122,7 @@ public class Controls {
                               * inputScale); // Drive counterclockwise with negative X (left)
                 })
             .withName("Drive"));
+
     // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
     // brake));
     // driveController.b().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
@@ -135,6 +138,13 @@ public class Controls {
                 .runOnce(() -> s.drivebaseSubsystem.seedFieldCentric())
                 .withName("Reset gyro"));
     s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
+    var swerveCoastButton =
+        Shuffleboard.getTab("Controls")
+            .add("Swerve Coast Mode", false)
+            .withWidget(BuiltInWidgets.kToggleButton)
+            .getEntry();
+    new Trigger(() -> swerveCoastButton.getBoolean(false))
+        .whileTrue(s.drivebaseSubsystem.coastMotors());
   }
 
   private void configureSuperStructureBindings() {
@@ -447,6 +457,13 @@ public class Controls {
                     () ->
                         0.2 * MathUtil.applyDeadband(climbTestController.getLeftTriggerAxis(), 0.1))
                 .withName("Climb Manual Control"));
+    var climbCoastButton =
+        Shuffleboard.getTab("Controls")
+            .add("Climb Coast Mode", false)
+            .withWidget(BuiltInWidgets.kToggleButton)
+            .getEntry();
+    new Trigger(() -> climbCoastButton.getBoolean(false))
+        .whileTrue(s.climbPivotSubsystem.coastMotors());
   }
 
   private void configureSpinnyClawBindings() {
