@@ -11,38 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "YSM to I"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "scoreCommand"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "I to LSF"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intake"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "LSF to J"
+                  "pathName": "YSM to J"
                 }
               },
               {

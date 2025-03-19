@@ -28,8 +28,8 @@ public class Hardware {
   public static final int SPINNY_CLAW_MOTOR_ID = 40;
 
   // climb [50-59]
-  public static final int CLIMB_PIVOT_MOTOR_ONE_ID = 50;
-  public static final int CLIMB_PIVOT_MOTOR_TWO_ID = 51;
+  public static final int CLIMB_PIVOT_MOTOR_LEFT_ID = 50;
+  public static final int CLIMB_PIVOT_MOTOR_RIGHT_ID = 51;
   public static final int CLIMB_PIVOT_CANDI_ID = 52;
 
   // climb DIO
@@ -37,6 +37,6 @@ public class Hardware {
 
   // vision
   public static final String PHOTON_IP = "10.24.12.11";
-  public static final String FRONT_CAM = "Arducam_OV9782B";
-  public static final String BACK_CAM = "Arducam_OV9281A";
+  public static final String LEFT_CAM = "Arducam_OV9782L";
+  public static final String RIGHT_CAM = "Arducam_OV9281R";
 }

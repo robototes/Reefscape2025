@@ -18,6 +18,7 @@ import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.SuperStructure;
+import frc.robot.subsystems.auto.AutoAlign;
 import frc.robot.util.AlgaeIntakeHeight;
 import frc.robot.util.AlgaeScoreType;
 import frc.robot.util.AutoAlign;
@@ -51,7 +52,6 @@ public class Controls {
   private AlgaeScoreType algaeScoreType = AlgaeScoreType.ALGAE_NET_SCORE;
 
   // Swerve stuff
-
   public static final double MaxSpeed =
       RobotType.getCurrent() == RobotType.BONK
           ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
@@ -89,7 +89,7 @@ public class Controls {
     configureClimbPivotBindings();
     configureSpinnyClawBindings();
     configureElevatorLEDBindings();
-    configureAlignBindings();
+    configureAutoAlignBindings();
   }
 
   private void configureDrivebaseBindings() {
@@ -122,7 +122,6 @@ public class Controls {
                               * inputScale); // Drive counterclockwise with negative X (left)
                 })
             .withName("Drive"));
-
     // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
     // brake));
     // driveController.b().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
@@ -459,12 +458,23 @@ public class Controls {
     // operatorController
     //     .start()
     //     .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
-    operatorController
+    climbTestController
         .rightTrigger(0.1)
         .whileTrue(
             s.climbPivotSubsystem
                 .moveClimbManual(
-                    () -> -MathUtil.applyDeadband(operatorController.getRightTriggerAxis(), 0.1))
+                    () ->
+                        0.2
+                            * -MathUtil.applyDeadband(
+                                climbTestController.getRightTriggerAxis(), 0.1))
+                .withName("Climb Manual Control"));
+    climbTestController
+        .leftTrigger(0.1)
+        .whileTrue(
+            s.climbPivotSubsystem
+                .moveClimbManual(
+                    () ->
+                        0.2 * MathUtil.applyDeadband(climbTestController.getLeftTriggerAxis(), 0.1))
                 .withName("Climb Manual Control"));
   }
 
@@ -516,11 +526,18 @@ public class Controls {
         .whileTrue(s.elevatorLEDSubsystem.animate(LEDPattern.rainbow(255, 255), "Auto Rainbow"));
   }
 
-  private void configureAlignBindings() {
+  private void configureAutoAlignBindings() {
     if (s.drivebaseSubsystem == null) {
       return;
     }
-    driverController.leftBumper().whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
+    driverController
+        .leftBumper()
+        .whileTrue(
+            AutoAlign.aim(
+                s.drivebaseSubsystem,
+                () -> -driverController.getLeftY() * MaxSpeed,
+                () -> -driverController.getLeftX() * MaxSpeed));
+    driverController.rightTrigger().whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
   }
 
   public void vibrateDriveController(double vibration) {

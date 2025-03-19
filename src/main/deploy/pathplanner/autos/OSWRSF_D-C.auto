@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "YSM to I"
+                  "pathName": "OSW to D"
                 }
               },
               {
@@ -26,7 +26,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "I to LSF"
+            "pathName": "D to RSF"
           }
         },
         {
@@ -42,38 +42,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LSF to J"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "scoreCommand"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "J to LSF"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intake"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "LSF to K"
+                  "pathName": "RSF to C"
                 }
               },
               {
