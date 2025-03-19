@@ -47,7 +47,7 @@ public class Robot extends TimedRobot {
     instance = this;
     robotType = RobotType.getCurrent();
     CanBridge.runTCP();
-		PDH = new PowerDistribution(Hardware.PDH_ID, ModuleType.kRev);
+    PDH = new PowerDistribution(Hardware.PDH_ID, ModuleType.kRev);
     LiveWindow.disableAllTelemetry();
     LiveWindow.enableTelemetry(PDH);
 

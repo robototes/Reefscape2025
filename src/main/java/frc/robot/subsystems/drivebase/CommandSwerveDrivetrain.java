@@ -242,7 +242,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   public ChassisSpeeds returnSpeeds() {
     return getState().Speeds;
   }
-  public Command coastMotors(){
+
+  public Command coastMotors() {
     return runOnce(() -> configNeutralMode(NeutralModeValue.Coast));
   }
 }
