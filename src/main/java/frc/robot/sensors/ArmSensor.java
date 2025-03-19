@@ -18,7 +18,7 @@ public class ArmSensor {
   private static final double TROUGH_LOWER_LIMIT = 0.18;
   private static final double TROUGH_UPPER_LIMIT = 0.28;
   private static final double CLAW_LOWER_LIMIT = 0.06;
-  private static final double CLAW_UPPER_LIMIT = 0.08;
+  private static final double CLAW_UPPER_LIMIT = 0.09;
 
   public ArmSensor() {
     mainSensor = new LaserCan(Hardware.MAIN_ARM_SENSOR);
