@@ -498,16 +498,20 @@ public class Controls {
     connected(armPivotSpinnyClawController)
         .and(armPivotSpinnyClawController.rightTrigger())
         .whileTrue(s.spinnyClawSubsytem.algaeGripIntakePower());
-    driverController.rightBumper().whileTrue(Commands.deferredProxy(
-        () -> {if (s.spinnyClawSubsytem.getCurrentCommand() != null) {
-            return Commands.none().withName("spinny claw used");
-        } else {
-            return switch (scoringMode) {
-                case CORAL -> s.spinnyClawSubsytem.coralExtakePower();
-                case ALGAE -> s.spinnyClawSubsytem.algaeExtakePower();
-              };
-        }}
-    ));
+    driverController
+        .rightBumper()
+        .whileTrue(
+            Commands.deferredProxy(
+                () -> {
+                  if (s.spinnyClawSubsytem.getCurrentCommand() != null) {
+                    return Commands.none().withName("spinny claw used");
+                  } else {
+                    return switch (scoringMode) {
+                      case CORAL -> s.spinnyClawSubsytem.coralExtakePower();
+                      case ALGAE -> s.spinnyClawSubsytem.algaeExtakePower();
+                    };
+                  }
+                }));
   }
 
   private void configureElevatorLEDBindings() {
