@@ -261,12 +261,21 @@ public class ClimbPivot extends SubsystemBase {
   }
 
   public Command coastMotors() {
-    return runOnce(() -> motorLeft.setNeutralMode(NeutralModeValue.Coast))
+    return startEnd(
+            () -> {
+              motorLeft.setNeutralMode(NeutralModeValue.Coast);
+              motorRight.setNeutralMode(NeutralModeValue.Coast);
+            },
+            () -> {
+              motorLeft.setNeutralMode(NeutralModeValue.Brake);
+              motorRight.setNeutralMode(NeutralModeValue.Brake);
+            })
         .ignoringDisable(true)
-        .withName("Coast Swerve");
+        .withName("Coast Climb");
   }
 
   public void brakeMotors() {
     motorLeft.setNeutralMode(NeutralModeValue.Brake);
+    motorRight.setNeutralMode(NeutralModeValue.Brake);
   }
 }

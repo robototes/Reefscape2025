@@ -1,10 +1,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -271,10 +269,12 @@ public class ElevatorSubsystem extends SubsystemBase {
   public Command holdCoastMode() {
     return startEnd(
             () -> {
-              m_motor.setControl(new CoastOut());
+              m_motor.setNeutralMode(NeutralModeValue.Coast);
+              m_motor2.setNeutralMode(NeutralModeValue.Coast);
             },
             () -> {
-              m_motor.setControl(new StaticBrake());
+              m_motor.setNeutralMode(NeutralModeValue.Brake);
+              m_motor2.setNeutralMode(NeutralModeValue.Brake);
             })
         .ignoringDisable(true)
         .withName("Hold elevator coast");
