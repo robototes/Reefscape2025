@@ -7,6 +7,8 @@ package frc.robot;
 import au.grapplerobotics.CanBridge;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -37,6 +39,7 @@ public class Robot extends TimedRobot {
   public final Sensors sensors;
   public final SuperStructure superStructure;
   private String autoCommandRequirements = "UNKNOWN";
+  private final PowerDistribution PDH;
 
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
@@ -44,8 +47,9 @@ public class Robot extends TimedRobot {
     instance = this;
     robotType = RobotType.getCurrent();
     CanBridge.runTCP();
-
+    PDH = new PowerDistribution(Hardware.PDH_ID, ModuleType.kRev);
     LiveWindow.disableAllTelemetry();
+    LiveWindow.enableTelemetry(PDH);
 
     subsystems = new Subsystems();
     sensors = new Sensors();
@@ -90,7 +94,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(CommandScheduler.getInstance());
     BuildInfo.logBuildInfo();
 
-    DriverStation.silenceJoystickConnectionWarning(true);
     AutoLogic.registerCommands();
     AutonomousField.initShuffleBoard("Field", 0, 0, this::addPeriodic);
     AutoLogic.initShuffleBoard();
@@ -108,12 +111,14 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {}
 
   @Override
-  public void disabledExit() {}
+  public void disabledExit() {
+    subsystems.drivebaseSubsystem.brakeMotors();
+    subsystems.climbPivotSubsystem.brakeMotors();
+  }
 
   @Override
   public void autonomousInit() {
     Shuffleboard.startRecording();
-    DriverStation.silenceJoystickConnectionWarning(!DriverStation.isFMSAttached());
     if (AutoLogic.getSelectedAuto() != null && SubsystemConstants.DRIVEBASE_ENABLED) {
       AutoLogic.getSelectedAuto().schedule();
     }

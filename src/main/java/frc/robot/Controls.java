@@ -8,6 +8,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -32,14 +34,11 @@ public class Controls {
   private static final int CLIMB_TEST_CONTROLLER_PORT = 4;
 
   private final CommandXboxController driverController;
-
   private final CommandXboxController operatorController;
-
   private final CommandXboxController armPivotSpinnyClawController;
-
   private final CommandXboxController elevatorTestController;
-
   private final CommandXboxController climbTestController;
+
   private final Subsystems s;
   private final Sensors sensors;
   private final SuperStructure superStructure;
@@ -89,6 +88,10 @@ public class Controls {
     configureAutoAlignBindings();
   }
 
+  private Trigger connected(CommandXboxController controller) {
+    return new Trigger(() -> controller.isConnected());
+  }
+
   private void configureDrivebaseBindings() {
     if (s.drivebaseSubsystem == null) {
       // Stop running this method
@@ -119,6 +122,7 @@ public class Controls {
                               * inputScale); // Drive counterclockwise with negative X (left)
                 })
             .withName("Drive"));
+
     // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
     // brake));
     // driveController.b().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
@@ -134,6 +138,13 @@ public class Controls {
                 .runOnce(() -> s.drivebaseSubsystem.seedFieldCentric())
                 .withName("Reset gyro"));
     s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
+    var swerveCoastButton =
+        Shuffleboard.getTab("Controls")
+            .add("Swerve Coast Mode", false)
+            .withWidget(BuiltInWidgets.kToggleButton)
+            .getEntry();
+    new Trigger(() -> swerveCoastButton.getBoolean(false))
+        .whileTrue(s.drivebaseSubsystem.coastMotors());
   }
 
   private void configureSuperStructureBindings() {
@@ -321,62 +332,62 @@ public class Controls {
           elevatorTestController.setRumble(RumbleType.kBothRumble, rumble);
           operatorController.setRumble(RumbleType.kBothRumble, rumble);
         });
-    elevatorTestController
-        .y()
+    connected(elevatorTestController)
+        .and(elevatorTestController.y())
         .onTrue(
             s.elevatorSubsystem
                 .setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_POS)
                 .withName("Elevator L4"));
-    elevatorTestController
-        .x()
+    connected(elevatorTestController)
+        .and(elevatorTestController.x())
         .onTrue(
             s.elevatorSubsystem
                 .setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_POS)
                 .withName("Elevator L3"));
-    elevatorTestController
-        .b()
+    connected(elevatorTestController)
+        .and(elevatorTestController.b())
         .onTrue(
             s.elevatorSubsystem
                 .setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_POS)
                 .withName("Elevator L2"));
-    elevatorTestController
-        .a()
+    connected(elevatorTestController)
+        .and(elevatorTestController.a())
         .onTrue(
             s.elevatorSubsystem
                 .setLevel(ElevatorSubsystem.CORAL_LEVEL_ONE_POS)
                 .withName("Elevator L1"));
-    elevatorTestController
-        .rightBumper()
+    connected(elevatorTestController)
+        .and(elevatorTestController.rightBumper())
         .onTrue(
             s.elevatorSubsystem
                 .setLevel(ElevatorSubsystem.CORAL_INTAKE_POS)
                 .withName("Elevator IntakePos"));
-    elevatorTestController
-        .povUp()
+    connected(elevatorTestController)
+        .and(elevatorTestController.povUp())
         .onTrue(
             s.elevatorSubsystem
                 .setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)
                 .withName("Elevator Algae L3-L4"));
-    elevatorTestController
-        .povLeft()
+    connected(elevatorTestController)
+        .and(elevatorTestController.povLeft())
         .onTrue(
             s.elevatorSubsystem
                 .setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)
                 .withName("Elevator Algae L2-L3"));
-    elevatorTestController
-        .povRight()
+    connected(elevatorTestController)
+        .and(elevatorTestController.povRight())
         .onTrue(
             s.elevatorSubsystem
                 .setLevel(ElevatorSubsystem.ALGAE_STOWED)
                 .withName("Elevator Algae Stowed"));
-    elevatorTestController
-        .povDown()
+    connected(elevatorTestController)
+        .and(elevatorTestController.povDown())
         .onTrue(
             s.elevatorSubsystem
                 .setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE)
                 .withName("Elevator Processor"));
-    elevatorTestController
-        .leftBumper()
+    connected(elevatorTestController)
+        .and(elevatorTestController.leftBumper())
         .whileTrue(s.elevatorSubsystem.holdCoastMode().withName("elevatortest hold coast mode"));
     // Elevator zero button
     operatorController
@@ -407,48 +418,47 @@ public class Controls {
             s.armPivotSubsystem
                 .startMovingVoltage(() -> Volts.of(3 * operatorController.getRightY()))
                 .withName("Arm Manual Control"));
-    armPivotSpinnyClawController
-        .rightStick()
+    connected(armPivotSpinnyClawController)
+        .and(armPivotSpinnyClawController.rightStick())
         .whileTrue(
             s.armPivotSubsystem
                 .startMovingVoltage(() -> Volts.of(3 * armPivotSpinnyClawController.getRightY()))
                 .withName("Arm Manual Control"));
-    armPivotSpinnyClawController
-        .povRight()
+    connected(armPivotSpinnyClawController)
+        .and(armPivotSpinnyClawController.povRight())
         .onTrue(
             s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_L4).withName("Arm L4 Preset"));
-    armPivotSpinnyClawController
-        .povLeft()
+    connected(armPivotSpinnyClawController)
+        .and(armPivotSpinnyClawController.povLeft())
         .onTrue(
             s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_L3).withName("Arm L3 Preset"));
-    armPivotSpinnyClawController
-        .povUp()
+    connected(armPivotSpinnyClawController)
+        .and(armPivotSpinnyClawController.povUp())
         .onTrue(
             s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_UP).withName("Arm Preset Up"));
-    armPivotSpinnyClawController
-        .povDown()
+    connected(armPivotSpinnyClawController)
+        .and(armPivotSpinnyClawController.povDown())
         .onTrue(
             s.armPivotSubsystem
                 .moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
                 .withName("Arm Preset Down"));
-    // Operator arm out position
-    operatorController
-        .povRight()
+    connected(armPivotSpinnyClawController)
+        .and(operatorController.povRight())
         .onTrue(s.armPivotSubsystem.moveToPosition(ArmPivot.PRESET_OUT).withName("Arm Preset Out"));
-    armPivotSpinnyClawController
-        .y()
+    connected(armPivotSpinnyClawController)
+        .and(armPivotSpinnyClawController.y())
         .onTrue(
             s.armPivotSubsystem
                 .moveToPosition(ArmPivot.ALGAE_REMOVE)
                 .withName("Algae Preset Remove"));
-    armPivotSpinnyClawController
-        .b()
+    connected(armPivotSpinnyClawController)
+        .and(armPivotSpinnyClawController.b())
         .onTrue(
             s.armPivotSubsystem
                 .moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE)
                 .withName("Algae Preset Score"));
-    armPivotSpinnyClawController
-        .a()
+    connected(armPivotSpinnyClawController)
+        .and(armPivotSpinnyClawController.a())
         .onTrue(
             s.armPivotSubsystem
                 .moveToPosition(ArmPivot.ALGAE_STOWED)
@@ -467,14 +477,14 @@ public class Controls {
       setClimbLEDs = Commands.none();
     }
 
-    climbTestController
-        .start()
+    connected(climbTestController)
+        .and(climbTestController.start())
         .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
     // operatorController
     //     .start()
     //     .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
-    climbTestController
-        .rightTrigger(0.1)
+    connected(climbTestController)
+        .and(climbTestController.rightTrigger(0.1))
         .whileTrue(
             s.climbPivotSubsystem
                 .moveClimbManual(
@@ -483,14 +493,21 @@ public class Controls {
                             * -MathUtil.applyDeadband(
                                 climbTestController.getRightTriggerAxis(), 0.1))
                 .withName("Climb Manual Control"));
-    climbTestController
-        .leftTrigger(0.1)
+    connected(climbTestController)
+        .and(climbTestController.leftTrigger(0.1))
         .whileTrue(
             s.climbPivotSubsystem
                 .moveClimbManual(
                     () ->
                         0.2 * MathUtil.applyDeadband(climbTestController.getLeftTriggerAxis(), 0.1))
                 .withName("Climb Manual Control"));
+    var climbCoastButton =
+        Shuffleboard.getTab("Controls")
+            .add("Climb Coast Mode", false)
+            .withWidget(BuiltInWidgets.kToggleButton)
+            .getEntry();
+    new Trigger(() -> climbCoastButton.getBoolean(false))
+        .whileTrue(s.climbPivotSubsystem.coastMotors());
   }
 
   private void configureSpinnyClawBindings() {
@@ -498,17 +515,17 @@ public class Controls {
       return;
     }
     // Claw controls bindings go here
-    armPivotSpinnyClawController
-        .leftBumper()
+    connected(armPivotSpinnyClawController)
+        .and(armPivotSpinnyClawController.leftBumper())
         .whileTrue(s.spinnyClawSubsytem.coralHoldExtakePower());
-    armPivotSpinnyClawController
-        .rightBumper()
+    connected(armPivotSpinnyClawController)
+        .and(armPivotSpinnyClawController.rightBumper())
         .whileTrue(s.spinnyClawSubsytem.coralHoldIntakePower());
-    armPivotSpinnyClawController
-        .leftTrigger()
+    connected(armPivotSpinnyClawController)
+        .and(armPivotSpinnyClawController.leftTrigger())
         .whileTrue(s.spinnyClawSubsytem.algaeHoldExtakePower());
-    armPivotSpinnyClawController
-        .rightTrigger()
+    connected(armPivotSpinnyClawController)
+        .and(armPivotSpinnyClawController.rightTrigger())
         .whileTrue(s.spinnyClawSubsytem.algaeHoldIntakePower());
   }
 

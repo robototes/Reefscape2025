@@ -259,4 +259,23 @@ public class ClimbPivot extends SubsystemBase {
     NotConnectedErrorTwo.set(
         notConnectedDebouncerTwo.calculate(!motorRight.getMotorVoltage().hasUpdated()));
   }
+
+  public Command coastMotors() {
+    return startEnd(
+            () -> {
+              motorLeft.setNeutralMode(NeutralModeValue.Coast);
+              motorRight.setNeutralMode(NeutralModeValue.Coast);
+            },
+            () -> {
+              motorLeft.setNeutralMode(NeutralModeValue.Brake);
+              motorRight.setNeutralMode(NeutralModeValue.Brake);
+            })
+        .ignoringDisable(true)
+        .withName("Coast Climb");
+  }
+
+  public void brakeMotors() {
+    motorLeft.setNeutralMode(NeutralModeValue.Brake);
+    motorRight.setNeutralMode(NeutralModeValue.Brake);
+  }
 }

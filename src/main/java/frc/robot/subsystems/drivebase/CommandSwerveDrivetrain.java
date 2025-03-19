@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -240,5 +241,21 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   public ChassisSpeeds returnSpeeds() {
     return getState().Speeds;
+  }
+
+  public Command coastMotors() {
+    return startEnd(
+            () -> {
+              configNeutralMode(NeutralModeValue.Coast);
+            },
+            () -> {
+              configNeutralMode(NeutralModeValue.Brake);
+            })
+        .ignoringDisable(true)
+        .withName("Coast Swerve");
+  }
+
+  public void brakeMotors() {
+    configNeutralMode(NeutralModeValue.Brake);
   }
 }
