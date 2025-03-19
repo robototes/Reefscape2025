@@ -154,9 +154,9 @@ public class SuperStructure {
   public Command algaeLevelThreeFourIntake() {
     return Commands.sequence(
             Commands.parallel(
-                spinnyClaw.algaeIntakePower(),
-                armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR))
+                    spinnyClaw.algaeIntakePower(),
+                    armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
+                    elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR))
                 .until(armSensor.inClaw()), // if statement to check armsensor enabled
             algaeStow())
         .withName("Algae L3-L4 Intake");
@@ -165,9 +165,9 @@ public class SuperStructure {
   public Command algaeLevelTwoThreeIntake() {
     return Commands.sequence(
             Commands.parallel(
-                spinnyClaw.algaeIntakePower(),
-                armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE))
+                    spinnyClaw.algaeIntakePower(),
+                    armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
+                    elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE))
                 .until(armSensor.inClaw()), // add if statement to check armsensor enabled
             algaeStow())
         .withName("Algae L2-L3 Intake");
@@ -176,10 +176,10 @@ public class SuperStructure {
   public Command algaeGroundIntake() {
     return Commands.sequence(
             Commands.parallel(
-                spinnyClaw.algaeIntakePower(),
-                armPivot.moveToPosition(ArmPivot.ALGAE_GROUND_INTAKE),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_GROUND_INTAKE))
-            .until(armSensor.inClaw()), // add if statement to check armsensor enabled
+                    spinnyClaw.algaeIntakePower(),
+                    armPivot.moveToPosition(ArmPivot.ALGAE_GROUND_INTAKE),
+                    elevator.setLevel(ElevatorSubsystem.ALGAE_GROUND_INTAKE))
+                .until(armSensor.inClaw()), // add if statement to check armsensor enabled
             algaeStow())
         .withName("Algae Ground Intake");
   }
@@ -193,8 +193,7 @@ public class SuperStructure {
         .withName("Algae Stow");
   }
 
-  public Command algaeProcessorScore(
-      BooleanSupplier score) {
+  public Command algaeProcessorScore(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
                 elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE),
@@ -216,7 +215,7 @@ public class SuperStructure {
         .withName("Algae Net Score");
   }
 
-  public boolean armSensorIsNull() { //should delete or repurpose
+  public boolean armSensorIsNull() { // should delete or repurpose
     boolean armSensorActive;
     if (armSensor != null) {
       armSensorActive = false;

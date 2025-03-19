@@ -150,8 +150,7 @@ public class Controls {
                 .withName("algae level 3-4"));
     operatorController
         .x()
-        .onTrue(
-            Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"))
+        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"))
         .onTrue(
             Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("algae level 2-3"));
@@ -195,13 +194,17 @@ public class Controls {
                 .withName("algae ground level"));
     driverController
         .leftTrigger()
-        .onTrue(Commands.deferredProxy(
-            () ->
-                switch (scoringMode) {
-                  case CORAL -> Commands.none();
-                  case ALGAE -> superStructure.algaeProcessorScore(driverController.rightBumper());
-                })
-        .withName("Processor Score"));
+        .onTrue(
+            Commands.deferredProxy(
+                    () ->
+                        switch (scoringMode) {
+                          case CORAL -> Commands.none();
+                          case ALGAE -> superStructure.algaeProcessorScore(
+                              driverController.rightBumper())
+                              .andThen(Commands.waitSeconds(0.7))
+                              .andThen(getAlgaeIntakeCommand());
+                        })
+                .withName("Processor Score"));
 
     operatorController
         .leftBumper()
@@ -266,7 +269,9 @@ public class Controls {
                     () ->
                         switch (scoringMode) {
                           case CORAL -> getCoralBranchHeightCommand();
-                          case ALGAE -> superStructure.algaeNetScore(driverController.rightBumper())
+                          case ALGAE -> superStructure
+                              .algaeNetScore(driverController.rightBumper())
+                              .andThen(Commands.waitSeconds(0.7))
                               .andThen(getAlgaeIntakeCommand())
                               .withName("Algae score then intake");
                         })
@@ -504,7 +509,8 @@ public class Controls {
     connected(armPivotSpinnyClawController)
         .and(armPivotSpinnyClawController.rightTrigger())
         .whileTrue(s.spinnyClawSubsytem.algaeGripIntakePower());
-    driverController //not totally sure this'll work but it might since we said to just auto retry scoring in the commands, so it should be okay...
+    driverController // not totally sure this'll work but it might since we said to just auto retry
+        // scoring in the commands, so it should be okay...
         .rightBumper()
         .whileTrue(
             Commands.deferredProxy(
