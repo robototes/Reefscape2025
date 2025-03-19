@@ -238,6 +238,6 @@ public class SuperStructure {
                 armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE),
                 spinnyClaw.algaeIntakePower()),
             spinnyClaw.algaeHoldExtakePower().withTimeout(0.25))
-        .withName("Algae Processor Score");
+        .withName("Algae Net Score");
   }
 }
