@@ -248,7 +248,9 @@ public class Controls {
                     () ->
                         switch (scoringMode) {
                           case CORAL -> getCoralBranchHeightCommand();
-                          case ALGAE -> getAlgaeScoreCommand().andThen(getAlgaeIntakeCommand()).withName("Algae score");
+                          case ALGAE -> getAlgaeScoreCommand()
+                              .andThen(getAlgaeIntakeCommand())
+                              .withName("Algae score");
                         })
                 .withName("score"));
   }
