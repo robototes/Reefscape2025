@@ -20,12 +20,20 @@ public class Hardware {
   // arm pivot [30-34]
   public static final int ARM_PIVOT_MOTOR_ID = 30;
   public static final int ARM_PIVOT_CANDI_ID = 31;
-
+	
   // arm Sensors [35-39]
   public static final int MAIN_ARM_SENSOR = 35;
 
   // spinny claw [40-44]
   public static final int SPINNY_CLAW_MOTOR_ID = 40;
+
+  // ground pivot [45-46]
+  public static final int GROUND_PIVOT_MOTOR_ID = 45;
+  public static final int GROUND_PIVOT_ENCODER_ID = 46;
+
+  // ground intake [47-48]
+  public static final int GROUND_INTAKE_MOTOR_ID = 47;
+  public static final int GROUND_INTAKE_SENSOR_ID = 48;
 
   // climb [50-59]
   public static final int CLIMB_PIVOT_MOTOR_LEFT_ID = 50;
