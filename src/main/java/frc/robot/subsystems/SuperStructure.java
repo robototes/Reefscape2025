@@ -221,22 +221,24 @@ public class SuperStructure {
         .withName("Algae Stow");
   }
 
-  public Command algaeProcessorScore() { // Big North + Spider collab on this one
+  public Command algaeProcessorScore(BooleanSupplier score) { // Big North + Spider collab on this one
     return Commands.sequence(
             Commands.parallel(
                 elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE),
                 armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
                 spinnyClaw.algaeIntakePower()),
+            Commands.waitUntil(score),
             spinnyClaw.algaeHoldExtakePower().withTimeout(0.25))
         .withName("Algae Processor Score");
   }
 
-  public Command algaeNetScore() {
+  public Command algaeNetScore(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
                 elevator.setLevel(ElevatorSubsystem.ALGAE_NET_SCORE),
                 armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE),
                 spinnyClaw.algaeIntakePower()),
+                Commands.waitUntil(score),
             spinnyClaw.algaeHoldExtakePower().withTimeout(0.25))
         .withName("Algae Net Score");
   }

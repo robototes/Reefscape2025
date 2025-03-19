@@ -265,8 +265,8 @@ public class Controls {
 
   private Command getAlgaeScoreCommand() {
     return switch (algaeScoreType) {
-      case ALGAE_PROCESSOR_SCORE -> superStructure.algaeProcessorScore();
-      case ALGAE_NET_SCORE -> superStructure.algaeNetScore();
+      case ALGAE_PROCESSOR_SCORE -> superStructure.algaeProcessorScore(driverController.rightBumper());
+      case ALGAE_NET_SCORE -> superStructure.algaeNetScore(driverController.rightBumper());
     };
   }
 
