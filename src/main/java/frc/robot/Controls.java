@@ -200,9 +200,11 @@ public class Controls {
                         switch (scoringMode) {
                           case CORAL -> Commands.none().withName("coral mode - no command");
                           case ALGAE -> Commands.sequence(
-                              superStructure.algaeProcessorScore(driverController.rightBumper()),
-                              Commands.waitSeconds(0.7),
-                              getAlgaeIntakeCommand()).withName("Processor score");
+                                  superStructure.algaeProcessorScore(
+                                      driverController.rightBumper()),
+                                  Commands.waitSeconds(0.7),
+                                  getAlgaeIntakeCommand())
+                              .withName("Processor score");
                         })
                 .withName("Schedule processor score"));
 
@@ -270,9 +272,9 @@ public class Controls {
                         switch (scoringMode) {
                           case CORAL -> getCoralBranchHeightCommand();
                           case ALGAE -> Commands.sequence(
-                            superStructure.algaeNetScore(driverController.rightBumper()),
-                              Commands.waitSeconds(0.7),
-                              getAlgaeIntakeCommand())
+                                  superStructure.algaeNetScore(driverController.rightBumper()),
+                                  Commands.waitSeconds(0.7),
+                                  getAlgaeIntakeCommand())
                               .withName("Algae score then intake");
                         })
                 .withName("score"));
