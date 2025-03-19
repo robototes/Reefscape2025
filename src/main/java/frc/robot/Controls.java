@@ -153,16 +153,22 @@ public class Controls {
     operatorController
         .x()
         .onTrue(
-            Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"));
+            Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"))
+        .onTrue(
+            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
+                .withName("algae level 2-3"));
     operatorController
         .b()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO).withName("level 2"));
+        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO).withName("level 2"))
+        .onTrue(
+            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
+                .withName("algae level 2-3"));
     operatorController
         .a()
         .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE).withName("level 1"))
         .onTrue(
-            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
-                .withName("algae level 2-3"));
+            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND)
+                .withName("algae ground level"));
     ;
     driverController
         .povUp()
@@ -498,7 +504,7 @@ public class Controls {
     connected(armPivotSpinnyClawController)
         .and(armPivotSpinnyClawController.rightTrigger())
         .whileTrue(s.spinnyClawSubsytem.algaeGripIntakePower());
-    driverController
+    driverController //not totally sure this'll work but it might since we said to just auto retry scoring in the commands, so it should be okay...
         .rightBumper()
         .whileTrue(
             Commands.deferredProxy(
