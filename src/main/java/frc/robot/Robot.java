@@ -94,7 +94,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(CommandScheduler.getInstance());
     BuildInfo.logBuildInfo();
 
-    DriverStation.silenceJoystickConnectionWarning(true);
     AutoLogic.registerCommands();
     AutonomousField.initShuffleBoard("Field", 0, 0, this::addPeriodic);
     AutoLogic.initShuffleBoard();
@@ -117,7 +116,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     Shuffleboard.startRecording();
-    DriverStation.silenceJoystickConnectionWarning(!DriverStation.isFMSAttached());
     if (AutoLogic.getSelectedAuto() != null && SubsystemConstants.DRIVEBASE_ENABLED) {
       AutoLogic.getSelectedAuto().schedule();
     }
