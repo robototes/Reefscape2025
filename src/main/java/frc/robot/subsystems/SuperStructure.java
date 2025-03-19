@@ -221,7 +221,8 @@ public class SuperStructure {
         .withName("Algae Stow");
   }
 
-  public Command algaeProcessorScore(BooleanSupplier score) { // Big North + Spider collab on this one
+  public Command algaeProcessorScore(
+      BooleanSupplier score) { // Big North + Spider collab on this one
     return Commands.sequence(
             Commands.parallel(
                 elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE),
@@ -238,7 +239,7 @@ public class SuperStructure {
                 elevator.setLevel(ElevatorSubsystem.ALGAE_NET_SCORE),
                 armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE),
                 spinnyClaw.algaeIntakePower()),
-                Commands.waitUntil(score),
+            Commands.waitUntil(score),
             spinnyClaw.algaeHoldExtakePower().withTimeout(0.25))
         .withName("Algae Net Score");
   }
