@@ -174,16 +174,18 @@ public class Controls {
     driverController
         .povLeft()
         .onTrue(
-            Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"));
+            Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"))
+            .onTrue(Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE).withName("algae level 2-3"));
     driverController
         .povRight()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO).withName("level 2"));
+        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO).withName("level 2"))
+        .onTrue(Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE).withName("algae level 2-3"));
     driverController
         .povDown()
         .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE).withName("level 1"))
         .onTrue(
-            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
-                .withName("algae level 2-3"));
+            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND)
+                .withName("algae ground level"));
 
     operatorController
         .leftBumper()
@@ -210,7 +212,7 @@ public class Controls {
         .a()
         .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
         .onTrue(
-            Commands.deferredProxy( // make a command factory within controls for this chunk of code
+            Commands.deferredProxy(
                     () ->
                         switch (scoringMode) { // may need a switch for coral intake with coral
                             // ground intake when implemented
