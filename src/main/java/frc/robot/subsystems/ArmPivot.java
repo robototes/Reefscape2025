@@ -38,10 +38,10 @@ public class ArmPivot extends SubsystemBase {
   private final double ARMPIVOT_KA = 0.0;
   public static final double CORAL_PRESET_L1 =
       -0.063; // simplified by tristan (technically untested)
-  public static final double CORAL_PRESET_L2 = 0.15;
-  public static final double CORAL_PRESET_L3 = 0.15;
-  public static final double CORAL_PRESET_L4 = -0.2;
-  public static final double CORAL_PRESET_PRE_L4 = 0.05;
+  public static final double CORAL_PRESET_L2 = 0.13;
+  public static final double CORAL_PRESET_L3 = 0.13;
+  public static final double CORAL_PRESET_L4 = 0;
+  public static final double CORAL_PRESET_PRE_L4 = 1.0 / 16.0;
   public static final double ALGAE_REMOVE_PREPOS = 0; // untested
   public static final double ALGAE_REMOVE = 0; // untested
   public static final double ALGAE_FLING = -0.08;

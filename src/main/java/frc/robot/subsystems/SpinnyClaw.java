@@ -25,8 +25,9 @@ public class SpinnyClaw extends SubsystemBase {
   public static final double CORAL_EXTAKE_SPEED = 2;
   public static final double CORAL_L4_EXTAKE_SPEED = 1;
   public static final double ALGAE_INTAKE_SPEED = -3; // untested
-  public static final double ALGAE_HOLD_INTAKE_SPEED = -1; // untested and by tristan lol
+  public static final double ALGAE_HOLD_INTAKE_SPEED = -2; // retesting because -1 didn't work
   public static final double ALGAE_EXTAKE_SPEED = 12; // untested
+  public static final double ALGAE_PROCESSOR_EXTAKE_SPEED = 10; // untested
   public static final double ALGAE_FLING_SPEED = 4;
 
   // Remove once we implement PID speed
@@ -119,6 +120,10 @@ public class SpinnyClaw extends SubsystemBase {
 
   public Command algaeHoldExtakePower() {
     return holdPower(ALGAE_EXTAKE_SPEED).withName("Algae hold extake power");
+  }
+
+  public Command algaeExtakeProcessorPower() {
+    return setPower(ALGAE_PROCESSOR_EXTAKE_SPEED).withName("Algae processor extake power");
   }
 
   public Command algaeFlingPower() {

@@ -235,7 +235,7 @@ public class SuperStructure {
                     spinnyClaw.algaeHoldIntakePower())
                 .withTimeout(1),
             Commands.waitUntil(score),
-            spinnyClaw.algaeExtakePower(),
+            spinnyClaw.algaeExtakeProcessorPower(),
             Commands.waitSeconds(0.7),
             Commands.deferredProxy(
                 () ->
