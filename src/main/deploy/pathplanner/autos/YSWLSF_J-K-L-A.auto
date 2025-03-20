@@ -5,22 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "sequential",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "YSW to J"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "scoreCommand"
-                }
-              }
-            ]
+            "pathName": "YSW to J"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCommand"
           }
         },
         {
@@ -36,22 +29,15 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "LSF to K"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "scoreCommand"
-                }
-              }
-            ]
+            "pathName": "LSF to K"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCommand"
           }
         },
         {
@@ -67,22 +53,15 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "LSF to L"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "scoreCommand"
-                }
-              }
-            ]
+            "pathName": "LSF to L"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCommand"
           }
         },
         {
@@ -98,22 +77,15 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "LSF to A"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "scoreCommand"
-                }
-              }
-            ]
+            "pathName": "LSF to A"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCommand"
           }
         }
       ]
