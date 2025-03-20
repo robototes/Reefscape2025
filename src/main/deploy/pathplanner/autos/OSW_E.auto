@@ -5,22 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "OSW to E"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "scoreCommand"
-                }
-              }
-            ]
+            "pathName": "OSW to E"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCommand"
           }
         }
       ]

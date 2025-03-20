@@ -81,7 +81,8 @@ public class AutoLogic {
           new AutoPath("YSM0", "YSM0"),
           new AutoPath("M0", "M0"),
           new AutoPath("OSM0", "OSM0"),
-          new AutoPath("OSW0", "OSW0"));
+          new AutoPath("OSW0", "OSW0"),
+          new AutoPath("PIDTESTING", "PID TESTING"));
 
   private static List<AutoPath> onePiecePaths =
       List.of(
@@ -92,7 +93,9 @@ public class AutoLogic {
           new AutoPath("M_H", "M_H"),
           new AutoPath("OSM_F", "OSM_F"),
           new AutoPath("OSW_F", "OSW_F"),
-          new AutoPath("OSW_E", "OSW_E"));
+          new AutoPath("OSW_E", "OSW_E"),
+          new AutoPath("M alliance push to G", "M alliance push to G"),
+          new AutoPath("M alliance push to H", "M alliance push to H"));
 
   private static List<AutoPath> twoPiecePaths =
       List.of(
@@ -125,8 +128,6 @@ public class AutoLogic {
           new AutoPath("YSWLSF_J-K-L-A", "YSWLSF_J-K-L-A"),
           new AutoPath("YSWLSF_I-J-K-L", "YSWLSF_I-J-K-L"));
 
-  private static List<AutoPath> testingPaths = List.of(new AutoPath("PIDTESTING", "PID TESTING"));
-
   // map (gulp)
   private static Map<Integer, List<AutoPath>> commandsMap =
       Map.of(
@@ -139,9 +140,7 @@ public class AutoLogic {
           3,
           threePiecePaths,
           4,
-          fourPiecePaths,
-          5,
-          testingPaths);
+          fourPiecePaths);
 
   // vars
 
@@ -293,7 +292,7 @@ public class AutoLogic {
         waitCommand = Commands.waitSeconds(0.5);
       }
       return Commands.sequence(
-              r.superStructure.preIntake(), waitCommand, r.superStructure.coralIntake())
+              r.superStructure.preIntake(), waitCommand, r.superStructure.coralIntake(), r.superStructure.coralStow())
           .withName("intake");
     }
     return Commands.none().withName("intake");
