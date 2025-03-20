@@ -23,6 +23,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
+import frc.robot.subsystems.ArmPivot;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -296,7 +298,7 @@ public class AutoLogic {
               r.superStructure.preIntake(),
               waitCommand,
               r.superStructure.coralIntake(),
-              r.superStructure.coralStow())
+              s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_UP))
           .withName("intake");
     }
     return Commands.none().withName("intake");
