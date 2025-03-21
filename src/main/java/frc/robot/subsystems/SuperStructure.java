@@ -48,10 +48,6 @@ public class SuperStructure {
                             elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS),
                             armPivot.moveToPosition(ArmPivot.CORAL_PRESET_PRE_L4))
                         .withDeadline(Commands.waitUntil(score)),
-                    Commands.parallel(
-                            elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_POS),
-                            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L4))
-                        .withTimeout(2.0),
                     armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN))
                 .onlyWhile(armSensor.inClaw()),
             Commands.print("Pre preIntake()"),
