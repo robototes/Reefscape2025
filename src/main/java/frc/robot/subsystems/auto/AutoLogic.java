@@ -273,11 +273,9 @@ public class AutoLogic {
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
-      return Commands.sequence(
-              AutoAlign.autoAlign(s.drivebaseSubsystem),
-              Commands.print("Pre raise elevator"),
-              r.superStructure.coralLevelFour(() -> readyToScore()),
-              Commands.print("Post raise elevator"))
+      return r.superStructure
+          .coralLevelFour(() -> readyToScore())
+          .deadlineFor(AutoAlign.autoAlign(s.drivebaseSubsystem))
           .withName("scoreCommand");
     }
     return Commands.none().withName("scoreCommand");
@@ -294,7 +292,7 @@ public class AutoLogic {
         waitCommand = Commands.waitSeconds(0.5);
       }
       return Commands.sequence(
-              r.superStructure.preIntake(),
+              r.superStructure.coralPreIntake(),
               waitCommand,
               r.superStructure.coralIntake(),
               s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_UP))

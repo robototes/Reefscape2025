@@ -45,7 +45,7 @@ public class AutoBuilderConfig {
 
             var alliance = DriverStation.getAlliance();
             if (alliance.isPresent()) {
-              return alliance.get() == DriverStation.Alliance.Red;
+              return !AutoAlign.isBlue(); // Checking alliance is red
             }
             return false;
           },
