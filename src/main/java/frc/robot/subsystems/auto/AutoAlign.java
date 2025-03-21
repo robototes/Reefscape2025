@@ -104,17 +104,11 @@ public class AutoAlign {
 
   private static Command autoPathAlign(CommandSwerveDrivetrain drivebaseSubsystem) {
     Pose2d robotPose = drivebaseSubsystem.getState().Pose;
-    Pose2d branchPose = getClosestBranch(drivebaseSubsystem);
+    Pose2d branchPose = getClosestBranch(robotPose);
     Transform2d robotToBranch = branchPose.minus(robotPose);
     if (robotToBranch.getTranslation().getNorm() < 0.01
         && Math.abs(robotToBranch.getRotation().getDegrees()) < 1) {
       return Commands.none();
-    }
-    boolean isBlue;
-    if (!DriverStation.getAlliance().isEmpty()) {
-      isBlue = DriverStation.getAlliance().get().equals(Alliance.Blue);
-    } else {
-      isBlue = false;
     }
     // sets the point for the path to go to
     List<Waypoint> waypointsPoeses = PathPlannerPath.waypointsFromPoses(robotPose, branchPose);
@@ -131,7 +125,7 @@ public class AutoAlign {
             new GoalEndState(0.0, branchPose.getRotation()));
     // path.flipPath(); Returns path except it's flipped
     // this unflips it
-    if (!isBlue) {
+    if (!isBlue()) {
       path = path.flipPath();
     }
 
@@ -142,16 +136,21 @@ public class AutoAlign {
     return drivebaseSubsystem.defer(() -> autoPathAlign(drivebaseSubsystem)).withName("Auto Align");
   }
 
-  private static Pose2d getClosestBranch(CommandSwerveDrivetrain drivebaseSubsystem) {
-    Pose2d robotPose = drivebaseSubsystem.getState().Pose;
+  public static Boolean isBlue() {
     boolean isBlue;
+    
     if (!DriverStation.getAlliance().isEmpty()) {
       isBlue = DriverStation.getAlliance().get().equals(Alliance.Blue);
     } else {
       isBlue = false;
     }
+    return isBlue;
+  }
+  private static Pose2d getClosestBranch(Pose2d robotPose) {
+    
+   
     // figures out which branch to go to
-    List<Pose2d> branchesPoses = isBlue ? blueBranchesPoses : redBranchesPoses;
+    List<Pose2d> branchesPoses = isBlue() ? blueBranchesPoses : redBranchesPoses;
     return robotPose.nearest(branchesPoses);
   }
 
@@ -165,10 +164,10 @@ public class AutoAlign {
     return drivebase.applyRequest(
         () -> {
           // use the other method to calculate target pose
-          Pose2d targetPose = getClosestBranch(drivebase);
+          Pose2d currentPose = drivebase.getState().Pose;
+          Pose2d targetPose = getClosestBranch(currentPose);
           // calculate Rotation2d that's the angle from current Translation2d and target pose
           // Translation2d
-          Pose2d currentPose = drivebase.getState().Pose;
           Translation2d distance = targetPose.getTranslation().minus(currentPose.getTranslation());
           Rotation2d targetRotation = distance.getAngle();
           // apply request
