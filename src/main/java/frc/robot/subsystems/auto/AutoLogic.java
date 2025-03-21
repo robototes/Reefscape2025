@@ -273,9 +273,9 @@ public class AutoLogic {
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
-      return Commands.parallel(
-              AutoAlign.autoAlign(s.drivebaseSubsystem),
-              r.superStructure.coralLevelFour(() -> readyToScore()))
+      return r.superStructure
+          .coralLevelFour(() -> readyToScore())
+          .deadlineFor(AutoAlign.autoAlign(s.drivebaseSubsystem))
           .withName("scoreCommand");
     }
     return Commands.none().withName("scoreCommand");
