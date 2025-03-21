@@ -24,7 +24,6 @@ import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
 import frc.robot.subsystems.ArmPivot;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -274,11 +273,9 @@ public class AutoLogic {
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
-      return Commands.sequence(
+      return Commands.parallel(
               AutoAlign.autoAlign(s.drivebaseSubsystem),
-              Commands.print("Pre raise elevator"),
-              r.superStructure.coralLevelFour(() -> readyToScore()),
-              Commands.print("Post raise elevator"))
+              r.superStructure.coralLevelFour(() -> readyToScore()))
           .withName("scoreCommand");
     }
     return Commands.none().withName("scoreCommand");
@@ -295,8 +292,10 @@ public class AutoLogic {
         waitCommand = Commands.waitSeconds(0.5);
       }
       return Commands.sequence(
-              r.superStructure.coralPreIntake(), waitCommand, r.superStructure.coralIntake(),               s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_UP))
-              )
+              r.superStructure.coralPreIntake(),
+              waitCommand,
+              r.superStructure.coralIntake(),
+              s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_UP))
           .withName("intake");
     }
     return Commands.none().withName("intake");
