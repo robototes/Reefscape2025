@@ -1,12 +1,11 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
@@ -15,6 +14,7 @@ import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
@@ -30,12 +30,12 @@ import java.util.function.Supplier;
 public class ElevatorSubsystem extends SubsystemBase {
   // Maximum is 38.34
   public static final double CORAL_LEVEL_FOUR_PRE_POS = 37.5;
-  public static final double CORAL_LEVEL_FOUR_POS = 36.5;
-  public static final double CORAL_LEVEL_THREE_PRE_POS = 16.8;
+  public static final double CORAL_LEVEL_FOUR_POS = 36;
+  public static final double CORAL_LEVEL_THREE_PRE_POS = 18.65;
   public static final double CORAL_LEVEL_THREE_POS = 14;
-  public static final double CORAL_LEVEL_TWO_PRE_POS = 4.8;
+  public static final double CORAL_LEVEL_TWO_PRE_POS = 6.94;
   public static final double CORAL_LEVEL_TWO_POS = 4.4;
-  public static final double CORAL_LEVEL_ONE_POS = 8.06;
+  public static final double CORAL_LEVEL_ONE_POS = 8.3;
   public static final double ALGAE_LEVEL_TWO_THREE = 8; // untested
   public static final double ALGAE_LEVEL_TWO_THREE_FLING = 16;
   public static final double ALGAE_LEVEL_THREE_FOUR = 16; // untested
@@ -65,6 +65,9 @@ public class ElevatorSubsystem extends SubsystemBase {
   private TalonFX m_motor;
   private TalonFX m_motor2;
 
+  private final TalonFXSimState m_motorOneSimState;
+  private final TalonFXSimState m_motorTwoSimState;
+
   private double curPos;
   private double targetPos;
   private boolean hasBeenZeroed;
@@ -92,6 +95,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     // m_encoder.setDistancePerPulse(Constants.kElevatorEncoderDistPerPulse);
     m_motor = new TalonFX(Hardware.ELEVATOR_MOTOR_ONE, "Drivebase");
     m_motor2 = new TalonFX(Hardware.ELEVATOR_MOTOR_TWO, "Drivebase");
+    m_motorOneSimState = m_motor.getSimState();
+    m_motorTwoSimState = m_motor2.getSimState();
     motorConfigs();
 
     Shuffleboard.getTab("Elevator").addDouble("Motor Current Position", () -> getCurrentPosition());
@@ -100,7 +105,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         .addDouble("M1 supply current", () -> m_motor.getSupplyCurrent().getValueAsDouble());
     Shuffleboard.getTab("Elevator")
         .addDouble("M2 supply current", () -> m_motor2.getSupplyCurrent().getValueAsDouble());
-    Shuffleboard.getTab("Elevator").addBoolean("Is zero'd", () -> getHasBeenZeroed());
+    Shuffleboard.getTab("Elevator").addBoolean("Is Zeroed", () -> getHasBeenZeroed());
     Shuffleboard.getTab("Elevator")
         .addDouble("M1 temp", () -> m_motor.getDeviceTemp().getValueAsDouble());
     Shuffleboard.getTab("Elevator")
@@ -264,10 +269,12 @@ public class ElevatorSubsystem extends SubsystemBase {
   public Command holdCoastMode() {
     return startEnd(
             () -> {
-              m_motor.setControl(new CoastOut());
+              m_motor.setNeutralMode(NeutralModeValue.Coast);
+              m_motor2.setNeutralMode(NeutralModeValue.Coast);
             },
             () -> {
-              m_motor.setControl(new StaticBrake());
+              m_motor.setNeutralMode(NeutralModeValue.Brake);
+              m_motor2.setNeutralMode(NeutralModeValue.Brake);
             })
         .ignoringDisable(true)
         .withName("Hold elevator coast");
@@ -340,5 +347,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         notConnectedDebouncerOne.calculate(!m_motor.getMotorVoltage().hasUpdated()));
     NotConnectedError2.set(
         notConnectedDebouncerTwo.calculate(!m_motor2.getMotorVoltage().hasUpdated()));
+    if (RobotBase.isSimulation()) {
+      m_motorOneSimState.setRawRotorPosition(targetPos);
+      m_motorTwoSimState.setRawRotorPosition(targetPos);
+    }
   }
 }

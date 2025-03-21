@@ -7,14 +7,20 @@ package frc.robot;
 import au.grapplerobotics.CanBridge;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Sensors.SensorConstants;
 import frc.robot.Subsystems.SubsystemConstants;
 import frc.robot.subsystems.SuperStructure;
+import frc.robot.subsystems.auto.AutoBuilderConfig;
+import frc.robot.subsystems.auto.AutoLogic;
+import frc.robot.subsystems.auto.AutonomousField;
 import frc.robot.util.BuildInfo;
 import frc.robot.util.RobotType;
 
@@ -32,17 +38,22 @@ public class Robot extends TimedRobot {
   public final Subsystems subsystems;
   public final Sensors sensors;
   public final SuperStructure superStructure;
+  private String autoCommandRequirements = "UNKNOWN";
+  private final PowerDistribution PDH;
 
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
+
     instance = this;
     robotType = RobotType.getCurrent();
     CanBridge.runTCP();
-
+    PDH = new PowerDistribution(Hardware.PDH_ID, ModuleType.kRev);
     LiveWindow.disableAllTelemetry();
+    LiveWindow.enableTelemetry(PDH);
 
     subsystems = new Subsystems();
     sensors = new Sensors();
+    AutoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
         && SubsystemConstants.SPINNYCLAW_ENABLED
@@ -52,6 +63,7 @@ public class Robot extends TimedRobot {
               subsystems.elevatorSubsystem,
               subsystems.armPivotSubsystem,
               subsystems.spinnyClawSubsytem,
+              subsystems.elevatorLEDSubsystem,
               sensors.armSensor);
     } else {
       superStructure = null;
@@ -70,15 +82,21 @@ public class Robot extends TimedRobot {
             command -> System.out.println("Command initialized: " + command.getName()));
     CommandScheduler.getInstance()
         .onCommandInterrupt(
-            command -> System.out.println("Command interrupted: " + command.getName()));
+            (command, interruptor) ->
+                System.out.println(
+                    "Command interrupted: "
+                        + command.getName()
+                        + "; Cause: "
+                        + interruptor.map(cmd -> cmd.getName()).orElse("<none>")));
     CommandScheduler.getInstance()
         .onCommandFinish(command -> System.out.println("Command finished: " + command.getName()));
 
     SmartDashboard.putData(CommandScheduler.getInstance());
-
     BuildInfo.logBuildInfo();
 
-    DriverStation.silenceJoystickConnectionWarning(true);
+    AutoLogic.registerCommands();
+    AutonomousField.initShuffleBoard("Field", 0, 0, this::addPeriodic);
+    AutoLogic.initShuffleBoard();
   }
 
   @Override
@@ -93,13 +111,18 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {}
 
   @Override
-  public void disabledExit() {}
+  public void disabledExit() {
+    subsystems.drivebaseSubsystem.brakeMotors();
+    subsystems.climbPivotSubsystem.brakeMotors();
+  }
 
   @Override
-  public void autonomousInit() {}
-
-  @Override
-  public void autonomousPeriodic() {}
+  public void autonomousInit() {
+    Shuffleboard.startRecording();
+    if (AutoLogic.getSelectedAuto() != null && SubsystemConstants.DRIVEBASE_ENABLED) {
+      AutoLogic.getSelectedAuto().schedule();
+    }
+  }
 
   @Override
   public void autonomousExit() {
@@ -109,6 +132,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     CommandScheduler.getInstance().cancelAll();
+    Shuffleboard.startRecording();
   }
 
   @Override
