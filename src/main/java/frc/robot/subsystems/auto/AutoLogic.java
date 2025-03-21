@@ -24,7 +24,6 @@ import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
 import frc.robot.subsystems.ArmPivot;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
