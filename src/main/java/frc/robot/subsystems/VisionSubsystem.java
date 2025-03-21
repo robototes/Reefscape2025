@@ -118,11 +118,10 @@ public class VisionSubsystem extends SubsystemBase {
             fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_RIGHT);
 
     var networkTables = NetworkTableInstance.getDefault();
-    // networkTables.addListener(
-    //
-    // networkTables.getTable("photonvision").getSubTable(Hardware.LEFT_CAM).getEntry("rawBytes"),
-    //     EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-    //     event -> update());
+    networkTables.addListener(
+        networkTables.getTable("photonvision").getSubTable(Hardware.LEFT_CAM).getEntry("rawBytes"),
+        EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+        event -> update());
 
     networkTables.addListener(
         networkTables.getTable("photonvision").getSubTable(Hardware.RIGHT_CAM).getEntry("rawBytes"),
