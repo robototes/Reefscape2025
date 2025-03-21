@@ -295,10 +295,8 @@ public class AutoLogic {
         waitCommand = Commands.waitSeconds(0.5);
       }
       return Commands.sequence(
-              r.superStructure.preIntake(),
-              waitCommand,
-              r.superStructure.coralIntake(),
-              s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_UP))
+              r.superStructure.coralPreIntake(), waitCommand, r.superStructure.coralIntake(),               s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_UP))
+              )
           .withName("intake");
     }
     return Commands.none().withName("intake");
