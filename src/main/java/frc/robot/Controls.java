@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -454,16 +455,14 @@ public class Controls {
       Commands.waitSeconds(1)
           .andThen(
               s.elevatorLEDSubsystem
-                  .blink(
-                      120,
-                      0,
-                      0,
-                      "Red - Elevator Not Zeroed") // make dimmer and blinky oi oi oi meow
+                  .blink(120, 0, 0, "Red - Elevator Not Zeroed")
                   .ignoringDisable(false))
           .schedule();
       hasBeenZeroed.onTrue(
           s.elevatorLEDSubsystem
               .colorSet(0, 255, 0, "Green - Elevator Zeroed")
+              .andThen(new WaitCommand(2))
+              .andThen(s.elevatorLEDSubsystem.colorSet(0, 0, 0, "LED off"))
               .ignoringDisable(false));
       hasBeenZeroed.onFalse(
           s.elevatorLEDSubsystem
