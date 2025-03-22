@@ -293,7 +293,7 @@ public class AutoLogic {
         waitCommand = Commands.waitSeconds(0.5);
       }
       return Commands.sequence(
-              r.superStructure.preIntake(), waitCommand, r.superStructure.coralIntake())
+              r.superStructure.coralPreIntake(), waitCommand, r.superStructure.coralIntake())
           .withName("intake");
     }
     return Commands.none().withName("intake");
