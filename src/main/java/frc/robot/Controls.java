@@ -510,7 +510,7 @@ public class Controls {
                     () ->
                         0.2
                             * -MathUtil.applyDeadband(
-                                climbTestController.getRightTriggerAxis(), 0.1))
+                                operatorController.getRightTriggerAxis(), 0.1))
                 .withName("Climb Manual Control"));
     connected(climbTestController)
         .and(climbTestController.rightTrigger(0.1))
