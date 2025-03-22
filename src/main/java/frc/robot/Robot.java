@@ -113,8 +113,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledExit() {
-    subsystems.drivebaseSubsystem.brakeMotors();
-    subsystems.climbPivotSubsystem.brakeMotors();
+    if (subsystems.drivebaseSubsystem != null) {
+      subsystems.drivebaseSubsystem.brakeMotors();
+    }
+    if (subsystems.climbPivotSubsystem != null) {
+      subsystems.climbPivotSubsystem.brakeMotors();
+    }
   }
 
   @Override
