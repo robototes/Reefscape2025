@@ -502,6 +502,16 @@ public class Controls {
     // operatorController
     //     .start()
     //     .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
+    operatorController
+        .rightTrigger(0.1)
+        .whileTrue(
+            s.climbPivotSubsystem
+                .moveClimbManual(
+                    () ->
+                        0.2
+                            * -MathUtil.applyDeadband(
+                                climbTestController.getRightTriggerAxis(), 0.1))
+                .withName("Climb Manual Control"));
     connected(climbTestController)
         .and(climbTestController.rightTrigger(0.1))
         .whileTrue(

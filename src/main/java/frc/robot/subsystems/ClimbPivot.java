@@ -235,13 +235,13 @@ public class ClimbPivot extends SubsystemBase {
   @Override
   public void periodic() {
     double currentPos = getClimbPosition();
-    if (MathUtil.isNear(targetPos, currentPos, BOOLEAN_TOLERANCE)) {
-      motorLeft.set(holdSpeed);
-      setSpeed = holdSpeed;
-    } else {
-      motorLeft.set(CLIMB_OUT_SPEED);
-      setSpeed = CLIMB_OUT_SPEED;
-    }
+    // if (MathUtil.isNear(targetPos, currentPos, BOOLEAN_TOLERANCE)) {
+    //   motorLeft.set(holdSpeed);
+    //   setSpeed = holdSpeed;
+    // } else {
+    //   motorLeft.set(CLIMB_OUT_SPEED);
+    //   setSpeed = CLIMB_OUT_SPEED;
+    // }
 
     if (MathUtil.isNear(currentPos, CLIMB_OUT_PRESET, BOOLEAN_TOLERANCE)) {
       isClimbOut = true;
