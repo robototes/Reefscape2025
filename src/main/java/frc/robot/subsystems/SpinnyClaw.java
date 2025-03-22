@@ -81,11 +81,11 @@ public class SpinnyClaw extends SubsystemBase {
     if (armSensor != null) {
       return runOnce(
           () -> {
-            if (armSensor.booleanInClaw() && pow < 0) {
-              motor.stopMotor();
-            } else {
-              motor.setVoltage(pow);
-            }
+            // if (armSensor.booleanInClaw() && pow < 0) {
+            //   motor.stopMotor();
+            // } else {
+            motor.setVoltage(pow);
+            // }
           });
     } else {
       return runOnce(() -> motor.setVoltage(pow));
@@ -96,11 +96,11 @@ public class SpinnyClaw extends SubsystemBase {
     if (armSensor != null) {
       return startEnd(
           () -> {
-            if (armSensor.booleanInClaw() && pow < 0) {
-              motor.stopMotor();
-            } else {
-              motor.setVoltage(pow);
-            }
+            // if (armSensor.booleanInClaw() && pow < 0) {
+            //   motor.stopMotor();
+            // } else {
+            motor.setVoltage(pow);
+            // }
           },
           () -> motor.stopMotor());
     } else {
