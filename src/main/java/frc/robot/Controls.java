@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.ArmPivot;
@@ -122,6 +123,32 @@ public class Controls {
                               * inputScale); // Drive counterclockwise with negative X (left)
                 })
             .withName("Drive"));
+    operatorController
+        .povUp()
+        .whileTrue(
+            s.drivebaseSubsystem
+                .applyRequest(
+                    () ->
+                        drive
+                            .withVelocityX(MetersPerSecond.of(1.0))
+                            .withVelocityY(0)
+                            .withRotationalRate(0))
+                .withName("1 m/s forward"));
+    operatorController
+        .povRight()
+        .whileTrue(
+            s.drivebaseSubsystem
+                .applyRequest(
+                    () ->
+                        drive
+                            .withVelocityX(MetersPerSecond.of(2.0))
+                            .withVelocityY(0)
+                            .withRotationalRate(0))
+                .withName("2 m/s forward"));
+    driverController.a().whileTrue(s.drivebaseSubsystem.sysIdDynamic(Direction.kForward));
+    driverController.b().whileTrue(s.drivebaseSubsystem.sysIdDynamic(Direction.kReverse));
+    driverController.y().whileTrue(s.drivebaseSubsystem.sysIdQuasistatic(Direction.kForward));
+    driverController.x().whileTrue(s.drivebaseSubsystem.sysIdQuasistatic(Direction.kReverse));
 
     // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
     // brake));
