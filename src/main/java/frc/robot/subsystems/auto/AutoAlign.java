@@ -70,7 +70,7 @@ public class AutoAlign {
   private static final Pose2d BRANCH_R_C =
       new Pose2d(new Translation2d(13.920, 5.120), Rotation2d.fromDegrees(240));
   private static final Pose2d BRANCH_R_D =
-      new Pose2d(new Translation2d(13.620, 5.250), Rotation2d.fromDegrees(240));
+      new Pose2d(new Translation2d(13.57, 5.250), Rotation2d.fromDegrees(240));
   private static final Pose2d BRANCH_R_E =
       new Pose2d(new Translation2d(12.560, 5.230), Rotation2d.fromDegrees(300));
   private static final Pose2d BRANCH_R_F =
