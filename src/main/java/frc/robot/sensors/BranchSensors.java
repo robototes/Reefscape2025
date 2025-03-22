@@ -23,7 +23,6 @@ public class BranchSensors {
     ShuffleboardTab tab = Shuffleboard.getTab("BranchSensor");
     tab.addDouble("LeftDistance(m)", () -> getLeftSensorDistance().in(Meters));
     tab.addDouble("RightDistance(m)", () -> getRightSensorDistance().in(Meters));
-    
   }
 
   private void ConfigureSensor(LaserCan Sensor) {
