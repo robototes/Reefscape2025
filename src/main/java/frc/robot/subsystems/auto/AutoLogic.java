@@ -255,9 +255,10 @@ public class AutoLogic {
   public static Command getSelectedAuto() {
 
     double waitTimer = autoDelayEntry.getDouble(0);
+    String autoName = availableAutos.getSelected().getAutoName();
 
     return Commands.waitSeconds(waitTimer)
-        .andThen(AutoBuilder.buildAuto(availableAutos.getSelected().getAutoName()));
+        .andThen(AutoBuilder.buildAuto(autoName)).withName(autoName);
   }
 
   private static boolean readyToScore() {
