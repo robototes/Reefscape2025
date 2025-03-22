@@ -508,7 +508,7 @@ public class Controls {
             s.climbPivotSubsystem
                 .moveClimbManual(
                     () ->
-                        0.2
+                        0.15
                             * -MathUtil.applyDeadband(
                                 operatorController.getRightTriggerAxis(), 0.1))
                 .withName("Climb Manual Control"));
