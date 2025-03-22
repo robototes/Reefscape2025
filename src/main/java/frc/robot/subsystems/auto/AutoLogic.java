@@ -258,7 +258,8 @@ public class AutoLogic {
     String autoName = availableAutos.getSelected().getAutoName();
 
     return Commands.waitSeconds(waitTimer)
-        .andThen(AutoBuilder.buildAuto(autoName)).withName(autoName);
+        .andThen(AutoBuilder.buildAuto(autoName))
+        .withName(autoName);
   }
 
   private static boolean readyToScore() {
