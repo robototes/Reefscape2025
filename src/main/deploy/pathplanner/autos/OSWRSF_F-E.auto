@@ -5,22 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "OSW to F"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "scoreCommand"
-                }
-              }
-            ]
+            "pathName": "OSW to F"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCommand"
           }
         },
         {
@@ -36,22 +29,15 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "RSF to E"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "scoreCommand"
-                }
-              }
-            ]
+            "pathName": "RSF to E"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCommand"
           }
         }
       ]
