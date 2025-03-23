@@ -39,6 +39,7 @@ public class SpinnyClaw extends SubsystemBase {
   private final Alert NotConnectedError =
       new Alert("Spinny Claw", "Motor not connected", AlertType.kError);
   private final Debouncer notConnectedDebouncer = new Debouncer(.1, DebounceType.kBoth);
+  private double lastSetPower;
 
   public SpinnyClaw(ArmSensor armSensor) {
     motor = new TalonFX(Hardware.SPINNY_CLAW_MOTOR_ID);
@@ -60,6 +61,9 @@ public class SpinnyClaw extends SubsystemBase {
         .addDouble("Claw Speed", () -> motor.getVelocity().getValueAsDouble());
     Shuffleboard.getTab("Claw")
         .addDouble("Claw Motor Temperature", () -> motor.getDeviceTemp().getValueAsDouble());
+    Shuffleboard.getTab("Claw")
+        .addDouble("Motor Voltage", () -> motor.getMotorVoltage().getValueAsDouble());
+    Shuffleboard.getTab("Claw").addDouble("Last Set Power", () -> lastSetPower);
   }
 
   // TalonFX config
@@ -85,10 +89,15 @@ public class SpinnyClaw extends SubsystemBase {
             //   motor.stopMotor();
             // } else {
             motor.setVoltage(pow);
+            lastSetPower = pow;
             // }
           });
     } else {
-      return runOnce(() -> motor.setVoltage(pow));
+      return runOnce(
+          () -> {
+            motor.setVoltage(pow);
+            lastSetPower = pow;
+          });
     }
   }
 
@@ -100,11 +109,18 @@ public class SpinnyClaw extends SubsystemBase {
             //   motor.stopMotor();
             // } else {
             motor.setVoltage(pow);
+            lastSetPower = pow;
+
             // }
           },
           () -> motor.stopMotor());
     } else {
-      return startEnd(() -> motor.setVoltage(pow), () -> motor.stopMotor());
+      return startEnd(
+          () -> {
+            motor.setVoltage(pow);
+            lastSetPower = pow;
+          },
+          () -> motor.stopMotor());
     }
   }
 
