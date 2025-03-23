@@ -58,7 +58,7 @@ public class ArmSensor {
   }
 
   public Trigger inClaw() {
-    return new Trigger(() -> booleanInClaw()).debounce(0.1);
+    return new Trigger(() -> booleanInClaw()).debounce(0.5);
   }
 
   public boolean booleanInClaw() {
