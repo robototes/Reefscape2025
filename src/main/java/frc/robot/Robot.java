@@ -122,6 +122,7 @@ public class Robot extends TimedRobot {
     }
     if (subsystems.climbPivotSubsystem != null) {
       subsystems.climbPivotSubsystem.brakeMotors();
+      subsystems.climbPivotSubsystem.moveCompleteTrue();
     }
   }
 

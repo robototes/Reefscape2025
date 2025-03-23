@@ -496,6 +496,8 @@ public class Controls {
       setClimbLEDs = Commands.none();
     }
 
+    s.climbPivotSubsystem.setDefaultCommand(s.climbPivotSubsystem.advanceClimbCheck());
+
     connected(climbTestController)
         .and(climbTestController.start())
         .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
