@@ -74,7 +74,7 @@ public class SpinnyClaw extends SubsystemBase {
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     cfg.apply(configuration);
     // enabling stator current limits
-    currentLimits.StatorCurrentLimit = 150; // subject to change
+    currentLimits.StatorCurrentLimit = 70; // subject to change
     currentLimits.StatorCurrentLimitEnable = true;
     currentLimits.SupplyCurrentLimit = 40; // subject to change
     currentLimits.SupplyCurrentLimitEnable = true;
