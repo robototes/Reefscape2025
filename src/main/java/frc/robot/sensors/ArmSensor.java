@@ -17,7 +17,7 @@ public class ArmSensor {
   // VALUES ARE IN METERS
   private static final double TROUGH_LOWER_LIMIT = 0.18;
   private static final double TROUGH_UPPER_LIMIT = 0.28;
-  private static final double CLAW_LOWER_LIMIT = 0.06;
+  private static final double CLAW_LOWER_LIMIT = 0.01;
   private static final double CLAW_UPPER_LIMIT = 0.09;
 
   public ArmSensor() {
