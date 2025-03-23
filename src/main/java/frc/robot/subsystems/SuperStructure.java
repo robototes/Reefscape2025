@@ -55,8 +55,9 @@ public class SuperStructure {
     return Commands.sequence(
             Commands.parallel(
                     Commands.print("Pre position"),
-                    elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS),
-                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
+                    elevator
+                        .setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS)
+                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
                     spinnyClaw.stop())
                 .withTimeout(2.0),
             repeatWhileClawFull(
