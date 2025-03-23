@@ -46,7 +46,7 @@ public class SuperStructure {
     if (armSensor == null) {
       return command;
     } else {
-      return command.until(armSensor.inClaw());
+      return command.withDeadline(Commands.waitUntil(armSensor.inClaw()));
     }
   }
 
@@ -157,8 +157,7 @@ public class SuperStructure {
                     Commands.parallel(
                         spinnyClaw.coralIntakePower(),
                         armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN)),
-                    elevator.setLevel(ElevatorSubsystem.CORAL_INTAKE_POS),
-                    Commands.idle())),
+                    elevator.setLevel(ElevatorSubsystem.CORAL_INTAKE_POS))),
             spinnyClaw.stop(),
             elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
             coralStow())
