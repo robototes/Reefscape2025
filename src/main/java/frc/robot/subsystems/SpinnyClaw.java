@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 
 public class SpinnyClaw extends SubsystemBase {
   public static final double CORAL_INTAKE_SPEED = -6;
-  public static final double CORAL_EXTAKE_SPEED = 9;
+  public static final double CORAL_EXTAKE_SPEED = 5;
   public static final double CORAL_L4_EXTAKE_SPEED = 2;
   public static final double ALGAE_INTAKE_SPEED = -3;
   public static final double ALGAE_GRIP_INTAKE_SPEED = -2.5;
