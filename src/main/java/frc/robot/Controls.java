@@ -563,10 +563,10 @@ public class Controls {
             Commands.deferredProxy(
                 () -> {
                   if (s.spinnyClawSubsytem.getCurrentCommand() != null) {
-                    return Commands.none().withName("spinny claw used");
+                    return Commands.none().withName("No manual spit - Spinny claw used");
                   } else {
                     return switch (scoringMode) {
-                      case CORAL -> s.spinnyClawSubsytem.coralExtakePower();
+                      case CORAL -> Commands.none().withName("No manual spit - Coral mode");
                       case ALGAE -> s.spinnyClawSubsytem.algaeExtakePower();
                     };
                   }
