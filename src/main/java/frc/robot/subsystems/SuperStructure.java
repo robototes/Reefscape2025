@@ -59,6 +59,7 @@ public class SuperStructure {
                         .setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS)
                         .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
                     spinnyClaw.stop())
+                .until(score)
                 .withTimeout(2.0),
             repeatWhileClawFull(
                 Commands.sequence(
@@ -77,10 +78,11 @@ public class SuperStructure {
   public Command coralLevelThree(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
-                elevator
-                    .setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS)
-                    .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
-                spinnyClaw.stop()),
+                    elevator
+                        .setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS)
+                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
+                    spinnyClaw.stop())
+                .until(score),
             repeatWhileClawFull(
                 Commands.repeatingSequence(
                     armPivot
@@ -95,10 +97,11 @@ public class SuperStructure {
   public Command coralLevelTwo(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
-                elevator
-                    .setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS)
-                    .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
-                spinnyClaw.stop()),
+                    elevator
+                        .setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS)
+                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
+                    spinnyClaw.stop())
+                .until(score),
             repeatWhileClawFull(
                 Commands.sequence(
                     armPivot
@@ -113,10 +116,10 @@ public class SuperStructure {
   public Command coralLevelOne(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
-                elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_ONE_POS),
-                armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L1),
-                spinnyClaw.stop()),
-            Commands.waitUntil(score),
+                    elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_ONE_POS),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L1),
+                    spinnyClaw.stop())
+                .withDeadline(Commands.waitUntil(score)),
             spinnyClaw.coralHoldExtakePower().withTimeout(0.25),
             coralPreIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L1").asProxy())
