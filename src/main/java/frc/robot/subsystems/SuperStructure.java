@@ -67,7 +67,7 @@ public class SuperStructure {
                             elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS),
                             armPivot.moveToPosition(ArmPivot.CORAL_PRESET_PRE_L4))
                         .withDeadline(Commands.waitUntil(score)),
-                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN))),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN).withTimeout(0.4))),
             Commands.print("Pre preIntake()"),
             coralPreIntake(),
             Commands.print("Post preIntake()"))
@@ -89,7 +89,7 @@ public class SuperStructure {
                     armPivot
                         .moveToPosition(ArmPivot.CORAL_PRESET_L3)
                         .withDeadline(Commands.waitUntil(score)),
-                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN))),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN).withTimeout(0.4))),
             coralPreIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L3").asProxy())
         .withName("Coral Level 3");
@@ -109,7 +109,7 @@ public class SuperStructure {
                     armPivot
                         .moveToPosition(ArmPivot.CORAL_PRESET_L2)
                         .withDeadline(Commands.waitUntil(score)),
-                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN))),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN).withTimeout(0.4))),
             coralPreIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L2").asProxy())
         .withName("Coral Level 2");
