@@ -54,7 +54,9 @@ public class Robot extends TimedRobot {
 
     sensors = new Sensors();
     subsystems = new Subsystems(sensors);
-    AutoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
+    if (SubsystemConstants.DRIVEBASE_ENABLED) {
+      AutoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
+    }
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
         && SubsystemConstants.SPINNYCLAW_ENABLED
@@ -95,9 +97,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(CommandScheduler.getInstance());
     BuildInfo.logBuildInfo();
 
-    AutoLogic.registerCommands();
-    AutonomousField.initShuffleBoard("Field", 0, 0, this::addPeriodic);
-    AutoLogic.initShuffleBoard();
+    if (SubsystemConstants.DRIVEBASE_ENABLED) {
+      AutoLogic.registerCommands();
+      AutonomousField.initShuffleBoard("Field", 0, 0, this::addPeriodic);
+      AutoLogic.initShuffleBoard();
+    }
   }
 
   @Override
@@ -118,13 +122,14 @@ public class Robot extends TimedRobot {
     }
     if (subsystems.climbPivotSubsystem != null) {
       subsystems.climbPivotSubsystem.brakeMotors();
+      subsystems.climbPivotSubsystem.moveCompleteTrue();
     }
   }
 
   @Override
   public void autonomousInit() {
     Shuffleboard.startRecording();
-    if (AutoLogic.getSelectedAuto() != null && SubsystemConstants.DRIVEBASE_ENABLED) {
+    if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.getSelectedAuto() != null) {
       AutoLogic.getSelectedAuto().schedule();
     }
   }

@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.ArmPivot;
@@ -123,32 +122,32 @@ public class Controls {
                               * inputScale); // Drive counterclockwise with negative X (left)
                 })
             .withName("Drive"));
-    operatorController
-        .povUp()
-        .whileTrue(
-            s.drivebaseSubsystem
-                .applyRequest(
-                    () ->
-                        drive
-                            .withVelocityX(MetersPerSecond.of(1.0))
-                            .withVelocityY(0)
-                            .withRotationalRate(0))
-                .withName("1 m/s forward"));
-    operatorController
-        .povRight()
-        .whileTrue(
-            s.drivebaseSubsystem
-                .applyRequest(
-                    () ->
-                        drive
-                            .withVelocityX(MetersPerSecond.of(2.0))
-                            .withVelocityY(0)
-                            .withRotationalRate(0))
-                .withName("2 m/s forward"));
-    driverController.a().whileTrue(s.drivebaseSubsystem.sysIdDynamic(Direction.kForward));
-    driverController.b().whileTrue(s.drivebaseSubsystem.sysIdDynamic(Direction.kReverse));
-    driverController.y().whileTrue(s.drivebaseSubsystem.sysIdQuasistatic(Direction.kForward));
-    driverController.x().whileTrue(s.drivebaseSubsystem.sysIdQuasistatic(Direction.kReverse));
+    // operatorController
+    //     .povUp()
+    //     .whileTrue(
+    //         s.drivebaseSubsystem
+    //             .applyRequest(
+    //                 () ->
+    //                     drive
+    //                         .withVelocityX(MetersPerSecond.of(1.0))
+    //                         .withVelocityY(0)
+    //                         .withRotationalRate(0))
+    //             .withName("1 m/s forward"));
+    // operatorController
+    //     .povRight()
+    //     .whileTrue(
+    //         s.drivebaseSubsystem
+    //             .applyRequest(
+    //                 () ->
+    //                     drive
+    //                         .withVelocityX(MetersPerSecond.of(2.0))
+    //                         .withVelocityY(0)
+    //                         .withRotationalRate(0))
+    //             .withName("2 m/s forward"));
+    // driverController.a().whileTrue(s.drivebaseSubsystem.sysIdDynamic(Direction.kForward));
+    // driverController.b().whileTrue(s.drivebaseSubsystem.sysIdDynamic(Direction.kReverse));
+    // driverController.y().whileTrue(s.drivebaseSubsystem.sysIdQuasistatic(Direction.kForward));
+    // driverController.x().whileTrue(s.drivebaseSubsystem.sysIdQuasistatic(Direction.kReverse));
 
     // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
     // brake));
@@ -497,12 +496,24 @@ public class Controls {
       setClimbLEDs = Commands.none();
     }
 
+    s.climbPivotSubsystem.setDefaultCommand(s.climbPivotSubsystem.advanceClimbCheck());
+
     connected(climbTestController)
         .and(climbTestController.start())
         .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
     // operatorController
     //     .start()
     //     .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
+    operatorController
+        .rightTrigger(0.1)
+        .whileTrue(
+            s.climbPivotSubsystem
+                .moveClimbManual(
+                    () ->
+                        0.15
+                            * -MathUtil.applyDeadband(
+                                operatorController.getRightTriggerAxis(), 0.1))
+                .withName("Climb Manual Control"));
     connected(climbTestController)
         .and(climbTestController.rightTrigger(0.1))
         .whileTrue(
@@ -554,10 +565,10 @@ public class Controls {
             Commands.deferredProxy(
                 () -> {
                   if (s.spinnyClawSubsytem.getCurrentCommand() != null) {
-                    return Commands.none().withName("spinny claw used");
+                    return Commands.none().withName("No manual spit - Spinny claw used");
                   } else {
                     return switch (scoringMode) {
-                      case CORAL -> s.spinnyClawSubsytem.coralExtakePower();
+                      case CORAL -> Commands.none().withName("No manual spit - Coral mode");
                       case ALGAE -> s.spinnyClawSubsytem.algaeExtakePower();
                     };
                   }

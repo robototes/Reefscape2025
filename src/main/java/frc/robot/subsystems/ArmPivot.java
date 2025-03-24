@@ -36,7 +36,7 @@ public class ArmPivot extends SubsystemBase {
   private final double ARMPIVOT_KV = 0.69;
   private final double ARMPIVOT_KG = 0.18;
   private final double ARMPIVOT_KA = 0.0;
-  public static final double CORAL_PRESET_L1 = -1.0 / 16; // should equal -0.063
+  public static final double CORAL_PRESET_L1 = 0;
   public static final double CORAL_PRESET_L2 = 0.13;
   public static final double CORAL_PRESET_L3 = 0.13;
   public static final double CORAL_PRESET_L4 = 0.0;
@@ -47,7 +47,7 @@ public class ArmPivot extends SubsystemBase {
   public static final double ALGAE_STOWED = -0.05;
   public static final double ALGAE_PROCESSOR_SCORE = -0.05;
   public static final double ALGAE_GROUND_INTAKE = -0.1;
-  public static final double ALGAE_NET_SCORE = 0.16; // untested - old value was 0.18
+  public static final double ALGAE_NET_SCORE = 0.175; // untested - old value was 0.18
   public static final double CORAL_PRESET_STOWED = 0.125;
   public static final double CORAL_PRESET_OUT = 0;
   public static final double CORAL_PRESET_UP = 0.25; // Pointing directly upwards

@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 
 public class SpinnyClaw extends SubsystemBase {
   public static final double CORAL_INTAKE_SPEED = -6;
-  public static final double CORAL_EXTAKE_SPEED = 4;
+  public static final double CORAL_EXTAKE_SPEED = 5;
   public static final double CORAL_L4_EXTAKE_SPEED = 2;
   public static final double ALGAE_INTAKE_SPEED = -3;
   public static final double ALGAE_GRIP_INTAKE_SPEED = -2.5;
@@ -39,6 +39,7 @@ public class SpinnyClaw extends SubsystemBase {
   private final Alert NotConnectedError =
       new Alert("Spinny Claw", "Motor not connected", AlertType.kError);
   private final Debouncer notConnectedDebouncer = new Debouncer(.1, DebounceType.kBoth);
+  private double lastSetPower;
 
   public SpinnyClaw(ArmSensor armSensor) {
     motor = new TalonFX(Hardware.SPINNY_CLAW_MOTOR_ID);
@@ -60,6 +61,9 @@ public class SpinnyClaw extends SubsystemBase {
         .addDouble("Claw Speed", () -> motor.getVelocity().getValueAsDouble());
     Shuffleboard.getTab("Claw")
         .addDouble("Claw Motor Temperature", () -> motor.getDeviceTemp().getValueAsDouble());
+    Shuffleboard.getTab("Claw")
+        .addDouble("Motor Voltage", () -> motor.getMotorVoltage().getValueAsDouble());
+    Shuffleboard.getTab("Claw").addDouble("Last Set Power", () -> lastSetPower);
   }
 
   // TalonFX config
@@ -70,7 +74,7 @@ public class SpinnyClaw extends SubsystemBase {
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     cfg.apply(configuration);
     // enabling stator current limits
-    currentLimits.StatorCurrentLimit = 150; // subject to change
+    currentLimits.StatorCurrentLimit = 70; // subject to change
     currentLimits.StatorCurrentLimitEnable = true;
     currentLimits.SupplyCurrentLimit = 40; // subject to change
     currentLimits.SupplyCurrentLimitEnable = true;
@@ -81,14 +85,19 @@ public class SpinnyClaw extends SubsystemBase {
     if (armSensor != null) {
       return runOnce(
           () -> {
-            if (armSensor.booleanInClaw() && pow < 0) {
-              motor.stopMotor();
-            } else {
-              motor.setVoltage(pow);
-            }
+            // if (armSensor.booleanInClaw() && pow < 0) {
+            //   motor.stopMotor();
+            // } else {
+            motor.setVoltage(pow);
+            lastSetPower = pow;
+            // }
           });
     } else {
-      return runOnce(() -> motor.setVoltage(pow));
+      return runOnce(
+          () -> {
+            motor.setVoltage(pow);
+            lastSetPower = pow;
+          });
     }
   }
 
@@ -96,15 +105,22 @@ public class SpinnyClaw extends SubsystemBase {
     if (armSensor != null) {
       return startEnd(
           () -> {
-            if (armSensor.booleanInClaw() && pow < 0) {
-              motor.stopMotor();
-            } else {
-              motor.setVoltage(pow);
-            }
+            // if (armSensor.booleanInClaw() && pow < 0) {
+            //   motor.stopMotor();
+            // } else {
+            motor.setVoltage(pow);
+            lastSetPower = pow;
+
+            // }
           },
           () -> motor.stopMotor());
     } else {
-      return startEnd(() -> motor.setVoltage(pow), () -> motor.stopMotor());
+      return startEnd(
+          () -> {
+            motor.setVoltage(pow);
+            lastSetPower = pow;
+          },
+          () -> motor.stopMotor());
     }
   }
 

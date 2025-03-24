@@ -2,6 +2,7 @@ package frc.robot;
 
 import static frc.robot.Subsystems.SubsystemConstants.*;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
 import frc.robot.generated.TestBaseTunerConstants;
@@ -20,12 +21,12 @@ public class Subsystems {
     // <SUBSYSTEM>_ENABLED constants go here
 
     public static final boolean DRIVEBASE_ENABLED = true;
-    public static final boolean VISION_ENABLED = false;
-    public static final boolean ELEVATOR_ENABLED = false;
-    public static final boolean ARMPIVOT_ENABLED = false;
-    public static final boolean SPINNYCLAW_ENABLED = false;
-    public static final boolean CLIMBPIVOT_ENABLED = false;
-    public static final boolean ELEVATOR_LED_ENABLED = false;
+    public static final boolean VISION_ENABLED = true;
+    public static final boolean ELEVATOR_ENABLED = true;
+    public static final boolean ARMPIVOT_ENABLED = true;
+    public static final boolean SPINNYCLAW_ENABLED = true;
+    public static final boolean CLIMBPIVOT_ENABLED = true;
+    public static final boolean ELEVATOR_LED_ENABLED = true;
   }
 
   // Subsystems go here
@@ -57,35 +58,41 @@ public class Subsystems {
 
     if (VISION_ENABLED) {
       visionSubsystem = new VisionSubsystem(drivebaseWrapper);
+      SmartDashboard.putData(visionSubsystem);
     } else {
       visionSubsystem = null;
     }
 
     if (ELEVATOR_ENABLED) {
       elevatorSubsystem = new ElevatorSubsystem();
+      SmartDashboard.putData(elevatorSubsystem);
     } else {
       elevatorSubsystem = null;
     }
 
     if (ARMPIVOT_ENABLED) {
       armPivotSubsystem = new ArmPivot();
+      SmartDashboard.putData(armPivotSubsystem);
     } else {
       armPivotSubsystem = null;
     }
 
     if (CLIMBPIVOT_ENABLED) {
       climbPivotSubsystem = new ClimbPivot();
+      SmartDashboard.putData(climbPivotSubsystem);
     } else {
       climbPivotSubsystem = null;
     }
 
     if (SPINNYCLAW_ENABLED) {
       spinnyClawSubsytem = new SpinnyClaw(sensors.armSensor);
+      SmartDashboard.putData(spinnyClawSubsytem);
     } else {
       spinnyClawSubsytem = null;
     }
     if (ELEVATOR_LED_ENABLED) {
       elevatorLEDSubsystem = new ElevatorLight();
+      SmartDashboard.putData(elevatorLEDSubsystem);
     } else {
       elevatorLEDSubsystem = null;
     }
