@@ -496,7 +496,8 @@ public class Controls {
       setClimbLEDs = Commands.none();
     }
 
-    s.climbPivotSubsystem.setDefaultCommand(s.climbPivotSubsystem.advanceClimbCheck().withName("Check Climb"));
+    s.climbPivotSubsystem.setDefaultCommand(
+        s.climbPivotSubsystem.advanceClimbCheck().withName("Check Climb"));
 
     connected(climbTestController)
         .and(climbTestController.start())
