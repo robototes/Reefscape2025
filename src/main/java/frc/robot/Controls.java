@@ -305,15 +305,16 @@ public class Controls {
         .onTrue(
             Commands.runOnce(
                     () -> {
-                        Command scoreCommand = switch (scoringMode) {
-                          case CORAL -> getCoralBranchHeightCommand();
-                          case ALGAE -> Commands.sequence(
-                                  superStructure.algaeNetScore(driverController.rightBumper()),
-                                  Commands.waitSeconds(0.7),
-                                  getAlgaeIntakeCommand())
-                              .withName("Algae score then intake");
-                        };
-                        CommandScheduler.getInstance().schedule(scoreCommand);
+                      Command scoreCommand =
+                          switch (scoringMode) {
+                            case CORAL -> getCoralBranchHeightCommand();
+                            case ALGAE -> Commands.sequence(
+                                    superStructure.algaeNetScore(driverController.rightBumper()),
+                                    Commands.waitSeconds(0.7),
+                                    getAlgaeIntakeCommand())
+                                .withName("Algae score then intake");
+                          };
+                      CommandScheduler.getInstance().schedule(scoreCommand);
                     })
                 .withName("score"));
   }
