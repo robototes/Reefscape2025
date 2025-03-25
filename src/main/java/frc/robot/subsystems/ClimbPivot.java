@@ -205,6 +205,7 @@ public class ClimbPivot extends SubsystemBase {
             }
           }
         });
+    shuffleboardTab.addDouble("targetPos", () -> targetPos);
     shuffleboardTab
         .addString(
             "Where moving?",
@@ -233,7 +234,9 @@ public class ClimbPivot extends SubsystemBase {
         .addDouble("Motor Speed", () -> getClimbVelocity())
         .withWidget(BuiltInWidgets.kTextView);
     shuffleboardTab.addDouble("Motor Position", () -> getClimbPosition());
-    shuffleboardTab.add("Within Tolerance?", inTolerance);
+    shuffleboardTab.addBoolean("Within Tolerance?", () -> inTolerance);
+    shuffleboardTab.addBoolean("Move Complete?", () -> moveComplete);
+
     // var climbDownEntry =
     //     shuffleboardTab.add("MOVE DOWN",
     // false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
