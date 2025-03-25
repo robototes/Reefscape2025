@@ -497,7 +497,7 @@ public class Controls {
     }
 
     s.climbPivotSubsystem.setDefaultCommand(
-        s.climbPivotSubsystem.advanceClimbCheck().withName("Check Climb"));
+        s.climbPivotSubsystem.advanceClimbCheck().withName("Advance Climb Check"));
 
     connected(climbTestController)
         .and(climbTestController.start())
