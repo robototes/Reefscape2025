@@ -29,7 +29,6 @@ public class Subsystems {
     public static final boolean CLIMBPIVOT_ENABLED = true;
     public static final boolean ELEVATOR_LED_ENABLED = true;
     public static final boolean GROUND_SPINNY_ENABLED = true;
-    
   }
 
   // Subsystems go here
@@ -98,7 +97,7 @@ public class Subsystems {
       groundSpinny = new GroundSpinny();
       SmartDashboard.putData(groundSpinny);
     } else {
-        groundSpinny = null;
+      groundSpinny = null;
     }
     if (ELEVATOR_LED_ENABLED) {
       elevatorLEDSubsystem = new ElevatorLight();
