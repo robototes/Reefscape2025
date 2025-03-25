@@ -423,6 +423,13 @@ public class Controls {
                 .ignoringDisable(true)
                 .withName("Reset elevator zero"));
     operatorController.rightBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
+    var elevatorCoastButton =
+    Shuffleboard.getTab("Elevator")
+        .add("Elevator Coast Mode", false)
+        .withWidget(BuiltInWidgets.kToggleButton)
+        .getEntry();
+    new Trigger(() -> elevatorCoastButton.getBoolean(false))
+        .whileTrue(s.elevatorSubsystem.holdCoastMode());
   }
 
   private void configureArmPivotBindings() {
