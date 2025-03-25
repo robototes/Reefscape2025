@@ -272,6 +272,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_motor.setNeutralMode(NeutralModeValue.Brake);
     m_motor2.setNeutralMode(NeutralModeValue.Brake);
   }
+
   public Command holdCoastMode() {
     return startEnd(
             () -> {
