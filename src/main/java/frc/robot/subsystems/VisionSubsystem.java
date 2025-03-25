@@ -188,7 +188,7 @@ public class VisionSubsystem extends SubsystemBase {
       aprilTagsHelper.addVisionMeasurement(
           FieldPose,
           TimestampSeconds,
-          STANDARD_DEVS.plus(DISTANCE_SC_STANDARD_DEVS).times(Distance));
+          DISTANCE_SC_STANDARD_DEVS.times(Math.max(0, Distance-1)));
       robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       if (RawTimestampSeconds > lastRawTimestampSeconds) {
         fieldPose3dEntry.set(FieldPose3d);
