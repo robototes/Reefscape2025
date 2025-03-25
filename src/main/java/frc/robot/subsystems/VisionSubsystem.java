@@ -163,6 +163,9 @@ public class VisionSubsystem extends SubsystemBase {
       PhotonPipelineResult result,
       PhotonPoseEstimator estimator,
       StructPublisher<Pose3d> rawFieldPose3dEntry) {
+    if (BadAprilTagDetector(result)) {
+      return;
+    }
     var RawTimestampSeconds = result.getTimestampSeconds();
     if (!MathUtil.isNear(Timer.getFPGATimestamp(), RawTimestampSeconds, 5.0)) {
       return;
@@ -217,5 +220,15 @@ public class VisionSubsystem extends SubsystemBase {
 
   public double getDistanceToTarget() {
     return (double) Math.round(Distance * 10) / 10;
+  }
+
+  // configured for 2025 reefscape
+  private static boolean BadAprilTagDetector(PhotonPipelineResult r) {
+    for (var t : r.getTargets()) {
+      if (0 < t.fiducialId && t.fiducialId < 6 || 11 < t.fiducialId && t.fiducialId < 17) {
+        return true;
+      }
+    }
+    return false;
   }
 }
