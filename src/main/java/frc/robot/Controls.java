@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -301,18 +302,19 @@ public class Controls {
 
     driverController
         .rightTrigger()
-        .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
         .onTrue(
-            Commands.deferredProxy(
-                    () ->
-                        switch (scoringMode) {
+            Commands.runOnce(
+                    () -> {
+                        Command scoreCommand = switch (scoringMode) {
                           case CORAL -> getCoralBranchHeightCommand();
                           case ALGAE -> Commands.sequence(
                                   superStructure.algaeNetScore(driverController.rightBumper()),
                                   Commands.waitSeconds(0.7),
                                   getAlgaeIntakeCommand())
                               .withName("Algae score then intake");
-                        })
+                        };
+                        CommandScheduler.getInstance().schedule(scoreCommand);
+                    })
                 .withName("score"));
   }
 
