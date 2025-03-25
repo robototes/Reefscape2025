@@ -50,21 +50,25 @@ public class VisionSubsystem extends SubsystemBase {
   private static final double CAMERA_YAW_LEFT = Units.degreesToRadians(-40);
   private static final double CAMERA_YAW_RIGHT = Units.degreesToRadians(45);
 
-  public static final Transform3d ROBOT_TO_CAM_LEFT = new Transform3d(
-      CAMERA_X_POS_METERS_LEFT,
-      CAMERA_Y_POS_METERS_LEFT,
-      CAMERA_Z_POS_METERS_LEFT,
-      new Rotation3d(CAMERA_ROLL_LEFT, CAMERA_PITCH_LEFT, CAMERA_YAW_LEFT));
+  public static final Transform3d ROBOT_TO_CAM_LEFT =
+      new Transform3d(
+          CAMERA_X_POS_METERS_LEFT,
+          CAMERA_Y_POS_METERS_LEFT,
+          CAMERA_Z_POS_METERS_LEFT,
+          new Rotation3d(CAMERA_ROLL_LEFT, CAMERA_PITCH_LEFT, CAMERA_YAW_LEFT));
 
-  public static final Transform3d ROBOT_TO_CAM_RIGHT = new Transform3d(
-      CAMERA_X_POS_METERS_RIGHT,
-      CAMERA_Y_POS_METERS_RIGHT,
-      CAMERA_Z_POS_METERS_RIGHT,
-      new Rotation3d(CAMERA_ROLL_RIGHT, CAMERA_PITCH_RIGHT, CAMERA_YAW_RIGHT));
+  public static final Transform3d ROBOT_TO_CAM_RIGHT =
+      new Transform3d(
+          CAMERA_X_POS_METERS_RIGHT,
+          CAMERA_Y_POS_METERS_RIGHT,
+          CAMERA_Z_POS_METERS_RIGHT,
+          new Rotation3d(CAMERA_ROLL_RIGHT, CAMERA_PITCH_RIGHT, CAMERA_YAW_RIGHT));
 
   // TODO Measure these
-  private static final Vector<N3> STANDARD_DEVS = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(20));
-  private static final Vector<N3> DISTANCE_SC_STANDARD_DEVS = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(6));
+  private static final Vector<N3> STANDARD_DEVS =
+      VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(20));
+  private static final Vector<N3> DISTANCE_SC_STANDARD_DEVS =
+      VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(6));
 
   private final PhotonCamera leftCamera;
   private final PhotonCamera rightCamera;
@@ -83,20 +87,23 @@ public class VisionSubsystem extends SubsystemBase {
   private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
   private double Distance = 0;
 
-  private final StructPublisher<Pose3d> fieldPose3dEntry = NetworkTableInstance.getDefault()
-      .getStructTopic("vision/fieldPose3d", Pose3d.struct)
-      .publish();
+  private final StructPublisher<Pose3d> fieldPose3dEntry =
+      NetworkTableInstance.getDefault()
+          .getStructTopic("vision/fieldPose3d", Pose3d.struct)
+          .publish();
 
-  private final StructPublisher<Pose3d> rawFieldPose3dEntryLeft = NetworkTableInstance.getDefault()
-      .getStructTopic("vision/rawFieldPose3dLeft", Pose3d.struct)
-      .publish();
+  private final StructPublisher<Pose3d> rawFieldPose3dEntryLeft =
+      NetworkTableInstance.getDefault()
+          .getStructTopic("vision/rawFieldPose3dLeft", Pose3d.struct)
+          .publish();
 
-  private final StructPublisher<Pose3d> rawFieldPose3dEntryRight = NetworkTableInstance.getDefault()
-      .getStructTopic("vision/rawFieldPose3dRight", Pose3d.struct)
-      .publish();
+  private final StructPublisher<Pose3d> rawFieldPose3dEntryRight =
+      NetworkTableInstance.getDefault()
+          .getStructTopic("vision/rawFieldPose3dRight", Pose3d.struct)
+          .publish();
 
-  private static final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout
-      .loadField(AprilTagFields.k2025ReefscapeWelded);
+  private static final AprilTagFieldLayout fieldLayout =
+      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
   public VisionSubsystem(DrivebaseWrapper aprilTagsHelper) {
     robotField = new Field2d();
@@ -105,10 +112,12 @@ public class VisionSubsystem extends SubsystemBase {
     rawVisionFieldObject = robotField.getObject("RawVision");
     leftCamera = new PhotonCamera(Hardware.LEFT_CAM);
     rightCamera = new PhotonCamera(Hardware.RIGHT_CAM);
-    photonPoseEstimatorLeftCamera = new PhotonPoseEstimator(
-        fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_LEFT);
-    photonPoseEstimatorRightCamera = new PhotonPoseEstimator(
-        fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_RIGHT);
+    photonPoseEstimatorLeftCamera =
+        new PhotonPoseEstimator(
+            fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_LEFT);
+    photonPoseEstimatorRightCamera =
+        new PhotonPoseEstimator(
+            fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_RIGHT);
 
     var networkTables = NetworkTableInstance.getDefault();
     networkTables.addListener(
@@ -172,9 +181,10 @@ public class VisionSubsystem extends SubsystemBase {
         return;
       }
       var FieldPose = FieldPose3d.toPose2d();
-      var Distance = PhotonUtils.getDistanceToPose(
-          FieldPose,
-          fieldLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d());
+      var Distance =
+          PhotonUtils.getDistanceToPose(
+              FieldPose,
+              fieldLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d());
       aprilTagsHelper.addVisionMeasurement(
           FieldPose,
           TimestampSeconds,
