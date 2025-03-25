@@ -45,6 +45,7 @@ public class ClimbPivot extends SubsystemBase {
   private final double CLIMB_HOLD_STOWED = -0.001;
   private final double CLIMB_HOLD_CLIMBOUT = -0.0;
   private final double CLIMB_HOLD_CLIMBED = -0.0705;
+  private final double CLIMB_IN_SPEED = -0.3;
 
   // relative to eachother, likely not accurately zero'ed when obtained.x
   private static final double MIN_ROTOR_POSITION = -50.45;
@@ -306,8 +307,14 @@ public class ClimbPivot extends SubsystemBase {
             moveComplete = true;
           } else {
             if (!moveComplete) {
-              motorLeft.set(CLIMB_OUT_SPEED);
-              setSpeed = CLIMB_OUT_SPEED;
+              if (targetPos == CLIMB_OUT_PRESET){
+                motorLeft.set(CLIMB_OUT_PRESET);
+                setSpeed = CLIMB_OUT_SPEED;
+              }
+              else {
+                motorLeft.set(CLIMB_IN_SPEED);
+                setSpeed = CLIMB_IN_SPEED;
+              }
             }
             inTolerance = false;
           }
