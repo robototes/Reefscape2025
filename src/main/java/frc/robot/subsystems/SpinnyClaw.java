@@ -33,6 +33,7 @@ public class SpinnyClaw extends SubsystemBase {
 
   // TalonFX
   private final TalonFX motor;
+  // ArmSensor
   private final ArmSensor armSensor;
 
   // alerts

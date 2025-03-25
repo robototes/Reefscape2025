@@ -28,6 +28,12 @@ public class Hardware {
   // spinny claw [40-44]
   public static final int SPINNY_CLAW_MOTOR_ID = 40;
 
+  // ground intake [45-49]
+  public static final int GROUND_INTAKE_ARM_MOTOR = 45;
+  public static final int GROUND_INTAKE_SPINNY_MOTOR = 46;
+  public static final int GROUND_INTAKE_ARM_ENCODER = 47;
+  public static final int GROUND_INTAKE_SENSOR = 48;
+
   // climb [50-59]
   public static final int CLIMB_PIVOT_MOTOR_LEFT_ID = 50;
   public static final int CLIMB_PIVOT_MOTOR_RIGHT_ID = 51;

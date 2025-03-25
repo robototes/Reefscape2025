@@ -86,6 +86,7 @@ public class Controls {
     configureSpinnyClawBindings();
     configureElevatorLEDBindings();
     configureAutoAlignBindings();
+    configureGroundSpinnyBindings();
   }
 
   private Trigger connected(CommandXboxController controller) {
@@ -616,6 +617,13 @@ public class Controls {
                 () -> -driverController.getLeftY() * MaxSpeed,
                 () -> -driverController.getLeftX() * MaxSpeed));
     driverController.rightTrigger().whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
+  }
+
+  private void configureGroundSpinnyBindings() {
+    if (s.groundSpinny == null) {
+      return;
+    }
+    s.groundSpinny.setDefaultCommand(s.groundSpinny.holdIntakePower());
   }
 
   public void vibrateDriveController(double vibration) {

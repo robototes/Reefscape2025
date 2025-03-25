@@ -11,6 +11,7 @@ import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ClimbPivot;
 import frc.robot.subsystems.DrivebaseWrapper;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.GroundSpinny;
 import frc.robot.subsystems.SpinnyClaw;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
@@ -27,6 +28,8 @@ public class Subsystems {
     public static final boolean SPINNYCLAW_ENABLED = true;
     public static final boolean CLIMBPIVOT_ENABLED = true;
     public static final boolean ELEVATOR_LED_ENABLED = true;
+    public static final boolean GROUND_SPINNY_ENABLED = true;
+    
   }
 
   // Subsystems go here
@@ -38,6 +41,7 @@ public class Subsystems {
   public final ClimbPivot climbPivotSubsystem;
   public final SpinnyClaw spinnyClawSubsytem;
   public final ElevatorLight elevatorLEDSubsystem;
+  public final GroundSpinny groundSpinny;
 
   public Subsystems(Sensors sensors) {
     // Initialize subsystems here (don't forget to check if they're enabled!)
@@ -89,6 +93,12 @@ public class Subsystems {
       SmartDashboard.putData(spinnyClawSubsytem);
     } else {
       spinnyClawSubsytem = null;
+    }
+    if (GROUND_SPINNY_ENABLED) {
+      groundSpinny = new GroundSpinny();
+      SmartDashboard.putData(groundSpinny);
+    } else {
+        groundSpinny = null;
     }
     if (ELEVATOR_LED_ENABLED) {
       elevatorLEDSubsystem = new ElevatorLight();
