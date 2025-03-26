@@ -8,12 +8,19 @@ import au.grapplerobotics.LaserCan;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Hardware;
 
 public class BranchSensors {
 
   private final LaserCan leftSensor;
   private final LaserCan rightSensor;
+
+  // temporary
+  private static final double RIGHT_SENSOR_MIN = 0.0;
+  private static final double RIGHT_SENSOR_MAX = 0.0;
+  private static final double LEFT_SENSOR_MAX = 0.0;
+  private static final double LEFT_SENSOR_MIN = 0.0;
 
   public BranchSensors() {
     leftSensor = new LaserCan(Hardware.BRANCH_SENSOR_LEFT);
@@ -52,5 +59,14 @@ public class BranchSensors {
     return getSensorDistance(rightSensor);
   }
 
-  
+  public Trigger withinScoreRange() {
+    return new Trigger(
+            () -> {
+              double rightDistance = getRightSensorDistance().in(Meters);
+              double leftDistance = getLeftSensorDistance().in(Meters);
+              return (leftDistance > LEFT_SENSOR_MIN && leftDistance < LEFT_SENSOR_MAX)
+                  && (rightDistance > RIGHT_SENSOR_MIN && rightDistance < RIGHT_SENSOR_MAX);
+            })
+        .debounce(0.5);
+  }
 }
