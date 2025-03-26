@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -268,7 +269,7 @@ public class Controls {
 
     driverController
         .a()
-        .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
+        .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interrupter"))
         .onTrue(
             Commands.deferredProxy(
                     () ->
@@ -302,18 +303,20 @@ public class Controls {
 
     driverController
         .rightTrigger()
-        .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
         .onTrue(
-            Commands.deferredProxy(
-                    () ->
-                        switch (scoringMode) {
-                          case CORAL -> getCoralBranchHeightCommand();
-                          case ALGAE -> Commands.sequence(
-                                  superStructure.algaeNetScore(driverController.rightBumper()),
-                                  Commands.waitSeconds(0.7),
-                                  getAlgaeIntakeCommand())
-                              .withName("Algae score then intake");
-                        })
+            Commands.runOnce(
+                    () -> {
+                      Command scoreCommand =
+                          switch (scoringMode) {
+                            case CORAL -> getCoralBranchHeightCommand();
+                            case ALGAE -> Commands.sequence(
+                                    superStructure.algaeNetScore(driverController.rightBumper()),
+                                    Commands.waitSeconds(0.7),
+                                    getAlgaeIntakeCommand())
+                                .withName("Algae score then intake");
+                          };
+                      CommandScheduler.getInstance().schedule(scoreCommand);
+                    })
                 .withName("score"));
   }
 
@@ -421,6 +424,13 @@ public class Controls {
                 .ignoringDisable(true)
                 .withName("Reset elevator zero"));
     operatorController.rightBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
+    var elevatorCoastButton =
+        Shuffleboard.getTab("Controls")
+            .add("Elevator Coast Mode", false)
+            .withWidget(BuiltInWidgets.kToggleButton)
+            .getEntry();
+    new Trigger(() -> elevatorCoastButton.getBoolean(false))
+        .whileTrue(s.elevatorSubsystem.holdCoastMode());
   }
 
   private void configureArmPivotBindings() {
@@ -490,21 +500,20 @@ public class Controls {
       return;
     }
 
-    Command setClimbLEDs;
     if (s.elevatorLEDSubsystem != null) {
-      setClimbLEDs = s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
-    } else {
-      setClimbLEDs = Commands.none();
+      Command setClimbLEDs = s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
+      s.climbPivotSubsystem.isClimbing().whileTrue(setClimbLEDs);
     }
 
-    s.climbPivotSubsystem.setDefaultCommand(s.climbPivotSubsystem.advanceClimbCheck());
+    s.climbPivotSubsystem.setDefaultCommand(
+        s.climbPivotSubsystem.advanceClimbCheck().withName("Advance Climb Check"));
 
     connected(climbTestController)
         .and(climbTestController.start())
-        .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
+        .onTrue(s.climbPivotSubsystem.advanceClimbTarget());
     // operatorController
     //     .start()
-    //     .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
+    //     .onTrue(s.climbPivotSubsystem.advanceClimbTarget());
     operatorController
         .rightTrigger(0.1)
         .whileTrue(
