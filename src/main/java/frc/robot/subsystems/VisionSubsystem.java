@@ -15,6 +15,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 import java.util.EnumSet;
+import java.util.Optional;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
@@ -224,9 +226,19 @@ public class VisionSubsystem extends SubsystemBase {
 
   // configured for 2025 reefscape
   private static boolean BadAprilTagDetector(PhotonPipelineResult r) {
-    for (var t : r.getTargets()) {
-      if (0 < t.fiducialId && t.fiducialId < 6 || 11 < t.fiducialId && t.fiducialId < 17) {
-        return true;
+    boolean isRed = DriverStation.getAlliance().equals(Optional.of(DriverStation.Alliance.Red));
+    if (isRed) {
+      for (var t : r.getTargets()) {
+        if (0 < t.fiducialId && t.fiducialId < 6 || 11 < t.fiducialId && t.fiducialId < 23) {
+          return true;
+        }
+      }
+    }
+    if (!isRed) {
+      for (var t : r.getTargets()) {
+        if (0 < t.fiducialId && t.fiducialId < 17) {
+          return true;
+        }
       }
     }
     return false;
