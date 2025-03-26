@@ -58,9 +58,9 @@ public class SuperStructure {
                     Commands.print("Pre position"),
                     elevator
                         .setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS)
-                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP).until(score)),
+                        .deadlineFor(
+                            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP).until(score)),
                     spinnyClaw.stop())
-                
                 .withTimeout(0.7),
             repeatPrescoreScoreSwing(
                 Commands.sequence(
