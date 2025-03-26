@@ -276,9 +276,8 @@ public class AutoLogic {
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
-      return r.superStructure
-          .coralLevelFour(() -> readyToScore())
-          .deadlineFor(AutoAlign.autoAlign(s.drivebaseSubsystem))
+      return Commands.sequence(AutoAlign.autoAlign(s.drivebaseSubsystem), r.superStructure
+          .coralLevelFour(() -> readyToScore()))
           .withName("scoreCommand");
     }
     return Commands.none().withName("scoreCommand");
@@ -305,6 +304,12 @@ public class AutoLogic {
     return AutoAlign.autoAlign(s.drivebaseSubsystem).withName("autoAlign");
   }
   public static Command isCollected() {
+    if (ARMSENSOR_ENABLED && r.sensors.armSensor != null) {
+
     return Commands.waitUntil(r.sensors.armSensor.inTrough()).withName("isCollected");
   }
+  return Commands.none().withName("isCollected");
+
+  }
+
 }

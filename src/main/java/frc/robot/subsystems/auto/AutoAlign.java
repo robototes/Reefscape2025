@@ -110,8 +110,43 @@ public class AutoAlign {
         && Math.abs(robotToBranch.getRotation().getDegrees()) < 1) {
       return Commands.none();
     }
+
     // sets the point for the path to go to
     List<Waypoint> waypointsPoeses = PathPlannerPath.waypointsFromPoses(robotPose, branchPose);
+    // creates path
+    PathPlannerPath path =
+        new PathPlannerPath(
+            waypointsPoeses,
+            new PathConstraints(
+                Controls.MaxSpeed,
+                MaxAcceleration,
+                Controls.MaxAngularRate,
+                MaxAngularAcceleraition),
+            null,
+            new GoalEndState(0.0, branchPose.getRotation()));
+    path.preventFlipping = true;
+    // // path.flipPath(); Returns path except it's flipped
+    // // this unflips it
+    // if (!isBlue()) {
+    //   path = path.flipPath();
+    // }
+
+    return AutoBuilder.followPath(path);
+  }
+
+
+
+  public static Command autoPathAlignSim(CommandSwerveDrivetrain drivebaseSubsystem) {
+    Pose2d robotPose = drivebaseSubsystem.getState().Pose;
+    Pose2d branchPose = getClosestBranch(robotPose);
+    Transform2d robotToBranch = branchPose.minus(robotPose);
+    if (robotToBranch.getTranslation().getNorm() < 0.01
+        && Math.abs(robotToBranch.getRotation().getDegrees()) < 1) {
+      return Commands.none();
+    }
+
+    // sets the point for the path to go to
+    List<Waypoint> waypointsPoeses = PathPlannerPath.waypointsFromPoses(robotPose,branchPose);
     // creates path
     PathPlannerPath path =
         new PathPlannerPath(

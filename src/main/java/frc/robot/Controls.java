@@ -420,6 +420,7 @@ public class Controls {
                 .ignoringDisable(true)
                 .withName("Reset elevator zero"));
     operatorController.rightBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
+    operatorController.rightTrigger(0.1).onTrue(Commands.sequence(Commands.print("Aligning..."), AutoAlign.autoPathAlignSim(s.drivebaseSubsystem)));
   }
 
   private void configureArmPivotBindings() {
