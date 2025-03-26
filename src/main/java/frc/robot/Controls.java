@@ -268,7 +268,7 @@ public class Controls {
 
     driverController
         .a()
-        .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
+        .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interrupter"))
         .onTrue(
             Commands.deferredProxy(
                     () ->
@@ -424,7 +424,7 @@ public class Controls {
                 .withName("Reset elevator zero"));
     operatorController.rightBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
     var elevatorCoastButton =
-        Shuffleboard.getTab("Elevator")
+        Shuffleboard.getTab("Controls")
             .add("Elevator Coast Mode", false)
             .withWidget(BuiltInWidgets.kToggleButton)
             .getEntry();
