@@ -225,7 +225,8 @@ public class Controls {
                               .coralIntake()
                               .alongWith(
                                   s.elevatorLEDSubsystem.tripleBlink(
-                                      255, 92, 0, "Orange - Manual Coral Intake"))
+                                      255, 92, 0, "Orange - Manual Coral Intake")
+                                      .asProxy())
                               .withName("Manual Coral Intake");
                           case ALGAE -> switch (algaeIntakeHeight) {
                             case ALGAE_LEVEL_THREE_FOUR -> superStructure.algaeLevelThreeFourFling(
@@ -240,11 +241,13 @@ public class Controls {
           .armSensor
           .inTrough()
           .and(superStructure.inPreIntakePosition())
+          .and(RobotModeTriggers.teleop())
           .onTrue(
               superStructure
                   .coralIntake()
                   .alongWith(
-                      s.elevatorLEDSubsystem.tripleBlink(255, 255, 0, "Yellow - Automatic Intake"))
+                      s.elevatorLEDSubsystem.tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
+                      .asProxy())
                   .withName("Automatic Intake"));
     }
 
@@ -496,20 +499,20 @@ public class Controls {
           .andThen(
               s.elevatorLEDSubsystem
                   .blink(120, 0, 0, "Red - Elevator Not Zeroed")
-                  .ignoringDisable(false))
+                  .ignoringDisable(true))
           .schedule();
       hasBeenZeroed.onTrue(
           s.elevatorLEDSubsystem
               .colorSet(0, 255, 0, "Green - Elevator Zeroed")
-              .andThen(new WaitCommand(2))
+              .andThen(Commands.waitSeconds(2))
               .andThen(s.elevatorLEDSubsystem.colorSet(0, 0, 0, "LED off"))
-              .ignoringDisable(false));
+              .ignoringDisable(true));
       RobotModeTriggers.disabled()
           .and(hasBeenZeroed.negate())
           .onTrue(
               s.elevatorLEDSubsystem
                   .colorSet(120, 0, 0, "Red - Elevator Not Zeroed")
-                  .ignoringDisable(false));
+                  .ignoringDisable(true));
     }
     RobotModeTriggers.autonomous()
         .whileTrue(s.elevatorLEDSubsystem.animate(LEDPattern.rainbow(255, 255), "Auto Rainbow"));
@@ -539,7 +542,5 @@ public class Controls {
     if (!DriverStation.isAutonomous()) {
       operatorController.getHID().setRumble(RumbleType.kBothRumble, vibration);
     }
-    RobotModeTriggers.autonomous()
-        .whileTrue(s.elevatorLEDSubsystem.animate(LEDPattern.rainbow(255, 255), "Auto Rainbow"));
   }
 }

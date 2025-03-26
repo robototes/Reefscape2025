@@ -25,8 +25,8 @@ public class ElevatorLight extends SubsystemBase {
   private CANdle candle;
 
   // private String curAnimation = "default";
-  private final AddressableLEDBuffer buffer = new AddressableLEDBuffer(62);
-  private final AddressableLEDBufferView[] sections = {buffer.createView(0, 62)};
+  private final AddressableLEDBuffer buffer = new AddressableLEDBuffer(71);
+  private final AddressableLEDBufferView[] sections = {buffer.createView(0, 70)};
 
   // LED modes
   public RainbowAnimation rainbowAnim = new RainbowAnimation(.5, .89, 64);
@@ -80,18 +80,6 @@ public class ElevatorLight extends SubsystemBase {
           updateLEDs(animation);
         })
         .withName("Animate" + name);
-  }
-
-  public Command animate2(LEDPattern animation, String name) {
-    return run(() -> {
-          for (AddressableLEDBufferView section : sections) {
-            animation.applyTo(section);
-            for (int i = 0; i < section.getLength(); ++i) {
-              candle.setLEDs(section.getRed(i), section.getBlue(i), section.getGreen(i), 0, i, 1);
-            }
-          }
-        })
-        .withName("Animate2" + name);
   }
 
   public Command showScoringMode(Supplier<ScoringMode> scoringMode) {
