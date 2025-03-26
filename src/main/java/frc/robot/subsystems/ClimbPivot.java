@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Hardware;
 import java.util.function.DoubleSupplier;
 
@@ -45,6 +46,7 @@ public class ClimbPivot extends SubsystemBase {
   private final double CLIMB_HOLD_STOWED = -0.001;
   private final double CLIMB_HOLD_CLIMBOUT = -0.0;
   private final double CLIMB_HOLD_CLIMBED = -0.0705;
+  private final double CLIMB_IN_SPEED = -0.3;
 
   // relative to eachother, likely not accurately zero'ed when obtained.x
   private static final double MIN_ROTOR_POSITION = -50.45;
@@ -123,7 +125,7 @@ public class ClimbPivot extends SubsystemBase {
     return runOnce(() -> motorLeft.stopMotor());
   }
 
-  public Command advanceClimbTarget(Command setClimbLEDs) {
+  public Command advanceClimbTarget() {
     return runOnce(
             () -> {
               switch (selectedPos) {
@@ -147,10 +149,6 @@ public class ClimbPivot extends SubsystemBase {
                 }
               }
             })
-        .alongWith(
-            setClimbLEDs
-                .onlyIf(() -> selectedPos == TargetPositions.CLIMB_OUT)
-                .until(() -> isClimbOut))
         .withName("Climb Sequence");
   }
 
@@ -205,6 +203,7 @@ public class ClimbPivot extends SubsystemBase {
             }
           }
         });
+    shuffleboardTab.addDouble("targetPos", () -> targetPos);
     shuffleboardTab
         .addString(
             "Where moving?",
@@ -233,7 +232,9 @@ public class ClimbPivot extends SubsystemBase {
         .addDouble("Motor Speed", () -> getClimbVelocity())
         .withWidget(BuiltInWidgets.kTextView);
     shuffleboardTab.addDouble("Motor Position", () -> getClimbPosition());
-    shuffleboardTab.add("Within Tolerance?", inTolerance);
+    shuffleboardTab.addBoolean("Within Tolerance?", () -> inTolerance);
+    shuffleboardTab.addBoolean("Move Complete?", () -> moveComplete);
+
     // var climbDownEntry =
     //     shuffleboardTab.add("MOVE DOWN",
     // false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
@@ -293,7 +294,6 @@ public class ClimbPivot extends SubsystemBase {
   }
 
   public Command advanceClimbCheck() {
-    System.out.println("RUN COMMAND!");
     return run(
         () -> {
           if (MathUtil.isNear(targetPos, getClimbPosition(), BOOLEAN_TOLERANCE)) {
@@ -303,12 +303,21 @@ public class ClimbPivot extends SubsystemBase {
             moveComplete = true;
           } else {
             if (!moveComplete) {
-              motorLeft.set(CLIMB_OUT_SPEED);
-              setSpeed = CLIMB_OUT_SPEED;
+              if (targetPos == CLIMB_OUT_PRESET) {
+                motorLeft.set(CLIMB_OUT_PRESET);
+                setSpeed = CLIMB_OUT_SPEED;
+              } else {
+                motorLeft.set(CLIMB_IN_SPEED);
+                setSpeed = CLIMB_IN_SPEED;
+              }
             }
             inTolerance = false;
           }
         });
+  }
+
+  public Trigger isClimbing() {
+    return new Trigger(() -> !moveComplete);
   }
 
   public void moveCompleteTrue() {
