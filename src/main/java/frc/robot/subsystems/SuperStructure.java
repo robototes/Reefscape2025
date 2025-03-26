@@ -51,6 +51,13 @@ public class SuperStructure {
     }
   }
 
+  public Trigger inCoralPreScorePosition() {
+    return new Trigger(
+        () ->
+              armPivot.atPosition(ArmPivot.CORAL_PRESET_DOWN));
+  }
+
+
   public Command coralLevelFour(
       BooleanSupplier score) { // when we change L4, add repeating score sequence
     return Commands.sequence(
@@ -58,7 +65,7 @@ public class SuperStructure {
                     Commands.print("Pre position"),
                     elevator
                         .setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS)
-                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP).until(score)),
+                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP).until(inCoralPreScorePosition().or(score))),
                     spinnyClaw.stop())
                 .withTimeout(0.7),
             repeatPrescoreScoreSwing(
@@ -81,9 +88,8 @@ public class SuperStructure {
             Commands.parallel(
                     elevator
                         .setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS)
-                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
+                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP).until(inCoralPreScorePosition().or(score))),
                     spinnyClaw.stop())
-                .until(score)
                 .withTimeout(0.5),
             repeatPrescoreScoreSwing(
                 Commands.repeatingSequence(
@@ -102,9 +108,8 @@ public class SuperStructure {
             Commands.parallel(
                     elevator
                         .setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS)
-                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
+                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP).until(inCoralPreScorePosition().or(score))),
                     spinnyClaw.stop())
-                .until(score)
                 .withTimeout(0.5),
             repeatPrescoreScoreSwing(
                 Commands.sequence(

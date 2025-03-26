@@ -59,13 +59,14 @@ public class BranchSensors {
     return getSensorDistance(rightSensor);
   }
 
+  // APPROVED BY SENSEI WU LETSS GOOOOOOOO :D
   public Trigger withinScoreRange() {
     return new Trigger(
             () -> {
               double rightDistance = getRightSensorDistance().in(Meters);
               double leftDistance = getLeftSensorDistance().in(Meters);
-              return (leftDistance > LEFT_SENSOR_MIN && leftDistance < LEFT_SENSOR_MAX)
-                  && (rightDistance > RIGHT_SENSOR_MIN && rightDistance < RIGHT_SENSOR_MAX);
+              return (LEFT_SENSOR_MIN < leftDistance && leftDistance < LEFT_SENSOR_MAX)
+                  && (RIGHT_SENSOR_MIN < rightDistance && rightDistance < RIGHT_SENSOR_MAX);
             })
         .debounce(0.5);
   }
