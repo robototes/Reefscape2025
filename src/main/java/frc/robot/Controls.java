@@ -413,10 +413,7 @@ public class Controls {
         .onTrue(
             Commands.parallel(
                     s.elevatorSubsystem.resetPosZero(),
-                    Commands.startEnd(
-                            () -> operatorController.setRumble(RumbleType.kBothRumble, 0.5),
-                            () -> operatorController.setRumble(RumbleType.kBothRumble, 0))
-                        .withTimeout(0.3))
+                    Rumble(operatorController,0.5,Seconds.of(0.3)))
                 .ignoringDisable(true)
                 .withName("Reset elevator zero"));
     operatorController.rightBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
@@ -616,6 +613,13 @@ public class Controls {
                 () -> -driverController.getLeftY() * MaxSpeed,
                 () -> -driverController.getLeftX() * MaxSpeed));
     driverController.rightTrigger().whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
+  }
+  private Command rumble (CommandXboxController controller, double vibration, Time duration){
+    return Commands.startEnd(
+         ()->controller.getHID().setRumble(RumbleType.kBothRumble, vibration),
+         ()->controller.getHID().setRumble(RumbleType.kBothRumble, 0))
+        .withTimeout(duration)
+    .withName("Rumble Port "+ controller.getHID().getPort());
   }
 
   public void vibrateDriveController(double vibration) {
