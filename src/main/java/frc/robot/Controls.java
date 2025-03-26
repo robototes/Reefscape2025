@@ -489,11 +489,9 @@ public class Controls {
       return;
     }
 
-    Command setClimbLEDs;
     if (s.elevatorLEDSubsystem != null) {
-      setClimbLEDs = s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
-    } else {
-      setClimbLEDs = Commands.none();
+      Command setClimbLEDs = s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
+      s.climbPivotSubsystem.isClimbing().whileTrue(setClimbLEDs);
     }
 
     s.climbPivotSubsystem.setDefaultCommand(
@@ -501,10 +499,10 @@ public class Controls {
 
     connected(climbTestController)
         .and(climbTestController.start())
-        .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
+        .onTrue(s.climbPivotSubsystem.advanceClimbTarget());
     // operatorController
     //     .start()
-    //     .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
+    //     .onTrue(s.climbPivotSubsystem.advanceClimbTarget());
     operatorController
         .rightTrigger(0.1)
         .whileTrue(

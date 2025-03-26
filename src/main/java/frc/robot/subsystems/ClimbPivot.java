@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Hardware;
 import java.util.function.DoubleSupplier;
 
@@ -124,7 +125,7 @@ public class ClimbPivot extends SubsystemBase {
     return runOnce(() -> motorLeft.stopMotor());
   }
 
-  public Command advanceClimbTarget(Command setClimbLEDs) {
+  public Command advanceClimbTarget() {
     return runOnce(
             () -> {
               switch (selectedPos) {
@@ -148,10 +149,6 @@ public class ClimbPivot extends SubsystemBase {
                 }
               }
             })
-        .alongWith(
-            setClimbLEDs
-                .onlyIf(() -> selectedPos == TargetPositions.CLIMB_OUT)
-                .until(() -> isClimbOut))
         .withName("Climb Sequence");
   }
 
@@ -297,7 +294,6 @@ public class ClimbPivot extends SubsystemBase {
   }
 
   public Command advanceClimbCheck() {
-    System.out.println("RUN COMMAND!");
     return run(
         () -> {
           if (MathUtil.isNear(targetPos, getClimbPosition(), BOOLEAN_TOLERANCE)) {
@@ -318,6 +314,10 @@ public class ClimbPivot extends SubsystemBase {
             inTolerance = false;
           }
         });
+  }
+
+  public Trigger isClimbing() {
+    return new Trigger(() -> !moveComplete);
   }
 
   public void moveCompleteTrue() {
