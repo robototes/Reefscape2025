@@ -172,6 +172,7 @@ public class AutoLogic {
     NamedCommands.registerCommand("scoreCommand", scoreCommand());
     NamedCommands.registerCommand("branchAlign", autoBranchAlign());
     NamedCommands.registerCommand("intake", intakeCommand());
+    NamedCommands.registerCommand("isCollected", isCollected());
   }
 
   // public Command getConditionalCommand(){}
@@ -286,24 +287,24 @@ public class AutoLogic {
   public static Command intakeCommand() {
 
     if (r.superStructure != null) {
-      Command waitCommand;
+  
       if (ARMSENSOR_ENABLED) {
-        waitCommand =
-            Commands.waitUntil(r.sensors.armSensor.inTrough().or(r.sensors.armSensor.inClaw()));
-      } else {
-        waitCommand = Commands.waitSeconds(0.5);
-      }
+       
+      
       return Commands.sequence(
-              r.superStructure.coralPreIntake(),
-              waitCommand,
+              r.superStructure.coralPreIntake(), 
               r.superStructure.coralIntake(),
               s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_UP))
           .withName("intake");
+      }
     }
     return Commands.none().withName("intake");
   }
 
   public static Command autoBranchAlign() {
     return AutoAlign.autoAlign(s.drivebaseSubsystem).withName("autoAlign");
+  }
+  public static Command isCollected() {
+    return Commands.waitUntil(r.sensors.armSensor.inTrough()).withName("isCollected");
   }
 }
