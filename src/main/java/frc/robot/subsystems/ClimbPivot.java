@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Hardware;
 import java.util.function.DoubleSupplier;
 
@@ -33,16 +34,19 @@ public class ClimbPivot extends SubsystemBase {
   private final DigitalInput sensor;
   private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Climb");
 
-  private final double STOWED_PRESET = -0.09;
-  private final double CLIMB_OUT_PRESET = -0.405;
-  private final double CLIMBED_PRESET = -0.208;
+  private final double BOOLEAN_TOLERANCE = 0.05;
+  private final double STOWED_PRESET = -0.068;
+  private final double CLIMB_OUT_PRESET =
+      -0.30 - BOOLEAN_TOLERANCE; // Subtract since we approach from 0 -> -infty
+  private final double CLIMBED_PRESET =
+      -0.209 + BOOLEAN_TOLERANCE; // Add sicne we approach from -infty -> 0
   private final double FORWARD_SOFT_STOP = -0.07;
   private final double REVERSE_SOFT_STOP = -78;
-  private final double CLIMB_OUT_SPEED = -0.1;
-  private final double BOOLEAN_TOLERANCE = 0.02;
+  private final double CLIMB_OUT_SPEED = -0.6;
   private final double CLIMB_HOLD_STOWED = -0.001;
   private final double CLIMB_HOLD_CLIMBOUT = -0.0;
   private final double CLIMB_HOLD_CLIMBED = -0.0705;
+  private final double CLIMB_IN_SPEED = -0.3;
 
   // relative to eachother, likely not accurately zero'ed when obtained.x
   private static final double MIN_ROTOR_POSITION = -50.45;
@@ -56,6 +60,8 @@ public class ClimbPivot extends SubsystemBase {
   private TargetPositions selectedPos = TargetPositions.STOWED;
   private double targetPos = STOWED_PRESET;
   private double holdSpeed = CLIMB_HOLD_STOWED;
+  private boolean moveComplete = true;
+  private boolean inTolerance = true;
 
   private double setSpeed = 0;
 
@@ -119,31 +125,30 @@ public class ClimbPivot extends SubsystemBase {
     return runOnce(() -> motorLeft.stopMotor());
   }
 
-  public Command advanceClimbTarget(Command setClimbLEDs) {
+  public Command advanceClimbTarget() {
     return runOnce(
             () -> {
               switch (selectedPos) {
                 case STOWED -> {
                   selectedPos = TargetPositions.CLIMB_OUT;
-                  targetPos = STOWED_PRESET;
+                  targetPos = CLIMB_OUT_PRESET;
                   holdSpeed = CLIMB_HOLD_STOWED;
+                  moveComplete = false;
                 }
                 case CLIMB_OUT -> {
                   selectedPos = TargetPositions.CLIMBED;
-                  targetPos = CLIMB_OUT_PRESET;
+                  targetPos = CLIMBED_PRESET;
                   holdSpeed = CLIMB_HOLD_CLIMBOUT;
+                  moveComplete = false;
                 }
                 case CLIMBED -> {
-                  selectedPos = TargetPositions.STOWED;
-                  targetPos = CLIMBED_PRESET;
+                  selectedPos = TargetPositions.STOWED; // Commented out due to ratchet
+                  targetPos = STOWED_PRESET;
                   holdSpeed = CLIMB_HOLD_CLIMBED;
+                  moveComplete = false;
                 }
               }
             })
-        .alongWith(
-            setClimbLEDs
-                .onlyIf(() -> selectedPos == TargetPositions.CLIMB_OUT)
-                .until(() -> isClimbOut))
         .withName("Climb Sequence");
   }
 
@@ -198,6 +203,7 @@ public class ClimbPivot extends SubsystemBase {
             }
           }
         });
+    shuffleboardTab.addDouble("targetPos", () -> targetPos);
     shuffleboardTab
         .addString(
             "Where moving?",
@@ -226,6 +232,9 @@ public class ClimbPivot extends SubsystemBase {
         .addDouble("Motor Speed", () -> getClimbVelocity())
         .withWidget(BuiltInWidgets.kTextView);
     shuffleboardTab.addDouble("Motor Position", () -> getClimbPosition());
+    shuffleboardTab.addBoolean("Within Tolerance?", () -> inTolerance);
+    shuffleboardTab.addBoolean("Move Complete?", () -> moveComplete);
+
     // var climbDownEntry =
     //     shuffleboardTab.add("MOVE DOWN",
     // false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
@@ -235,13 +244,18 @@ public class ClimbPivot extends SubsystemBase {
   @Override
   public void periodic() {
     double currentPos = getClimbPosition();
-    if (MathUtil.isNear(targetPos, currentPos, BOOLEAN_TOLERANCE)) {
-      motorLeft.set(holdSpeed);
-      setSpeed = holdSpeed;
-    } else {
-      motorLeft.set(CLIMB_OUT_SPEED);
-      setSpeed = CLIMB_OUT_SPEED;
-    }
+    // if (MathUtil.isNear(targetPos, currentPos, BOOLEAN_TOLERANCE)) {
+    //   motorLeft.set(0);
+    //   setSpeed = 0;
+    //   System.out.println("IN TOLERANCEEEFOIEWHTIHIF");
+    //   moveComplete = true;
+    // } else {
+    //   if (!moveComplete) {
+    //     motorLeft.set(CLIMB_OUT_SPEED);
+    //     setSpeed = CLIMB_OUT_SPEED;
+    //   }
+    //   System.out.println("OUT OF TOLERANCECEIWHTIUERURUITH");
+    // }
 
     if (MathUtil.isNear(currentPos, CLIMB_OUT_PRESET, BOOLEAN_TOLERANCE)) {
       isClimbOut = true;
@@ -277,5 +291,36 @@ public class ClimbPivot extends SubsystemBase {
   public void brakeMotors() {
     motorLeft.setNeutralMode(NeutralModeValue.Brake);
     motorRight.setNeutralMode(NeutralModeValue.Brake);
+  }
+
+  public Command advanceClimbCheck() {
+    return run(
+        () -> {
+          if (MathUtil.isNear(targetPos, getClimbPosition(), BOOLEAN_TOLERANCE)) {
+            motorLeft.set(0);
+            setSpeed = 0;
+            inTolerance = true;
+            moveComplete = true;
+          } else {
+            if (!moveComplete) {
+              if (targetPos == CLIMB_OUT_PRESET) {
+                motorLeft.set(CLIMB_OUT_PRESET);
+                setSpeed = CLIMB_OUT_SPEED;
+              } else {
+                motorLeft.set(CLIMB_IN_SPEED);
+                setSpeed = CLIMB_IN_SPEED;
+              }
+            }
+            inTolerance = false;
+          }
+        });
+  }
+
+  public Trigger isClimbing() {
+    return new Trigger(() -> !moveComplete);
+  }
+
+  public void moveCompleteTrue() {
+    moveComplete = true;
   }
 }

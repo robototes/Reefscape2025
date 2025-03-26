@@ -1,10 +1,13 @@
 package frc.robot.sensors;
 
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Millimeter;
 
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Hardware;
 
 public class BranchSensors {
@@ -17,6 +20,9 @@ public class BranchSensors {
     rightSensor = new LaserCan(Hardware.BRANCH_SENSOR_RIGHT);
     ConfigureSensor(leftSensor);
     ConfigureSensor(rightSensor);
+    ShuffleboardTab tab = Shuffleboard.getTab("BranchSensor");
+    tab.addDouble("LeftDistance(m)", () -> getLeftSensorDistance().in(Meters));
+    tab.addDouble("RightDistance(m)", () -> getRightSensorDistance().in(Meters));
   }
 
   private void ConfigureSensor(LaserCan Sensor) {

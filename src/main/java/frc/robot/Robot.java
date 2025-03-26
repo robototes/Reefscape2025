@@ -36,6 +36,7 @@ public class Robot extends TimedRobot {
   private final RobotType robotType;
   public final Controls controls;
   public final Subsystems subsystems;
+
   public final Sensors sensors;
   public final SuperStructure superStructure;
   private String autoCommandRequirements = "UNKNOWN";
@@ -51,9 +52,11 @@ public class Robot extends TimedRobot {
     LiveWindow.disableAllTelemetry();
     LiveWindow.enableTelemetry(PDH);
 
-    subsystems = new Subsystems();
     sensors = new Sensors();
-    AutoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
+    subsystems = new Subsystems(sensors);
+    if (SubsystemConstants.DRIVEBASE_ENABLED) {
+      AutoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
+    }
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
         && SubsystemConstants.SPINNYCLAW_ENABLED
@@ -94,9 +97,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(CommandScheduler.getInstance());
     BuildInfo.logBuildInfo();
 
-    AutoLogic.registerCommands();
-    AutonomousField.initShuffleBoard("Field", 0, 0, this::addPeriodic);
-    AutoLogic.initShuffleBoard();
+    if (SubsystemConstants.DRIVEBASE_ENABLED) {
+      AutoLogic.registerCommands();
+      AutonomousField.initShuffleBoard("Field", 0, 0, this::addPeriodic);
+      AutoLogic.initShuffleBoard();
+    }
   }
 
   @Override
@@ -112,14 +117,19 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledExit() {
-    subsystems.drivebaseSubsystem.brakeMotors();
-    subsystems.climbPivotSubsystem.brakeMotors();
+    if (subsystems.drivebaseSubsystem != null) {
+      subsystems.drivebaseSubsystem.brakeMotors();
+    }
+    if (subsystems.climbPivotSubsystem != null) {
+      subsystems.climbPivotSubsystem.brakeMotors();
+      subsystems.climbPivotSubsystem.moveCompleteTrue();
+    }
   }
 
   @Override
   public void autonomousInit() {
     Shuffleboard.startRecording();
-    if (AutoLogic.getSelectedAuto() != null && SubsystemConstants.DRIVEBASE_ENABLED) {
+    if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.getSelectedAuto() != null) {
       AutoLogic.getSelectedAuto().schedule();
     }
   }

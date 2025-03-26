@@ -17,8 +17,8 @@ public class ArmSensor {
   // VALUES ARE IN METERS
   private static final double TROUGH_LOWER_LIMIT = 0.18;
   private static final double TROUGH_UPPER_LIMIT = 0.28;
-  private static final double CLAW_LOWER_LIMIT = 0.06;
-  private static final double CLAW_UPPER_LIMIT = 0.08;
+  private static final double CLAW_LOWER_LIMIT = 0.01;
+  private static final double CLAW_UPPER_LIMIT = 0.09;
 
   public ArmSensor() {
     mainSensor = new LaserCan(Hardware.MAIN_ARM_SENSOR);
@@ -58,11 +58,11 @@ public class ArmSensor {
   }
 
   public Trigger inClaw() {
-    return new Trigger(
-            () -> {
-              double distance = getSensorDistance().in(Meters);
-              return distance > CLAW_LOWER_LIMIT && distance < CLAW_UPPER_LIMIT;
-            })
-        .debounce(0.1);
+    return new Trigger(() -> booleanInClaw()).debounce(0.5);
+  }
+
+  public boolean booleanInClaw() {
+    double distance = getSensorDistance().in(Meters);
+    return distance > CLAW_LOWER_LIMIT && distance < CLAW_UPPER_LIMIT;
   }
 }

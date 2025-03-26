@@ -34,22 +34,45 @@ public class SuperStructure {
     return elevatorLight.colorSet(r, g, b, name);
   }
 
-  public Command coralLevelFour(BooleanSupplier score) {
+  private Command repeatPrescoreScoreSwing(Command command, BooleanSupplier score) {
+    if (armSensor == null) {
+      return Commands.sequence(
+          command, Commands.waitUntil(() -> !score.getAsBoolean()), Commands.waitUntil(score));
+    } else {
+      return command.repeatedly().onlyWhile(armSensor.inClaw());
+    }
+  }
+
+  private Command untilClawFull(Command command) {
+    if (armSensor == null) {
+      return command;
+    } else {
+      return command.withDeadline(Commands.waitUntil(armSensor.inClaw()));
+    }
+  }
+
+  public Command coralLevelFour(
+      BooleanSupplier score) { // when we change L4, add repeating score sequence
     return Commands.sequence(
             Commands.parallel(
                 colorSet(0, 255, 0, "Green - Aligned With L4"),
-                elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS),
-                armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
-                spinnyClaw.stop()),
-            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_PRE_L4),
-            Commands.waitUntil(score),
-            Commands.parallel(
-                    elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_POS),
-                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L4))
-                .withTimeout(2.0),
-            spinnyClaw.coralHoldExtakeL4Power().withTimeout(0.2),
+                    Commands.print("Pre position"),
+                    elevator
+                        .setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS)
+                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
+                    spinnyClaw.stop())
+                .until(score)
+                .withTimeout(0.7),
+            repeatPrescoreScoreSwing(
+                Commands.sequence(
+                    Commands.parallel(
+                            elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS),
+                            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_PRE_L4))
+                        .withDeadline(Commands.waitUntil(score)),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN).withTimeout(0.4)),
+                score),
             Commands.print("Pre preIntake()"),
-            preIntake(),
+            coralPreIntake(),
             Commands.print("Post preIntake()"))
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L4").asProxy())
         .withName("Coral Level 4");
@@ -57,29 +80,44 @@ public class SuperStructure {
 
   public Command coralLevelThree(BooleanSupplier score) {
     return Commands.sequence(
-        Commands.parallel(
-            colorSet(0, 255, 0, "Green - Aligned With L3"),
-            elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS),
-            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
-            spinnyClaw.stop()),
-        armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L2_L3),
-        Commands.waitUntil(score),
-        elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_POS),
-        spinnyClaw.coralHoldExtakePower().withTimeout(0.15),
-        preIntake().withName("Coral Level 3"));
+            Commands.parallel(
+                colorSet(0, 255, 0, "Green - Aligned With L3"),
+                    elevator
+                        .setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS)
+                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
+                    spinnyClaw.stop())
+                .until(score)
+                .withTimeout(0.5),
+            repeatPrescoreScoreSwing(
+                Commands.repeatingSequence(
+                    armPivot
+                        .moveToPosition(ArmPivot.CORAL_PRESET_L3)
+                        .withDeadline(Commands.waitUntil(score)),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN).withTimeout(0.4)),
+                score),
+            coralPreIntake())
+        .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L3").asProxy())
+        .withName("Coral Level 3");
   }
 
   public Command coralLevelTwo(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
                 colorSet(0, 255, 0, "Green - Aligned With L2"),
-                elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS),
-                armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
-                spinnyClaw.stop()),
-            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L2),
-            Commands.waitUntil(score),
-            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN),
-            preIntake())
+                    elevator
+                        .setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS)
+                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
+                    spinnyClaw.stop())
+                .until(score)
+                .withTimeout(0.5),
+            repeatPrescoreScoreSwing(
+                Commands.sequence(
+                    armPivot
+                        .moveToPosition(ArmPivot.CORAL_PRESET_L2)
+                        .withDeadline(Commands.waitUntil(score)),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN).withTimeout(0.4)),
+                score),
+            coralPreIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L2").asProxy())
         .withName("Coral Level 2");
   }
@@ -88,12 +126,13 @@ public class SuperStructure {
     return Commands.sequence(
             Commands.parallel(
                 colorSet(0, 255, 0, "Green - Aligned With L1"),
-                elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_ONE_POS),
-                armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L1),
-                spinnyClaw.stop()),
-            Commands.waitUntil(score),
-            spinnyClaw.coralHoldExtakePower().withTimeout(0.15),
-            preIntake())
+                    elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_ONE_POS),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L1),
+                    spinnyClaw.stop())
+                .withTimeout(0.5)
+                .withDeadline(Commands.waitUntil(score)),
+            spinnyClaw.coralHoldExtakePower().withTimeout(0.25),
+            coralPreIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L1").asProxy())
         .withName("Coral Level 1");
   }
@@ -106,7 +145,7 @@ public class SuperStructure {
         .withName("Coral Stow");
   }
 
-  public Command preIntake() {
+  public Command coralPreIntake() {
     return Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
             armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN),
@@ -115,7 +154,7 @@ public class SuperStructure {
         .withName("PreIntake");
   }
 
-  public Trigger inPreIntakePosition() {
+  public Trigger inCoralPreIntakePosition() {
     return new Trigger(
         () ->
             elevator.atPosition(ElevatorSubsystem.CORAL_PRE_INTAKE)
@@ -124,13 +163,12 @@ public class SuperStructure {
 
   public Command coralIntake() {
     return Commands.sequence(
-            Commands.sequence(
+            untilClawFull(
+                Commands.sequence(
                     Commands.parallel(
-                        spinnyClaw.intakePower(),
+                        spinnyClaw.coralIntakePower(),
                         armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN)),
-                    elevator.setLevel(ElevatorSubsystem.CORAL_INTAKE_POS),
-                    Commands.idle())
-                .until(armSensor.inClaw()),
+                    elevator.setLevel(ElevatorSubsystem.CORAL_INTAKE_POS))),
             spinnyClaw.stop(),
             elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
             coralStow())
@@ -142,24 +180,68 @@ public class SuperStructure {
             Commands.parallel(
                 spinnyClaw.algaeIntakePower(),
                 armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
-            // add a wait command here
-            algaeStow())
+                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)))
+        //     .until(armSensor.inClaw()), // if statement to check armsensor enabled
+        // algaeStow())
         .withName("Algae L3-L4 Intake");
   }
 
-  public Command algaeLevelTwoThreeIntake() { // theoretically
+  public Command algaeLevelTwoThreeIntake() {
     return Commands.sequence(
             Commands.parallel(
                 spinnyClaw.algaeIntakePower(),
                 armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
-            // add a wait command here
-            algaeStow())
+                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)))
+        //     .until(armSensor.inClaw()), // add if statement to check armsensor enabled
+        // algaeStow())
         .withName("Algae L2-L3 Intake");
   }
 
-  public Command algaeLevelThreeFourFling(BooleanSupplier finish) {
+  public Command algaeGroundIntake() {
+    return Commands.sequence(
+            Commands.parallel(
+                spinnyClaw.algaeIntakePower(),
+                armPivot.moveToPosition(ArmPivot.ALGAE_GROUND_INTAKE),
+                elevator.setLevel(ElevatorSubsystem.ALGAE_GROUND_INTAKE)))
+        //     .until(armSensor.inClaw()), // add if statement to check armsensor enabled
+        // algaeStow())
+        .withName("Algae Ground Intake");
+  }
+
+  public Command algaeStow() {
+    return Commands.parallel(
+        colorSet(
+                170, 170, 170, "White - Stowed"), // ask jospeh aboyt this one cuz idk gang... meow
+            elevator.setLevel(ElevatorSubsystem.ALGAE_STOWED),
+            armPivot.moveToPosition(ArmPivot.ALGAE_STOWED),
+            spinnyClaw.algaeGripIntakePower())
+        .deadlineFor(colorSet(255, 255, 255, "White - Stowed").asProxy())
+        .withName("Algae Stow");
+  }
+
+  public Command algaeProcessorScore(BooleanSupplier score) {
+    return Commands.sequence(
+            Commands.parallel(
+                elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE),
+                armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
+                spinnyClaw.algaeGripIntakePower()),
+            Commands.waitUntil(score),
+            spinnyClaw.algaeExtakeProcessorPower())
+        .withName("Algae Processor Score");
+  }
+
+  public Command algaeNetScore(BooleanSupplier score) {
+    return Commands.sequence(
+            Commands.parallel(
+                elevator.setLevel(ElevatorSubsystem.ALGAE_NET_SCORE),
+                armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE),
+                spinnyClaw.algaeIntakePower()),
+            Commands.waitUntil(score),
+            spinnyClaw.algaeHoldExtakePower().withTimeout(0.7))
+        .withName("Algae Net Score");
+  }
+
+  /*public Command algaeLevelThreeFourFling(BooleanSupplier finish) {
     return Commands.sequence(
             Commands.parallel(
                 spinnyClaw.algaeFlingPower(),
@@ -170,7 +252,7 @@ public class SuperStructure {
         .withName("Algae L3-L4 Fling");
   }
 
-  public Command algaeLevelTwoThreeFling(BooleanSupplier finish) { // theoretically
+  public Command algaeLevelTwoThreeFling(BooleanSupplier finish) {
     return Commands.sequence(
             Commands.parallel(
                 spinnyClaw.algaeFlingPower(),
@@ -179,46 +261,5 @@ public class SuperStructure {
             Commands.waitUntil(finish),
             algaeStow())
         .withName("Algae L2-L3 Fling");
-  }
-
-  public Command algaeLevelThreeFourPop() {
-    return Commands.sequence(
-            Commands.parallel(
-                armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE_PREPOS),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)),
-            armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-            algaeStow())
-        .withName("Algae L3-L4 Pop");
-  }
-
-  public Command algaeLevelTwoThreePop() { // theoretically
-    return Commands.sequence(
-            Commands.parallel(
-                armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE_PREPOS),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
-            armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-            algaeStow())
-        .withName("Algae L2-L3 Pop");
-  }
-
-  public Command algaeStow() { // Big North + Spider collab on this one
-    return Commands.parallel(
-            colorSet(
-                170, 170, 170, "White - Stowed"), // ask jospeh aboyt this one cuz idk gang... meow
-            elevator.setLevel(ElevatorSubsystem.ALGAE_STOWED),
-            armPivot.moveToPosition(ArmPivot.ALGAE_STOWED),
-            spinnyClaw.algaeIntakePower())
-        .deadlineFor(colorSet(255, 255, 255, "White - Stowed").asProxy())
-        .withName("Algae Stow");
-  }
-
-  public Command algaeProcessorScore() { // Big North + Spider collab on this one
-    return Commands.sequence(
-            Commands.parallel(
-                elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE),
-                armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
-                spinnyClaw.algaeIntakePower()),
-            spinnyClaw.algaeExtakePower())
-        .withName("Algae Processor Score");
-  }
+        }*/
 }

@@ -2,6 +2,7 @@ package frc.robot;
 
 import static frc.robot.Subsystems.SubsystemConstants.*;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
 import frc.robot.generated.TestBaseTunerConstants;
@@ -38,7 +39,7 @@ public class Subsystems {
   public final SpinnyClaw spinnyClawSubsytem;
   public final ElevatorLight elevatorLEDSubsystem;
 
-  public Subsystems() {
+  public Subsystems(Sensors sensors) {
     // Initialize subsystems here (don't forget to check if they're enabled!)
     // Add specification for bonk, Enum? get team number?
     if (DRIVEBASE_ENABLED) {
@@ -57,35 +58,41 @@ public class Subsystems {
 
     if (VISION_ENABLED) {
       visionSubsystem = new VisionSubsystem(drivebaseWrapper);
+      SmartDashboard.putData(visionSubsystem);
     } else {
       visionSubsystem = null;
     }
 
     if (ELEVATOR_ENABLED) {
       elevatorSubsystem = new ElevatorSubsystem();
+      SmartDashboard.putData(elevatorSubsystem);
     } else {
       elevatorSubsystem = null;
     }
 
     if (ARMPIVOT_ENABLED) {
       armPivotSubsystem = new ArmPivot();
+      SmartDashboard.putData(armPivotSubsystem);
     } else {
       armPivotSubsystem = null;
     }
 
     if (CLIMBPIVOT_ENABLED) {
       climbPivotSubsystem = new ClimbPivot();
+      SmartDashboard.putData(climbPivotSubsystem);
     } else {
       climbPivotSubsystem = null;
     }
 
     if (SPINNYCLAW_ENABLED) {
-      spinnyClawSubsytem = new SpinnyClaw();
+      spinnyClawSubsytem = new SpinnyClaw(sensors.armSensor);
+      SmartDashboard.putData(spinnyClawSubsytem);
     } else {
       spinnyClawSubsytem = null;
     }
     if (ELEVATOR_LED_ENABLED) {
       elevatorLEDSubsystem = new ElevatorLight();
+      SmartDashboard.putData(elevatorLEDSubsystem);
     } else {
       elevatorLEDSubsystem = null;
     }

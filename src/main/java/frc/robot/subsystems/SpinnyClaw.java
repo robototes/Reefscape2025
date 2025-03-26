@@ -16,33 +16,39 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
+import frc.robot.sensors.ArmSensor;
 import java.util.function.Supplier;
 
 public class SpinnyClaw extends SubsystemBase {
-  public static final double CORAL_INTAKE_SPEED = -4;
-  public static final double CORAL_EXTAKE_SPEED = 2;
-  public static final double CORAL_L4_EXTAKE_SPEED = 1;
-  public static final double ALGAE_INTAKE_SPEED = -2; // untested
-  public static final double ALGAE_EXTAKE_SPEED = 2; // untested
-  public static final double ALGAE_FLING_SPEED = 4;
+  public static final double CORAL_INTAKE_SPEED = -6;
+  public static final double CORAL_EXTAKE_SPEED = 5;
+  public static final double CORAL_L4_EXTAKE_SPEED = 2;
+  public static final double ALGAE_INTAKE_SPEED = -3;
+  public static final double ALGAE_GRIP_INTAKE_SPEED = -2.5;
+  public static final double ALGAE_EXTAKE_SPEED = 12; // untested
+  public static final double ALGAE_PROCESSOR_EXTAKE_SPEED = 8; // untested
+  public static final double ALGAE_FLING_SPEED = 10;
   // Remove once we implement PID speed
   public static int placeholderPIDSpeed;
 
   // TalonFX
   private final TalonFX motor;
+  private final ArmSensor armSensor;
 
   // alerts
   private final Alert NotConnectedError =
       new Alert("Spinny Claw", "Motor not connected", AlertType.kError);
   private final Debouncer notConnectedDebouncer = new Debouncer(.1, DebounceType.kBoth);
+  private double lastSetPower;
 
-  public SpinnyClaw() {
+  public SpinnyClaw(ArmSensor armSensor) {
     motor = new TalonFX(Hardware.SPINNY_CLAW_MOTOR_ID);
+    this.armSensor = armSensor;
     configMotors();
     logTabs();
   }
 
-  // (+) is to move arm up, and (-) is down
+  // (+) is to intake out, and (-) is in
   public Command movingVoltage(Supplier<Voltage> speedControl) {
     return run(() -> motor.setVoltage(speedControl.get().in(Volts)))
         .finallyDo(() -> motor.setVoltage(0))
@@ -55,6 +61,9 @@ public class SpinnyClaw extends SubsystemBase {
         .addDouble("Claw Speed", () -> motor.getVelocity().getValueAsDouble());
     Shuffleboard.getTab("Claw")
         .addDouble("Claw Motor Temperature", () -> motor.getDeviceTemp().getValueAsDouble());
+    Shuffleboard.getTab("Claw")
+        .addDouble("Motor Voltage", () -> motor.getMotorVoltage().getValueAsDouble());
+    Shuffleboard.getTab("Claw").addDouble("Last Set Power", () -> lastSetPower);
   }
 
   // TalonFX config
@@ -65,7 +74,7 @@ public class SpinnyClaw extends SubsystemBase {
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     cfg.apply(configuration);
     // enabling stator current limits
-    currentLimits.StatorCurrentLimit = 150; // subject to change
+    currentLimits.StatorCurrentLimit = 70; // subject to change
     currentLimits.StatorCurrentLimitEnable = true;
     currentLimits.SupplyCurrentLimit = 40; // subject to change
     currentLimits.SupplyCurrentLimitEnable = true;
@@ -73,18 +82,53 @@ public class SpinnyClaw extends SubsystemBase {
   }
 
   private Command setPower(double pow) {
-    return runOnce(() -> motor.setVoltage(pow));
+    if (armSensor != null) {
+      return runOnce(
+          () -> {
+            // if (armSensor.booleanInClaw() && pow < 0) {
+            //   motor.stopMotor();
+            // } else {
+            motor.setVoltage(pow);
+            lastSetPower = pow;
+            // }
+          });
+    } else {
+      return runOnce(
+          () -> {
+            motor.setVoltage(pow);
+            lastSetPower = pow;
+          });
+    }
   }
 
   private Command holdPower(double pow) {
-    return startEnd(() -> motor.setVoltage(pow), () -> motor.stopMotor());
+    if (armSensor != null) {
+      return startEnd(
+          () -> {
+            // if (armSensor.booleanInClaw() && pow < 0) {
+            //   motor.stopMotor();
+            // } else {
+            motor.setVoltage(pow);
+            lastSetPower = pow;
+
+            // }
+          },
+          () -> motor.stopMotor());
+    } else {
+      return startEnd(
+          () -> {
+            motor.setVoltage(pow);
+            lastSetPower = pow;
+          },
+          () -> motor.stopMotor());
+    }
   }
 
-  public Command intakePower() {
+  public Command coralIntakePower() {
     return setPower(CORAL_INTAKE_SPEED).withName("Intake power");
   }
 
-  public Command extakePower() {
+  public Command coralExtakePower() {
     return setPower(CORAL_EXTAKE_SPEED).withName("Extake power");
   }
 
@@ -96,25 +140,26 @@ public class SpinnyClaw extends SubsystemBase {
     return holdPower(CORAL_EXTAKE_SPEED).withName("Hold extake power");
   }
 
-  public Command coralHoldExtakeL4Power() {
-    return holdPower(CORAL_L4_EXTAKE_SPEED).withName("Hold extake power L4");
-  }
-
   // algae stuff
   public Command algaeIntakePower() {
     return setPower(ALGAE_INTAKE_SPEED).withName("Algae intake power");
   }
 
-  public Command algaeExtakePower() {
+  public Command
+      algaeExtakePower() { // can change to net extake maybe? also bound as general extake though
     return setPower(ALGAE_EXTAKE_SPEED).withName("Algae extake power");
   }
 
-  public Command algaeHoldIntakePower() {
-    return holdPower(ALGAE_INTAKE_SPEED).withName("Algae hold intake power");
+  public Command algaeGripIntakePower() {
+    return setPower(ALGAE_GRIP_INTAKE_SPEED).withName("Algae grip intake power");
   }
 
   public Command algaeHoldExtakePower() {
     return holdPower(ALGAE_EXTAKE_SPEED).withName("Algae hold extake power");
+  }
+
+  public Command algaeExtakeProcessorPower() {
+    return setPower(ALGAE_PROCESSOR_EXTAKE_SPEED).withName("Algae processor extake power");
   }
 
   public Command algaeFlingPower() {

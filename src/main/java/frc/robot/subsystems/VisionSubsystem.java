@@ -67,6 +67,8 @@ public class VisionSubsystem extends SubsystemBase {
   // TODO Measure these
   private static final Vector<N3> STANDARD_DEVS =
       VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(20));
+  private static final Vector<N3> DISTANCE_SC_STANDARD_DEVS =
+      VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(6));
 
   private final PhotonCamera leftCamera;
   private final PhotonCamera rightCamera;
@@ -180,8 +182,10 @@ public class VisionSubsystem extends SubsystemBase {
           PhotonUtils.getDistanceToPose(
               FieldPose,
               fieldLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d());
-      if (Distance > 2.0) return;
-      aprilTagsHelper.addVisionMeasurement(FieldPose, TimestampSeconds, STANDARD_DEVS);
+      aprilTagsHelper.addVisionMeasurement(
+          FieldPose,
+          TimestampSeconds,
+          STANDARD_DEVS.plus(DISTANCE_SC_STANDARD_DEVS).times(Distance));
       robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       if (RawTimestampSeconds > lastRawTimestampSeconds) {
         fieldPose3dEntry.set(FieldPose3d);
