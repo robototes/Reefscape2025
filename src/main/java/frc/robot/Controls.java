@@ -504,10 +504,12 @@ public class Controls {
               .andThen(new WaitCommand(2))
               .andThen(s.elevatorLEDSubsystem.colorSet(0, 0, 0, "LED off"))
               .ignoringDisable(false));
-      hasBeenZeroed.onFalse(
-          s.elevatorLEDSubsystem
-              .colorSet(120, 0, 0, "Red - Elevator Not Zeroed")
-              .ignoringDisable(false));
+      RobotModeTriggers.disabled()
+          .and(hasBeenZeroed.negate())
+          .onTrue(
+              s.elevatorLEDSubsystem
+                  .colorSet(120, 0, 0, "Red - Elevator Not Zeroed")
+                  .ignoringDisable(false));
     }
     RobotModeTriggers.autonomous()
         .whileTrue(s.elevatorLEDSubsystem.animate(LEDPattern.rainbow(255, 255), "Auto Rainbow"));
