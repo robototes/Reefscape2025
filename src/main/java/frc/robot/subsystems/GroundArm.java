@@ -1,9 +1,5 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Hardware;
-
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
@@ -11,42 +7,47 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Hardware;
 
 public class GroundArm extends SubsystemBase {
   public static final double STOWED_POSITION = 0.25;
   public static final double GRAB_POSITION = -0.25;
 
-//MotionMagic voltage
-private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
+  // MotionMagic voltage
+  private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
 
-// TalonFX
+  // TalonFX
   private final TalonFX gndmotor;
 
-// TalonFX config
-public void configMotors() {
-  TalonFXConfiguration configuration = new TalonFXConfiguration();
-  TalonFXConfigurator cfg = gndmotor.getConfigurator();
-  var currentLimits = new CurrentLimitsConfigs();
-  configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-  cfg.apply(configuration);
-  // enabling stator current limits
-  currentLimits.StatorCurrentLimit = 40; // subject to change
-  currentLimits.StatorCurrentLimitEnable = true;
-  currentLimits.SupplyCurrentLimit = 20; // subject to change
-  currentLimits.SupplyCurrentLimitEnable = true;
-  cfg.apply(currentLimits);
-}
+  // TalonFX config
+  public void configMotors() {
+    TalonFXConfiguration configuration = new TalonFXConfiguration();
+    TalonFXConfigurator cfg = gndmotor.getConfigurator();
+    var currentLimits = new CurrentLimitsConfigs();
+    configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    cfg.apply(configuration);
+    // enabling stator current limits
+    currentLimits.StatorCurrentLimit = 40; // subject to change
+    currentLimits.StatorCurrentLimitEnable = true;
+    currentLimits.SupplyCurrentLimit = 20; // subject to change
+    currentLimits.SupplyCurrentLimitEnable = true;
+    cfg.apply(currentLimits);
+  }
 
-//position
+  // position
   private double getCurrentPosition() {
     var curPos = gndmotor.getPosition();
     return curPos.getValueAsDouble();
   }
 
   private double targetPos;
+
   private double getTargetPosition() {
     return targetPos;
   }
+
   private Command setTargetPosition(double pos) {
     return runOnce(
         () -> {
@@ -79,12 +80,12 @@ public void configMotors() {
     return startEnd(
         () -> {
           gndmotor.setVoltage(pos);
-           stowedPosition = pos;
+          stowedPosition = pos;
         },
         () -> gndmotor.stopMotor());
-   }
+  }
 
-   public Command stowedPosition() {
+  public Command stowedPosition() {
     return armPos(STOWED_POSITION).withName("holdIntakePower");
-   }
+  }
 }

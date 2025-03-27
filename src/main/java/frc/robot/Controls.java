@@ -643,8 +643,6 @@ public class Controls {
     s.groundArm.setDefaultCommand(s.groundArm.stowedPosition());
   }
 
-
-
   public void vibrateDriveController(double vibration) {
     if (!DriverStation.isAutonomous()) {
       driverController.getHID().setRumble(RumbleType.kBothRumble, vibration);

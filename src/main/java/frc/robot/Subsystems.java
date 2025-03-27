@@ -11,8 +11,8 @@ import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ClimbPivot;
 import frc.robot.subsystems.DrivebaseWrapper;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.GroundSpinny;
 import frc.robot.subsystems.GroundArm;
+import frc.robot.subsystems.GroundSpinny;
 import frc.robot.subsystems.SpinnyClaw;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
@@ -31,7 +31,6 @@ public class Subsystems {
     public static final boolean ELEVATOR_LED_ENABLED = true;
     public static final boolean GROUND_SPINNY_ENABLED = true;
     public static final boolean GROUND_ARM_ENABLED = true;
-    
   }
 
   // Subsystems go here
@@ -45,7 +44,6 @@ public class Subsystems {
   public final ElevatorLight elevatorLEDSubsystem;
   public final GroundSpinny groundSpinny;
   public final GroundArm groundArm;
-  
 
   public Subsystems(Sensors sensors) {
     // Initialize subsystems here (don't forget to check if they're enabled!)
