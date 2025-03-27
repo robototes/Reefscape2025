@@ -88,6 +88,7 @@ public class Controls {
     configureElevatorLEDBindings();
     configureAutoAlignBindings();
     configureGroundSpinnyBindings();
+    configureGroundArmBindings();
   }
 
   private Trigger connected(CommandXboxController controller) {
@@ -634,6 +635,15 @@ public class Controls {
     }
     s.groundSpinny.setDefaultCommand(s.groundSpinny.holdIntakePower());
   }
+
+  private void configureGroundArmBindings() {
+    if (s.groundArm == null) {
+      return;
+    }
+    s.groundArm.setDefaultCommand(s.groundArm.stowedPosition());
+  }
+
+
 
   public void vibrateDriveController(double vibration) {
     if (!DriverStation.isAutonomous()) {
