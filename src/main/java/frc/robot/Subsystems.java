@@ -102,7 +102,7 @@ public class Subsystems {
       groundSpinny = new GroundSpinny();
       SmartDashboard.putData(groundSpinny);
     } else {
-        groundSpinny = null;
+      groundSpinny = null;
     }
 
     if (GROUND_ARM_ENABLED) {
