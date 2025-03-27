@@ -42,7 +42,7 @@ public class ElevatorLight extends SubsystemBase {
     candle = new CANdle(Hardware.ELEVATOR_LED);
     configureCandle();
     candle.clearAnimation(0);
-    candle.setLEDs(128, 128, 128);
+    candle.setLEDs(150, 150, 150);
     // candle.animate(larsonAnim);
     // candle.animate(rainbowAnim);
     // candle.animate(fireAnim);
@@ -62,6 +62,12 @@ public class ElevatorLight extends SubsystemBase {
   public Command tripleBlink(int r, int g, int b, String name) {
     return animate(LEDPattern.solid(new Color(r, g, b)).blink(Seconds.of(1.0 / 6.0)), name)
         .withTimeout(Seconds.of(1.0))
+        .withName("Animate" + name);
+  }
+
+  public Command blink(int r, int g, int b, String name) {
+    return animate(
+            LEDPattern.solid(new Color(r, g, b)).blink(Seconds.of(0.5), Seconds.of(1.5)), name)
         .withName("Animate" + name);
   }
 

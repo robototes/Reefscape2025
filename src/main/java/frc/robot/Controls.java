@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -277,8 +278,8 @@ public class Controls {
                           case CORAL -> superStructure
                               .coralIntake()
                               .alongWith(
-                                  s.elevatorLEDSubsystem
-                                      .tripleBlink(255, 92, 0, "Orange - Manual Coral Intake")
+                                  s.elevatorLEDSubsystem.tripleBlink(
+                                      255, 92, 0, "Orange - Manual Coral Intake")
                                       .asProxy())
                               .withName("Manual Coral Intake");
                           case ALGAE -> getAlgaeIntakeCommand();
@@ -294,9 +295,8 @@ public class Controls {
               superStructure
                   .coralIntake()
                   .alongWith(
-                      s.elevatorLEDSubsystem
-                          .tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
-                          .asProxy())
+                      s.elevatorLEDSubsystem.tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
+                      .asProxy())
                   .withName("Automatic Intake"));
     }
 
@@ -597,17 +597,21 @@ public class Controls {
       Commands.waitSeconds(1)
           .andThen(
               s.elevatorLEDSubsystem
-                  .colorSet(255, 0, 0, "Red - Elevator Not Zeroed")
+                  .blink(120, 0, 0, "Red - Elevator Not Zeroed")
                   .ignoringDisable(true))
           .schedule();
       hasBeenZeroed.onTrue(
           s.elevatorLEDSubsystem
               .colorSet(0, 255, 0, "Green - Elevator Zeroed")
+              .andThen(Commands.waitSeconds(2))
+              .andThen(s.elevatorLEDSubsystem.colorSet(0, 0, 0, "LED off"))
               .ignoringDisable(true));
-      hasBeenZeroed.onFalse(
-          s.elevatorLEDSubsystem
-              .colorSet(255, 0, 0, "Red - Elevator Not Zeroed")
-              .ignoringDisable(false));
+      RobotModeTriggers.disabled()
+          .and(hasBeenZeroed.negate())
+          .onTrue(
+              s.elevatorLEDSubsystem
+                  .colorSet(120, 0, 0, "Red - Elevator Not Zeroed")
+                  .ignoringDisable(true));
     }
     RobotModeTriggers.autonomous()
         .whileTrue(s.elevatorLEDSubsystem.animate(LEDPattern.rainbow(255, 255), "Auto Rainbow"));
