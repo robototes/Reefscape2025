@@ -22,8 +22,31 @@ private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
 // TalonFX
   private final TalonFX gndmotor;
 
-//target position
+// TalonFX config
+public void configMotors() {
+  TalonFXConfiguration configuration = new TalonFXConfiguration();
+  TalonFXConfigurator cfg = gndmotor.getConfigurator();
+  var currentLimits = new CurrentLimitsConfigs();
+  configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+  cfg.apply(configuration);
+  // enabling stator current limits
+  currentLimits.StatorCurrentLimit = 40; // subject to change
+  currentLimits.StatorCurrentLimitEnable = true;
+  currentLimits.SupplyCurrentLimit = 20; // subject to change
+  currentLimits.SupplyCurrentLimitEnable = true;
+  cfg.apply(currentLimits);
+}
+
+//position
+  private double getCurrentPosition() {
+    var curPos = gndmotor.getPosition();
+    return curPos.getValueAsDouble();
+  }
+
   private double targetPos;
+  private double getTargetPosition() {
+    return targetPos;
+  }
   private Command setTargetPosition(double pos) {
     return runOnce(
         () -> {
@@ -41,13 +64,13 @@ private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
     Shuffleboard.getTab("Ground Arm")
         .addDouble("Pivot Motor Temperature", () -> gndmotor.getDeviceTemp().getValueAsDouble());
     Shuffleboard.getTab("Ground Arm").addDouble("Pivot Position", () -> getCurrentPosition());
-    Shuffleboard.getTab("Ground Arm").addDouble("Pivot Target Pos", () -> targetPos());
+    Shuffleboard.getTab("Ground Arm").addDouble("Pivot Target Pos", () -> getTargetPosition());
     Shuffleboard.getTab("Ground Arm")
         .addDouble("Pivot Motor rotor Pos", () -> gndmotor.getRotorPosition().getValueAsDouble());
   }
 
-     public GroundArm() {
-    gndmotor = new TalonFX(Hardware.SPINNY_CLAW_MOTOR_ID);
+  public GroundArm() {
+    gndmotor = new TalonFX(Hardware.GROUND_INTAKE_ARM_MOTOR);
     configMotors();
     logTabs();
   }
