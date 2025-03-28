@@ -22,12 +22,20 @@ public class GroundArm extends SubsystemBase {
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
 
   // TalonFX
-  private final TalonFX gndmotor;
+  private final TalonFX motor;
+
+  private double targetPos;
+
+  public GroundArm() {
+    motor = new TalonFX(Hardware.GROUND_INTAKE_ARM_MOTOR);
+    configMotors();
+    logTabs();
+  }
 
   // TalonFX config
   public void configMotors() {
     TalonFXConfiguration configuration = new TalonFXConfiguration();
-    TalonFXConfigurator cfg = gndmotor.getConfigurator();
+    TalonFXConfigurator cfg = motor.getConfigurator();
     var currentLimits = new CurrentLimitsConfigs();
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     cfg.apply(configuration);
@@ -41,11 +49,9 @@ public class GroundArm extends SubsystemBase {
 
   // position
   private double getCurrentPosition() {
-    var curPos = gndmotor.getPosition();
+    var curPos = motor.getPosition();
     return curPos.getValueAsDouble();
   }
-
-  private double targetPos;
 
   private double getTargetPosition() {
     return targetPos;
@@ -54,29 +60,20 @@ public class GroundArm extends SubsystemBase {
   private Command setTargetPosition(double pos) {
     return runOnce(
         () -> {
-          gndmotor.setControl(m_request.withPosition(pos));
+          motor.setControl(m_request.withPosition(pos));
           targetPos = pos;
         });
   }
 
-  // logs
-  private double stowedPosition;
-
   public void logTabs() {
     Shuffleboard.getTab("Ground Arm")
-        .addDouble("Pivot Speed", () -> gndmotor.getVelocity().getValueAsDouble());
+        .addDouble("Pivot Speed", () -> motor.getVelocity().getValueAsDouble());
     Shuffleboard.getTab("Ground Arm")
-        .addDouble("Pivot Motor Temperature", () -> gndmotor.getDeviceTemp().getValueAsDouble());
+        .addDouble("Pivot Motor Temperature", () -> motor.getDeviceTemp().getValueAsDouble());
     Shuffleboard.getTab("Ground Arm").addDouble("Pivot Position", () -> getCurrentPosition());
     Shuffleboard.getTab("Ground Arm").addDouble("Pivot Target Pos", () -> getTargetPosition());
     Shuffleboard.getTab("Ground Arm")
-        .addDouble("Pivot Motor rotor Pos", () -> gndmotor.getRotorPosition().getValueAsDouble());
-  }
-
-  public GroundArm() {
-    gndmotor = new TalonFX(Hardware.GROUND_INTAKE_ARM_MOTOR);
-    configMotors();
-    logTabs();
+        .addDouble("Pivot Motor rotor Pos", () -> motor.getRotorPosition().getValueAsDouble());
   }
 
   // preset command placeholder
