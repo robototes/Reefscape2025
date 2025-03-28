@@ -20,6 +20,7 @@ import frc.robot.Hardware;
 import java.util.function.DoubleSupplier;
 
 public class ClimbPivot extends SubsystemBase {
+  private static final boolean DUAL_MOTORS = false;
 
   private final TalonFX motorLeft;
   private final TalonFX motorRight;
@@ -45,7 +46,7 @@ public class ClimbPivot extends SubsystemBase {
   private final double CLIMB_HOLD_STOWED = -0.001;
   private final double CLIMB_HOLD_CLIMBOUT = -0.0;
   private final double CLIMB_HOLD_CLIMBED = -0.0705;
-  private final double CLIMB_IN_SPEED = -0.3;
+  private final double CLIMB_IN_SPEED = 0.3;
 
   // relative to eachother, likely not accurately zero'ed when obtained.x
   private static final double MIN_ROTOR_POSITION = -50.45;
@@ -74,11 +75,13 @@ public class ClimbPivot extends SubsystemBase {
 
   public ClimbPivot() {
     motorLeft = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_LEFT_ID);
+    if(DUAL_MOTORS){
     motorRight = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_RIGHT_ID);
+    } else {motorRight = null;}
     sensor = new DigitalInput(Hardware.CLIMB_SENSOR);
     configure();
     setupLogging();
-    motorRight.setControl(new Follower(motorLeft.getDeviceID(), true));
+    //motorRight.setControl(new Follower(motorLeft.getDeviceID(), true));
   }
 
   private void configure() {
@@ -87,8 +90,8 @@ public class ClimbPivot extends SubsystemBase {
 
     TalonFXConfiguration configuration = new TalonFXConfiguration();
 
-    configuration.Feedback.FeedbackRemoteSensorID = Hardware.CLIMB_PIVOT_CANDI_ID;
-    configuration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANdiPWM1;
+    configuration.Feedback.FeedbackRemoteSensorID = Hardware.CLIMB_PIVOT_CANCODER_ID;
+    configuration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     configuration.Feedback.RotorToSensorRatio =
         (MAX_ROTOR_POSITION - MIN_ROTOR_POSITION) / (MAX_ENCODER_POSITION - MIN_ENCODER_POSITION);
     // Set and enable current limit
@@ -98,7 +101,9 @@ public class ClimbPivot extends SubsystemBase {
     configuration.CurrentLimits.SupplyCurrentLimitEnable = true;
     // Enable brake mode
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    talonFXConfigurator2.apply(configuration);
+    if(DUAL_MOTORS){
+      talonFXConfigurator2.apply(configuration);
+    }
 
     configuration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     configuration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
@@ -273,19 +278,25 @@ public class ClimbPivot extends SubsystemBase {
 
     NotConnectedErrorOne.set(
         notConnectedDebouncerOne.calculate(!motorLeft.getMotorVoltage().hasUpdated()));
-    NotConnectedErrorTwo.set(
-        notConnectedDebouncerTwo.calculate(!motorRight.getMotorVoltage().hasUpdated()));
+    if(DUAL_MOTORS){
+     NotConnectedErrorTwo.set(
+         notConnectedDebouncerTwo.calculate(!motorRight.getMotorVoltage().hasUpdated()));
+    }
   }
 
   public Command coastMotors() {
     return startEnd(
             () -> {
               motorLeft.setNeutralMode(NeutralModeValue.Coast);
+              if (DUAL_MOTORS){
               motorRight.setNeutralMode(NeutralModeValue.Coast);
+              }
             },
             () -> {
               motorLeft.setNeutralMode(NeutralModeValue.Brake);
+              if (DUAL_MOTORS){
               motorRight.setNeutralMode(NeutralModeValue.Brake);
+              }
             })
         .ignoringDisable(true)
         .withName("Coast Climb");
@@ -293,8 +304,9 @@ public class ClimbPivot extends SubsystemBase {
 
   public void brakeMotors() {
     motorLeft.setNeutralMode(NeutralModeValue.Brake);
-    motorRight.setNeutralMode(NeutralModeValue.Brake);
-  }
+    if (DUAL_MOTORS){
+      motorRight.setNeutralMode(NeutralModeValue.Brake);
+    }  }
 
   public Command advanceClimbCheck() {
     System.out.println("RUN COMMAND!");

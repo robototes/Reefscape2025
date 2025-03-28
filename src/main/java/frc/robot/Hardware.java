@@ -31,7 +31,7 @@ public class Hardware {
   // climb [50-59]
   public static final int CLIMB_PIVOT_MOTOR_LEFT_ID = 50;
   public static final int CLIMB_PIVOT_MOTOR_RIGHT_ID = 51;
-  public static final int CLIMB_PIVOT_CANDI_ID = 52;
+  public static final int CLIMB_PIVOT_CANCODER_ID = 52;
 
   // climb DIO
   public static final int CLIMB_SENSOR = 1;
