@@ -44,7 +44,7 @@ public class Controls {
   private final Sensors sensors;
   private final SuperStructure superStructure;
 
-  private BranchHeight branchHeight = BranchHeight.LEVEL_FOUR;
+  private BranchHeight branchHeight = BranchHeight.CORAL_LEVEL_FOUR;
   private ScoringMode scoringMode = ScoringMode.CORAL;
   private AlgaeIntakeHeight algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
 
@@ -181,54 +181,47 @@ public class Controls {
     // operator start button used for climb - bound in climb bindings
     operatorController
         .y()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_FOUR).withName("level 4"))
-        .onTrue(
-            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
-                .withName("algae level 3-4"));
+        .onTrue(Commands.runOnce(() -> {
+            branchHeight = BranchHeight.CORAL_LEVEL_FOUR;
+            algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;})
+                .withName("coral level 4, algae level 3-4"));
     operatorController
         .x()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"))
-        .onTrue(
-            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
-                .withName("algae level 2-3"));
+        .onTrue(Commands.runOnce(() -> {branchHeight = BranchHeight.CORAL_LEVEL_THREE;
+            algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;})
+                .withName("coral level 3, algae level 2-3"));
     operatorController
         .b()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO).withName("level 2"))
-        .onTrue(
-            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
-                .withName("algae level 2-3"));
+        .onTrue(Commands.runOnce(() -> {branchHeight = BranchHeight.CORAL_LEVEL_TWO;
+            algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;})
+                    .withName("coral level 2, algae level 2-3"));
     operatorController
         .a()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE).withName("level 1"))
-        .onTrue(
-            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND)
-                .withName("algae ground level"));
-
+        .onTrue(Commands.runOnce(() -> {branchHeight = BranchHeight.CORAL_LEVEL_ONE;
+        algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;})
+                .withName("coral level 1, algae ground level"));
     ;
-    driverController
+    driverController //reuse for others
         .povUp()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_FOUR).withName("level 4"))
-        .onTrue(
-            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
-                .withName("algae level 3-4"));
+        .onTrue(Commands.runOnce(() -> {
+            branchHeight = BranchHeight.CORAL_LEVEL_FOUR;
+            algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;})
+                .withName("coral level 4, algae level 3-4"));
     driverController
         .povLeft()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"))
-        .onTrue(
-            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
-                .withName("algae level 2-3"));
+        .onTrue(Commands.runOnce(() -> {branchHeight = BranchHeight.CORAL_LEVEL_THREE;
+            algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;})
+                .withName("coral level 3, algae level 2-3"));
     driverController
         .povRight()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO).withName("level 2"))
-        .onTrue(
-            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
-                .withName("algae level 2-3"));
+        .onTrue(Commands.runOnce(() -> {branchHeight = BranchHeight.CORAL_LEVEL_TWO;
+        algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;})
+                .withName("coral level 2, algae level 2-3"));
     driverController
         .povDown()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE).withName("level 1"))
-        .onTrue(
-            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND)
-                .withName("algae ground level"));
+        .onTrue(Commands.runOnce(() -> {branchHeight = BranchHeight.CORAL_LEVEL_ONE;
+        algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;})
+                .withName("coral level 1, algae ground level"));
     driverController
         .leftTrigger()
         .onTrue(
@@ -268,21 +261,23 @@ public class Controls {
 
     driverController
         .a()
-        .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interrupter"))
+        .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
         .onTrue(
-            Commands.deferredProxy(
-                    () ->
-                        switch (scoringMode) { // may need a switch for coral intake with coral
-                            // ground intake when implemented
-                          case CORAL -> superStructure
-                              .coralIntake()
-                              .alongWith(
-                                  s.elevatorLEDSubsystem
-                                      .tripleBlink(255, 92, 0, "Orange - Manual Coral Intake")
-                                      .asProxy())
-                              .withName("Manual Coral Intake");
-                          case ALGAE -> getAlgaeIntakeCommand();
-                        })
+            Commands.runOnce(
+                    () -> {
+                        Command intakeCommand =
+                            switch (scoringMode) {
+                            case CORAL -> superStructure
+                            .coralIntake()
+                            .alongWith(
+                                s.elevatorLEDSubsystem
+                                    .tripleBlink(255, 92, 0, "Orange - Manual Coral Intake")
+                                    .asProxy())
+                            .withName("Manual Coral Intake");
+                            case ALGAE -> getAlgaeIntakeCommand();
+                            };
+                        CommandScheduler.getInstance().schedule(intakeCommand);
+                    })
                 .withName("Driver Intake"));
     if (sensors.armSensor != null) {
       sensors
@@ -329,10 +324,10 @@ public class Controls {
 
   private Command getCoralBranchHeightCommand() {
     return switch (branchHeight) {
-      case LEVEL_FOUR -> superStructure.coralLevelFour(driverController.rightBumper());
-      case LEVEL_THREE -> superStructure.coralLevelThree(driverController.rightBumper());
-      case LEVEL_TWO -> superStructure.coralLevelTwo(driverController.rightBumper());
-      case LEVEL_ONE -> superStructure.coralLevelOne(driverController.rightBumper());
+      case CORAL_LEVEL_FOUR -> superStructure.coralLevelFour(driverController.rightBumper());
+      case CORAL_LEVEL_THREE -> superStructure.coralLevelThree(driverController.rightBumper());
+      case CORAL_LEVEL_TWO -> superStructure.coralLevelTwo(driverController.rightBumper());
+      case CORAL_LEVEL_ONE -> superStructure.coralLevelOne(driverController.rightBumper());
     };
   }
 
@@ -567,8 +562,7 @@ public class Controls {
     connected(armPivotSpinnyClawController)
         .and(armPivotSpinnyClawController.rightTrigger())
         .whileTrue(s.spinnyClawSubsytem.algaeGripIntakePower());
-    driverController // not totally sure this'll work but it might since we said to just auto retry
-        // scoring in the commands, so it should be okay...
+    driverController
         .rightBumper()
         .whileTrue(
             Commands.deferredProxy(
