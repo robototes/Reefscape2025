@@ -257,14 +257,14 @@ public class Controls {
         .leftBumper()
         .onTrue(
             Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE)
-            .alongWith(scoringModeSelectRumble())
-            .withName("Algae Scoring Mode"));
+                .alongWith(scoringModeSelectRumble())
+                .withName("Algae Scoring Mode"));
     operatorController
         .leftTrigger()
         .onTrue(
             Commands.runOnce(() -> scoringMode = ScoringMode.CORAL)
-            .alongWith(scoringModeSelectRumble())
-            .withName("Coral Scoring Mode"))
+                .alongWith(scoringModeSelectRumble())
+                .withName("Coral Scoring Mode"))
         .onTrue(superStructure.coralPreIntake());
     operatorController
         .povLeft()
@@ -426,7 +426,7 @@ public class Controls {
         .onTrue(
             Commands.parallel(
                     s.elevatorSubsystem.resetPosZero(),
-                    Rumble(operatorController,0.5,Seconds.of(0.3)))
+                    rumble(operatorController, 0.5, Seconds.of(0.3)))
                 .ignoringDisable(true)
                 .withName("Reset elevator zero"));
     operatorController.rightBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
@@ -627,23 +627,25 @@ public class Controls {
                 () -> -driverController.getLeftX() * MaxSpeed));
     driverController.rightTrigger().whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
   }
-  private Command rumble (CommandXboxController controller, double vibration, Time duration){
+
+  private Command rumble(CommandXboxController controller, double vibration, Time duration) {
     return Commands.startEnd(
-         ()->controller.getHID().setRumble(RumbleType.kBothRumble, vibration),
-         ()->controller.getHID().setRumble(RumbleType.kBothRumble, 0))
+            () -> controller.getHID().setRumble(RumbleType.kBothRumble, vibration),
+            () -> controller.getHID().setRumble(RumbleType.kBothRumble, 0))
         .withTimeout(duration)
-    .withName("Rumble Port "+ controller.getHID().getPort());
-  }
-  private Command heightSelectRumble () {
-    return rumble(driverController, 0.5, Seconds.of(0.3))
-    .alongWith(rumble (operatorController, 0.5, Seconds.of(0.3)))
-    .withName ("height select rumble");
+        .withName("Rumble Port " + controller.getHID().getPort());
   }
 
-  private Command scoringModeSelectRumble (){
+  private Command heightSelectRumble() {
+    return rumble(driverController, 0.5, Seconds.of(0.3))
+        .alongWith(rumble(operatorController, 0.5, Seconds.of(0.3)))
+        .withName("height select rumble");
+  }
+
+  private Command scoringModeSelectRumble() {
     return rumble(driverController, 1.0, Seconds.of(0.5))
-    .alongWith(rumble (operatorController, 1.0, Seconds.of(0.5)))
-    .withName ("height select rumble");
+        .alongWith(rumble(operatorController, 1.0, Seconds.of(0.5)))
+        .withName("height select rumble");
   }
 
   public void vibrateDriveController(double vibration) {
