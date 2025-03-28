@@ -37,18 +37,18 @@ public class ClimbPivot extends SubsystemBase {
   private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Climb");
 
   private final double BOOLEAN_TOLERANCE = 0.05;
-  private final double STOWED_PRESET = -0.068;
+  private final double STOWED_PRESET = -0.450;
   private final double CLIMB_OUT_PRESET =
-      -0.30 - BOOLEAN_TOLERANCE; // Subtract since we approach from 0 -> -infty
+      -0.18 - BOOLEAN_TOLERANCE; // Subtract since we approach from 0 -> -infty
   private final double CLIMBED_PRESET =
-      -0.209 + BOOLEAN_TOLERANCE; // Add sicne we approach from -infty -> 0
+      -0.318 + BOOLEAN_TOLERANCE; // Add sicne we approach from -infty -> 0
   private final double FORWARD_SOFT_STOP = -0.07;
   private final double REVERSE_SOFT_STOP = -78;
-  private final double CLIMB_OUT_SPEED = -0.6;
+  private final double CLIMB_OUT_SPEED = 0.6;
   private final double CLIMB_HOLD_STOWED = -0.001;
   private final double CLIMB_HOLD_CLIMBOUT = -0.0;
   private final double CLIMB_HOLD_CLIMBED = -0.0705;
-  private final double CLIMB_IN_SPEED = 0.3;
+  private final double CLIMB_IN_SPEED = -0.3;
 
   // relative to eachother, likely not accurately zero'ed when obtained.x
   private static final double MIN_ROTOR_POSITION = -50.45;
