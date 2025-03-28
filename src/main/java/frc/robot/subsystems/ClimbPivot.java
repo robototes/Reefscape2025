@@ -247,28 +247,11 @@ public class ClimbPivot extends SubsystemBase {
     shuffleboardTab.addDouble("Motor Position", () -> getClimbPosition());
     shuffleboardTab.addBoolean("Within Tolerance?", () -> inTolerance);
     shuffleboardTab.addBoolean("Move Complete?", () -> moveComplete);
-
-    // var climbDownEntry =
-    //     shuffleboardTab.add("MOVE DOWN",
-    // false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    // new Trigger(() -> climbDownEntry.getBoolean(false)).whileTrue(moveClimbManual(() -> 0.1));
   }
 
   @Override
   public void periodic() {
     double currentPos = getClimbPosition();
-    // if (MathUtil.isNear(targetPos, currentPos, BOOLEAN_TOLERANCE)) {
-    //   motorLeft.set(0);
-    //   setSpeed = 0;
-    //   System.out.println("IN TOLERANCEEEFOIEWHTIHIF");
-    //   moveComplete = true;
-    // } else {
-    //   if (!moveComplete) {
-    //     motorLeft.set(CLIMB_OUT_SPEED);
-    //     setSpeed = CLIMB_OUT_SPEED;
-    //   }
-    //   System.out.println("OUT OF TOLERANCECEIWHTIUERURUITH");
-    // }
 
     if (MathUtil.isNear(currentPos, CLIMB_OUT_PRESET, BOOLEAN_TOLERANCE)) {
       isClimbOut = true;
@@ -280,7 +263,12 @@ public class ClimbPivot extends SubsystemBase {
     } else {
       isStowed = false;
     }
-
+    if (MathUtil.isNear(targetPos, getClimbPosition(), BOOLEAN_TOLERANCE)) {
+      inTolerance = true;
+      moveComplete = true;
+    } else {
+      inTolerance = false;
+    }
     NotConnectedErrorOne.set(
         notConnectedDebouncerOne.calculate(!motorLeft.getMotorVoltage().hasUpdated()));
     if (DUAL_MOTORS) {
@@ -317,11 +305,9 @@ public class ClimbPivot extends SubsystemBase {
   public Command advanceClimbCheck() {
     return run(
         () -> {
-          if (MathUtil.isNear(targetPos, getClimbPosition(), BOOLEAN_TOLERANCE)) {
+          if (inTolerance) {
             motorLeft.set(0);
             setSpeed = 0;
-            inTolerance = true;
-            moveComplete = true;
           } else {
             if (!moveComplete) {
               if (targetPos == CLIMB_OUT_PRESET) {
@@ -332,7 +318,6 @@ public class ClimbPivot extends SubsystemBase {
                 setSpeed = CLIMB_IN_SPEED;
               }
             }
-            inTolerance = false;
           }
         });
   }
@@ -343,5 +328,6 @@ public class ClimbPivot extends SubsystemBase {
 
   public void moveCompleteTrue() {
     moveComplete = true;
+    motorLeft.stopMotor();
   }
 }
