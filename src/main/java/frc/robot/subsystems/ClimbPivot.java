@@ -299,7 +299,7 @@ public class ClimbPivot extends SubsystemBase {
             setSpeed = 0;
           } else {
             if (!moveComplete) {
-              if (targetPos >  getClimbPosition()) {
+              if (targetPos > getClimbPosition()) {
                 motorLeft.set(CLIMB_OUT_PRESET);
                 setSpeed = CLIMB_OUT_SPEED;
               } else {
