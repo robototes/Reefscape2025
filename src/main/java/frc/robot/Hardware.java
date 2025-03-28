@@ -33,6 +33,9 @@ public class Hardware {
   public static final int CLIMB_PIVOT_MOTOR_RIGHT_ID = 51;
   public static final int CLIMB_PIVOT_CANDI_ID = 52;
 
+  // elevator-zero DIO
+  public static final int ELEVATOR_ZERO_DIO = 0;
+
   // climb DIO
   public static final int CLIMB_SENSOR = 1;
 

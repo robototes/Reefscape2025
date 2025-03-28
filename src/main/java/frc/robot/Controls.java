@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.LEDPattern;
@@ -430,6 +431,12 @@ public class Controls {
             .getEntry();
     new Trigger(() -> elevatorCoastButton.getBoolean(false))
         .whileTrue(s.elevatorSubsystem.holdCoastMode());
+    // Initializes a DigitalInput on Elevator Zero DIO
+    DigitalInput input = new DigitalInput(Hardware.ELEVATOR_ZERO_DIO);
+    RobotModeTriggers.disabled()
+        .and(new Trigger(() -> input.get()))
+        .onTrue((s.elevatorSubsystem.resetPosZero()));
+            
   }
 
   private void configureArmPivotBindings() {
