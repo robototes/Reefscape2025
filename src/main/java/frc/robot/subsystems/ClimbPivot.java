@@ -123,17 +123,6 @@ public class ClimbPivot extends SubsystemBase {
     // on opposite side
   }
 
-  // public Command moveClimbMotor(double speed) {
-  //   return run(() -> {
-  //         motorOne.set(speed);
-  //       })
-  //       .finallyDo(
-  //           () -> {
-  //             motorOne.stopMotor();
-  //           })
-  //       .withName("Climb moveClimbMotor(" + speed + ")");
-  // }
-
   public Command stopMotor() {
     return runOnce(() -> motorLeft.stopMotor());
   }
@@ -310,7 +299,7 @@ public class ClimbPivot extends SubsystemBase {
             setSpeed = 0;
           } else {
             if (!moveComplete) {
-              if (targetPos == CLIMB_OUT_PRESET) {
+              if (targetPos >  getClimbPosition()) {
                 motorLeft.set(CLIMB_OUT_PRESET);
                 setSpeed = CLIMB_OUT_SPEED;
               } else {
