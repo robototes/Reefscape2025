@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Hardware;
 import java.util.function.DoubleSupplier;
 
@@ -48,6 +49,8 @@ public class ClimbPivot extends SubsystemBase {
   private final double CLIMB_HOLD_CLIMBOUT = -0.0;
   private final double CLIMB_HOLD_CLIMBED = -0.0705;
   private final double CLIMB_IN_SPEED = 0.3;
+
+
 
   // relative to eachother, likely not accurately zero'ed when obtained.x
   private static final double MIN_ROTOR_POSITION = -50.45;
@@ -137,7 +140,7 @@ public class ClimbPivot extends SubsystemBase {
     return runOnce(() -> motorLeft.stopMotor());
   }
 
-  public Command advanceClimbTarget(Command setClimbLEDs) {
+  public Command advanceClimbTarget() {
     return runOnce(
             () -> {
               switch (selectedPos) {
@@ -161,10 +164,6 @@ public class ClimbPivot extends SubsystemBase {
                 }
               }
             })
-        .alongWith(
-            setClimbLEDs
-                .onlyIf(() -> selectedPos == TargetPositions.CLIMB_OUT)
-                .until(() -> isClimbOut))
         .withName("Climb Sequence");
   }
 
@@ -318,7 +317,6 @@ public class ClimbPivot extends SubsystemBase {
   }
 
   public Command advanceClimbCheck() {
-    System.out.println("RUN COMMAND!");
     return run(
         () -> {
           if (MathUtil.isNear(targetPos, getClimbPosition(), BOOLEAN_TOLERANCE)) {
@@ -339,6 +337,10 @@ public class ClimbPivot extends SubsystemBase {
             inTolerance = false;
           }
         });
+  }
+
+  public Trigger isClimbing() {
+    return new Trigger(() -> !moveComplete);
   }
 
   public void moveCompleteTrue() {
