@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -75,18 +76,25 @@ public class ClimbPivot extends SubsystemBase {
 
   public ClimbPivot() {
     motorLeft = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_LEFT_ID);
-    if(DUAL_MOTORS){
-    motorRight = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_RIGHT_ID);
-    } else {motorRight = null;}
+    if (DUAL_MOTORS) {
+      motorRight = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_RIGHT_ID);
+    } else {
+      motorRight = null;
+    }
     sensor = new DigitalInput(Hardware.CLIMB_SENSOR);
     configure();
     setupLogging();
-    //motorRight.setControl(new Follower(motorLeft.getDeviceID(), true));
+    if (motorRight != null) {
+      motorRight.setControl(new Follower(motorLeft.getDeviceID(), true));
+    }
   }
 
   private void configure() {
     var talonFXConfigurator = motorLeft.getConfigurator();
-    var talonFXConfigurator2 = motorRight.getConfigurator();
+    TalonFXConfigurator talonFXConfigurator2 = null;
+    if (motorRight != null) {
+      talonFXConfigurator2 = motorRight.getConfigurator();
+    }
 
     TalonFXConfiguration configuration = new TalonFXConfiguration();
 
@@ -101,7 +109,7 @@ public class ClimbPivot extends SubsystemBase {
     configuration.CurrentLimits.SupplyCurrentLimitEnable = true;
     // Enable brake mode
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    if(DUAL_MOTORS){
+    if (motorRight != null) {
       talonFXConfigurator2.apply(configuration);
     }
 
@@ -278,9 +286,9 @@ public class ClimbPivot extends SubsystemBase {
 
     NotConnectedErrorOne.set(
         notConnectedDebouncerOne.calculate(!motorLeft.getMotorVoltage().hasUpdated()));
-    if(DUAL_MOTORS){
-     NotConnectedErrorTwo.set(
-         notConnectedDebouncerTwo.calculate(!motorRight.getMotorVoltage().hasUpdated()));
+    if (DUAL_MOTORS) {
+      NotConnectedErrorTwo.set(
+          notConnectedDebouncerTwo.calculate(!motorRight.getMotorVoltage().hasUpdated()));
     }
   }
 
@@ -288,14 +296,14 @@ public class ClimbPivot extends SubsystemBase {
     return startEnd(
             () -> {
               motorLeft.setNeutralMode(NeutralModeValue.Coast);
-              if (DUAL_MOTORS){
-              motorRight.setNeutralMode(NeutralModeValue.Coast);
+              if (DUAL_MOTORS) {
+                motorRight.setNeutralMode(NeutralModeValue.Coast);
               }
             },
             () -> {
               motorLeft.setNeutralMode(NeutralModeValue.Brake);
-              if (DUAL_MOTORS){
-              motorRight.setNeutralMode(NeutralModeValue.Brake);
+              if (DUAL_MOTORS) {
+                motorRight.setNeutralMode(NeutralModeValue.Brake);
               }
             })
         .ignoringDisable(true)
@@ -304,9 +312,10 @@ public class ClimbPivot extends SubsystemBase {
 
   public void brakeMotors() {
     motorLeft.setNeutralMode(NeutralModeValue.Brake);
-    if (DUAL_MOTORS){
+    if (DUAL_MOTORS) {
       motorRight.setNeutralMode(NeutralModeValue.Brake);
-    }  }
+    }
+  }
 
   public Command advanceClimbCheck() {
     System.out.println("RUN COMMAND!");
