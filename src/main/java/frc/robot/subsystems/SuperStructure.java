@@ -51,8 +51,7 @@ public class SuperStructure {
     }
   }
 
-  public Command coralLevelFour(
-      BooleanSupplier score) {
+  public Command coralLevelFour(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
                     Commands.print("Pre position"),
