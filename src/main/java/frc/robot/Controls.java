@@ -163,7 +163,13 @@ public class Controls {
         .onTrue(
             s.drivebaseSubsystem
                 .runOnce(() -> s.drivebaseSubsystem.seedFieldCentric())
-                .withName("Reset gyro"));
+                .withName("Reset gyro"))
+        .onTrue(
+            Commands.startEnd(
+            () -> driverController.setRumble(RumbleType.kBothRumble, 0.5),
+            () -> driverController.setRumble(RumbleType.kBothRumble, 0))
+            .withTimeout(0.3));
+          
     s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
     var swerveCoastButton =
         Shuffleboard.getTab("Controls")
@@ -248,12 +254,33 @@ public class Controls {
     operatorController
         .leftBumper()
         .onTrue(
-            Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE).withName("Algae Scoring Mode"));
+            Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE).withName("Algae Scoring Mode"))
+        .onTrue(
+            Commands.startEnd(
+                () -> operatorController.setRumble(RumbleType.kBothRumble, 0.5),
+                () -> operatorController.setRumble(RumbleType.kBothRumble, 0))
+            .withTimeout(0.3))
+        .onTrue(
+            Commands.startEnd(
+            () -> driverController.setRumble(RumbleType.kBothRumble, 0.5),
+            () -> driverController.setRumble(RumbleType.kBothRumble, 0))
+            .withTimeout(0.3));
+
     operatorController
         .leftTrigger()
         .onTrue(
             Commands.runOnce(() -> scoringMode = ScoringMode.CORAL).withName("Coral Scoring Mode"))
-        .onTrue(superStructure.coralPreIntake());
+        .onTrue(superStructure.coralPreIntake())
+        .onTrue(
+            Commands.startEnd(
+                () -> operatorController.setRumble(RumbleType.kBothRumble, 0.5),
+                () -> operatorController.setRumble(RumbleType.kBothRumble, 0))
+            .withTimeout(0.3))
+        .onTrue(
+            Commands.startEnd(
+            () -> driverController.setRumble(RumbleType.kBothRumble, 0.5),
+            () -> driverController.setRumble(RumbleType.kBothRumble, 0))
+            .withTimeout(0.3));
     operatorController
         .povLeft()
         .onTrue(
@@ -412,7 +439,7 @@ public class Controls {
         .back()
         .onTrue(
             Commands.parallel(
-                    s.elevatorSubsystem.resetPosZero(),
+                    s.elevatorSubsystem.resetPosZero(), //meow
                     Commands.startEnd(
                             () -> operatorController.setRumble(RumbleType.kBothRumble, 0.5),
                             () -> operatorController.setRumble(RumbleType.kBothRumble, 0))
