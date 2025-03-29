@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
-import frc.robot.subsystems.ArmPivot;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -266,6 +265,7 @@ public class AutoLogic {
   public static Command scoreCommand() {
     if (r.superStructure != null) {
       return AutoAlign.autoAlign(s.drivebaseSubsystem)
+          .repeatedly()
           .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
           .withName("scoreCommand");
     }
@@ -278,10 +278,7 @@ public class AutoLogic {
 
       if (ARMSENSOR_ENABLED) {
 
-        return Commands.sequence(
-                r.superStructure.coralPreIntake(),
-                r.superStructure.coralIntake(),
-                s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_UP))
+        return Commands.sequence(r.superStructure.coralPreIntake(), r.superStructure.coralIntake())
             .withName("intake");
       }
     }
