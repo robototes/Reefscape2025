@@ -105,9 +105,9 @@ public class Subsystems {
 
     if (GROUND_ARM_ENABLED) {
       groundArm = new GroundArm();
-      SmartDashboard.putData(armPivotSubsystem);
+      SmartDashboard.putData(groundArm);
     } else {
-      armPivotSubsystem = null;
+      groundArm = null;
     }
 
     if (ELEVATOR_LED_ENABLED) {

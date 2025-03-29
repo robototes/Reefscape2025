@@ -16,18 +16,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 
 public class GroundArm extends SubsystemBase {
-  private final double ARMPIVOT_KP = 1;
+  private final double ARMPIVOT_KP = 0;
   private final double ARMPIVOT_KI = 0;
   private final double ARMPIVOT_KD = 0;
-  private final double ARMPIVOT_KS = 0;
-  private final double ARMPIVOT_KV = 0;
-  private final double ARMPIVOT_KG = 0;
+  private final double ARMPIVOT_KS = 0.3;
+  private final double ARMPIVOT_KV = 4;
+  private final double ARMPIVOT_KG = 0.048;
   private final double ARMPIVOT_KA = 0;
   public static final double STOWED_POSITION = 0.476;
   public static final double GRAB_POSITION = 0;
   public static final double POS_TOLERANCE = Units.degreesToRotations(5);
-  // ratio from motor to output
-  private static final double ARM_RATIO = 1 / 60;
+  // ratio from motor rotations to output rotations
+  private static final double ARM_RATIO = 60;
 
   // MotionMagic voltage
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
@@ -48,11 +48,11 @@ public class GroundArm extends SubsystemBase {
     TalonFXConfigurator cfg = motor.getConfigurator();
     var talonFXConfiguration = new TalonFXConfiguration();
 
-    talonFXConfiguration.Feedback.FeedbackRemoteSensorID = Hardware.ARM_PIVOT_CANDI_ID;
-    talonFXConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANdiPWM1;
-    talonFXConfiguration.Feedback.RotorToSensorRatio = 1 / ARM_RATIO;
+    talonFXConfiguration.Feedback.FeedbackRemoteSensorID = Hardware.GROUND_INTAKE_ARM_ENCODER;
+    talonFXConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+    talonFXConfiguration.Feedback.RotorToSensorRatio = ARM_RATIO;
 
-    talonFXConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    talonFXConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     // enabling current limits
@@ -73,9 +73,9 @@ public class GroundArm extends SubsystemBase {
     talonFXConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
     // set Motion Magic settings in rps not mechanism units
-    talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity = 10;
-    talonFXConfiguration.MotionMagic.MotionMagicAcceleration = 20;
-    talonFXConfiguration.MotionMagic.MotionMagicJerk = 200;
+    talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity = 0.5;
+    talonFXConfiguration.MotionMagic.MotionMagicAcceleration = 1;
+    talonFXConfiguration.MotionMagic.MotionMagicJerk = 2;
 
     cfg.apply(talonFXConfiguration);
   }
@@ -114,10 +114,5 @@ public class GroundArm extends SubsystemBase {
     return setTargetPosition(position)
         .andThen(
             Commands.waitUntil(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE));
-  }
-
-  public Command stowedPosition() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'stowedPosition'");
   }
 }

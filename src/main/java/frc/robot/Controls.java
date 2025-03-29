@@ -20,6 +20,7 @@ import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.GroundArm;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoAlign;
 import frc.robot.util.AlgaeIntakeHeight;
@@ -661,7 +662,11 @@ public class Controls {
     if (s.groundArm == null) {
       return;
     }
-    s.groundArm.setDefaultCommand(s.groundArm.stowedPosition());
+    s.groundArm.setDefaultCommand(
+        s.groundArm
+            .moveToPosition(GroundArm.STOWED_POSITION)
+            .andThen(Commands.idle())
+            .withName("Ground stowed position wait"));
   }
 
   public void vibrateDriveController(double vibration) {
