@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -16,10 +17,12 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Hardware;
 import java.util.function.DoubleSupplier;
 
 public class ClimbPivot extends SubsystemBase {
+  private static final boolean DUAL_MOTORS = false;
 
   private final TalonFX motorLeft;
   private final TalonFX motorRight;
@@ -34,17 +37,18 @@ public class ClimbPivot extends SubsystemBase {
   private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Climb");
 
   private final double BOOLEAN_TOLERANCE = 0.05;
-  private final double STOWED_PRESET = -0.068;
+  private final double STOWED_PRESET = -0.450;
   private final double CLIMB_OUT_PRESET =
-      -0.30 - BOOLEAN_TOLERANCE; // Subtract since we approach from 0 -> -infty
+      -0.18 - BOOLEAN_TOLERANCE; // Subtract since we approach from 0 -> -infty
   private final double CLIMBED_PRESET =
-      -0.209 + BOOLEAN_TOLERANCE; // Add sicne we approach from -infty -> 0
+      -0.318 + BOOLEAN_TOLERANCE; // Add sicne we approach from -infty -> 0
   private final double FORWARD_SOFT_STOP = -0.07;
   private final double REVERSE_SOFT_STOP = -78;
-  private final double CLIMB_OUT_SPEED = -0.6;
+  private final double CLIMB_OUT_SPEED = 0.6;
   private final double CLIMB_HOLD_STOWED = -0.001;
   private final double CLIMB_HOLD_CLIMBOUT = -0.0;
   private final double CLIMB_HOLD_CLIMBED = -0.0705;
+  private final double CLIMB_IN_SPEED = -0.3;
 
   // relative to eachother, likely not accurately zero'ed when obtained.x
   private static final double MIN_ROTOR_POSITION = -50.45;
@@ -73,21 +77,30 @@ public class ClimbPivot extends SubsystemBase {
 
   public ClimbPivot() {
     motorLeft = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_LEFT_ID);
-    motorRight = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_RIGHT_ID);
+    if (DUAL_MOTORS) {
+      motorRight = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_RIGHT_ID);
+    } else {
+      motorRight = null;
+    }
     sensor = new DigitalInput(Hardware.CLIMB_SENSOR);
     configure();
     setupLogging();
-    motorRight.setControl(new Follower(motorLeft.getDeviceID(), true));
+    if (motorRight != null) {
+      motorRight.setControl(new Follower(motorLeft.getDeviceID(), true));
+    }
   }
 
   private void configure() {
     var talonFXConfigurator = motorLeft.getConfigurator();
-    var talonFXConfigurator2 = motorRight.getConfigurator();
+    TalonFXConfigurator talonFXConfigurator2 = null;
+    if (motorRight != null) {
+      talonFXConfigurator2 = motorRight.getConfigurator();
+    }
 
     TalonFXConfiguration configuration = new TalonFXConfiguration();
 
-    configuration.Feedback.FeedbackRemoteSensorID = Hardware.CLIMB_PIVOT_CANDI_ID;
-    configuration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANdiPWM1;
+    configuration.Feedback.FeedbackRemoteSensorID = Hardware.CLIMB_PIVOT_CANCODER_ID;
+    configuration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     configuration.Feedback.RotorToSensorRatio =
         (MAX_ROTOR_POSITION - MIN_ROTOR_POSITION) / (MAX_ENCODER_POSITION - MIN_ENCODER_POSITION);
     // Set and enable current limit
@@ -97,7 +110,9 @@ public class ClimbPivot extends SubsystemBase {
     configuration.CurrentLimits.SupplyCurrentLimitEnable = true;
     // Enable brake mode
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    talonFXConfigurator2.apply(configuration);
+    if (motorRight != null) {
+      talonFXConfigurator2.apply(configuration);
+    }
 
     configuration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     configuration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
@@ -123,7 +138,7 @@ public class ClimbPivot extends SubsystemBase {
     return runOnce(() -> motorLeft.stopMotor());
   }
 
-  public Command advanceClimbTarget(Command setClimbLEDs) {
+  public Command advanceClimbTarget() {
     return runOnce(
             () -> {
               switch (selectedPos) {
@@ -147,10 +162,6 @@ public class ClimbPivot extends SubsystemBase {
                 }
               }
             })
-        .alongWith(
-            setClimbLEDs
-                .onlyIf(() -> selectedPos == TargetPositions.CLIMB_OUT)
-                .until(() -> isClimbOut))
         .withName("Climb Sequence");
   }
 
@@ -205,6 +216,7 @@ public class ClimbPivot extends SubsystemBase {
             }
           }
         });
+    shuffleboardTab.addDouble("targetPos", () -> targetPos);
     shuffleboardTab
         .addString(
             "Where moving?",
@@ -233,7 +245,9 @@ public class ClimbPivot extends SubsystemBase {
         .addDouble("Motor Speed", () -> getClimbVelocity())
         .withWidget(BuiltInWidgets.kTextView);
     shuffleboardTab.addDouble("Motor Position", () -> getClimbPosition());
-    shuffleboardTab.add("Within Tolerance?", inTolerance);
+    shuffleboardTab.addBoolean("Within Tolerance?", () -> inTolerance);
+    shuffleboardTab.addBoolean("Move Complete?", () -> moveComplete);
+
     // var climbDownEntry =
     //     shuffleboardTab.add("MOVE DOWN",
     // false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
@@ -269,19 +283,25 @@ public class ClimbPivot extends SubsystemBase {
 
     NotConnectedErrorOne.set(
         notConnectedDebouncerOne.calculate(!motorLeft.getMotorVoltage().hasUpdated()));
-    NotConnectedErrorTwo.set(
-        notConnectedDebouncerTwo.calculate(!motorRight.getMotorVoltage().hasUpdated()));
+    if (DUAL_MOTORS) {
+      NotConnectedErrorTwo.set(
+          notConnectedDebouncerTwo.calculate(!motorRight.getMotorVoltage().hasUpdated()));
+    }
   }
 
   public Command coastMotors() {
     return startEnd(
             () -> {
               motorLeft.setNeutralMode(NeutralModeValue.Coast);
-              motorRight.setNeutralMode(NeutralModeValue.Coast);
+              if (DUAL_MOTORS) {
+                motorRight.setNeutralMode(NeutralModeValue.Coast);
+              }
             },
             () -> {
               motorLeft.setNeutralMode(NeutralModeValue.Brake);
-              motorRight.setNeutralMode(NeutralModeValue.Brake);
+              if (DUAL_MOTORS) {
+                motorRight.setNeutralMode(NeutralModeValue.Brake);
+              }
             })
         .ignoringDisable(true)
         .withName("Coast Climb");
@@ -289,11 +309,12 @@ public class ClimbPivot extends SubsystemBase {
 
   public void brakeMotors() {
     motorLeft.setNeutralMode(NeutralModeValue.Brake);
-    motorRight.setNeutralMode(NeutralModeValue.Brake);
+    if (DUAL_MOTORS) {
+      motorRight.setNeutralMode(NeutralModeValue.Brake);
+    }
   }
 
   public Command advanceClimbCheck() {
-    System.out.println("RUN COMMAND!");
     return run(
         () -> {
           if (MathUtil.isNear(targetPos, getClimbPosition(), BOOLEAN_TOLERANCE)) {
@@ -303,12 +324,21 @@ public class ClimbPivot extends SubsystemBase {
             moveComplete = true;
           } else {
             if (!moveComplete) {
-              motorLeft.set(CLIMB_OUT_SPEED);
-              setSpeed = CLIMB_OUT_SPEED;
+              if (targetPos == CLIMB_OUT_PRESET) {
+                motorLeft.set(CLIMB_OUT_PRESET);
+                setSpeed = CLIMB_OUT_SPEED;
+              } else {
+                motorLeft.set(CLIMB_IN_SPEED);
+                setSpeed = CLIMB_IN_SPEED;
+              }
             }
             inTolerance = false;
           }
         });
+  }
+
+  public Trigger isClimbing() {
+    return new Trigger(() -> !moveComplete);
   }
 
   public void moveCompleteTrue() {
