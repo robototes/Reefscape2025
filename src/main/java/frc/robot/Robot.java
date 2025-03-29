@@ -149,9 +149,7 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {
-    System.out.println("Robot pose:" + subsystems.drivebaseSubsystem.getState().Pose);
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void teleopExit() {
