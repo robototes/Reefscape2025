@@ -126,7 +126,7 @@ public class SuperStructure {
                     spinnyClaw.stop())
                 .withTimeout(0.5)
                 .withDeadline(Commands.waitUntil(score)),
-            spinnyClaw.coralHoldExtakePower().withTimeout(0.25),
+            spinnyClaw.coralLevelOneHoldExtakePower().withTimeout(0.25),
             coralPreIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L1").asProxy())
         .withName("Coral Level 1");
@@ -224,7 +224,7 @@ public class SuperStructure {
             Commands.parallel(
                 elevator.setLevel(ElevatorSubsystem.ALGAE_NET_SCORE),
                 armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE),
-                spinnyClaw.algaeIntakePower()),
+                spinnyClaw.algaeGripIntakePower()),
             Commands.waitUntil(score),
             spinnyClaw.algaeHoldExtakePower().withTimeout(0.7))
         .withName("Algae Net Score");

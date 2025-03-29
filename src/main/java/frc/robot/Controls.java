@@ -290,7 +290,16 @@ public class Controls {
                           case ALGAE -> superStructure.algaeStow();
                         })
                 .withName("Stow"));
-    operatorController.povDown().onTrue(superStructure.coralPreIntake().withName("pre-intake"));
+    operatorController
+        .povDown()
+        .onTrue(
+            Commands.deferredProxy(
+                    () ->
+                        switch (scoringMode) {
+                          case CORAL -> superStructure.coralPreIntake();
+                          case ALGAE -> superStructure.algaeStow();
+                        })
+                .withName("pre-intake, algae stow"));
 
     driverController
         .a()
