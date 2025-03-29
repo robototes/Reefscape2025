@@ -152,7 +152,7 @@ private static final Pose2d BRANCH_B_L =
     }
 
     // sets the point for the path to go to
-    List<Waypoint> waypointsPoeses = PathPlannerPath.waypointsFromPoses(robotPose,branchPose);
+    List<Waypoint> waypointsPoeses = PathPlannerPath.waypointsFromPoses(robotPose, new Pose2d(branchPose.getX(), branchPose.getY(), branchPose.getRotation()));
     // creates path
     PathPlannerPath path =
         new PathPlannerPath(
