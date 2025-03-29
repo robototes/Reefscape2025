@@ -36,19 +36,9 @@ public class AutonomousField {
     var autonomousField =
         new AutonomousField(() -> speedMultiplier.getDouble(DEFAULT_PLAYBACK_SPEED));
 
-    /*var watchdog =
-        new Watchdog(0.005, () -> DriverStation.reportWarning("auto field loop overrun", false));
     addPeriodic.accept(
-        () -> {
-          watchdog.reset();
-          autonomousField.update(AutoLogic.getSelectedAutoName());
-          watchdog.addEpoch("AutonomousField.update()");
-          watchdog.disable();
-          if (watchdog.isExpired()) {
-            watchdog.printEpochs();
-          }
-        },
-        UPDATE_RATE); */
+        () -> autonomousField.update(AutoLogic.getSelectedAutoName()),
+        UPDATE_RATE);
     tab.add("Selected auto", autonomousField.getField())
         .withPosition(0, 0)
         // .withPosition(columnIndex, rowIndex)
