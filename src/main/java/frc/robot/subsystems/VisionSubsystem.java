@@ -227,18 +227,13 @@ public class VisionSubsystem extends SubsystemBase {
   // configured for 2025 reefscape
   private static boolean BadAprilTagDetector(PhotonPipelineResult r) {
     boolean isRed = DriverStation.getAlliance().equals(Optional.of(DriverStation.Alliance.Red));
-    if (isRed) {
-      for (var t : r.getTargets()) {
-        if (0 < t.fiducialId && t.fiducialId < 6 || 11 < t.fiducialId && t.fiducialId < 23) {
-          return true;
-        }
-      }
-    }
-    if (!isRed) {
-      for (var t : r.getTargets()) {
-        if (0 < t.fiducialId && t.fiducialId < 17) {
-          return true;
-        }
+    boolean isBlue = DriverStation.getAlliance().equals(Optional.of(DriverStation.Alliance.Blue));
+    for (var t : r.getTargets()) {
+      boolean isRedReef = 6 <= t.getFiducialId() && t.getFiducialId() <= 11;
+      boolean isBlueReef = 17 <= t.getFiducialId() && t.getFiducialId() <= 22;
+      boolean isValid = isBlueReef && !isRed || isRedReef && !isBlue;
+      if (!isValid) {
+        return true;
       }
     }
     return false;
