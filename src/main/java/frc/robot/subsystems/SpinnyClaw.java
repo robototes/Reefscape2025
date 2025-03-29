@@ -22,9 +22,10 @@ import java.util.function.Supplier;
 public class SpinnyClaw extends SubsystemBase {
   public static final double CORAL_INTAKE_SPEED = -6;
   public static final double CORAL_EXTAKE_SPEED = 5;
+  public static final double CORAL_L1_EXTAKE_SPEED = 2.5;
   public static final double ALGAE_INTAKE_SPEED = -3;
   public static final double ALGAE_GRIP_INTAKE_SPEED = -2.5;
-  public static final double ALGAE_EXTAKE_SPEED = 12;
+  public static final double ALGAE_EXTAKE_SPEED = 14;
   public static final double ALGAE_PROCESSOR_EXTAKE_SPEED = 8;
   public static final double ALGAE_FLING_SPEED = 10;
   // Remove once we implement PID speed
@@ -32,6 +33,7 @@ public class SpinnyClaw extends SubsystemBase {
 
   // TalonFX
   private final TalonFX motor;
+  // ArmSensor
   private final ArmSensor armSensor;
 
   // alerts
@@ -137,6 +139,10 @@ public class SpinnyClaw extends SubsystemBase {
 
   public Command coralHoldExtakePower() {
     return holdPower(CORAL_EXTAKE_SPEED).withName("Hold extake power");
+  }
+
+  public Command coralLevelOneHoldExtakePower() {
+    return holdPower(CORAL_L1_EXTAKE_SPEED).withName("Level 1 hold extake power");
   }
 
   // algae stuff

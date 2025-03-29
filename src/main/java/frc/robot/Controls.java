@@ -20,6 +20,7 @@ import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.GroundArm;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoAlign;
 import frc.robot.util.AlgaeIntakeHeight;
@@ -87,6 +88,8 @@ public class Controls {
     configureSpinnyClawBindings();
     configureElevatorLEDBindings();
     configureAutoAlignBindings();
+    configureGroundSpinnyBindings();
+    configureGroundArmBindings();
   }
 
   private Trigger connected(CommandXboxController controller) {
@@ -287,7 +290,16 @@ public class Controls {
                           case ALGAE -> superStructure.algaeStow();
                         })
                 .withName("Stow"));
-    operatorController.povDown().onTrue(superStructure.coralPreIntake().withName("pre-intake"));
+    operatorController
+        .povDown()
+        .onTrue(
+            Commands.deferredProxy(
+                    () ->
+                        switch (scoringMode) {
+                          case CORAL -> superStructure.coralPreIntake();
+                          case ALGAE -> superStructure.algaeStow();
+                        })
+                .withName("pre-intake, algae stow"));
 
     driverController
         .a()
@@ -535,9 +547,7 @@ public class Controls {
     connected(climbTestController)
         .and(climbTestController.start())
         .onTrue(s.climbPivotSubsystem.advanceClimbTarget());
-    // operatorController
-    //     .start()
-    //     .onTrue(s.climbPivotSubsystem.advanceClimbTarget());
+    operatorController.start().onTrue(s.climbPivotSubsystem.advanceClimbTarget());
     operatorController
         .rightTrigger(0.1)
         .whileTrue(
@@ -648,6 +658,24 @@ public class Controls {
                 () -> -driverController.getLeftY() * MaxSpeed,
                 () -> -driverController.getLeftX() * MaxSpeed));
     driverController.rightTrigger().whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
+  }
+
+  private void configureGroundSpinnyBindings() {
+    if (s.groundSpinny == null) {
+      return;
+    }
+    s.groundSpinny.setDefaultCommand(s.groundSpinny.holdIntakePower());
+  }
+
+  private void configureGroundArmBindings() {
+    if (s.groundArm == null) {
+      return;
+    }
+    s.groundArm.setDefaultCommand(
+        s.groundArm
+            .moveToPosition(GroundArm.STOWED_POSITION)
+            .andThen(Commands.idle())
+            .withName("Ground stowed position wait"));
   }
 
   public void vibrateDriveController(double vibration) {
