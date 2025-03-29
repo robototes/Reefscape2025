@@ -5,6 +5,9 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -14,9 +17,20 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 
 public class GroundArm extends SubsystemBase {
-  public static final double STOWED_POSITION = 0.25;
-  public static final double GRAB_POSITION = -0.25;
+  private final double ARMPIVOT_KP = 1;
+  private final double ARMPIVOT_KI = 0;
+  private final double ARMPIVOT_KD = 0;
+  private final double ARMPIVOT_KS = 0;
+  private final double ARMPIVOT_KV = 0;
+  private final double ARMPIVOT_KG = 0;
+  private final double ARMPIVOT_KA = 0;
+  public static final double STOWED_POSITION = 0.5;
+  public static final double GRAB_POSITION = 0;
   public static final double POS_TOLERANCE = Units.degreesToRotations(5);
+  //ratio from motor to output
+  private static final double ARM_RATIO = 1 / 60;
+
+
 
   // MotionMagic voltage
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
@@ -34,17 +48,42 @@ public class GroundArm extends SubsystemBase {
 
   // TalonFX config
   public void configMotors() {
-    TalonFXConfiguration configuration = new TalonFXConfiguration();
     TalonFXConfigurator cfg = motor.getConfigurator();
-    var currentLimits = new CurrentLimitsConfigs();
-    configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    cfg.apply(configuration);
-    // enabling stator current limits
-    currentLimits.StatorCurrentLimit = 40; // subject to change
-    currentLimits.StatorCurrentLimitEnable = true;
-    currentLimits.SupplyCurrentLimit = 20; // subject to change
-    currentLimits.SupplyCurrentLimitEnable = true;
-    cfg.apply(currentLimits);
+    var talonFXConfiguration = new TalonFXConfiguration();
+
+    talonFXConfiguration.Feedback.FeedbackRemoteSensorID = Hardware.ARM_PIVOT_CANDI_ID;
+    talonFXConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANdiPWM1;
+    talonFXConfiguration.Feedback.RotorToSensorRatio = 1 / ARM_RATIO;
+
+    talonFXConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+    // enabling current limits
+    talonFXConfiguration.CurrentLimits.StatorCurrentLimit = 20; // starting low for testing
+    talonFXConfiguration.CurrentLimits.StatorCurrentLimitEnable = true;
+    talonFXConfiguration.CurrentLimits.SupplyCurrentLimit = 10; // starting low for testing
+    talonFXConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+    // PID
+    // set slot 0 gains
+    talonFXConfiguration.Slot0.kS = ARMPIVOT_KS;
+    talonFXConfiguration.Slot0.kV = ARMPIVOT_KV;
+    talonFXConfiguration.Slot0.kA = ARMPIVOT_KA;
+    talonFXConfiguration.Slot0.kP = ARMPIVOT_KP;
+    talonFXConfiguration.Slot0.kI = ARMPIVOT_KI;
+    talonFXConfiguration.Slot0.kD = ARMPIVOT_KD;
+    talonFXConfiguration.Slot0.kG = ARMPIVOT_KG;
+    talonFXConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+
+    // set Motion Magic settings in rps not mechanism units
+    talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity =
+        80; // Target cruise velocity of 80 rps
+    talonFXConfiguration.MotionMagic.MotionMagicAcceleration =
+        160; // Target acceleration of 160 rps/s (0.5 seconds)
+    talonFXConfiguration.MotionMagic.MotionMagicJerk =
+        1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
+
+    cfg.apply(talonFXConfiguration);
   }
 
   // position

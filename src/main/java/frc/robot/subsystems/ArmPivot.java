@@ -58,6 +58,7 @@ public class ArmPivot extends SubsystemBase {
   public static final double PLACEHOLDER_CORAL_WEIGHT_KG = 0.8;
   // Constant for gear ratio (the power that one motor gives to gear)
   private static final double ARM_RATIO = (12.0 / 60.0) * (20.0 / 60.0) * (18.0 / 48.0);
+  
   // create a Motion Magic request, voltage output
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
 
