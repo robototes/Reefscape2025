@@ -460,7 +460,11 @@ public class Controls {
                 .ignoringDisable(true)
                 .withName("Reset elevator zero"));
     operatorController.rightBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
-    operatorController.rightTrigger(0.1).onTrue(Commands.sequence(Commands.print("Aligning..."), AutoAlign.autoPathAlignSim(s.drivebaseSubsystem)));
+    operatorController
+        .rightTrigger(0.1)
+        .onTrue(
+            Commands.sequence(
+                Commands.print("Aligning..."), AutoAlign.autoPathAlignSim(s.drivebaseSubsystem)));
     var elevatorCoastButton =
         Shuffleboard.getTab("Controls")
             .add("Elevator Coast Mode", false)

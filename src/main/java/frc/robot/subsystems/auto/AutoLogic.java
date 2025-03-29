@@ -7,7 +7,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -263,15 +262,11 @@ public class AutoLogic {
         .withName(autoName);
   }
 
- 
-
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
-      return 
-        AutoAlign.autoAlign(s.drivebaseSubsystem).withDeadline(
-        r.superStructure
-          .coralLevelFour(() -> AutoAlign.readyToScore()))
+      return AutoAlign.autoAlign(s.drivebaseSubsystem)
+          .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
           .withName("scoreCommand");
     }
     return Commands.none().withName("scoreCommand");
@@ -280,15 +275,14 @@ public class AutoLogic {
   public static Command intakeCommand() {
 
     if (r.superStructure != null) {
-  
+
       if (ARMSENSOR_ENABLED) {
-       
-      
-      return Commands.sequence(
-              r.superStructure.coralPreIntake(), 
-              r.superStructure.coralIntake(),
-              s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_UP))
-          .withName("intake");
+
+        return Commands.sequence(
+                r.superStructure.coralPreIntake(),
+                r.superStructure.coralIntake(),
+                s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_UP))
+            .withName("intake");
       }
     }
     return Commands.none().withName("intake");
@@ -297,13 +291,12 @@ public class AutoLogic {
   public static Command autoBranchAlign() {
     return AutoAlign.autoAlign(s.drivebaseSubsystem).withName("autoAlign");
   }
+
   public static Command isCollected() {
     if (ARMSENSOR_ENABLED && r.sensors.armSensor != null) {
 
-    return Commands.waitUntil(r.sensors.armSensor.inTrough()).withName("isCollected");
+      return Commands.waitUntil(r.sensors.armSensor.inTrough()).withName("isCollected");
+    }
+    return Commands.none().withName("isCollected");
   }
-  return Commands.none().withName("isCollected");
-
-  }
-
 }
