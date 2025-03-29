@@ -6,7 +6,6 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.Alert;
@@ -36,19 +35,19 @@ public class ClimbPivot extends SubsystemBase {
   private final DigitalInput sensor;
   private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Climb");
 
-  private final double BOOLEAN_TOLERANCE = 0.05;
-  private final double STOWED_PRESET = -0.450;
-  private final double CLIMB_OUT_PRESET =
-      -0.18 - BOOLEAN_TOLERANCE; // Subtract since we approach from 0 -> -infty
-  private final double CLIMBED_PRESET =
-      -0.318 + BOOLEAN_TOLERANCE; // Add sicne we approach from -infty -> 0
+  private final double STOWED_MAX_PRESET = -0.450;
+  private final double STOWED_MIN_PRESET = -0.459;
+  private final double CLIMB_OUT_MAX_PRESET = -0.14;
+  private final double CLIMB_OUT_MIN_PRESET = -0.21;
+  private final double CLIMBED_MAX_PRESET = -0.325;
+  private final double CLIMBED_MIN_PRESET = -0.333;
   private final double FORWARD_SOFT_STOP = -0.07;
   private final double REVERSE_SOFT_STOP = -78;
-  private final double CLIMB_OUT_SPEED = 0.6;
+  private final double CLIMB_OUT_SPEED = 1.0;
   private final double CLIMB_HOLD_STOWED = -0.001;
   private final double CLIMB_HOLD_CLIMBOUT = -0.0;
   private final double CLIMB_HOLD_CLIMBED = -0.0705;
-  private final double CLIMB_IN_SPEED = -0.3;
+  private final double CLIMB_IN_SPEED = -0.75;
 
   // relative to eachother, likely not accurately zero'ed when obtained.x
   private static final double MIN_ROTOR_POSITION = -50.45;
@@ -60,7 +59,8 @@ public class ClimbPivot extends SubsystemBase {
   private boolean isStowed = true;
 
   private TargetPositions selectedPos = TargetPositions.STOWED;
-  private double targetPos = STOWED_PRESET;
+  private double maxTargetPos = STOWED_MAX_PRESET;
+  private double minTargetPos = STOWED_MIN_PRESET;
   private double holdSpeed = CLIMB_HOLD_STOWED;
   private boolean moveComplete = true;
   private boolean inTolerance = true;
@@ -133,19 +133,22 @@ public class ClimbPivot extends SubsystemBase {
               switch (selectedPos) {
                 case STOWED -> {
                   selectedPos = TargetPositions.CLIMB_OUT;
-                  targetPos = CLIMB_OUT_PRESET;
+                  maxTargetPos = CLIMB_OUT_MAX_PRESET;
+                  minTargetPos = CLIMB_OUT_MIN_PRESET;
                   holdSpeed = CLIMB_HOLD_STOWED;
                   moveComplete = false;
                 }
                 case CLIMB_OUT -> {
                   selectedPos = TargetPositions.CLIMBED;
-                  targetPos = CLIMBED_PRESET;
+                  maxTargetPos = CLIMBED_MAX_PRESET;
+                  minTargetPos = CLIMBED_MIN_PRESET;
                   holdSpeed = CLIMB_HOLD_CLIMBOUT;
                   moveComplete = false;
                 }
                 case CLIMBED -> {
                   selectedPos = TargetPositions.STOWED; // Commented out due to ratchet
-                  targetPos = STOWED_PRESET;
+                  maxTargetPos = STOWED_MAX_PRESET;
+                  minTargetPos = STOWED_MIN_PRESET;
                   holdSpeed = CLIMB_HOLD_CLIMBED;
                   moveComplete = false;
                 }
@@ -205,7 +208,7 @@ public class ClimbPivot extends SubsystemBase {
             }
           }
         });
-    shuffleboardTab.addDouble("targetPos", () -> targetPos);
+    shuffleboardTab.addDouble("targetPos", () -> maxTargetPos);
     shuffleboardTab
         .addString(
             "Where moving?",
@@ -242,17 +245,17 @@ public class ClimbPivot extends SubsystemBase {
   public void periodic() {
     double currentPos = getClimbPosition();
 
-    if (MathUtil.isNear(currentPos, CLIMB_OUT_PRESET, BOOLEAN_TOLERANCE)) {
+    if (CLIMB_OUT_MIN_PRESET <= currentPos && currentPos <= CLIMB_OUT_MAX_PRESET) {
       isClimbOut = true;
     } else {
       isClimbOut = false;
     }
-    if (MathUtil.isNear(currentPos, STOWED_PRESET, BOOLEAN_TOLERANCE)) {
+    if (STOWED_MIN_PRESET <= currentPos && currentPos <= STOWED_MAX_PRESET) {
       isStowed = true;
     } else {
       isStowed = false;
     }
-    if (MathUtil.isNear(targetPos, getClimbPosition(), BOOLEAN_TOLERANCE)) {
+    if (minTargetPos <= currentPos && currentPos <= maxTargetPos) {
       inTolerance = true;
       moveComplete = true;
     } else {
@@ -299,8 +302,8 @@ public class ClimbPivot extends SubsystemBase {
             setSpeed = 0;
           } else {
             if (!moveComplete) {
-              if (targetPos > getClimbPosition()) {
-                motorLeft.set(CLIMB_OUT_PRESET);
+              if (minTargetPos > getClimbPosition()) {
+                motorLeft.set(CLIMB_OUT_SPEED);
                 setSpeed = CLIMB_OUT_SPEED;
               } else {
                 motorLeft.set(CLIMB_IN_SPEED);
