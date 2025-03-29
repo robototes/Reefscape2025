@@ -126,6 +126,9 @@ public class Robot extends TimedRobot {
       subsystems.climbPivotSubsystem.brakeMotors();
       subsystems.climbPivotSubsystem.moveCompleteTrue();
     }
+    if (subsystems.elevatorSubsystem != null) {
+      subsystems.elevatorSubsystem.brakeMotors();
+    }
   }
 
   @Override

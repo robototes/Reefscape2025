@@ -51,16 +51,15 @@ public class SuperStructure {
     }
   }
 
-  public Command coralLevelFour(
-      BooleanSupplier score) { // when we change L4, add repeating score sequence
+  public Command coralLevelFour(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
                     Commands.print("Pre position"),
                     elevator
                         .setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS)
-                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
+                        .deadlineFor(
+                            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP).until(score)),
                     spinnyClaw.stop())
-                .until(score)
                 .withTimeout(0.7),
             repeatPrescoreScoreSwing(
                 Commands.sequence(
@@ -188,8 +187,6 @@ public class SuperStructure {
                 spinnyClaw.algaeIntakePower(),
                 armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)))
-        //     .until(armSensor.inClaw()), // add if statement to check armsensor enabled
-        // algaeStow())
         .withName("Algae L2-L3 Intake");
   }
 
@@ -199,8 +196,6 @@ public class SuperStructure {
                 spinnyClaw.algaeIntakePower(),
                 armPivot.moveToPosition(ArmPivot.ALGAE_GROUND_INTAKE),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_GROUND_INTAKE)))
-        //     .until(armSensor.inClaw()), // add if statement to check armsensor enabled
-        // algaeStow())
         .withName("Algae Ground Intake");
   }
 

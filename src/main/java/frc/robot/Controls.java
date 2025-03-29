@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -19,6 +20,7 @@ import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.GroundArm;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoAlign;
 import frc.robot.util.AlgaeIntakeHeight;
@@ -43,7 +45,7 @@ public class Controls {
   private final Sensors sensors;
   private final SuperStructure superStructure;
 
-  private BranchHeight branchHeight = BranchHeight.LEVEL_FOUR;
+  private BranchHeight branchHeight = BranchHeight.CORAL_LEVEL_FOUR;
   private ScoringMode scoringMode = ScoringMode.CORAL;
   private AlgaeIntakeHeight algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
 
@@ -86,6 +88,8 @@ public class Controls {
     configureSpinnyClawBindings();
     configureElevatorLEDBindings();
     configureAutoAlignBindings();
+    configureGroundSpinnyBindings();
+    configureGroundArmBindings();
   }
 
   private Trigger connected(CommandXboxController controller) {
@@ -180,54 +184,77 @@ public class Controls {
     // operator start button used for climb - bound in climb bindings
     operatorController
         .y()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_FOUR).withName("level 4"))
         .onTrue(
-            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
-                .withName("algae level 3-4"));
+            Commands.runOnce(
+                    () -> {
+                      branchHeight = BranchHeight.CORAL_LEVEL_FOUR;
+                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
+                    })
+                .withName("coral level 4, algae level 3-4"));
     operatorController
         .x()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"))
         .onTrue(
-            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
-                .withName("algae level 2-3"));
+            Commands.runOnce(
+                    () -> {
+                      branchHeight = BranchHeight.CORAL_LEVEL_THREE;
+                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;
+                    })
+                .withName("coral level 3, algae level 2-3"));
     operatorController
         .b()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO).withName("level 2"))
         .onTrue(
-            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
-                .withName("algae level 2-3"));
+            Commands.runOnce(
+                    () -> {
+                      branchHeight = BranchHeight.CORAL_LEVEL_TWO;
+                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;
+                    })
+                .withName("coral level 2, algae level 2-3"));
     operatorController
         .a()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE).withName("level 1"))
         .onTrue(
-            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND)
-                .withName("algae ground level"));
-
+            Commands.runOnce(
+                    () -> {
+                      branchHeight = BranchHeight.CORAL_LEVEL_ONE;
+                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;
+                    })
+                .withName("coral level 1, algae ground level"));
     ;
-    driverController
+    driverController // reuse for others
         .povUp()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_FOUR).withName("level 4"))
         .onTrue(
-            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
-                .withName("algae level 3-4"));
+            Commands.runOnce(
+                    () -> {
+                      branchHeight = BranchHeight.CORAL_LEVEL_FOUR;
+                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
+                    })
+                .withName("coral level 4, algae level 3-4"));
     driverController
         .povLeft()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_THREE).withName("level 3"))
         .onTrue(
-            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
-                .withName("algae level 2-3"));
+            Commands.runOnce(
+                    () -> {
+                      branchHeight = BranchHeight.CORAL_LEVEL_THREE;
+                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;
+                    })
+                .withName("coral level 3, algae level 2-3"));
     driverController
         .povRight()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_TWO).withName("level 2"))
         .onTrue(
-            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
-                .withName("algae level 2-3"));
+            Commands.runOnce(
+                    () -> {
+                      branchHeight = BranchHeight.CORAL_LEVEL_TWO;
+                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;
+                    })
+                .withName("coral level 2, algae level 2-3"));
     driverController
         .povDown()
-        .onTrue(Commands.runOnce(() -> branchHeight = BranchHeight.LEVEL_ONE).withName("level 1"))
         .onTrue(
-            Commands.runOnce(() -> algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND)
-                .withName("algae ground level"));
+            Commands.runOnce(
+                    () -> {
+                      branchHeight = BranchHeight.CORAL_LEVEL_ONE;
+                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;
+                    })
+                .withName("coral level 1, algae ground level"));
     driverController
         .leftTrigger()
         .onTrue(
@@ -269,19 +296,21 @@ public class Controls {
         .a()
         .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
         .onTrue(
-            Commands.deferredProxy(
-                    () ->
-                        switch (scoringMode) { // may need a switch for coral intake with coral
-                            // ground intake when implemented
-                          case CORAL -> superStructure
-                              .coralIntake()
-                              .alongWith(
-                                  s.elevatorLEDSubsystem
-                                      .tripleBlink(255, 92, 0, "Orange - Manual Coral Intake")
-                                      .asProxy())
-                              .withName("Manual Coral Intake");
-                          case ALGAE -> getAlgaeIntakeCommand();
-                        })
+            Commands.runOnce(
+                    () -> {
+                      Command intakeCommand =
+                          switch (scoringMode) {
+                            case CORAL -> superStructure
+                                .coralIntake()
+                                .alongWith(
+                                    s.elevatorLEDSubsystem
+                                        .tripleBlink(255, 92, 0, "Orange - Manual Coral Intake")
+                                        .asProxy())
+                                .withName("Manual Coral Intake");
+                            case ALGAE -> getAlgaeIntakeCommand();
+                          };
+                      CommandScheduler.getInstance().schedule(intakeCommand);
+                    })
                 .withName("Driver Intake"));
     if (sensors.armSensor != null) {
       sensors
@@ -301,18 +330,20 @@ public class Controls {
 
     driverController
         .rightTrigger()
-        .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
         .onTrue(
-            Commands.deferredProxy(
-                    () ->
-                        switch (scoringMode) {
-                          case CORAL -> getCoralBranchHeightCommand();
-                          case ALGAE -> Commands.sequence(
-                                  superStructure.algaeNetScore(driverController.rightBumper()),
-                                  Commands.waitSeconds(0.7),
-                                  getAlgaeIntakeCommand())
-                              .withName("Algae score then intake");
-                        })
+            Commands.runOnce(
+                    () -> {
+                      Command scoreCommand =
+                          switch (scoringMode) {
+                            case CORAL -> getCoralBranchHeightCommand();
+                            case ALGAE -> Commands.sequence(
+                                    superStructure.algaeNetScore(driverController.rightBumper()),
+                                    Commands.waitSeconds(0.7),
+                                    getAlgaeIntakeCommand())
+                                .withName("Algae score then intake");
+                          };
+                      CommandScheduler.getInstance().schedule(scoreCommand);
+                    })
                 .withName("score"));
   }
 
@@ -326,10 +357,10 @@ public class Controls {
 
   private Command getCoralBranchHeightCommand() {
     return switch (branchHeight) {
-      case LEVEL_FOUR -> superStructure.coralLevelFour(driverController.rightBumper());
-      case LEVEL_THREE -> superStructure.coralLevelThree(driverController.rightBumper());
-      case LEVEL_TWO -> superStructure.coralLevelTwo(driverController.rightBumper());
-      case LEVEL_ONE -> superStructure.coralLevelOne(driverController.rightBumper());
+      case CORAL_LEVEL_FOUR -> superStructure.coralLevelFour(driverController.rightBumper());
+      case CORAL_LEVEL_THREE -> superStructure.coralLevelThree(driverController.rightBumper());
+      case CORAL_LEVEL_TWO -> superStructure.coralLevelTwo(driverController.rightBumper());
+      case CORAL_LEVEL_ONE -> superStructure.coralLevelOne(driverController.rightBumper());
     };
   }
 
@@ -421,6 +452,13 @@ public class Controls {
                 .withName("Reset elevator zero"));
     operatorController.rightBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
     operatorController.rightTrigger(0.1).onTrue(Commands.sequence(Commands.print("Aligning..."), AutoAlign.autoPathAlignSim(s.drivebaseSubsystem)));
+    var elevatorCoastButton =
+        Shuffleboard.getTab("Controls")
+            .add("Elevator Coast Mode", false)
+            .withWidget(BuiltInWidgets.kToggleButton)
+            .getEntry();
+    new Trigger(() -> elevatorCoastButton.getBoolean(false))
+        .whileTrue(s.elevatorSubsystem.holdCoastMode());
   }
 
   private void configureArmPivotBindings() {
@@ -490,30 +528,25 @@ public class Controls {
       return;
     }
 
-    Command setClimbLEDs;
     if (s.elevatorLEDSubsystem != null) {
-      setClimbLEDs = s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
-    } else {
-      setClimbLEDs = Commands.none();
+      Command setClimbLEDs = s.elevatorLEDSubsystem.pulse(0, 0, 255, "Blue - Climb Extended");
+      s.climbPivotSubsystem.isClimbing().whileTrue(setClimbLEDs);
     }
 
-    s.climbPivotSubsystem.setDefaultCommand(s.climbPivotSubsystem.advanceClimbCheck());
+    s.climbPivotSubsystem.setDefaultCommand(
+        s.climbPivotSubsystem.advanceClimbCheck().withName("Advance Climb Check"));
 
     connected(climbTestController)
         .and(climbTestController.start())
-        .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
-    // operatorController
-    //     .start()
-    //     .onTrue(s.climbPivotSubsystem.advanceClimbTarget(setClimbLEDs.asProxy()));
+        .onTrue(s.climbPivotSubsystem.advanceClimbTarget());
+    operatorController.start().onTrue(s.climbPivotSubsystem.advanceClimbTarget());
     operatorController
         .rightTrigger(0.1)
         .whileTrue(
             s.climbPivotSubsystem
                 .moveClimbManual(
                     () ->
-                        0.15
-                            * -MathUtil.applyDeadband(
-                                operatorController.getRightTriggerAxis(), 0.1))
+                        0.3 * MathUtil.applyDeadband(operatorController.getRightTriggerAxis(), 0.1))
                 .withName("Climb Manual Control"));
     connected(climbTestController)
         .and(climbTestController.rightTrigger(0.1))
@@ -521,8 +554,8 @@ public class Controls {
             s.climbPivotSubsystem
                 .moveClimbManual(
                     () ->
-                        0.2
-                            * -MathUtil.applyDeadband(
+                        0.4
+                            * MathUtil.applyDeadband(
                                 climbTestController.getRightTriggerAxis(), 0.1))
                 .withName("Climb Manual Control"));
     connected(climbTestController)
@@ -531,7 +564,8 @@ public class Controls {
             s.climbPivotSubsystem
                 .moveClimbManual(
                     () ->
-                        0.2 * MathUtil.applyDeadband(climbTestController.getLeftTriggerAxis(), 0.1))
+                        -0.4
+                            * MathUtil.applyDeadband(climbTestController.getLeftTriggerAxis(), 0.1))
                 .withName("Climb Manual Control"));
     var climbCoastButton =
         Shuffleboard.getTab("Controls")
@@ -559,8 +593,7 @@ public class Controls {
     connected(armPivotSpinnyClawController)
         .and(armPivotSpinnyClawController.rightTrigger())
         .whileTrue(s.spinnyClawSubsytem.algaeGripIntakePower());
-    driverController // not totally sure this'll work but it might since we said to just auto retry
-        // scoring in the commands, so it should be okay...
+    driverController
         .rightBumper()
         .whileTrue(
             Commands.deferredProxy(
@@ -617,6 +650,24 @@ public class Controls {
                 () -> -driverController.getLeftY() * MaxSpeed,
                 () -> -driverController.getLeftX() * MaxSpeed));
     driverController.rightTrigger().whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
+  }
+
+  private void configureGroundSpinnyBindings() {
+    if (s.groundSpinny == null) {
+      return;
+    }
+    s.groundSpinny.setDefaultCommand(s.groundSpinny.holdIntakePower());
+  }
+
+  private void configureGroundArmBindings() {
+    if (s.groundArm == null) {
+      return;
+    }
+    s.groundArm.setDefaultCommand(
+        s.groundArm
+            .moveToPosition(GroundArm.STOWED_POSITION)
+            .andThen(Commands.idle())
+            .withName("Ground stowed position wait"));
   }
 
   public void vibrateDriveController(double vibration) {
