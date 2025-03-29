@@ -163,12 +163,7 @@ public class Controls {
         .onTrue(
             s.drivebaseSubsystem
                 .runOnce(() -> s.drivebaseSubsystem.seedFieldCentric())
-                .withName("Reset gyro"))
-        .onTrue(
-            Commands.startEnd(
-            () -> driverController.setRumble(RumbleType.kBothRumble, 0.5),
-            () -> driverController.setRumble(RumbleType.kBothRumble, 0))
-            .withTimeout(0.3));
+                .withName("Reset gyro"));
           
     s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
     var swerveCoastButton =
@@ -254,33 +249,14 @@ public class Controls {
     operatorController
         .leftBumper()
         .onTrue(
-            Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE).withName("Algae Scoring Mode"))
-        .onTrue(
-            Commands.startEnd(
-                () -> operatorController.setRumble(RumbleType.kBothRumble, 0.5),
-                () -> operatorController.setRumble(RumbleType.kBothRumble, 0))
-            .withTimeout(0.3))
-        .onTrue(
-            Commands.startEnd(
-            () -> driverController.setRumble(RumbleType.kBothRumble, 0.5),
-            () -> driverController.setRumble(RumbleType.kBothRumble, 0))
-            .withTimeout(0.3));
+            Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE).withName("Algae Scoring Mode"));
 
     operatorController
         .leftTrigger()
         .onTrue(
             Commands.runOnce(() -> scoringMode = ScoringMode.CORAL).withName("Coral Scoring Mode"))
-        .onTrue(superStructure.coralPreIntake())
-        .onTrue(
-            Commands.startEnd(
-                () -> operatorController.setRumble(RumbleType.kBothRumble, 0.5),
-                () -> operatorController.setRumble(RumbleType.kBothRumble, 0))
-            .withTimeout(0.3))
-        .onTrue(
-            Commands.startEnd(
-            () -> driverController.setRumble(RumbleType.kBothRumble, 0.5),
-            () -> driverController.setRumble(RumbleType.kBothRumble, 0))
-            .withTimeout(0.3));
+        .onTrue(superStructure.coralPreIntake());
+
     operatorController
         .povLeft()
         .onTrue(
@@ -439,7 +415,7 @@ public class Controls {
         .back()
         .onTrue(
             Commands.parallel(
-                    s.elevatorSubsystem.resetPosZero(), //meow
+                    s.elevatorSubsystem.resetPosZero(),
                     Commands.startEnd(
                             () -> operatorController.setRumble(RumbleType.kBothRumble, 0.5),
                             () -> operatorController.setRumble(RumbleType.kBothRumble, 0))
