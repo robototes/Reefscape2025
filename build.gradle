@@ -88,7 +88,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    errorprone group: "com.google.errorprone", name:  "error_prone_core", version: "2.28.0"
+    errorprone group: "com.google.errorprone", name: "error_prone_core", version: "2.28.0"
 }
 
 test {
