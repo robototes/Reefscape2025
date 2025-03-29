@@ -36,9 +36,7 @@ public class AutonomousField {
     var autonomousField =
         new AutonomousField(() -> speedMultiplier.getDouble(DEFAULT_PLAYBACK_SPEED));
 
-    addPeriodic.accept(
-        () -> autonomousField.update(AutoLogic.getSelectedAutoName()),
-        UPDATE_RATE);
+    addPeriodic.accept(() -> autonomousField.update(AutoLogic.getSelectedAutoName()), UPDATE_RATE);
     tab.add("Selected auto", autonomousField.getField())
         .withPosition(0, 0)
         // .withPosition(columnIndex, rowIndex)
