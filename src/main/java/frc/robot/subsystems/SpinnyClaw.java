@@ -25,7 +25,7 @@ public class SpinnyClaw extends SubsystemBase {
   public static final double CORAL_L1_EXTAKE_SPEED = 2.5;
   public static final double ALGAE_INTAKE_SPEED = -3;
   public static final double ALGAE_GRIP_INTAKE_SPEED = -2.5;
-  public static final double ALGAE_EXTAKE_SPEED = 12;
+  public static final double ALGAE_EXTAKE_SPEED = 14;
   public static final double ALGAE_PROCESSOR_EXTAKE_SPEED = 8;
   public static final double ALGAE_FLING_SPEED = 10;
   // Remove once we implement PID speed

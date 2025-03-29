@@ -215,9 +215,9 @@ public class Controls {
             Commands.runOnce(
                     () -> {
                       branchHeight = BranchHeight.CORAL_LEVEL_ONE;
-                      // algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;
+                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;
                     })
-                .withName("coral level 1"));
+                .withName("coral level 1, algae ground level"));
     ;
     driverController // reuse for others
         .povUp()
@@ -252,9 +252,9 @@ public class Controls {
             Commands.runOnce(
                     () -> {
                       branchHeight = BranchHeight.CORAL_LEVEL_ONE;
-                      // algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;
+                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;
                     })
-                .withName("coral level 1"));
+                .withName("coral level 1, algae ground level"));
     driverController
         .leftTrigger()
         .onTrue(
@@ -290,7 +290,16 @@ public class Controls {
                           case ALGAE -> superStructure.algaeStow();
                         })
                 .withName("Stow"));
-    operatorController.povDown().onTrue(superStructure.coralPreIntake().withName("pre-intake"));
+    operatorController
+        .povDown()
+        .onTrue(
+            Commands.deferredProxy(
+                    () ->
+                        switch (scoringMode) {
+                          case CORAL -> superStructure.coralPreIntake();
+                          case ALGAE -> superStructure.algaeStow();
+                        })
+                .withName("pre-intake, algae stow"));
 
     driverController
         .a()
