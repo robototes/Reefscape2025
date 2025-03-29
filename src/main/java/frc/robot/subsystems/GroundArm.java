@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -27,10 +26,8 @@ public class GroundArm extends SubsystemBase {
   public static final double STOWED_POSITION = 0.5;
   public static final double GRAB_POSITION = 0;
   public static final double POS_TOLERANCE = Units.degreesToRotations(5);
-  //ratio from motor to output
+  // ratio from motor to output
   private static final double ARM_RATIO = 1 / 60;
-
-
 
   // MotionMagic voltage
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
@@ -76,12 +73,9 @@ public class GroundArm extends SubsystemBase {
     talonFXConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
     // set Motion Magic settings in rps not mechanism units
-    talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity =
-        80; // Target cruise velocity of 80 rps
-    talonFXConfiguration.MotionMagic.MotionMagicAcceleration =
-        160; // Target acceleration of 160 rps/s (0.5 seconds)
-    talonFXConfiguration.MotionMagic.MotionMagicJerk =
-        1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
+    talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity = 10;
+    talonFXConfiguration.MotionMagic.MotionMagicAcceleration = 20;
+    talonFXConfiguration.MotionMagic.MotionMagicJerk = 200;
 
     cfg.apply(talonFXConfiguration);
   }
@@ -120,5 +114,10 @@ public class GroundArm extends SubsystemBase {
     return setTargetPosition(position)
         .andThen(
             Commands.waitUntil(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE));
+  }
+
+  public Command stowedPosition() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'stowedPosition'");
   }
 }
