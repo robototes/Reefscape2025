@@ -212,9 +212,9 @@ public class Controls {
             Commands.runOnce(
                     () -> {
                       branchHeight = BranchHeight.CORAL_LEVEL_ONE;
-                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;
+                      // algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;
                     })
-                .withName("coral level 1, algae ground level"));
+                .withName("coral level 1"));
     ;
     driverController // reuse for others
         .povUp()
@@ -249,9 +249,9 @@ public class Controls {
             Commands.runOnce(
                     () -> {
                       branchHeight = BranchHeight.CORAL_LEVEL_ONE;
-                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;
+                      // algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;
                     })
-                .withName("coral level 1, algae ground level"));
+                .withName("coral level 1"));
     driverController
         .leftTrigger()
         .onTrue(
