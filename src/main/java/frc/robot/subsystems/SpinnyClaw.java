@@ -133,6 +133,7 @@ public class SpinnyClaw extends SubsystemBase {
   public Command coralExtakePower() {
     return setPower(CORAL_EXTAKE_SPEED).withName("Extake power");
   }
+
   public Command coralRejectPower() {
     return setPower(CORAL_REJECT_SPEED).withName("Extake power");
   }

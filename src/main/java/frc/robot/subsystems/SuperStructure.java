@@ -37,7 +37,9 @@ public class SuperStructure {
   private Command repeatPrescoreScoreSwing(Command command, BooleanSupplier score) {
     if (armSensor == null) {
       return Commands.sequence(
-          command, Commands.waitUntil(() -> !score.getAsBoolean()), Commands.waitUntil(inCoralPreScorePosition().or(score)));
+          command,
+          Commands.waitUntil(() -> !score.getAsBoolean()),
+          Commands.waitUntil(inCoralPreScorePosition().or(score)));
     } else {
       return command.repeatedly().onlyWhile(armSensor.inClaw());
     }
@@ -52,9 +54,7 @@ public class SuperStructure {
   }
 
   public Trigger inCoralPreScorePosition() {
-    return new Trigger(
-        () ->
-              armPivot.atPosition(ArmPivot.CORAL_PRESET_UP));
+    return new Trigger(() -> armPivot.atPosition(ArmPivot.CORAL_PRESET_UP));
   }
 
   public Command coralLevelFour(BooleanSupplier score) {
@@ -63,7 +63,10 @@ public class SuperStructure {
                     Commands.print("Pre position"),
                     elevator
                         .setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS)
-                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP).until(inCoralPreScorePosition().or(score))),
+                        .deadlineFor(
+                            armPivot
+                                .moveToPosition(ArmPivot.CORAL_PRESET_UP)
+                                .until(inCoralPreScorePosition().or(score))),
                     spinnyClaw.stop())
                 .withTimeout(0.7),
             repeatPrescoreScoreSwing(
@@ -86,7 +89,10 @@ public class SuperStructure {
             Commands.parallel(
                     elevator
                         .setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS)
-                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP).until(inCoralPreScorePosition().or(score))),
+                        .deadlineFor(
+                            armPivot
+                                .moveToPosition(ArmPivot.CORAL_PRESET_UP)
+                                .until(inCoralPreScorePosition().or(score))),
                     spinnyClaw.stop())
                 .withTimeout(0.5),
             repeatPrescoreScoreSwing(
@@ -106,7 +112,10 @@ public class SuperStructure {
             Commands.parallel(
                     elevator
                         .setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS)
-                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP).until(inCoralPreScorePosition().or(score))),
+                        .deadlineFor(
+                            armPivot
+                                .moveToPosition(ArmPivot.CORAL_PRESET_UP)
+                                .until(inCoralPreScorePosition().or(score))),
                     spinnyClaw.stop())
                 .withTimeout(0.5),
             repeatPrescoreScoreSwing(

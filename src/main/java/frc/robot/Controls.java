@@ -334,7 +334,7 @@ public class Controls {
                           .tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
                           .asProxy())
                   .withName("Automatic Intake"));
-    if (sensors.branchSensors != null) {
+      if (sensors.branchSensors != null) {
         sensors
             .branchSensors
             .withinScoreRange()
@@ -342,38 +342,39 @@ public class Controls {
             .and(RobotModeTriggers.teleop())
             .onTrue(
                 Commands.runOnce(
-                    () -> {
-                        switch (scoringMode) {
-                            case CORAL -> getCoralBranchHeightCommand();
-                            case ALGAE -> Commands.none();
-                        };
-                    })
-                    /*.alongWith(
-                        s.elevatorLEDSubsystem
-                            .tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
-                            .asProxy())*/
-                    .withName("Automatic Score"));
-    }
-
-    driverController
-        .rightTrigger()
-        .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      Command scoreCommand =
+                        () -> {
                           switch (scoringMode) {
                             case CORAL -> getCoralBranchHeightCommand();
-                            case ALGAE -> Commands.sequence(
-                                    superStructure.algaeNetScore(driverController.rightBumper()),
-                                    Commands.waitSeconds(0.7),
-                                    getAlgaeIntakeCommand())
-                                .withName("Algae score then intake");
-                          };
-                      CommandScheduler.getInstance().schedule(scoreCommand);
-                    })
-                .withName("score"));
-        }
+                            case ALGAE -> Commands.none();
+                          }
+                          ;
+                        })
+                    /*.alongWith(
+                    s.elevatorLEDSubsystem
+                        .tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
+                        .asProxy())*/
+                    .withName("Automatic Score"));
+      }
+
+      driverController
+          .rightTrigger()
+          .onTrue(
+              Commands.runOnce(
+                      () -> {
+                        Command scoreCommand =
+                            switch (scoringMode) {
+                              case CORAL -> getCoralBranchHeightCommand();
+                              case ALGAE -> Commands.sequence(
+                                      superStructure.algaeNetScore(driverController.rightBumper()),
+                                      Commands.waitSeconds(0.7),
+                                      getAlgaeIntakeCommand())
+                                  .withName("Algae score then intake");
+                            };
+                        CommandScheduler.getInstance().schedule(scoreCommand);
+                      })
+                  .withName("score"));
     }
+  }
 
   private Command getAlgaeIntakeCommand() {
     return switch (algaeIntakeHeight) {
