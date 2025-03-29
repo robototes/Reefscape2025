@@ -23,7 +23,7 @@ public class GroundArm extends SubsystemBase {
   private final double ARMPIVOT_KV = 0;
   private final double ARMPIVOT_KG = 0;
   private final double ARMPIVOT_KA = 0;
-  public static final double STOWED_POSITION = 0.5;
+  public static final double STOWED_POSITION = 0.476;
   public static final double GRAB_POSITION = 0;
   public static final double POS_TOLERANCE = Units.degreesToRotations(5);
   // ratio from motor to output
