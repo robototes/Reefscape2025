@@ -46,7 +46,7 @@ public class ArmPivot extends SubsystemBase {
   public static final double ALGAE_FLING = -0.08;
   public static final double ALGAE_STOWED = -0.05;
   public static final double ALGAE_PROCESSOR_SCORE = -0.05;
-  public static final double ALGAE_GROUND_INTAKE = -0.1;
+  public static final double ALGAE_GROUND_INTAKE = -0.07;
   public static final double ALGAE_NET_SCORE = 0.175; // untested - old value was 0.18
   public static final double CORAL_PRESET_STOWED = 0.125;
   public static final double CORAL_PRESET_OUT = 0;
@@ -58,6 +58,7 @@ public class ArmPivot extends SubsystemBase {
   public static final double PLACEHOLDER_CORAL_WEIGHT_KG = 0.8;
   // Constant for gear ratio (the power that one motor gives to gear)
   private static final double ARM_RATIO = (12.0 / 60.0) * (20.0 / 60.0) * (18.0 / 48.0);
+
   // create a Motion Magic request, voltage output
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
 
