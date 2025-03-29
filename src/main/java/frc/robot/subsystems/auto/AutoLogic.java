@@ -263,21 +263,13 @@ public class AutoLogic {
         .withName(autoName);
   }
 
-  private static boolean readyToScore() {
-    var speeds = s.drivebaseSubsystem.getState().Speeds;
-    var rotation = s.drivebaseSubsystem.getRotation3d();
-    return MathUtil.isNear(0, speeds.vxMetersPerSecond, 0.01)
-        && MathUtil.isNear(0, speeds.vyMetersPerSecond, 0.01)
-        && MathUtil.isNear(0, speeds.omegaRadiansPerSecond, Units.degreesToRadians(2))
-        && MathUtil.isNear(0, rotation.getX(), Units.degreesToRadians(2))
-        && MathUtil.isNear(0, rotation.getY(), Units.degreesToRadians(2));
-  }
+ 
 
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
       return Commands.sequence(AutoAlign.autoAlign(s.drivebaseSubsystem), r.superStructure
-          .coralLevelFour(() -> readyToScore()))
+          .coralLevelFour(() -> AutoAlign.readyToScore()))
           .withName("scoreCommand");
     }
     return Commands.none().withName("scoreCommand");

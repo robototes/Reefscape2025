@@ -7,15 +7,21 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Controls;
+import frc.robot.Robot;
+import frc.robot.Subsystems;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import java.util.Arrays;
 import java.util.List;
@@ -213,4 +219,14 @@ public class AutoAlign {
               .withTargetDirection(targetRotation);
         });
   }
+   public static boolean readyToScore() {
+    var speeds = AutoLogic.s.drivebaseSubsystem.getState().Speeds;
+    var rotation = AutoLogic.s.drivebaseSubsystem.getRotation3d();
+    return MathUtil.isNear(0, speeds.vxMetersPerSecond, 0.01)
+        && MathUtil.isNear(0, speeds.vyMetersPerSecond, 0.01)
+        && MathUtil.isNear(0, speeds.omegaRadiansPerSecond, Units.degreesToRadians(2))
+        && MathUtil.isNear(0, rotation.getX(), Units.degreesToRadians(2))
+        && MathUtil.isNear(0, rotation.getY(), Units.degreesToRadians(2)) && MathUtil.isNear(AutoLogic.s.drivebaseSubsystem.getState().Pose.getX(), getClosestBranch(AutoLogic.s.drivebaseSubsystem.getState().Pose).getX(), 0.01)
+        && MathUtil.isNear(0, rotation.getY(), Units.degreesToRadians(2)) && MathUtil.isNear(AutoLogic.s.drivebaseSubsystem.getState().Pose.getY(), getClosestBranch(AutoLogic.s.drivebaseSubsystem.getState().Pose).getY(), 0.01);
+    }
 }
