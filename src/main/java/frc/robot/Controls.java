@@ -335,6 +335,20 @@ public class Controls {
                           .tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
                           .asProxy())
                   .withName("Automatic Intake"));
+    if (sensors.branchSensors != null) {
+        sensors
+            .branchSensors
+            .withinScoreRange()
+            .and(superStructure.preScore())
+            .and(RobotModeTriggers.teleop())
+            .onTrue(
+                superStructure
+                    .coralIntake()
+                    .alongWith(
+                        s.elevatorLEDSubsystem
+                            .tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
+                            .asProxy())
+                    .withName("Automatic Intake"));
     }
 
     driverController
