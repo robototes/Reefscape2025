@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Millimeter;
 
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -15,8 +16,8 @@ public class ArmSensor {
 
   private final LaserCan mainSensor;
   // VALUES ARE IN METERS
-  private static final double TROUGH_LOWER_LIMIT = 0.18;
-  private static final double TROUGH_UPPER_LIMIT = 0.28;
+  private static final double TROUGH_LOWER_LIMIT = 0.10;
+  private static final double TROUGH_UPPER_LIMIT = 0.20;
   private static final double CLAW_LOWER_LIMIT = 0.01;
   private static final double CLAW_UPPER_LIMIT = 0.09;
 
@@ -54,11 +55,13 @@ public class ArmSensor {
               double distance = getSensorDistance().in(Meters);
               return distance > TROUGH_LOWER_LIMIT && distance < TROUGH_UPPER_LIMIT;
             })
-        .debounce(0.5);
+        .debounce(0.1);
   }
 
   public Trigger inClaw() {
-    return new Trigger(() -> booleanInClaw()).debounce(0.5);
+    return new Trigger(() -> booleanInClaw())
+        .debounce(0.1, DebounceType.kRising)
+        .debounce(0.25, DebounceType.kFalling);
   }
 
   public boolean booleanInClaw() {
