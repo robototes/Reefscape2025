@@ -535,9 +535,7 @@ public class Controls {
     connected(climbTestController)
         .and(climbTestController.start())
         .onTrue(s.climbPivotSubsystem.advanceClimbTarget());
-    // operatorController
-    //     .start()
-    //     .onTrue(s.climbPivotSubsystem.advanceClimbTarget());
+    operatorController.start().onTrue(s.climbPivotSubsystem.advanceClimbTarget());
     operatorController
         .rightTrigger(0.1)
         .whileTrue(
