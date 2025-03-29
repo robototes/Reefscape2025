@@ -127,11 +127,6 @@ public class AutoAlign {
             null,
             new GoalEndState(0.0, branchPose.getRotation()));
     path.preventFlipping = true;
-    // // path.flipPath(); Returns path except it's flipped
-    // // this unflips it
-    // if (!isBlue()) {
-    //   path = path.flipPath();
-    // }
 
     return AutoBuilder.followPath(path);
   }
@@ -161,11 +156,6 @@ public class AutoAlign {
             null,
             new GoalEndState(0.0, branchPose.getRotation()));
     path.preventFlipping = true;
-    // // path.flipPath(); Returns path except it's flipped
-    // // this unflips it
-    // if (!isBlue()) {
-    //   path = path.flipPath();
-    // }
 
     return AutoBuilder.followPath(path);
   }
