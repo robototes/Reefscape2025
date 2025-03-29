@@ -178,6 +178,8 @@ public class AutoAlign {
   }
 
   public static boolean readyToScore() {
+    var currentPose = AutoLogic.s.drivebaseSubsystem.getState().Pose;
+    var branchPose = getClosestBranch(currentPose);
     var speeds = AutoLogic.s.drivebaseSubsystem.getState().Speeds;
     var rotation = AutoLogic.s.drivebaseSubsystem.getRotation3d();
     return MathUtil.isNear(0, speeds.vxMetersPerSecond, 0.01)
@@ -185,14 +187,6 @@ public class AutoAlign {
         && MathUtil.isNear(0, speeds.omegaRadiansPerSecond, Units.degreesToRadians(2))
         && MathUtil.isNear(0, rotation.getX(), Units.degreesToRadians(2))
         && MathUtil.isNear(0, rotation.getY(), Units.degreesToRadians(2))
-        && MathUtil.isNear(
-            AutoLogic.s.drivebaseSubsystem.getState().Pose.getX(),
-            getClosestBranch(AutoLogic.s.drivebaseSubsystem.getState().Pose).getX(),
-            0.01)
-        && MathUtil.isNear(0, rotation.getY(), Units.degreesToRadians(2))
-        && MathUtil.isNear(
-            AutoLogic.s.drivebaseSubsystem.getState().Pose.getY(),
-            getClosestBranch(AutoLogic.s.drivebaseSubsystem.getState().Pose).getY(),
-            0.01);
+        && currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
   }
 }
