@@ -218,7 +218,6 @@ public class Controls {
                       algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;
                     })
                 .withName("coral level 1, algae ground level"));
-    ;
     driverController // reuse for others
         .povUp()
         .onTrue(
@@ -339,16 +338,21 @@ public class Controls {
         sensors
             .branchSensors
             .withinScoreRange()
-            .and(superStructure.preScore())
+            .and(superStructure.inCoralPreScorePosition())
             .and(RobotModeTriggers.teleop())
             .onTrue(
-                superStructure
-                    .coralIntake()
-                    .alongWith(
+                Commands.runOnce(
+                    () -> {
+                        switch (scoringMode) {
+                            case CORAL -> getCoralBranchHeightCommand();
+                            case ALGAE -> Commands.none();
+                        };
+                    })
+                    /*.alongWith(
                         s.elevatorLEDSubsystem
                             .tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
-                            .asProxy())
-                    .withName("Automatic Intake"));
+                            .asProxy())*/
+                    .withName("Automatic Score"));
     }
 
     driverController
@@ -368,7 +372,8 @@ public class Controls {
                       CommandScheduler.getInstance().schedule(scoreCommand);
                     })
                 .withName("score"));
-  }
+        }
+    }
 
   private Command getAlgaeIntakeCommand() {
     return switch (algaeIntakeHeight) {
