@@ -7,7 +7,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -23,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
-import frc.robot.subsystems.ArmPivot;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -172,6 +170,7 @@ public class AutoLogic {
     NamedCommands.registerCommand("scoreCommand", scoreCommand());
     NamedCommands.registerCommand("branchAlign", autoBranchAlign());
     NamedCommands.registerCommand("intake", intakeCommand());
+    NamedCommands.registerCommand("isCollected", isCollected());
   }
 
   // public Command getConditionalCommand(){}
@@ -262,22 +261,12 @@ public class AutoLogic {
         .withName(autoName);
   }
 
-  private static boolean readyToScore() {
-    var speeds = s.drivebaseSubsystem.getState().Speeds;
-    var rotation = s.drivebaseSubsystem.getRotation3d();
-    return MathUtil.isNear(0, speeds.vxMetersPerSecond, 0.01)
-        && MathUtil.isNear(0, speeds.vyMetersPerSecond, 0.01)
-        && MathUtil.isNear(0, speeds.omegaRadiansPerSecond, Units.degreesToRadians(2))
-        && MathUtil.isNear(0, rotation.getX(), Units.degreesToRadians(2))
-        && MathUtil.isNear(0, rotation.getY(), Units.degreesToRadians(2));
-  }
-
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
-      return r.superStructure
-          .coralLevelFour(() -> readyToScore())
-          .deadlineFor(AutoAlign.autoAlign(s.drivebaseSubsystem))
+      return AutoAlign.autoAlign(s.drivebaseSubsystem)
+          .repeatedly()
+          .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
           .withName("scoreCommand");
     }
     return Commands.none().withName("scoreCommand");
@@ -286,24 +275,25 @@ public class AutoLogic {
   public static Command intakeCommand() {
 
     if (r.superStructure != null) {
-      Command waitCommand;
+
       if (ARMSENSOR_ENABLED) {
-        waitCommand =
-            Commands.waitUntil(r.sensors.armSensor.inTrough().or(r.sensors.armSensor.inClaw()));
-      } else {
-        waitCommand = Commands.waitSeconds(0.5);
+
+        return Commands.sequence(r.superStructure.coralPreIntake(), r.superStructure.coralIntake())
+            .withName("intake");
       }
-      return Commands.sequence(
-              r.superStructure.coralPreIntake(),
-              waitCommand,
-              r.superStructure.coralIntake(),
-              s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_UP))
-          .withName("intake");
     }
     return Commands.none().withName("intake");
   }
 
   public static Command autoBranchAlign() {
     return AutoAlign.autoAlign(s.drivebaseSubsystem).withName("autoAlign");
+  }
+
+  public static Command isCollected() {
+    if (ARMSENSOR_ENABLED && r.sensors.armSensor != null) {
+
+      return Commands.waitUntil(r.sensors.armSensor.inTrough()).withName("isCollected");
+    }
+    return Commands.none().withName("isCollected");
   }
 }
