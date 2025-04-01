@@ -14,16 +14,17 @@ import frc.robot.Hardware;
 
 public class IntakeSensor{
 
-  private final LaserCan mainSensor;
+  private final LaserCan intakeSensor;
   // VALUES ARE IN METERS
   private static final double INTAKE_LOWER_LIMIT = 0.10;
   private static final double INTAKE_UPPER_LIMIT = 0.20;
 
 
   public IntakeSensor() {
-    mainSensor = new LaserCan(Hardware.MAIN_ARM_SENSOR);
-    ConfigureSensor(mainSensor);
-    ShuffleboardTab tab = Shuffleboard.getTab("ArmSensor");
+    intakeSensor = new LaserCan(Hardware.GROUND_INTAKE_SENSOR);
+    ConfigureSensor(intakeSensor);
+    ShuffleboardTab tab = Shuffleboard.getTab("IntakeSensor");
+    tab.addBoolean("In Intake", inIntake());
     tab.addDouble("Distance(m)", () -> getSensorDistance().in(Meters));
   }
 
