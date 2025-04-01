@@ -22,7 +22,6 @@ import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.GroundArm;
-import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoAlign;
 import frc.robot.util.AlgaeIntakeHeight;
 import frc.robot.util.BranchHeight;
