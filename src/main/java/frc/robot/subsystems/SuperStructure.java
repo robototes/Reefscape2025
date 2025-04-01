@@ -54,7 +54,6 @@ public class SuperStructure {
   public Command coralLevelFour(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
-                colorSet(0, 255, 0, "Green - Aligned With L4"),
                     Commands.print("Pre position"),
                     elevator
                         .setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS)
@@ -80,7 +79,6 @@ public class SuperStructure {
   public Command coralLevelThree(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
-                colorSet(0, 255, 0, "Green - Aligned With L3"),
                     elevator
                         .setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS)
                         .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
@@ -102,7 +100,6 @@ public class SuperStructure {
   public Command coralLevelTwo(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
-                colorSet(0, 255, 0, "Green - Aligned With L2"),
                     elevator
                         .setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS)
                         .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
@@ -124,7 +121,6 @@ public class SuperStructure {
   public Command coralLevelOne(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
-                colorSet(0, 255, 0, "Green - Aligned With L1"),
                     elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_ONE_POS),
                     armPivot.moveToPosition(ArmPivot.CORAL_PRESET_L1),
                     spinnyClaw.stop())
@@ -205,8 +201,6 @@ public class SuperStructure {
 
   public Command algaeStow() {
     return Commands.parallel(
-        colorSet(
-                170, 170, 170, "White - Stowed"), // ask jospeh aboyt this one cuz idk gang... meow
             elevator.setLevel(ElevatorSubsystem.ALGAE_STOWED),
             armPivot.moveToPosition(ArmPivot.ALGAE_STOWED),
             spinnyClaw.algaeGripIntakePower())
