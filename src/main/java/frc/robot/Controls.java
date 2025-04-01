@@ -657,7 +657,7 @@ public class Controls {
           .and(hasBeenZeroed.negate())
           .onTrue(
               s.elevatorLEDSubsystem
-                  .colorSet(120, 0, 0, "Red - Elevator Not Zeroed")
+                  .blink(120, 0, 0, "Red - Elevator Not Zeroed")
                   .ignoringDisable(true));
     }
     RobotModeTriggers.autonomous()
