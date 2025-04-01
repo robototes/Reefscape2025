@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -24,7 +26,7 @@ public class GroundArm extends SubsystemBase {
   private final double ARMPIVOT_KG = 0.048;
   private final double ARMPIVOT_KA = 0;
   public static final double STOWED_POSITION = 0.476;
-  public static final double GRAB_POSITION = 0;
+  public static final double GROUND_POSITION = 0;
   public static final double POS_TOLERANCE = Units.degreesToRotations(5);
   // ratio from motor rotations to output rotations
   private static final double ARM_RATIO = 60;
@@ -115,4 +117,15 @@ public class GroundArm extends SubsystemBase {
         .andThen(
             Commands.waitUntil(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE));
   }
+  public Command stop() {
+    return runOnce(()-> motor.stopMotor());
+
+  }
+  public Command grounIntake(BooleanSupplier inSensor){
+    return Commands.sequence(
+      moveToPosition(GROUND_POSITION),
+      Commands.idle()
+      ).until(inSensor);
+  }
+
 }

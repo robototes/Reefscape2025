@@ -687,6 +687,7 @@ public class Controls {
             .moveToPosition(GroundArm.STOWED_POSITION)
             .andThen(Commands.idle())
             .withName("Ground stowed position wait"));
+    climbTestController.leftBumper().onTrue(s.groundArm.grounIntake(sensors.intakeSensor.inIntake()));
   }
 
   private Command rumble(CommandXboxController controller, double vibration, Time duration) {
