@@ -39,14 +39,15 @@ public class AutoLogic {
   public static final double STAGE_ANGLE = 262;
 
   public static enum StartPosition {
-    ALLIANCE_SIDE_WALL(
+    FAR_LEFT_CAGE(
         "Far Left Cage", new Pose2d(7.187, 7.277, new Rotation2d(Units.degreesToRadians(-90)))),
-    ALLIANCE_SIDE_MIDDLE(
+    CENTER_LEFT_CAGE(
         "Center Left Cage", new Pose2d(7.187, 6.171, new Rotation2d(Units.degreesToRadians(-90)))),
-    MIDDLE("MIDDLE MIDDLE", new Pose2d(7.187, 4.044, new Rotation2d(Units.degreesToRadians(180)))),
-    OPPOSITE_ALLIANCE_SIDE_MIDDLE(
+    MIDDLE_MIDDLE(
+        "MIDDLE MIDDLE", new Pose2d(7.187, 4.044, new Rotation2d(Units.degreesToRadians(180)))),
+    CENTER_RIGHT_CAGE(
         "Center Right Cage", new Pose2d(7.187, 1.908, new Rotation2d(Units.degreesToRadians(90)))),
-    OPPOSITE_ALLIANCE_SIDE_WALL(
+    FAR_RIGHT_CAGE(
         "Far Right Cage", new Pose2d(7.187, 0.811, new Rotation2d(Units.degreesToRadians(90)))),
     MISC("Misc", null);
 
