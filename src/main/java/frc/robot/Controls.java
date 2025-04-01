@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.LEDPattern;
@@ -166,6 +167,7 @@ public class Controls {
         .onTrue(
             s.drivebaseSubsystem
                 .runOnce(() -> s.drivebaseSubsystem.seedFieldCentric())
+                .alongWith(rumble(driverController, 0.5, Seconds.of(0.3)))
                 .withName("Reset gyro"));
     s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
     var swerveCoastButton =
@@ -190,6 +192,7 @@ public class Controls {
                       branchHeight = BranchHeight.CORAL_LEVEL_FOUR;
                       algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
                     })
+                .alongWith(heightSelectRumble())
                 .withName("coral level 4, algae level 3-4"));
     operatorController
         .x()
@@ -199,6 +202,7 @@ public class Controls {
                       branchHeight = BranchHeight.CORAL_LEVEL_THREE;
                       algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;
                     })
+                .alongWith(heightSelectRumble())
                 .withName("coral level 3, algae level 2-3"));
     operatorController
         .b()
@@ -208,6 +212,7 @@ public class Controls {
                       branchHeight = BranchHeight.CORAL_LEVEL_TWO;
                       algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;
                     })
+                .alongWith(heightSelectRumble())
                 .withName("coral level 2, algae level 2-3"));
     operatorController
         .a()
@@ -217,9 +222,10 @@ public class Controls {
                       branchHeight = BranchHeight.CORAL_LEVEL_ONE;
                       algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;
                     })
+                .alongWith(heightSelectRumble())
                 .withName("coral level 1, algae ground level"));
-    ;
-    driverController // reuse for others
+
+    driverController
         .povUp()
         .onTrue(
             Commands.runOnce(
@@ -227,6 +233,7 @@ public class Controls {
                       branchHeight = BranchHeight.CORAL_LEVEL_FOUR;
                       algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
                     })
+                .alongWith(heightSelectRumble())
                 .withName("coral level 4, algae level 3-4"));
     driverController
         .povLeft()
@@ -236,6 +243,7 @@ public class Controls {
                       branchHeight = BranchHeight.CORAL_LEVEL_THREE;
                       algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;
                     })
+                .alongWith(heightSelectRumble())
                 .withName("coral level 3, algae level 2-3"));
     driverController
         .povRight()
@@ -245,6 +253,7 @@ public class Controls {
                       branchHeight = BranchHeight.CORAL_LEVEL_TWO;
                       algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;
                     })
+                .alongWith(heightSelectRumble())
                 .withName("coral level 2, algae level 2-3"));
     driverController
         .povDown()
@@ -254,6 +263,7 @@ public class Controls {
                       branchHeight = BranchHeight.CORAL_LEVEL_ONE;
                       algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;
                     })
+                .alongWith(heightSelectRumble())
                 .withName("coral level 1, algae ground level"));
     driverController
         .leftTrigger()
@@ -274,11 +284,15 @@ public class Controls {
     operatorController
         .leftBumper()
         .onTrue(
-            Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE).withName("Algae Scoring Mode"));
+            Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE)
+                .alongWith(scoringModeSelectRumble())
+                .withName("Algae Scoring Mode"));
     operatorController
         .leftTrigger()
         .onTrue(
-            Commands.runOnce(() -> scoringMode = ScoringMode.CORAL).withName("Coral Scoring Mode"))
+            Commands.runOnce(() -> scoringMode = ScoringMode.CORAL)
+                .alongWith(scoringModeSelectRumble())
+                .withName("Coral Scoring Mode"))
         .onTrue(superStructure.coralPreIntake());
     operatorController
         .povLeft()
@@ -453,10 +467,7 @@ public class Controls {
         .onTrue(
             Commands.parallel(
                     s.elevatorSubsystem.resetPosZero(),
-                    Commands.startEnd(
-                            () -> operatorController.setRumble(RumbleType.kBothRumble, 0.5),
-                            () -> operatorController.setRumble(RumbleType.kBothRumble, 0))
-                        .withTimeout(0.3))
+                    rumble(operatorController, 0.5, Seconds.of(0.3)))
                 .ignoringDisable(true)
                 .withName("Reset elevator zero"));
     operatorController.rightBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
@@ -676,6 +687,26 @@ public class Controls {
             .moveToPosition(GroundArm.STOWED_POSITION)
             .andThen(Commands.idle())
             .withName("Ground stowed position wait"));
+  }
+
+  private Command rumble(CommandXboxController controller, double vibration, Time duration) {
+    return Commands.startEnd(
+            () -> controller.getHID().setRumble(RumbleType.kBothRumble, vibration),
+            () -> controller.getHID().setRumble(RumbleType.kBothRumble, 0))
+        .withTimeout(duration)
+        .withName("Rumble Port " + controller.getHID().getPort());
+  }
+
+  private Command heightSelectRumble() {
+    return rumble(driverController, 0.5, Seconds.of(0.3))
+        .alongWith(rumble(operatorController, 0.5, Seconds.of(0.3)))
+        .withName("height select rumble");
+  }
+
+  private Command scoringModeSelectRumble() {
+    return rumble(driverController, 1.0, Seconds.of(0.5))
+        .alongWith(rumble(operatorController, 1.0, Seconds.of(0.5)))
+        .withName("height select rumble");
   }
 
   public void vibrateDriveController(double vibration) {
