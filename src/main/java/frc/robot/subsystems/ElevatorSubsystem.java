@@ -29,24 +29,24 @@ import java.util.function.Supplier;
 
 public class ElevatorSubsystem extends SubsystemBase {
   // Maximum is 38.34
-  public static final double CORAL_LEVEL_FOUR_PRE_POS = 37.5; // tristan used 38.5
-  public static final double CORAL_LEVEL_FOUR_POS = 36; // tristan used 28
-  public static final double CORAL_LEVEL_THREE_PRE_POS = 18.65; // tristan used 17.8
-  public static final double CORAL_LEVEL_THREE_POS = 14; // tristan used 13
+  public static final double CORAL_LEVEL_FOUR_PRE_POS = 37.5;
+  public static final double CORAL_LEVEL_FOUR_POS = 36;
+  public static final double CORAL_LEVEL_THREE_PRE_POS = 18.65;
+  public static final double CORAL_LEVEL_THREE_POS = 14;
   public static final double CORAL_LEVEL_TWO_PRE_POS = 6.94;
-  public static final double CORAL_LEVEL_TWO_POS = 4.4; // tristan used 4
+  public static final double CORAL_LEVEL_TWO_POS = 4.4;
   public static final double CORAL_LEVEL_ONE_POS = 8.3;
-  public static final double ALGAE_LEVEL_TWO_THREE = 11; // tested by tristan dooley
+  public static final double ALGAE_LEVEL_TWO_THREE = 11;
   public static final double ALGAE_LEVEL_TWO_THREE_FLING = 16;
-  public static final double ALGAE_LEVEL_THREE_FOUR = 21; // tested by tristan dooley
+  public static final double ALGAE_LEVEL_THREE_FOUR = 21;
   public static final double ALGAE_LEVEL_THREE_FOUR_FLING = 25;
-  public static final double ALGAE_STOWED = 0; // untested
-  public static final double ALGAE_PROCESSOR_SCORE = 2; // untested
+  public static final double ALGAE_STOWED = 2;
+  public static final double ALGAE_PROCESSOR_SCORE = 2;
   public static final double ALGAE_NET_SCORE = 38; // untested
-  public static final double ALGAE_GROUND_INTAKE = 0; // untested
-  public static final double CORAL_STOWED = 2;
-  public static final double CORAL_INTAKE_POS = 0.1;
-  public static final double CORAL_PRE_INTAKE = 3;
+  public static final double ALGAE_GROUND_INTAKE = 0.01;
+  public static final double CORAL_STOWED = 3.9;
+  public static final double CORAL_INTAKE_POS = 1.55;
+  public static final double CORAL_PRE_INTAKE = 3.9;
   public static final double MANUAL = 0.1;
   private static final double POS_TOLERANCE = 0.1;
   private final double ELEVATOR_KP = 13.804;
@@ -266,6 +266,11 @@ public class ElevatorSubsystem extends SubsystemBase {
             })
         .andThen(Commands.waitUntil(() -> atPosition(pos)))
         .withName("setLevel" + pos);
+  }
+
+  public void brakeMotors() {
+    m_motor.setNeutralMode(NeutralModeValue.Brake);
+    m_motor2.setNeutralMode(NeutralModeValue.Brake);
   }
 
   public Command holdCoastMode() {

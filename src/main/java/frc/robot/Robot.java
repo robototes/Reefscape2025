@@ -39,7 +39,6 @@ public class Robot extends TimedRobot {
 
   public final Sensors sensors;
   public final SuperStructure superStructure;
-  private String autoCommandRequirements = "UNKNOWN";
   private final PowerDistribution PDH;
 
   protected Robot() {
@@ -123,6 +122,9 @@ public class Robot extends TimedRobot {
     if (subsystems.climbPivotSubsystem != null) {
       subsystems.climbPivotSubsystem.brakeMotors();
       subsystems.climbPivotSubsystem.moveCompleteTrue();
+    }
+    if (subsystems.elevatorSubsystem != null) {
+      subsystems.elevatorSubsystem.brakeMotors();
     }
   }
 

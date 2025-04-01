@@ -25,13 +25,26 @@
         {
           "type": "named",
           "data": {
-            "name": "intake"
+            "name": "isCollected"
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "LSF to J"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LSF to J"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              }
+            ]
           }
         },
         {
@@ -49,13 +62,26 @@
         {
           "type": "named",
           "data": {
-            "name": "intake"
+            "name": "isCollected"
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "LSF to K"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LSF to K"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              }
+            ]
           }
         },
         {
@@ -73,13 +99,26 @@
         {
           "type": "named",
           "data": {
-            "name": "intake"
+            "name": "isCollected"
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "LSF to L"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LSF to L"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              }
+            ]
           }
         },
         {

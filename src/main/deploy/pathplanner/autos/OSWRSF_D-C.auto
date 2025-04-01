@@ -25,13 +25,26 @@
         {
           "type": "named",
           "data": {
-            "name": "intake"
+            "name": "isCollected"
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "RSF to C"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RSF to C"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              }
+            ]
           }
         },
         {
