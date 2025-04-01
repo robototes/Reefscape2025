@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.function.BooleanSupplier;
-
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -16,17 +14,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
+import java.util.function.BooleanSupplier;
 
 public class GroundArm extends SubsystemBase {
-  private final double ARMPIVOT_KP = 0;
+  private final double ARMPIVOT_KP = 3.8;
   private final double ARMPIVOT_KI = 0;
   private final double ARMPIVOT_KD = 0;
-  private final double ARMPIVOT_KS = 0.3;
+  private final double ARMPIVOT_KS = 0.7;
   private final double ARMPIVOT_KV = 4;
   private final double ARMPIVOT_KG = 0.048;
   private final double ARMPIVOT_KA = 0;
   public static final double STOWED_POSITION = 0.476;
-  public static final double GROUND_POSITION = 0;
+  public static final double GROUND_POSITION = -0.03;
   public static final double POS_TOLERANCE = Units.degreesToRotations(5);
   // ratio from motor rotations to output rotations
   private static final double ARM_RATIO = 60;
@@ -117,15 +116,12 @@ public class GroundArm extends SubsystemBase {
         .andThen(
             Commands.waitUntil(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE));
   }
+
   public Command stop() {
-    return runOnce(()-> motor.stopMotor());
-
-  }
-  public Command grounIntake(BooleanSupplier inSensor){
-    return Commands.sequence(
-      moveToPosition(GROUND_POSITION),
-      Commands.idle()
-      ).until(inSensor);
+    return runOnce(() -> motor.stopMotor());
   }
 
+  public Command grounIntake(BooleanSupplier inSensor) {
+    return Commands.sequence(moveToPosition(GROUND_POSITION), Commands.idle()).until(inSensor);
+  }
 }

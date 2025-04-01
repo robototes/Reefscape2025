@@ -5,20 +5,18 @@ import static edu.wpi.first.units.Units.Millimeter;
 
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Hardware;
 
-public class IntakeSensor{
+public class IntakeSensor {
 
   private final LaserCan intakeSensor;
   // VALUES ARE IN METERS
-  private static final double INTAKE_LOWER_LIMIT = 0.025;
-  private static final double INTAKE_UPPER_LIMIT = 0.035;
-
+  private static final double INTAKE_LOWER_LIMIT = 0.010;
+  private static final double INTAKE_UPPER_LIMIT = 0.07;
 
   public IntakeSensor() {
     intakeSensor = new LaserCan(Hardware.GROUND_INTAKE_SENSOR);
@@ -27,8 +25,6 @@ public class IntakeSensor{
     tab.addBoolean("In Intake", inIntake());
     tab.addDouble("Distance(m)", () -> getSensorDistance().in(Meters));
   }
-  
-
 
   private void ConfigureSensor(LaserCan Sensor) {
     try {
@@ -48,6 +44,7 @@ public class IntakeSensor{
       return Millimeter.of(-1);
     }
   }
+
   public Trigger inIntake() {
     return new Trigger(
             () -> {
