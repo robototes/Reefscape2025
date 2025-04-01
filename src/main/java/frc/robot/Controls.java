@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -170,7 +169,7 @@ public class Controls {
                 .runOnce(() -> s.drivebaseSubsystem.seedFieldCentric())
                 .alongWith(rumble(driverController, 0.5, Seconds.of(0.3)))
                 .withName("Reset gyro"));
-          
+
     s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
     var swerveCoastButton =
         Shuffleboard.getTab("Controls")
@@ -348,8 +347,9 @@ public class Controls {
               superStructure
                   .coralIntake()
                   .alongWith(
-                      s.elevatorLEDSubsystem.tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
-                      .asProxy())
+                      s.elevatorLEDSubsystem
+                          .tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
+                          .asProxy())
                   .withName("Automatic Intake"));
     }
 
@@ -371,7 +371,6 @@ public class Controls {
                     })
                 .withName("score"));
   }
-
 
   private Command getAlgaeIntakeCommand() {
     return switch (algaeIntakeHeight) {
@@ -667,16 +666,16 @@ public class Controls {
         .thirtySecondsLeft()
         .onTrue(
             Commands.sequence(
-            s.elevatorLEDSubsystem.blinky(255, 0, 0, "red half blink - 30 sec remaining"),
-            s.elevatorLEDSubsystem.blinky(255, 255, 0, "Yellow half blink - 30 sec remaining")
-        ));
+                s.elevatorLEDSubsystem.blinky(255, 0, 0, "red half blink - 30 sec remaining"),
+                s.elevatorLEDSubsystem.blinky(
+                    255, 255, 0, "Yellow half blink - 30 sec remaining")));
     s.elevatorLEDSubsystem
         .fifteenSecondsLeft()
         .onTrue(
             Commands.sequence(
-            s.elevatorLEDSubsystem.blinky(255, 0, 0, "Red half blink - 15 sec remaining"), 
-            s.elevatorLEDSubsystem.blinky(255, 255, 0, "Yellow half blink - 15 sec remaining")
-        ));
+                s.elevatorLEDSubsystem.blinky(255, 0, 0, "Red half blink - 15 sec remaining"),
+                s.elevatorLEDSubsystem.blinky(
+                    255, 255, 0, "Yellow half blink - 15 sec remaining")));
   }
 
   private void configureAutoAlignBindings() {
