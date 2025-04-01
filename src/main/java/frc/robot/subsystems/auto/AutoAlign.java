@@ -178,16 +178,30 @@ public class AutoAlign {
   }
 
   public static boolean readyToScore() {
-    var currentPose = AutoLogic.s.drivebaseSubsystem.getState().Pose;
-    var branchPose = getClosestBranch(currentPose);
+
+    return (isStationary() && isLevel() && isCloseEnough()) || oneSecondLeft();
+  }
+
+  public static boolean isStationary() {
     var speeds = AutoLogic.s.drivebaseSubsystem.getState().Speeds;
-    var rotation = AutoLogic.s.drivebaseSubsystem.getRotation3d();
-    if (DriverStation.getMatchTime() <= 1) { return true; } 
     return MathUtil.isNear(0, speeds.vxMetersPerSecond, 0.01)
         && MathUtil.isNear(0, speeds.vyMetersPerSecond, 0.01)
-        && MathUtil.isNear(0, speeds.omegaRadiansPerSecond, Units.degreesToRadians(2))
-        && MathUtil.isNear(0, rotation.getX(), Units.degreesToRadians(2))
-        && MathUtil.isNear(0, rotation.getY(), Units.degreesToRadians(2))
-        && currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
+        && MathUtil.isNear(0, speeds.omegaRadiansPerSecond, Units.degreesToRadians(2));
+  }
+
+  public static boolean isLevel() {
+    var rotation = AutoLogic.s.drivebaseSubsystem.getRotation3d();
+    return MathUtil.isNear(0, rotation.getX(), Units.degreesToRadians(2))
+        && MathUtil.isNear(0, rotation.getY(), Units.degreesToRadians(2));
+  }
+
+  public static boolean isCloseEnough() {
+    var currentPose = AutoLogic.s.drivebaseSubsystem.getState().Pose;
+    var branchPose = getClosestBranch(currentPose);
+    return currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
+  }
+
+  public static boolean oneSecondLeft() {
+    return DriverStation.getMatchTime() <= 1;
   }
 }
