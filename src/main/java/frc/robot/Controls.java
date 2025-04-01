@@ -649,8 +649,8 @@ public class Controls {
           .schedule();
       hasBeenZeroed.onTrue(
           s.elevatorLEDSubsystem
-              .colorSet(0, 255, 0, "Green - Elevator Zeroed")
-              .andThen(Commands.waitSeconds(2))
+              .colorSet(0, 170, 0, "Green - Elevator Zeroed")
+              .withTimeout(2)
               .andThen(s.elevatorLEDSubsystem.colorSet(0, 0, 0, "LED off"))
               .ignoringDisable(true));
       RobotModeTriggers.disabled()
