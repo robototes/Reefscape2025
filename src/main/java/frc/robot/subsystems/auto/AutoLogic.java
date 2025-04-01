@@ -209,6 +209,7 @@ public class AutoLogic {
     tab.add("Launch Type", isVision).withPosition(4, 1);
     tab.add("Game Objects", gameObjects).withPosition(5, 1);
     tab.add("Available Auto Variants", availableAutos).withPosition(4, 2).withSize(2, 1);
+    tab.addBoolean("readyToScore?", () -> AutoAlign.readyToScore());
     autoDelayEntry = tab.add("Auto Delay", 0).withPosition(4, 3).withSize(1, 1).getEntry();
 
     isVision.onChange((dummyVar) -> AutoLogic.filterAutos(gameObjects.getSelected()));
