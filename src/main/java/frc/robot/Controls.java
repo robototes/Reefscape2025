@@ -565,7 +565,8 @@ public class Controls {
             s.climbPivotSubsystem
                 .moveClimbManual(
                     () ->
-                        0.3 * MathUtil.applyDeadband(operatorController.getRightTriggerAxis(), 0.1))
+                        -0.6
+                            * MathUtil.applyDeadband(operatorController.getRightTriggerAxis(), 0.1))
                 .withName("Climb Manual Control"));
     connected(climbTestController)
         .and(climbTestController.rightTrigger(0.1))
@@ -573,7 +574,7 @@ public class Controls {
             s.climbPivotSubsystem
                 .moveClimbManual(
                     () ->
-                        0.4
+                        -0.6
                             * MathUtil.applyDeadband(
                                 climbTestController.getRightTriggerAxis(), 0.1))
                 .withName("Climb Manual Control"));
@@ -583,8 +584,7 @@ public class Controls {
             s.climbPivotSubsystem
                 .moveClimbManual(
                     () ->
-                        -0.4
-                            * MathUtil.applyDeadband(climbTestController.getLeftTriggerAxis(), 0.1))
+                        0.6 * MathUtil.applyDeadband(climbTestController.getLeftTriggerAxis(), 0.1))
                 .withName("Climb Manual Control"));
     var climbCoastButton =
         Shuffleboard.getTab("Controls")
