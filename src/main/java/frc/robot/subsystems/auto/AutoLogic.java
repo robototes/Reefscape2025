@@ -40,17 +40,17 @@ public class AutoLogic {
 
   public static enum StartPosition {
     ALLIANCE_SIDE_WALL(
-        "Alliance Side Wall",
+        "Far Left Cage",
         new Pose2d(7.187, 7.277, new Rotation2d(Units.degreesToRadians(-90)))),
     ALLIANCE_SIDE_MIDDLE(
-        "Alliance Side Middle",
+        "Center Left Cage",
         new Pose2d(7.187, 6.171, new Rotation2d(Units.degreesToRadians(-90)))),
-    MIDDLE("MIDDLE", new Pose2d(7.187, 4.044, new Rotation2d(Units.degreesToRadians(180)))),
+    MIDDLE("MIDDLE MIDDLE", new Pose2d(7.187, 4.044, new Rotation2d(Units.degreesToRadians(180)))),
     OPPOSITE_ALLIANCE_SIDE_MIDDLE(
-        "Opposite Alliance Side Middle",
+        "Center Right Cage",
         new Pose2d(7.187, 1.908, new Rotation2d(Units.degreesToRadians(90)))),
     OPPOSITE_ALLIANCE_SIDE_WALL(
-        "Opposite Alliance Side Wall",
+        "Far Right Cage",
         new Pose2d(7.187, 0.811, new Rotation2d(Units.degreesToRadians(90)))),
     MISC("Misc", null);
 
