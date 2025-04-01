@@ -16,8 +16,8 @@ public class IntakeSensor{
 
   private final LaserCan intakeSensor;
   // VALUES ARE IN METERS
-  private static final double INTAKE_LOWER_LIMIT = 0.10;
-  private static final double INTAKE_UPPER_LIMIT = 0.20;
+  private static final double INTAKE_LOWER_LIMIT = 0.025;
+  private static final double INTAKE_UPPER_LIMIT = 0.035;
 
 
   public IntakeSensor() {
@@ -27,6 +27,8 @@ public class IntakeSensor{
     tab.addBoolean("In Intake", inIntake());
     tab.addDouble("Distance(m)", () -> getSensorDistance().in(Meters));
   }
+  
+
 
   private void ConfigureSensor(LaserCan Sensor) {
     try {
@@ -39,7 +41,7 @@ public class IntakeSensor{
   }
 
   public Distance getSensorDistance() {
-    LaserCan.Measurement measurement = mainSensor.getMeasurement();
+    LaserCan.Measurement measurement = intakeSensor.getMeasurement();
     if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
       return Millimeter.of(measurement.distance_mm);
     } else {
