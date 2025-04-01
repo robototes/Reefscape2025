@@ -182,6 +182,7 @@ public class AutoAlign {
     var branchPose = getClosestBranch(currentPose);
     var speeds = AutoLogic.s.drivebaseSubsystem.getState().Speeds;
     var rotation = AutoLogic.s.drivebaseSubsystem.getRotation3d();
+    if (DriverStation.getMatchTime() <= 1) { return true; } 
     return MathUtil.isNear(0, speeds.vxMetersPerSecond, 0.01)
         && MathUtil.isNear(0, speeds.vyMetersPerSecond, 0.01)
         && MathUtil.isNear(0, speeds.omegaRadiansPerSecond, Units.degreesToRadians(2))

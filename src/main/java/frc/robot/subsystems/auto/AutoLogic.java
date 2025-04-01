@@ -104,12 +104,12 @@ public class AutoLogic {
           new AutoPath("YSMLSF_I-J", "YSMLSF_I-J"),
           new AutoPath("YSMLSF_J-K", "YSMLSF_J-K"),
           new AutoPath("YSMLSF_K-L", "YSMLSF_K-L"),
-          new AutoPath("OSMLSF_F-E", "OSMRSF_F-E"),
-          new AutoPath("OSMLSF_E-D", "OSMRSF_E-D"),
-          new AutoPath("OSMLSF_D-C", "OSMRSF_D-C"),
-          new AutoPath("OSWLSF_F-E", "OSWRSF_F-E"),
-          new AutoPath("OSWLSF_E-D", "OSWRSF_E-D"),
-          new AutoPath("OSWLSF_D-C", "OSWRSF_D-C"));
+          new AutoPath("OSMRSF_F-E", "OSMRSF_F-E"),
+          new AutoPath("OSMRSF_E-D", "OSMRSF_E-D"),
+          new AutoPath("OSMRSF_D-C", "OSMRSF_D-C"),
+          new AutoPath("OSWRSF_F-E", "OSWRSF_F-E"),
+          new AutoPath("OSWRSF_E-D", "OSWRSF_E-D"),
+          new AutoPath("OSWRSF_D-C", "OSWRSF_D-C"));
 
   private static List<AutoPath> threePiecePaths =
       List.of(
