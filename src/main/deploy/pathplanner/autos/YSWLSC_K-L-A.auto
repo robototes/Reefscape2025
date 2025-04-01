@@ -25,13 +25,26 @@
         {
           "type": "named",
           "data": {
-            "name": "intake"
+            "name": "isCollected"
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "LSC to L"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LSC to L"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              }
+            ]
           }
         },
         {
@@ -49,13 +62,26 @@
         {
           "type": "named",
           "data": {
-            "name": "intake"
+            "name": "isCollected"
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "LSC to A"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LSC to A"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              }
+            ]
           }
         },
         {

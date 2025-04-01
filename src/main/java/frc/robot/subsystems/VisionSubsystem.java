@@ -15,6 +15,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 import java.util.EnumSet;
+import java.util.Optional;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
@@ -163,6 +165,9 @@ public class VisionSubsystem extends SubsystemBase {
       PhotonPipelineResult result,
       PhotonPoseEstimator estimator,
       StructPublisher<Pose3d> rawFieldPose3dEntry) {
+    if (BadAprilTagDetector(result)) {
+      return;
+    }
     var RawTimestampSeconds = result.getTimestampSeconds();
     if (!MathUtil.isNear(Timer.getFPGATimestamp(), RawTimestampSeconds, 5.0)) {
       return;
@@ -185,7 +190,7 @@ public class VisionSubsystem extends SubsystemBase {
       aprilTagsHelper.addVisionMeasurement(
           FieldPose,
           TimestampSeconds,
-          STANDARD_DEVS.plus(DISTANCE_SC_STANDARD_DEVS).times(Distance));
+          DISTANCE_SC_STANDARD_DEVS.times(Math.max(0, Distance - 1)).plus(STANDARD_DEVS));
       robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       if (RawTimestampSeconds > lastRawTimestampSeconds) {
         fieldPose3dEntry.set(FieldPose3d);
@@ -217,5 +222,20 @@ public class VisionSubsystem extends SubsystemBase {
 
   public double getDistanceToTarget() {
     return (double) Math.round(Distance * 10) / 10;
+  }
+
+  // configured for 2025 reefscape
+  private static boolean BadAprilTagDetector(PhotonPipelineResult r) {
+    boolean isRed = DriverStation.getAlliance().equals(Optional.of(DriverStation.Alliance.Red));
+    boolean isBlue = DriverStation.getAlliance().equals(Optional.of(DriverStation.Alliance.Blue));
+    for (var t : r.getTargets()) {
+      boolean isRedReef = 6 <= t.getFiducialId() && t.getFiducialId() <= 11;
+      boolean isBlueReef = 17 <= t.getFiducialId() && t.getFiducialId() <= 22;
+      boolean isValid = isBlueReef && !isRed || isRedReef && !isBlue;
+      if (!isValid) {
+        return true;
+      }
+    }
+    return false;
   }
 }

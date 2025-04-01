@@ -34,8 +34,8 @@ public class AutoBuilderConfig {
           // feedforwards
           new PPHolonomicDriveController( // PPHolonomicController is the built in path following
               // controller for holonomic drive trains
-              new PIDConstants(2.0, 0.0, 0.0), // Translation PID constants
-              new PIDConstants(2.0, 0.0, 0.0) // Rotation PID constants
+              new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+              new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
               ),
           RobotConfig.fromGUISettings(), // The robot configuration
           () -> {

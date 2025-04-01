@@ -1,8 +1,8 @@
 package frc.robot.util;
 
 public enum BranchHeight {
-  LEVEL_ONE,
-  LEVEL_TWO,
-  LEVEL_THREE,
-  LEVEL_FOUR;
+  CORAL_LEVEL_ONE,
+  CORAL_LEVEL_TWO,
+  CORAL_LEVEL_THREE,
+  CORAL_LEVEL_FOUR;
 }

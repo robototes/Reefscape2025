@@ -51,8 +51,7 @@ public class SuperStructure {
     }
   }
 
-  public Command coralLevelFour(
-      BooleanSupplier score) { // when we change L4, add repeating score sequence
+  public Command coralLevelFour(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
                     Commands.print("Pre position"),
@@ -127,7 +126,7 @@ public class SuperStructure {
                     spinnyClaw.stop())
                 .withTimeout(0.5)
                 .withDeadline(Commands.waitUntil(score)),
-            spinnyClaw.coralHoldExtakePower().withTimeout(0.25),
+            spinnyClaw.coralLevelOneHoldExtakePower().withTimeout(0.25),
             coralPreIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L1").asProxy())
         .withName("Coral Level 1");
@@ -188,8 +187,6 @@ public class SuperStructure {
                 spinnyClaw.algaeIntakePower(),
                 armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)))
-        //     .until(armSensor.inClaw()), // add if statement to check armsensor enabled
-        // algaeStow())
         .withName("Algae L2-L3 Intake");
   }
 
@@ -199,8 +196,6 @@ public class SuperStructure {
                 spinnyClaw.algaeIntakePower(),
                 armPivot.moveToPosition(ArmPivot.ALGAE_GROUND_INTAKE),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_GROUND_INTAKE)))
-        //     .until(armSensor.inClaw()), // add if statement to check armsensor enabled
-        // algaeStow())
         .withName("Algae Ground Intake");
   }
 
@@ -229,7 +224,7 @@ public class SuperStructure {
             Commands.parallel(
                 elevator.setLevel(ElevatorSubsystem.ALGAE_NET_SCORE),
                 armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE),
-                spinnyClaw.algaeIntakePower()),
+                spinnyClaw.algaeGripIntakePower()),
             Commands.waitUntil(score),
             spinnyClaw.algaeHoldExtakePower().withTimeout(0.7))
         .withName("Algae Net Score");

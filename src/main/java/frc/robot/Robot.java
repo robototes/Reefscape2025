@@ -39,7 +39,6 @@ public class Robot extends TimedRobot {
 
   public final Sensors sensors;
   public final SuperStructure superStructure;
-  private String autoCommandRequirements = "UNKNOWN";
   private final PowerDistribution PDH;
 
   protected Robot() {
