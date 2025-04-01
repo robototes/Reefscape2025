@@ -40,18 +40,14 @@ public class AutoLogic {
 
   public static enum StartPosition {
     ALLIANCE_SIDE_WALL(
-        "Far Left Cage",
-        new Pose2d(7.187, 7.277, new Rotation2d(Units.degreesToRadians(-90)))),
+        "Far Left Cage", new Pose2d(7.187, 7.277, new Rotation2d(Units.degreesToRadians(-90)))),
     ALLIANCE_SIDE_MIDDLE(
-        "Center Left Cage",
-        new Pose2d(7.187, 6.171, new Rotation2d(Units.degreesToRadians(-90)))),
+        "Center Left Cage", new Pose2d(7.187, 6.171, new Rotation2d(Units.degreesToRadians(-90)))),
     MIDDLE("MIDDLE MIDDLE", new Pose2d(7.187, 4.044, new Rotation2d(Units.degreesToRadians(180)))),
     OPPOSITE_ALLIANCE_SIDE_MIDDLE(
-        "Center Right Cage",
-        new Pose2d(7.187, 1.908, new Rotation2d(Units.degreesToRadians(90)))),
+        "Center Right Cage", new Pose2d(7.187, 1.908, new Rotation2d(Units.degreesToRadians(90)))),
     OPPOSITE_ALLIANCE_SIDE_WALL(
-        "Far Right Cage",
-        new Pose2d(7.187, 0.811, new Rotation2d(Units.degreesToRadians(90)))),
+        "Far Right Cage", new Pose2d(7.187, 0.811, new Rotation2d(Units.degreesToRadians(90)))),
     MISC("Misc", null);
 
     final String title; // for shuffleboard display
