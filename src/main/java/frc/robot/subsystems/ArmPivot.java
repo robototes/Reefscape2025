@@ -125,9 +125,7 @@ public class ArmPivot extends SubsystemBase {
 
   // preset command placeholder
   public Command moveToPosition(double position) {
-    return setTargetPosition(position)
-        .andThen(
-            Commands.waitUntil(atAngle(position)));
+    return setTargetPosition(position).andThen(Commands.waitUntil(atAngle(position)));
   }
 
   public Trigger atAngle(double position) {
