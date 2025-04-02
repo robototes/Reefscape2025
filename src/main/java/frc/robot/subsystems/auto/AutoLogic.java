@@ -212,7 +212,7 @@ public class AutoLogic {
     tab.addBoolean("Close Enough?", () -> AutoAlign.isCloseEnough());
     tab.addBoolean("Stationary?", () -> AutoAlign.isStationary());
     tab.addBoolean("Low on time?", () -> AutoAlign.oneSecondLeft());
-    tab.addDouble("MATCH TIME(COUNTDOWN FOR AUTO)", () -> DriverStation.getMatchTime());
+    tab.addDouble("MATCH TIME(TIMER FOR AUTO)", () -> DriverStation.getMatchTime());
     autoDelayEntry = tab.add("Auto Delay", 0).withPosition(4, 3).withSize(1, 1).getEntry();
 
     isVision.onChange((dummyVar) -> AutoLogic.filterAutos(gameObjects.getSelected()));
