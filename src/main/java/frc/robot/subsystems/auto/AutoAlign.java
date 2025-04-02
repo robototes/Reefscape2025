@@ -201,7 +201,9 @@ public class AutoAlign {
     return currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
   }
 
-  public static boolean oneSecondLeft() {
+  public static boolean
+      oneSecondLeft() { // THIS WILL ONLY WORK ON THE REAL FIELD AND IN PRACTICE MODE!
+
     return DriverStation.getMatchTime() <= 1;
   }
 }

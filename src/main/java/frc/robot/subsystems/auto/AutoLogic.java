@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -207,6 +208,11 @@ public class AutoLogic {
     tab.add("Game Objects", gameObjects).withPosition(5, 1);
     tab.add("Available Auto Variants", availableAutos).withPosition(4, 2).withSize(2, 1);
     tab.addBoolean("readyToScore?", () -> AutoAlign.readyToScore());
+    tab.addBoolean("Level?", () -> AutoAlign.isLevel());
+    tab.addBoolean("Close Enough?", () -> AutoAlign.isCloseEnough());
+    tab.addBoolean("Stationary?", () -> AutoAlign.isStationary());
+    tab.addBoolean("Low on time?", () -> AutoAlign.oneSecondLeft());
+    tab.addDouble("MATCH TIME(COUNTDOWN FOR AUTO)", () -> DriverStation.getMatchTime());
     autoDelayEntry = tab.add("Auto Delay", 0).withPosition(4, 3).withSize(1, 1).getEntry();
 
     isVision.onChange((dummyVar) -> AutoLogic.filterAutos(gameObjects.getSelected()));
