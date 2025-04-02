@@ -187,17 +187,20 @@ public class Controls {
     operatorController
         .y()
         .onTrue(
-            selectScoringHeight(BranchHeight.CORAL_LEVEL_FOUR, AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
+            selectScoringHeight(
+                    BranchHeight.CORAL_LEVEL_FOUR, AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
                 .withName("coral level 4, algae level 3-4"));
     operatorController
         .x()
         .onTrue(
-            selectScoringHeight(BranchHeight.CORAL_LEVEL_THREE, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
+            selectScoringHeight(
+                    BranchHeight.CORAL_LEVEL_THREE, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("coral level 3, algae level 2-3"));
     operatorController
         .b()
         .onTrue(
-            selectScoringHeight(BranchHeight.CORAL_LEVEL_TWO, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
+            selectScoringHeight(
+                    BranchHeight.CORAL_LEVEL_TWO, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("coral level 2, algae level 2-3"));
     operatorController
         .a()
@@ -207,17 +210,20 @@ public class Controls {
     driverController
         .povUp()
         .onTrue(
-            selectScoringHeight(BranchHeight.CORAL_LEVEL_FOUR, AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
+            selectScoringHeight(
+                    BranchHeight.CORAL_LEVEL_FOUR, AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
                 .withName("coral level 4, algae level 3-4"));
     driverController
         .povLeft()
         .onTrue(
-            selectScoringHeight(BranchHeight.CORAL_LEVEL_THREE, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
+            selectScoringHeight(
+                    BranchHeight.CORAL_LEVEL_THREE, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("coral level 3, algae level 2-3"));
     driverController
         .povRight()
         .onTrue(
-            selectScoringHeight(BranchHeight.CORAL_LEVEL_TWO, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
+            selectScoringHeight(
+                    BranchHeight.CORAL_LEVEL_TWO, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("coral level 2, algae level 2-3"));
     driverController
         .povDown()
@@ -249,7 +255,7 @@ public class Controls {
         .onTrue(
             Commands.runOnce(() -> CommandScheduler.getInstance().schedule(getAlgaeIntakeCommand()))
                 .withName("run algae intake"));
-    operatorController //should work???
+    operatorController // should work???
         .leftTrigger()
         .onTrue(
             Commands.runOnce(() -> scoringMode = ScoringMode.CORAL)
@@ -654,9 +660,13 @@ public class Controls {
 
   private Command selectScoringHeight(BranchHeight b, AlgaeIntakeHeight a) {
     return Commands.runOnce(
-        () -> {
+            () -> {
               branchHeight = b;
               algaeIntakeHeight = a;
+              if (scoringMode == ScoringMode.ALGAE
+                  && (sensors.armSensor == null || !sensors.armSensor.booleanInClaw())) {
+                CommandScheduler.getInstance().schedule(getAlgaeIntakeCommand());
+              }
             })
         .alongWith(heightSelectRumble());
   }
