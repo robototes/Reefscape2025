@@ -65,8 +65,9 @@ public class SuperStructure {
                 Commands.sequence(
                     Commands.parallel(
                             elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS),
-                            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_PRE_L4))
-                        .withDeadline(Commands.waitUntil(score)),
+                            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
+                              .withTimeout(1.5)
+                              .until(armPivot.atAngle(ArmPivot.CORAL_POST_SCORE))),
                     armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN).withTimeout(0.4)),
                 score),
             Commands.print("Pre preIntake()"),
@@ -90,7 +91,9 @@ public class SuperStructure {
                     armPivot
                         .moveToPosition(ArmPivot.CORAL_PRESET_L3)
                         .withDeadline(Commands.waitUntil(score)),
-                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN).withTimeout(0.4)),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
+                      .withTimeout(1.5)
+                      .until(armPivot.atAngle(ArmPivot.CORAL_POST_SCORE))),
                 score),
             coralPreIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L3").asProxy())
@@ -111,7 +114,9 @@ public class SuperStructure {
                     armPivot
                         .moveToPosition(ArmPivot.CORAL_PRESET_L2)
                         .withDeadline(Commands.waitUntil(score)),
-                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN).withTimeout(0.4)),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
+                        .withTimeout(1.5)
+                        .until(armPivot.atAngle(ArmPivot.CORAL_POST_SCORE))),
                 score),
             coralPreIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L2").asProxy())
