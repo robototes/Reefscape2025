@@ -70,7 +70,7 @@ public class ElevatorLight extends SubsystemBase {
 
   public Command blink(int r, int g, int b, String name) {
     return animate(
-            LEDPattern.solid(new Color(r, g, b)).blink(Seconds.of(0.1), Seconds.of(0.4)), name)
+            LEDPattern.solid(new Color(r, g, b)).blink(Seconds.of(0.25), Seconds.of(0.50)), name)
         .withName("Animate" + name);
   }
 
