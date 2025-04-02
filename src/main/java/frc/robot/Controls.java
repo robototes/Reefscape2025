@@ -326,9 +326,11 @@ public class Controls {
                             case CORAL -> superStructure
                                 .coralIntake()
                                 .alongWith(
-                                    s.elevatorLEDSubsystem!=null ? s.elevatorLEDSubsystem
-                                        .tripleBlink(255, 92, 0, "Orange - Manual Coral Intake")
-                                        .asProxy() : Commands.none())
+                                    s.elevatorLEDSubsystem != null
+                                        ? s.elevatorLEDSubsystem
+                                            .tripleBlink(255, 92, 0, "Orange - Manual Coral Intake")
+                                            .asProxy()
+                                        : Commands.none())
                                 .withName("Manual Coral Intake");
                             case ALGAE -> getAlgaeIntakeCommand();
                           };
@@ -345,9 +347,11 @@ public class Controls {
               superStructure
                   .coralIntake()
                   .alongWith(
-                      s.elevatorLEDSubsystem!=null ? s.elevatorLEDSubsystem
-                          .tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
-                          .asProxy() : Commands.none())
+                      s.elevatorLEDSubsystem != null
+                          ? s.elevatorLEDSubsystem
+                              .tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
+                              .asProxy()
+                          : Commands.none())
                   .withName("Automatic Intake"));
     }
 
