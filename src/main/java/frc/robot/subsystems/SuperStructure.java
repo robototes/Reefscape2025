@@ -64,12 +64,13 @@ public class SuperStructure {
             repeatPrescoreScoreSwing(
                 Commands.sequence(
                     Commands.parallel(
-                        elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS),
-                        armPivot
-                            .moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
-                            .withTimeout(1.5)
-                            .until(armPivot.atAngle(ArmPivot.CORAL_POST_SCORE))),
-                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN).withTimeout(0.4)),
+                            elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS),
+                            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_PRE_L4))
+                        .withDeadline(Commands.waitUntil(score)),
+                    armPivot
+                        .moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
+                        .withTimeout(1.5)
+                        .until(armPivot.atAngle(ArmPivot.CORAL_POST_SCORE))),
                 score),
             Commands.print("Pre preIntake()"),
             coralPreIntake(),
