@@ -169,6 +169,7 @@ public class Controls {
                 .runOnce(() -> s.drivebaseSubsystem.seedFieldCentric())
                 .alongWith(rumble(driverController, 0.5, Seconds.of(0.3)))
                 .withName("Reset gyro"));
+
     s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
     var swerveCoastButton =
         Shuffleboard.getTab("Controls")
@@ -262,6 +263,7 @@ public class Controls {
                 .alongWith(scoringModeSelectRumble())
                 .withName("Coral Scoring Mode"))
         .onTrue(superStructure.coralPreIntake());
+
     operatorController
         .povLeft()
         .onTrue(
@@ -614,20 +616,38 @@ public class Controls {
       Commands.waitSeconds(1)
           .andThen(
               s.elevatorLEDSubsystem
-                  .colorSet(255, 0, 0, "Red - Elevator Not Zeroed")
+                  .blink(120, 0, 0, "Red - Elevator Not Zeroed")
                   .ignoringDisable(true))
           .schedule();
       hasBeenZeroed.onTrue(
           s.elevatorLEDSubsystem
-              .colorSet(0, 255, 0, "Green - Elevator Zeroed")
+              .colorSet(0, 170, 0, "Green - Elevator Zeroed")
+              .withTimeout(2)
+              .andThen(s.elevatorLEDSubsystem.colorSet(0, 0, 0, "LED off"))
               .ignoringDisable(true));
-      hasBeenZeroed.onFalse(
-          s.elevatorLEDSubsystem
-              .colorSet(255, 0, 0, "Red - Elevator Not Zeroed")
-              .ignoringDisable(false));
+      RobotModeTriggers.disabled()
+          .and(hasBeenZeroed.negate())
+          .onTrue(
+              s.elevatorLEDSubsystem
+                  .blink(120, 0, 0, "Red - Elevator Not Zeroed")
+                  .ignoringDisable(true));
     }
     RobotModeTriggers.autonomous()
         .whileTrue(s.elevatorLEDSubsystem.animate(LEDPattern.rainbow(255, 255), "Auto Rainbow"));
+    s.elevatorLEDSubsystem
+        .thirtySecondsLeft()
+        .onTrue(
+            Commands.sequence(
+                s.elevatorLEDSubsystem.blinky(255, 0, 0, "red half blink - 30 sec remaining"),
+                s.elevatorLEDSubsystem.blinky(
+                    255, 255, 0, "Yellow half blink - 30 sec remaining")));
+    s.elevatorLEDSubsystem
+        .fifteenSecondsLeft()
+        .onTrue(
+            Commands.sequence(
+                s.elevatorLEDSubsystem.blinky(255, 0, 0, "Red half blink - 15 sec remaining"),
+                s.elevatorLEDSubsystem.blinky(
+                    255, 255, 0, "Yellow half blink - 15 sec remaining")));
   }
 
   private void configureAutoAlignBindings() {

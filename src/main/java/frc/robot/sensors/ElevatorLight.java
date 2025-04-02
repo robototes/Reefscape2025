@@ -12,9 +12,11 @@ import com.ctre.phoenix.led.StrobeAnimation;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Hardware;
 import frc.robot.util.ScoringMode;
 import java.util.function.DoubleSupplier;
@@ -23,6 +25,7 @@ import java.util.function.Supplier;
 public class ElevatorLight extends SubsystemBase {
 
   private CANdle candle;
+  private Timer timer = new Timer();
 
   // private String curAnimation = "default";
   private final AddressableLEDBuffer buffer = new AddressableLEDBuffer(71);
@@ -65,6 +68,18 @@ public class ElevatorLight extends SubsystemBase {
         .withName("Animate" + name);
   }
 
+  public Command blink(int r, int g, int b, String name) {
+    return animate(
+            LEDPattern.solid(new Color(r, g, b)).blink(Seconds.of(0.25), Seconds.of(0.50)), name)
+        .withName("Animate" + name);
+  }
+
+  public Command blinky(int r, int g, int b, String name) {
+    return animate(
+            LEDPattern.solid(new Color(r, g, b)).blink(Seconds.of(0.25), Seconds.of(0.25)), name)
+        .withName("Animate" + name);
+  }
+
   public Command pulse(int r, int g, int b, String name) {
     return animate(LEDPattern.solid(new Color(r, g, b)).breathe(Seconds.of(1.0)), name);
   }
@@ -102,5 +117,13 @@ public class ElevatorLight extends SubsystemBase {
     LEDPattern mask = LEDPattern.progressMaskLayer(progress);
     LEDPattern heightDisplay = base.mask(mask);
     return heightDisplay;
+  }
+
+  public Trigger thirtySecondsLeft() {
+    return new Trigger(() -> timer.hasElapsed(105));
+  }
+
+  public Trigger fifteenSecondsLeft() {
+    return new Trigger(() -> timer.hasElapsed(120));
   }
 }
