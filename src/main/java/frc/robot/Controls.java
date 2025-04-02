@@ -187,83 +187,42 @@ public class Controls {
     operatorController
         .y()
         .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      branchHeight = BranchHeight.CORAL_LEVEL_FOUR;
-                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
-                    })
-                .alongWith(heightSelectRumble())
+            selectScoringHeight(BranchHeight.CORAL_LEVEL_FOUR, AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
                 .withName("coral level 4, algae level 3-4"));
     operatorController
         .x()
         .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      branchHeight = BranchHeight.CORAL_LEVEL_THREE;
-                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;
-                    })
-                .alongWith(heightSelectRumble())
+            selectScoringHeight(BranchHeight.CORAL_LEVEL_THREE, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("coral level 3, algae level 2-3"));
     operatorController
         .b()
         .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      branchHeight = BranchHeight.CORAL_LEVEL_TWO;
-                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;
-                    })
-                .alongWith(heightSelectRumble())
+            selectScoringHeight(BranchHeight.CORAL_LEVEL_TWO, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("coral level 2, algae level 2-3"));
     operatorController
         .a()
         .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      branchHeight = BranchHeight.CORAL_LEVEL_ONE;
-                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;
-                    })
-                .alongWith(heightSelectRumble())
+            selectScoringHeight(BranchHeight.CORAL_LEVEL_ONE, AlgaeIntakeHeight.ALGAE_LEVEL_GROUND)
                 .withName("coral level 1, algae ground level"));
-
     driverController
         .povUp()
         .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      branchHeight = BranchHeight.CORAL_LEVEL_FOUR;
-                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
-                    })
-                .alongWith(heightSelectRumble())
+            selectScoringHeight(BranchHeight.CORAL_LEVEL_FOUR, AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
                 .withName("coral level 4, algae level 3-4"));
     driverController
         .povLeft()
         .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      branchHeight = BranchHeight.CORAL_LEVEL_THREE;
-                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;
-                    })
-                .alongWith(heightSelectRumble())
+            selectScoringHeight(BranchHeight.CORAL_LEVEL_THREE, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("coral level 3, algae level 2-3"));
     driverController
         .povRight()
         .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      branchHeight = BranchHeight.CORAL_LEVEL_TWO;
-                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;
-                    })
-                .alongWith(heightSelectRumble())
+            selectScoringHeight(BranchHeight.CORAL_LEVEL_TWO, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("coral level 2, algae level 2-3"));
     driverController
         .povDown()
         .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      branchHeight = BranchHeight.CORAL_LEVEL_ONE;
-                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;
-                    })
-                .alongWith(heightSelectRumble())
+            selectScoringHeight(BranchHeight.CORAL_LEVEL_ONE, AlgaeIntakeHeight.ALGAE_LEVEL_GROUND)
                 .withName("coral level 1, algae ground level"));
     driverController
         .leftTrigger()
@@ -691,6 +650,15 @@ public class Controls {
             .moveToPosition(GroundArm.STOWED_POSITION)
             .andThen(Commands.idle())
             .withName("Ground stowed position wait"));
+  }
+
+  private Command selectScoringHeight(BranchHeight b, AlgaeIntakeHeight a) {
+    return Commands.runOnce(
+        () -> {
+              branchHeight = b;
+              algaeIntakeHeight = a;
+            })
+        .alongWith(heightSelectRumble());
   }
 
   private Command rumble(CommandXboxController controller, double vibration, Time duration) {
