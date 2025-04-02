@@ -286,8 +286,11 @@ public class Controls {
         .onTrue(
             Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE)
                 .alongWith(scoringModeSelectRumble())
-                .withName("Algae Scoring Mode"));
-    operatorController
+                .withName("Algae Scoring Mode"))
+        .onTrue(
+            Commands.runOnce(() -> CommandScheduler.getInstance().schedule(getAlgaeIntakeCommand()))
+                .withName("run algae intake"));
+    operatorController //should work???
         .leftTrigger()
         .onTrue(
             Commands.runOnce(() -> scoringMode = ScoringMode.CORAL)
