@@ -92,12 +92,12 @@ public class SpinnyClaw extends SubsystemBase {
     if (armSensor != null) {
       return runOnce(
           () -> {
-            if (armSensor.booleanInClaw() && pow < 0 && scoringMode.get() == ScoringMode.CORAL) {
-              motor.stopMotor();
-            } else {
-              motor.setVoltage(pow);
-              lastSetPower = pow;
-            }
+            // if (armSensor.booleanInClaw() && pow < 0 && scoringMode.get() == ScoringMode.CORAL) {
+            // motor.stopMotor();
+            // } else {
+            motor.setVoltage(pow);
+            lastSetPower = pow;
+            // }
           });
     } else {
       return runOnce(
@@ -112,12 +112,12 @@ public class SpinnyClaw extends SubsystemBase {
     if (armSensor != null) {
       return startEnd(
           () -> {
-            if (armSensor.booleanInClaw() && pow < 0 && scoringMode.get() == ScoringMode.CORAL) {
-              motor.stopMotor();
-            } else {
-              motor.setVoltage(pow);
-              lastSetPower = pow;
-            }
+            // if (armSensor.booleanInClaw() && pow < 0 && scoringMode.get() == ScoringMode.CORAL) {
+            // motor.stopMotor();
+            // } else {
+            motor.setVoltage(pow);
+            lastSetPower = pow;
+            // }
           },
           () -> motor.stopMotor());
     } else {
