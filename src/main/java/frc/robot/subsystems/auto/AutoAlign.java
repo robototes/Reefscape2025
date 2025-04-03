@@ -66,21 +66,31 @@ public class AutoAlign {
           BRANCH_B_L);
 
   private static final Pose2d BRANCH_R_A =
-      new Pose2d(new Translation2d(14.41, 3.77), Rotation2d.fromDegrees(172.51)); // Practice matach log values
+      new Pose2d(
+          new Translation2d(14.41, 3.77),
+          Rotation2d.fromDegrees(172.51)); // Practice matach log values
   private static final Pose2d BRANCH_R_B =
       new Pose2d(new Translation2d(14.31, 4.24), Rotation2d.fromDegrees(-173.25)); // WAAHS values
   private static final Pose2d BRANCH_R_C =
-      new Pose2d(new Translation2d(13.88, 5.07), Rotation2d.fromDegrees(-125.86)); // Practice matach log values
+      new Pose2d(
+          new Translation2d(13.88, 5.07),
+          Rotation2d.fromDegrees(-125.86)); // Practice matach log values
   private static final Pose2d BRANCH_R_D =
       new Pose2d(new Translation2d(13.54, 5.24), Rotation2d.fromDegrees(240)); // WAAHS values
   private static final Pose2d BRANCH_R_E =
-      new Pose2d(new Translation2d(12.50, 5.24), Rotation2d.fromDegrees(-56.40)); // Practice matach log values
+      new Pose2d(
+          new Translation2d(12.50, 5.24),
+          Rotation2d.fromDegrees(-56.40)); // Practice matach log values
   private static final Pose2d BRANCH_R_F =
-      new Pose2d(new Translation2d(12.31, 4.97), Rotation2d.fromDegrees(-62.1)); // Practice matach log values
+      new Pose2d(
+          new Translation2d(12.31, 4.97),
+          Rotation2d.fromDegrees(-62.1)); // Practice matach log values
   private static final Pose2d BRANCH_R_G =
       new Pose2d(new Translation2d(11.73, 4.18), Rotation2d.fromDegrees(-2.35)); // WAAHS values
   private static final Pose2d BRANCH_R_H =
-      new Pose2d(new Translation2d(11.88, 3.91), Rotation2d.fromDegrees(.78)); // Practice matach log values 
+      new Pose2d(
+          new Translation2d(11.88, 3.91),
+          Rotation2d.fromDegrees(.78)); // Practice matach log values
   private static final Pose2d BRANCH_R_I =
       new Pose2d(new Translation2d(12.29, 2.95), Rotation2d.fromDegrees(50.4)); // WAAHS values
   private static final Pose2d BRANCH_R_J =
