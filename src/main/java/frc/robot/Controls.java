@@ -641,14 +641,7 @@ public class Controls {
     if (s.drivebaseSubsystem == null) {
       return;
     }
-    driverController
-        .leftBumper()
-        .whileTrue(
-            AutoAlign.aim(
-                s.drivebaseSubsystem,
-                () -> -driverController.getLeftY() * MaxSpeed,
-                () -> -driverController.getLeftX() * MaxSpeed));
-    driverController.rightTrigger().whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
+    driverController.rightTrigger().whileTrue(AutoAlign.autoAlignTwo(s.drivebaseSubsystem, this));
   }
 
   private void configureGroundSpinnyBindings() {

@@ -145,6 +145,11 @@ public class AutoAlign {
     return drivebaseSubsystem.defer(() -> autoPathAlign(drivebaseSubsystem)).withName("Auto Align");
   }
 
+  public static Command autoAlignTwo(
+      CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
+    return drivebaseSubsystem.defer(() -> new AutoAlignTwo(drivebaseSubsystem, controls));
+  }
+
   public static Boolean isBlue() {
     boolean isBlue;
 

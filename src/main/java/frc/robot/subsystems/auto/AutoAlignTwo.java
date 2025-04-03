@@ -5,9 +5,11 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Controls;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 
 public class AutoAlignTwo extends Command {
@@ -18,14 +20,17 @@ public class AutoAlignTwo extends Command {
   private CommandSwerveDrivetrain drive;
   private Pose2d branchPose;
   private boolean redAlliance;
+  private Controls controls;
 
   private final SwerveRequest.FieldCentric driveRequest =
       new SwerveRequest.FieldCentric() // Add a 10% deadband
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-  public AutoAlignTwo(CommandSwerveDrivetrain drive) {
+  public AutoAlignTwo(CommandSwerveDrivetrain drive, Controls controls) {
     this.drive = drive;
     pidRotate.enableContinuousInput(-Math.PI, Math.PI);
+    this.controls = controls;
+    setName("Auto Align Two");
   }
 
   public void initialize() {
@@ -40,6 +45,12 @@ public class AutoAlignTwo extends Command {
   @Override
   public void execute() {
     Pose2d currentPose = drive.getState().Pose;
+    Transform2d robotToBranch = branchPose.minus(currentPose);
+    if (robotToBranch.getTranslation().getNorm() < 0.01
+        && Math.abs(robotToBranch.getRotation().getDegrees()) < 1) {
+      controls.vibrateDriveController(0.5);
+      return;
+    }
 
     // Calculate the power for X direction and clamp it between -1 and 1
     double powerX = pidX.calculate(currentPose.getX());
@@ -67,5 +78,6 @@ public class AutoAlignTwo extends Command {
     SwerveRequest stop = driveRequest.withVelocityX(0).withVelocityY(0).withRotationalRate(0);
     // Set the drive control with the stop request to halt all movement
     drive.setControl(stop);
+    controls.vibrateDriveController(0);
   }
 }
