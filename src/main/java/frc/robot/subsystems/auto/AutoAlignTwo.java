@@ -1,11 +1,19 @@
 package frc.robot.subsystems.auto;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,6 +29,26 @@ public class AutoAlignTwo extends Command {
   private Pose2d branchPose;
   private boolean redAlliance;
   private Controls controls;
+  private static final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+
+  private static final List<Pose2d> redAprilTags =
+      Arrays.asList(
+          aprilTagFieldLayout.getTagPose(6).get().toPose2d(),
+          aprilTagFieldLayout.getTagPose(7).get().toPose2d(),
+          aprilTagFieldLayout.getTagPose(8).get().toPose2d(),
+          aprilTagFieldLayout.getTagPose(9).get().toPose2d(),
+          aprilTagFieldLayout.getTagPose(10).get().toPose2d(),
+          aprilTagFieldLayout.getTagPose(11).get().toPose2d()
+      );
+      private static final List<Pose2d> blueAprilTags =
+      Arrays.asList(
+          aprilTagFieldLayout.getTagPose(17).get().toPose2d(),
+          aprilTagFieldLayout.getTagPose(18).get().toPose2d(),
+          aprilTagFieldLayout.getTagPose(19).get().toPose2d(),
+          aprilTagFieldLayout.getTagPose(20).get().toPose2d(),
+          aprilTagFieldLayout.getTagPose(21).get().toPose2d(),
+          aprilTagFieldLayout.getTagPose(22).get().toPose2d()
+      );
 
   private final SwerveRequest.FieldCentric driveRequest =
       new SwerveRequest.FieldCentric() // Add a 10% deadband
@@ -40,6 +68,11 @@ public class AutoAlignTwo extends Command {
     pidX.setSetpoint(branchPose.getX());
     pidY.setSetpoint(branchPose.getY());
     pidRotate.setSetpoint(branchPose.getRotation().getRadians());
+  }
+
+  public static Pose2d getNearestTag(Pose2d p, boolean isBlue) {
+    List<Pose2d> branchesPoses = isBlue ? blueAprilTags : redAprilTags;
+    return p.nearest(branchesPoses);
   }
 
   @Override
