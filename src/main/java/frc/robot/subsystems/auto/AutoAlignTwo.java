@@ -2,16 +2,12 @@ package frc.robot.subsystems.auto;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 
 public class AutoAlignTwo extends Command {
@@ -22,16 +18,17 @@ public class AutoAlignTwo extends Command {
   private CommandSwerveDrivetrain drive;
   private Pose2d branchPose;
   private boolean redAlliance;
-  
-  private final SwerveRequest.FieldCentric driveRequest = new SwerveRequest.FieldCentric() // Add a 10% deadband
-    .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-  public AutoAlignTwo (CommandSwerveDrivetrain drive) {
+  private final SwerveRequest.FieldCentric driveRequest =
+      new SwerveRequest.FieldCentric() // Add a 10% deadband
+          .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
+  public AutoAlignTwo(CommandSwerveDrivetrain drive) {
     this.drive = drive;
     pidRotate.enableContinuousInput(-Math.PI, Math.PI);
   }
-  
-  public void initialize(){
+
+  public void initialize() {
     redAlliance = DriverStation.getAlliance().get() == Alliance.Red;
     Pose2d robotPose = drive.getState().Pose;
     branchPose = AutoAlign.getClosestBranch(robotPose);
@@ -50,8 +47,8 @@ public class AutoAlignTwo extends Command {
 
     powerX = MathUtil.clamp(powerX, -2, 2);
     powerY = MathUtil.clamp(powerY, -2, 2);
-    powerX += .05*Math.signum(powerX);
-    powerY += .05*Math.signum(powerY);
+    powerX += .05 * Math.signum(powerX);
+    powerY += .05 * Math.signum(powerY);
     if (redAlliance) {
       powerX *= -1;
       powerY *= -1;
@@ -59,14 +56,16 @@ public class AutoAlignTwo extends Command {
 
     double powerRotate = pidRotate.calculate(currentPose.getRotation().getRadians());
     powerRotate = MathUtil.clamp(powerRotate, -4, 4);
-    SwerveRequest request = driveRequest.withVelocityX(powerX).withVelocityY(powerY).withRotationalRate(powerRotate);
+    SwerveRequest request =
+        driveRequest.withVelocityX(powerX).withVelocityY(powerY).withRotationalRate(powerRotate);
     // Set the drive control with the created request
     drive.setControl(request);
   }
+
   public void end(boolean interrupted) {
-        // Create a swerve request to stop all motion by setting velocities and rotational rate to 0
-        SwerveRequest stop = driveRequest.withVelocityX(0).withVelocityY(0).withRotationalRate(0);
-        // Set the drive control with the stop request to halt all movement
-        drive.setControl(stop);
+    // Create a swerve request to stop all motion by setting velocities and rotational rate to 0
+    SwerveRequest stop = driveRequest.withVelocityX(0).withVelocityY(0).withRotationalRate(0);
+    // Set the drive control with the stop request to halt all movement
+    drive.setControl(stop);
   }
 }
