@@ -5,9 +5,7 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.LEDPattern;
@@ -452,11 +450,11 @@ public class Controls {
             .getEntry();
     new Trigger(() -> elevatorCoastButton.getBoolean(false))
         .whileTrue(s.elevatorSubsystem.holdCoastMode());
-    var elevatorZeroButton = new DigitalInput(Hardware.ELEVATOR_ZERO_BUTTON);
-    new Trigger(() -> elevatorZeroButton.get())
-        .debounce(1, DebounceType.kRising)
-        .and(RobotModeTriggers.disabled())
-        .onTrue(s.elevatorSubsystem.resetPosZero());
+    // var elevatorZeroButton = new DigitalInput(Hardware.ELEVATOR_ZERO_BUTTON);
+    // new Trigger(() -> elevatorZeroButton.get())
+    //     .debounce(1, DebounceType.kRising)
+    //     .and(RobotModeTriggers.disabled())
+    //     .onTrue(s.elevatorSubsystem.resetPosZero());
   }
 
   private void configureArmPivotBindings() {
