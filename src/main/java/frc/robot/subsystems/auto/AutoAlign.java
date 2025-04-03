@@ -66,21 +66,21 @@ public class AutoAlign {
           BRANCH_B_L);
 
   private static final Pose2d BRANCH_R_A =
-      new Pose2d(new Translation2d(14.38, 3.85), Rotation2d.fromDegrees(179.3)); // WAAHS values
+      new Pose2d(new Translation2d(14.41, 3.77), Rotation2d.fromDegrees(172.51)); // Practice matach log values
   private static final Pose2d BRANCH_R_B =
-      new Pose2d(new Translation2d(14.36, 4.24), Rotation2d.fromDegrees(180)); // WAAHS values
+      new Pose2d(new Translation2d(14.31, 4.24), Rotation2d.fromDegrees(-173.25)); // WAAHS values
   private static final Pose2d BRANCH_R_C =
-      new Pose2d(new Translation2d(13.86, 5.09), Rotation2d.fromDegrees(240)); // WAAHS values
+      new Pose2d(new Translation2d(13.88, 5.07), Rotation2d.fromDegrees(-125.86)); // Practice matach log values
   private static final Pose2d BRANCH_R_D =
       new Pose2d(new Translation2d(13.54, 5.24), Rotation2d.fromDegrees(240)); // WAAHS values
   private static final Pose2d BRANCH_R_E =
-      new Pose2d(new Translation2d(12.54, 5.26), Rotation2d.fromDegrees(-54)); // WAAHS values
+      new Pose2d(new Translation2d(12.50, 5.24), Rotation2d.fromDegrees(-56.40)); // Practice matach log values
   private static final Pose2d BRANCH_R_F =
-      new Pose2d(new Translation2d(12.25, 5.03), Rotation2d.fromDegrees(300)); // WAAHS values
+      new Pose2d(new Translation2d(12.31, 4.97), Rotation2d.fromDegrees(-62.1)); // Practice matach log values
   private static final Pose2d BRANCH_R_G =
       new Pose2d(new Translation2d(11.73, 4.18), Rotation2d.fromDegrees(-2.35)); // WAAHS values
   private static final Pose2d BRANCH_R_H =
-      new Pose2d(new Translation2d(11.72, 3.83), Rotation2d.fromDegrees(-4.9)); // WAAHS values
+      new Pose2d(new Translation2d(11.88, 3.91), Rotation2d.fromDegrees(.78)); // Practice matach log values 
   private static final Pose2d BRANCH_R_I =
       new Pose2d(new Translation2d(12.29, 2.95), Rotation2d.fromDegrees(50.4)); // WAAHS values
   private static final Pose2d BRANCH_R_J =
