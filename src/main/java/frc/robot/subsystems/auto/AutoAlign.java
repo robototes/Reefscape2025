@@ -156,7 +156,7 @@ public class AutoAlign {
     return isBlue;
   }
 
-  private static Pose2d getClosestBranch(Pose2d robotPose) {
+  public static Pose2d getClosestBranch(Pose2d robotPose) {
 
     // figures out which branch to go to
     List<Pose2d> branchesPoses = isBlue() ? blueBranchesPoses : redBranchesPoses;
