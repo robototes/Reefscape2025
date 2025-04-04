@@ -572,7 +572,7 @@ public class Controls {
     if (s.spinnyClawSubsytem == null) {
       return;
     }
-    s.spinnyClawSubsytem.setScoringMode(() -> ScoringMode.CORAL);
+    s.spinnyClawSubsytem.setScoringMode(() -> scoringMode);
     // Claw controls bindings go here
     connected(armPivotSpinnyClawController)
         .and(armPivotSpinnyClawController.leftBumper())
