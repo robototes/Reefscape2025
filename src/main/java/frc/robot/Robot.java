@@ -60,8 +60,6 @@ public class Robot extends TimedRobot {
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
         && SubsystemConstants.SPINNYCLAW_ENABLED
-        && SensorConstants.ARMSENSOR_ENABLED // is this supposed to be here?
-        && SensorConstants.INTAKE_SENSOR_ENABLED // should we add this here?
     ) {
       superStructure =
           new SuperStructure(

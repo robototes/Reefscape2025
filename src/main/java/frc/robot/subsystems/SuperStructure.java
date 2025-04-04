@@ -148,7 +148,7 @@ public class SuperStructure {
         .withName("Coral Level 1");
   }
 
-  public Command groundIntake() {
+  public Command groundIntake() { //untested
     return Commands.sequence(
         Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.CORAL_GROUND_INTAKE_POS),
@@ -173,10 +173,6 @@ public class SuperStructure {
 
   public Command coralPreIntake() {
     return Commands.sequence(
-            Commands.sequence(
-              groundArm.moveToPosition(GroundArm.STOWED_POSITION),
-              groundSpinny.holdIntakePower()
-            ),
             Commands.parallel(
                 elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
                 armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN),
