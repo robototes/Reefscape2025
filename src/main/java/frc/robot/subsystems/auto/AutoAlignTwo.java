@@ -7,7 +7,9 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,6 +38,8 @@ public class AutoAlignTwo extends Command {
           aprilTagFieldLayout.getTagPose(9).get().toPose2d(),
           aprilTagFieldLayout.getTagPose(10).get().toPose2d(),
           aprilTagFieldLayout.getTagPose(11).get().toPose2d());
+  // robot dimensions - 36.5 32.5
+  // reef face from april tag center 12.97/2
   private static final List<Pose2d> blueAprilTags =
       Arrays.asList(
           aprilTagFieldLayout.getTagPose(17).get().toPose2d(),
@@ -45,9 +49,32 @@ public class AutoAlignTwo extends Command {
           aprilTagFieldLayout.getTagPose(21).get().toPose2d(),
           aprilTagFieldLayout.getTagPose(22).get().toPose2d());
 
+  private static final List<Pose2d> blueBranchPoses;
+  private static final List<Pose2d> redBranchPoses;
+
+  private static final Transform2d leftReef =
+      new Transform2d(
+          new Pose2d(),
+          new Pose2d(
+              Units.inchesToMeters(36.5 / 2),
+              Units.inchesToMeters((32.5 / 2) + (12.97 / 2)),
+              Rotation2d.fromDegrees(0)));
+  private static final Transform2d rightReef =
+      new Transform2d(
+          new Pose2d(),
+          new Pose2d(
+              Units.inchesToMeters(36.5 / 2),
+              Units.inchesToMeters((32.5 / 2) - (12.97 / 2)),
+              Rotation2d.fromDegrees(0)));
+
   private final SwerveRequest.FieldCentric driveRequest =
       new SwerveRequest.FieldCentric() // Add a 10% deadband
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
+  static {
+    redBranchPoses = List.of();
+    blueBranchPoses = List.of();
+  }
 
   public AutoAlignTwo(CommandSwerveDrivetrain drive, Controls controls) {
     this.drive = drive;
@@ -66,8 +93,8 @@ public class AutoAlignTwo extends Command {
   }
 
   public static Pose2d getNearestTag(Pose2d p, boolean isBlue) {
-    List<Pose2d> branchesPoses = isBlue ? blueAprilTags : redAprilTags;
-    return p.nearest(branchesPoses);
+    List<Pose2d> tagPose2ds = isBlue ? blueAprilTags : redAprilTags;
+    return p.nearest(tagPose2ds);
   }
 
   @Override
