@@ -79,6 +79,34 @@ public class SuperStructure {
         .withName("Coral Level 4");
   }
 
+  public Command coralLevelFourPlus(BooleanSupplier score) {
+    return Commands.sequence(
+            Commands.parallel(
+                    Commands.print("Pre position"),
+                    elevator
+                        .setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS_PLUS)
+                        .deadlineFor(
+                            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP).until(score)),
+                    spinnyClaw.stop())
+                .withTimeout(0.7),
+            repeatPrescoreScoreSwing(
+                Commands.sequence(
+                    Commands.parallel(
+                            elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS_PLUS),
+                            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_OUT))
+                        .withDeadline(Commands.waitUntil(score)),
+                    armPivot
+                        .moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
+                        .withTimeout(1.5)
+                        .until(armPivot.atAngle(ArmPivot.CORAL_POST_SCORE))),
+                score),
+            Commands.print("Pre preIntake()"),
+            coralPreIntake(),
+            Commands.print("Post preIntake()"))
+        .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L4").asProxy())
+        .withName("Coral Level 4");
+  }
+
   public Command coralLevelThree(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(

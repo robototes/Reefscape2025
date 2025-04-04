@@ -188,6 +188,13 @@ public class Controls {
     // operator start button used for climb - bound in climb bindings
     operatorController
         .y()
+        .and(operatorController.povUp())
+        .onTrue(
+            selectScoringHeight(
+                    BranchHeight.CORAL_LEVEL_FOUR_PLUS, AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
+                .withName("coral level 4 PLUS, algae level 3-4"));
+    operatorController
+        .y()
         .onTrue(
             selectScoringHeight(
                     BranchHeight.CORAL_LEVEL_FOUR, AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
@@ -354,6 +361,8 @@ public class Controls {
 
   private Command getCoralBranchHeightCommand() {
     return switch (branchHeight) {
+      case CORAL_LEVEL_FOUR_PLUS -> superStructure.coralLevelFourPlus(
+          driverController.rightBumper());
       case CORAL_LEVEL_FOUR -> superStructure.coralLevelFour(driverController.rightBumper());
       case CORAL_LEVEL_THREE -> superStructure.coralLevelThree(driverController.rightBumper());
       case CORAL_LEVEL_TWO -> superStructure.coralLevelTwo(driverController.rightBumper());
