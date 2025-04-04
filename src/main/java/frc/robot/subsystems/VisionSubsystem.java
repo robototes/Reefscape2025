@@ -168,8 +168,8 @@ public class VisionSubsystem extends SubsystemBase {
       //   return;
       // }
       if (!MathUtil.isNear(0, FieldPose3d.getZ(), 0.10)
-          || !MathUtil.isNear(0, FieldPose3d.getRotation().getX(), Units.degreesToRadians(3))
-          || !MathUtil.isNear(0, FieldPose3d.getRotation().getY(), Units.degreesToRadians(3))) {
+          || !MathUtil.isNear(0, FieldPose3d.getRotation().getX(), Units.degreesToRadians(8))
+          || !MathUtil.isNear(0, FieldPose3d.getRotation().getY(), Units.degreesToRadians(8))) {
         return;
       }
       var FieldPose = FieldPose3d.toPose2d();
