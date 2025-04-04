@@ -62,4 +62,8 @@ public class GroundSpinny extends SubsystemBase {
   public Command holdIntakePower() {
     return holdPower(GROUND_INTAKE_SPEED).withName("holdIntakePower");
   }
+
+  public Command stop() {
+    return runOnce(() -> motor.stopMotor()).withName("Ground spinny stop");
+  }
 }

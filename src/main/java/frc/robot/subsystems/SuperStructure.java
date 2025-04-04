@@ -11,6 +11,8 @@ public class SuperStructure {
   private final ElevatorSubsystem elevator;
   private final ArmPivot armPivot;
   private final SpinnyClaw spinnyClaw;
+  private final GroundArm groundArm;
+  private final GroundSpinny groundSpinny;
   private final ElevatorLight elevatorLight;
   private final ArmSensor armSensor;
 
@@ -18,11 +20,15 @@ public class SuperStructure {
       ElevatorSubsystem elevator,
       ArmPivot armPivot,
       SpinnyClaw spinnyClaw,
+      GroundArm groundArm,
+      GroundSpinny groundSpinny,
       ElevatorLight elevatorLight,
       ArmSensor armSensor) {
     this.elevator = elevator;
     this.armPivot = armPivot;
     this.spinnyClaw = spinnyClaw;
+    this.groundArm = groundArm;
+    this.groundSpinny = groundSpinny;
     this.elevatorLight = elevatorLight;
     this.armSensor = armSensor;
   }
@@ -142,6 +148,21 @@ public class SuperStructure {
         .withName("Coral Level 1");
   }
 
+  public Command groundIntake() {
+    return Commands.sequence(
+        Commands.parallel(
+            elevator.setLevel(ElevatorSubsystem.CORAL_GROUND_INTAKE_POS),
+            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_GROUND_INTAKE),
+            spinnyClaw.stop(),
+            groundSpinny.holdIntakePower()),
+        Commands.parallel(
+            groundArm.moveToPosition(GroundArm.GROUND_POSITION),
+            groundSpinny.holdIntakePower()),
+        groundSpinny.stop(),
+        Commands.waitSeconds(1), //just going off of vibes
+        coralPreIntake());
+  }
+
   public Command coralStow() {
     return Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.CORAL_STOWED),
@@ -151,10 +172,15 @@ public class SuperStructure {
   }
 
   public Command coralPreIntake() {
-    return Commands.parallel(
-            elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
-            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN),
-            spinnyClaw.stop())
+    return Commands.sequence(
+            Commands.sequence(
+              groundArm.moveToPosition(GroundArm.STOWED_POSITION),
+              groundSpinny.holdIntakePower()
+            ),
+            Commands.parallel(
+                elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
+                armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN),
+                spinnyClaw.stop()))
         .andThen(Commands.print("end of preIntake()"))
         .withName("PreIntake");
   }

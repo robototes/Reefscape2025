@@ -53,6 +53,7 @@ public class ArmPivot extends SubsystemBase {
   public static final double CORAL_PRESET_STOWED = 0.125;
   public static final double CORAL_PRESET_OUT = 0;
   public static final double CORAL_PRESET_UP = 0.25; // Pointing directly upwards
+  public static final double CORAL_PRESET_GROUND_INTAKE = 0.25; // untested - using preset up pos
   public static final double CORAL_PRESET_DOWN = -0.25;
   public static final double HARDSTOP_HIGH = 0.32;
   public static final double HARDSTOP_LOW = -0.26;

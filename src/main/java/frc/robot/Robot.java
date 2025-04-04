@@ -60,12 +60,16 @@ public class Robot extends TimedRobot {
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
         && SubsystemConstants.SPINNYCLAW_ENABLED
-        && SensorConstants.ARMSENSOR_ENABLED) {
+        && SensorConstants.ARMSENSOR_ENABLED // is this supposed to be here?
+        && SensorConstants.INTAKE_SENSOR_ENABLED // should we add this here?
+    ) {
       superStructure =
           new SuperStructure(
               subsystems.elevatorSubsystem,
               subsystems.armPivotSubsystem,
               subsystems.spinnyClawSubsytem,
+              subsystems.groundArm,
+              subsystems.groundSpinny,
               subsystems.elevatorLEDSubsystem,
               sensors.armSensor);
     } else {
