@@ -50,6 +50,14 @@ public class GroundSpinny extends SubsystemBase {
     cfg.apply(currentLimits);
   }
 
+  private Command setPower(double pow) {
+    return runOnce(
+        () -> {
+          motor.setVoltage(pow);
+          lastSetPower = pow;
+        });
+  }
+
   private Command holdPower(double pow) {
     return startEnd(
         () -> {
@@ -59,8 +67,12 @@ public class GroundSpinny extends SubsystemBase {
         () -> motor.stopMotor());
   }
 
+  public Command setIntakePower() {
+    return setPower(GROUND_INTAKE_SPEED).withName("set intake power");
+  }
+
   public Command holdIntakePower() {
-    return holdPower(GROUND_INTAKE_SPEED).withName("holdIntakePower");
+    return holdPower(GROUND_INTAKE_SPEED).withName("hold intake power");
   }
 
   public Command stop() {

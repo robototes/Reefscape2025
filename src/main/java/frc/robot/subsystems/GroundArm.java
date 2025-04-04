@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
-import java.util.function.BooleanSupplier;
 
 public class GroundArm extends SubsystemBase {
   private final double ARMPIVOT_KP = 3.8;
@@ -121,9 +120,5 @@ public class GroundArm extends SubsystemBase {
 
   public Command stop() {
     return runOnce(() -> motor.stopMotor());
-  }
-
-  public Command grounIntake(BooleanSupplier inSensor) {
-    return Commands.sequence(moveToPosition(GROUND_POSITION), Commands.idle()).until(inSensor);
   }
 }

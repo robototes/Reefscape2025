@@ -53,4 +53,9 @@ public class IntakeSensor {
             })
         .debounce(0.1);
   }
+
+  public boolean booleanInIntake() {
+    double distance = getSensorDistance().in(Meters);
+    return distance > INTAKE_LOWER_LIMIT && distance < INTAKE_UPPER_LIMIT;
+  }
 }

@@ -316,6 +316,7 @@ public class Controls {
                       CommandScheduler.getInstance().schedule(intakeCommand);
                     })
                 .withName("Driver Intake"));
+    driverController.b().onTrue(superStructure.groundIntake(driverController.x()));
     if (sensors.armSensor != null) {
       sensors
           .armSensor
@@ -669,9 +670,6 @@ public class Controls {
             .moveToPosition(GroundArm.STOWED_POSITION)
             .andThen(Commands.idle())
             .withName("Ground stowed position wait"));
-    climbTestController
-        .leftBumper()
-        .onTrue(s.groundArm.grounIntake(sensors.intakeSensor.inIntake()));
   }
 
   private Command selectScoringHeight(BranchHeight b, AlgaeIntakeHeight a) {
