@@ -146,9 +146,12 @@ public class ClimbPivot extends SubsystemBase {
                   moveComplete = false;
                 }
                 case CLIMBED -> {
-                  selectedPos = TargetPositions.STOWED; // Commented out due to ratchet
-                  maxTargetPos = STOWED_MAX_PRESET;
-                  minTargetPos = STOWED_MIN_PRESET;
+                  // selectedPos = TargetPositions.STOWED;
+                  selectedPos = TargetPositions.CLIMB_OUT;
+                  // maxTargetPos = STOWED_MAX_PRESET;
+                  // minTargetPos = STOWED_MIN_PRESET;
+                  maxTargetPos = CLIMB_OUT_MAX_PRESET;
+                  minTargetPos = CLIMB_OUT_MIN_PRESET;
                   holdSpeed = CLIMB_HOLD_CLIMBED;
                   moveComplete = false;
                 }
@@ -325,5 +328,15 @@ public class ClimbPivot extends SubsystemBase {
 
   public void moveCompleteFalse() {
     moveComplete = false;
+  }
+
+  public Command stow() {
+    return runOnce(
+        () -> {
+          selectedPos = TargetPositions.STOWED;
+          maxTargetPos = STOWED_MAX_PRESET;
+          minTargetPos = STOWED_MIN_PRESET;
+          moveComplete = false;
+        });
   }
 }

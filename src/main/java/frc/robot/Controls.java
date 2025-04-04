@@ -536,15 +536,17 @@ public class Controls {
         .and(climbTestController.start())
         .onTrue(s.climbPivotSubsystem.advanceClimbTarget());
     operatorController.start().onTrue(s.climbPivotSubsystem.advanceClimbTarget());
-    operatorController
-        .rightTrigger(0.1)
-        .whileTrue(
-            s.climbPivotSubsystem
-                .moveClimbManual(
-                    () ->
-                        -0.6
-                            * MathUtil.applyDeadband(operatorController.getRightTriggerAxis(), 0.1))
-                .withName("Climb Manual Control"));
+    // operatorController
+    //     .rightTrigger(0.1)
+    //     .whileTrue(
+    //         s.climbPivotSubsystem
+    //             .moveClimbManual(
+    //                 () ->
+    //                     -0.6
+    //                         * MathUtil.applyDeadband(operatorController.getRightTriggerAxis(),
+    // 0.1))
+    // .withName("Climb Manual Control"));
+    operatorController.rightTrigger().onTrue(s.climbPivotSubsystem.stow());
     connected(climbTestController)
         .and(climbTestController.rightTrigger(0.1))
         .whileTrue(
