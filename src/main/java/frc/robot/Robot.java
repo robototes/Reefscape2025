@@ -136,6 +136,9 @@ public class Robot extends TimedRobot {
     if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.getSelectedAuto() != null) {
       AutoLogic.getSelectedAuto().schedule();
     }
+    if (subsystems.climbPivotSubsystem != null) {
+      subsystems.climbPivotSubsystem.moveCompleteFalse();
+    }
   }
 
   @Override

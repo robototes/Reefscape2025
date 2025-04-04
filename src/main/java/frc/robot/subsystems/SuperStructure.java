@@ -223,8 +223,8 @@ public class SuperStructure {
             Commands.parallel(
                 spinnyClaw.algaeGripIntakePower(),
                 Commands.sequence(
-                    elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE),
-                    armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE))),
+                    armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
+                    elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE))),
             Commands.waitUntil(score),
             spinnyClaw.algaeExtakeProcessorPower())
         .withName("Algae Processor Score");
