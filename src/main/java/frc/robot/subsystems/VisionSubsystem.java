@@ -163,7 +163,7 @@ public class VisionSubsystem extends SubsystemBase {
     if (estimatedPose.isPresent()) {
       var TimestampSeconds = estimatedPose.get().timestampSeconds;
       var FieldPose3d = estimatedPose.get().estimatedPose;
-      // rawFieldPose3dEntry.set(FieldPose3d);
+      rawFieldPose3dEntry.set(FieldPose3d);
       // if (BadAprilTagDetector(result)) {
       //   return;
       // }
