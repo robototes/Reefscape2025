@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Hardware;
@@ -41,6 +42,7 @@ public class ArmPivot extends SubsystemBase {
   public static final double CORAL_PRESET_L3 = 0.13;
   public static final double CORAL_PRESET_L4 = 0.0;
   public static final double CORAL_PRESET_PRE_L4 = 1.0 / 16.0;
+  public static final double CORAL_POST_SCORE = -0.15;
   public static final double ALGAE_REMOVE_PREPOS = 0;
   public static final double ALGAE_REMOVE = 0;
   public static final double ALGAE_FLING = -0.08;
@@ -123,9 +125,11 @@ public class ArmPivot extends SubsystemBase {
 
   // preset command placeholder
   public Command moveToPosition(double position) {
-    return setTargetPosition(position)
-        .andThen(
-            Commands.waitUntil(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE));
+    return setTargetPosition(position).andThen(Commands.waitUntil(atAngle(position)));
+  }
+
+  public Trigger atAngle(double position) {
+    return new Trigger(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE);
   }
 
   // (+) is to move arm up, and (-) is down

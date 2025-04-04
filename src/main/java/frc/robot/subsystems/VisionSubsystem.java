@@ -38,32 +38,35 @@ import org.photonvision.targeting.PhotonPipelineResult;
  * station (+X is forward from blue driver station, +Y is left, +Z is up).
  */
 public class VisionSubsystem extends SubsystemBase {
-
-  private static final double CAMERA_X_POS_METERS_LEFT = 0.3;
-  private static final double CAMERA_X_POS_METERS_RIGHT = 0.28;
-  private static final double CAMERA_Y_POS_METERS_LEFT = 0.26;
+  private static final double CAMERA_X_POS_METERS_LEFT = 0.26;
+  private static final double CAMERA_X_POS_METERS_RIGHT = 0.27;
+  private static final double CAMERA_Y_POS_METERS_LEFT = 0.25;
   private static final double CAMERA_Y_POS_METERS_RIGHT = -0.25;
-  private static final double CAMERA_Z_POS_METERS_LEFT = 0.22;
-  private static final double CAMERA_Z_POS_METERS_RIGHT = 0.22;
-  private static final double CAMERA_ROLL_LEFT = Units.degreesToRadians(-1.5);
-  private static final double CAMERA_ROLL_RIGHT = Units.degreesToRadians(1.87);
-  private static final double CAMERA_PITCH_LEFT = Units.degreesToRadians(-9.18);
-  private static final double CAMERA_PITCH_RIGHT = Units.degreesToRadians(-6.55);
-  private static final double CAMERA_YAW_LEFT = Units.degreesToRadians(-40);
-  private static final double CAMERA_YAW_RIGHT = Units.degreesToRadians(45);
+  private static final double CAMERA_Z_POS_METERS_LEFT = 0.20;
+  private static final double CAMERA_Z_POS_METERS_RIGHT = 0.21;
+  private static final double CAMERA_ROLL_LEFT = Units.degreesToRadians(3);
+  private static final double CAMERA_ROLL_RIGHT = Units.degreesToRadians(0.92);
+  private static final double CAMERA_PITCH_LEFT = Units.degreesToRadians(-6.3);
+  private static final double CAMERA_PITCH_RIGHT = Units.degreesToRadians(-8.3);
+  private static final double CAMERA_YAW_LEFT = Units.degreesToRadians(-44.64);
+  private static final double CAMERA_YAW_RIGHT = Units.degreesToRadians(46.42);
 
   public static final Transform3d ROBOT_TO_CAM_LEFT =
       new Transform3d(
+          // Translation3d.kZero,
           CAMERA_X_POS_METERS_LEFT,
           CAMERA_Y_POS_METERS_LEFT,
           CAMERA_Z_POS_METERS_LEFT,
+          // Rotation3d.kZero);
           new Rotation3d(CAMERA_ROLL_LEFT, CAMERA_PITCH_LEFT, CAMERA_YAW_LEFT));
 
   public static final Transform3d ROBOT_TO_CAM_RIGHT =
       new Transform3d(
+          // Translation3d.kZero,
           CAMERA_X_POS_METERS_RIGHT,
           CAMERA_Y_POS_METERS_RIGHT,
           CAMERA_Z_POS_METERS_RIGHT,
+          // Rotation3d.kZero);
           new Rotation3d(CAMERA_ROLL_RIGHT, CAMERA_PITCH_RIGHT, CAMERA_YAW_RIGHT));
 
   // TODO Measure these
@@ -165,9 +168,9 @@ public class VisionSubsystem extends SubsystemBase {
       PhotonPipelineResult result,
       PhotonPoseEstimator estimator,
       StructPublisher<Pose3d> rawFieldPose3dEntry) {
-    if (BadAprilTagDetector(result)) {
-      return;
-    }
+    // if (BadAprilTagDetector(result)) {
+    //   return;
+    // }
     var RawTimestampSeconds = result.getTimestampSeconds();
     if (!MathUtil.isNear(Timer.getFPGATimestamp(), RawTimestampSeconds, 5.0)) {
       return;
@@ -177,11 +180,11 @@ public class VisionSubsystem extends SubsystemBase {
       var TimestampSeconds = estimatedPose.get().timestampSeconds;
       var FieldPose3d = estimatedPose.get().estimatedPose;
       rawFieldPose3dEntry.set(FieldPose3d);
-      if (!MathUtil.isNear(0, FieldPose3d.getZ(), 0.10)
-          || !MathUtil.isNear(0, FieldPose3d.getRotation().getX(), Units.degreesToRadians(3))
-          || !MathUtil.isNear(0, FieldPose3d.getRotation().getY(), Units.degreesToRadians(3))) {
-        return;
-      }
+      // if (!MathUtil.isNear(0, FieldPose3d.getZ(), 0.10)
+      //     || !MathUtil.isNear(0, FieldPose3d.getRotation().getX(), Units.degreesToRadians(3))
+      //     || !MathUtil.isNear(0, FieldPose3d.getRotation().getY(), Units.degreesToRadians(3))) {
+      //   return;
+      // }
       var FieldPose = FieldPose3d.toPose2d();
       var Distance =
           PhotonUtils.getDistanceToPose(
@@ -221,7 +224,7 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public double getDistanceToTarget() {
-    return (double) Math.round(Distance * 10) / 10;
+    return (double) Math.round(Distance * 1000) / 1000;
   }
 
   // configured for 2025 reefscape

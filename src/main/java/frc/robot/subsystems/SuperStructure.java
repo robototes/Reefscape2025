@@ -67,7 +67,10 @@ public class SuperStructure {
                             elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS),
                             armPivot.moveToPosition(ArmPivot.CORAL_PRESET_PRE_L4))
                         .withDeadline(Commands.waitUntil(score)),
-                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN).withTimeout(0.4)),
+                    armPivot
+                        .moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
+                        .withTimeout(1.5)
+                        .until(armPivot.atAngle(ArmPivot.CORAL_POST_SCORE))),
                 score),
             Commands.print("Pre preIntake()"),
             coralPreIntake(),
@@ -90,7 +93,10 @@ public class SuperStructure {
                     armPivot
                         .moveToPosition(ArmPivot.CORAL_PRESET_L3)
                         .withDeadline(Commands.waitUntil(score)),
-                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN).withTimeout(0.4)),
+                    armPivot
+                        .moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
+                        .withTimeout(1.5)
+                        .until(armPivot.atAngle(ArmPivot.CORAL_POST_SCORE))),
                 score),
             coralPreIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L3").asProxy())
@@ -111,7 +117,10 @@ public class SuperStructure {
                     armPivot
                         .moveToPosition(ArmPivot.CORAL_PRESET_L2)
                         .withDeadline(Commands.waitUntil(score)),
-                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN).withTimeout(0.4)),
+                    armPivot
+                        .moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
+                        .withTimeout(1.5)
+                        .until(armPivot.atAngle(ArmPivot.CORAL_POST_SCORE))),
                 score),
             coralPreIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L2").asProxy())
@@ -127,6 +136,7 @@ public class SuperStructure {
                 .withTimeout(0.5)
                 .withDeadline(Commands.waitUntil(score)),
             spinnyClaw.coralLevelOneHoldExtakePower().withTimeout(0.25),
+            Commands.waitSeconds(1), // try this for wait time
             coralPreIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L1").asProxy())
         .withName("Coral Level 1");
@@ -191,9 +201,9 @@ public class SuperStructure {
   }
 
   public Command algaeGroundIntake() {
-    return Commands.sequence(
-            Commands.parallel(
-                spinnyClaw.algaeIntakePower(),
+    return Commands.parallel(
+            spinnyClaw.algaeIntakePower(),
+            Commands.sequence(
                 armPivot.moveToPosition(ArmPivot.ALGAE_GROUND_INTAKE),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_GROUND_INTAKE)))
         .withName("Algae Ground Intake");
@@ -211,9 +221,10 @@ public class SuperStructure {
   public Command algaeProcessorScore(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
-                elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE),
-                armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
-                spinnyClaw.algaeGripIntakePower()),
+                spinnyClaw.algaeGripIntakePower(),
+                Commands.sequence(
+                    armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
+                    elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE))),
             Commands.waitUntil(score),
             spinnyClaw.algaeExtakeProcessorPower())
         .withName("Algae Processor Score");
