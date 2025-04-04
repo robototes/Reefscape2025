@@ -322,4 +322,8 @@ public class ClimbPivot extends SubsystemBase {
     moveComplete = true;
     motorLeft.stopMotor();
   }
+
+  public void moveCompleteFalse() {
+    moveComplete = false;
+  }
 }
