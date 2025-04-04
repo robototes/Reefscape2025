@@ -163,10 +163,10 @@ public class VisionSubsystem extends SubsystemBase {
     if (estimatedPose.isPresent()) {
       var TimestampSeconds = estimatedPose.get().timestampSeconds;
       var FieldPose3d = estimatedPose.get().estimatedPose;
-      rawFieldPose3dEntry.set(FieldPose3d);
-      if (BadAprilTagDetector(result)) {
-        return;
-      }
+      // rawFieldPose3dEntry.set(FieldPose3d);
+      // if (BadAprilTagDetector(result)) {
+      //   return;
+      // }
       if (!MathUtil.isNear(0, FieldPose3d.getZ(), 0.10)
           || !MathUtil.isNear(0, FieldPose3d.getRotation().getX(), Units.degreesToRadians(3))
           || !MathUtil.isNear(0, FieldPose3d.getRotation().getY(), Units.degreesToRadians(3))) {
