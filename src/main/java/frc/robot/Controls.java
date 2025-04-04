@@ -635,7 +635,10 @@ public class Controls {
     if (s.drivebaseSubsystem == null) {
       return;
     }
-    driverController.rightTrigger().whileTrue(AutoAlign.autoAlignTwo(s.drivebaseSubsystem, this));
+    driverController
+        .rightTrigger()
+        .and(() -> scoringMode == ScoringMode.CORAL)
+        .whileTrue(AutoAlign.autoAlignTwo(s.drivebaseSubsystem, this));
   }
 
   private void configureGroundSpinnyBindings() {
