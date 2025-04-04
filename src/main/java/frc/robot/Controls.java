@@ -316,7 +316,9 @@ public class Controls {
                       CommandScheduler.getInstance().schedule(intakeCommand);
                     })
                 .withName("Driver Intake"));
+
     driverController.b().onTrue(superStructure.groundIntake(driverController.x()));
+    
     if (sensors.armSensor != null) {
       sensors
           .armSensor
