@@ -166,7 +166,6 @@ public class AutoLogic {
 
     // Intake
     NamedCommands.registerCommand("scoreCommand", scoreCommand());
-    NamedCommands.registerCommand("branchAlign", autoBranchAlign());
     NamedCommands.registerCommand("intake", intakeCommand());
     NamedCommands.registerCommand("isCollected", isCollected());
   }
@@ -207,9 +206,9 @@ public class AutoLogic {
     tab.add("Launch Type", isVision).withPosition(4, 1);
     tab.add("Game Objects", gameObjects).withPosition(5, 1);
     tab.add("Available Auto Variants", availableAutos).withPosition(4, 2).withSize(2, 1);
-    tab.addBoolean("readyToScore?", () -> AutoAlign.readyToScore());
+    tab.addBoolean("readyToScore?", () -> AutoAlign.readyToScoreTwo());
     tab.addBoolean("Level?", () -> AutoAlign.isLevel());
-    tab.addBoolean("Close Enough?", () -> AutoAlign.isCloseEnough());
+    tab.addBoolean("Close Enough?", () -> AutoAlign.isCloseEnoughTwo());
     tab.addBoolean("Stationary?", () -> AutoAlign.isStationary());
     tab.addBoolean("Low on time?", () -> AutoAlign.oneSecondLeft());
     tab.addDouble("MATCH TIME(TIMER FOR AUTO)", () -> DriverStation.getMatchTime());
@@ -268,9 +267,9 @@ public class AutoLogic {
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
-      return AutoAlign.autoAlign(s.drivebaseSubsystem)
+      return AutoAlign.autoAlignTwo(s.drivebaseSubsystem, controls)
           .repeatedly()
-          .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
+          .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScoreTwo()))
           .withName("scoreCommand");
     }
     return Commands.none().withName("scoreCommand");
@@ -287,10 +286,6 @@ public class AutoLogic {
       }
     }
     return Commands.none().withName("intake");
-  }
-
-  public static Command autoBranchAlign() {
-    return AutoAlign.autoAlign(s.drivebaseSubsystem).withName("autoAlign");
   }
 
   public static Command isCollected() {

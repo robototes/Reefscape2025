@@ -180,11 +180,9 @@ public class AutoAlignTwo extends Command {
       controls.vibrateDriveController(0.5);
       return;
     }
-
     // Calculate the power for X direction and clamp it between -1 and 1
     double powerX = pidX.calculate(currentPose.getX());
     double powerY = pidY.calculate(currentPose.getY());
-
     powerX = MathUtil.clamp(powerX, -2, 2);
     powerY = MathUtil.clamp(powerY, -2, 2);
     powerX += .05 * Math.signum(powerX);
@@ -193,13 +191,25 @@ public class AutoAlignTwo extends Command {
       powerX *= -1;
       powerY *= -1;
     }
-
     double powerRotate = pidRotate.calculate(currentPose.getRotation().getRadians());
     powerRotate = MathUtil.clamp(powerRotate, -4, 4);
     SwerveRequest request =
         driveRequest.withVelocityX(powerX).withVelocityY(powerY).withRotationalRate(powerRotate);
     // Set the drive control with the created request
     drive.setControl(request);
+  }
+
+  @Override
+  public boolean isFinished() {
+    Pose2d currentPose = drive.getState().Pose;
+    Transform2d robotToBranch = branchPose.minus(currentPose);
+    if (robotToBranch.getTranslation().getNorm() < 0.01
+        && Math.abs(robotToBranch.getRotation().getDegrees()) < 1) {
+      controls.vibrateDriveController(0.5);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @Override

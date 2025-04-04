@@ -147,7 +147,9 @@ public class AutoAlign {
 
   public static Command autoAlignTwo(
       CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
-    return drivebaseSubsystem.defer(() -> new AutoAlignTwo(drivebaseSubsystem, controls));
+    return drivebaseSubsystem
+        .defer(() -> new AutoAlignTwo(drivebaseSubsystem, controls))
+        .withName("Auto Align Two");
   }
 
   public static Boolean isBlue() {
@@ -193,8 +195,11 @@ public class AutoAlign {
   }
 
   public static boolean readyToScore() {
-
     return (isStationary() && isLevel() && isCloseEnough()) || oneSecondLeft();
+  }
+
+  public static boolean readyToScoreTwo() {
+    return (isStationary() && isLevel() && isCloseEnoughTwo()) || oneSecondLeft();
   }
 
   public static boolean isStationary() {
@@ -213,6 +218,12 @@ public class AutoAlign {
   public static boolean isCloseEnough() {
     var currentPose = AutoLogic.s.drivebaseSubsystem.getState().Pose;
     var branchPose = getClosestBranch(currentPose);
+    return currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
+  }
+
+  public static boolean isCloseEnoughTwo() {
+    var currentPose = AutoLogic.s.drivebaseSubsystem.getState().Pose;
+    var branchPose = AutoAlignTwo.getNearestBranch(currentPose, isBlue());
     return currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
   }
 
