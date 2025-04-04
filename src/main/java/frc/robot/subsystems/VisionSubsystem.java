@@ -71,7 +71,7 @@ public class VisionSubsystem extends SubsystemBase {
   private static final Vector<N3> STANDARD_DEVS =
       VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(20));
   private static final Vector<N3> DISTANCE_SC_STANDARD_DEVS =
-      VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(6));
+      VecBuilder.fill(1, 1, Units.degreesToRadians(50));
 
   private final PhotonCamera leftCamera;
   private final PhotonCamera rightCamera;
