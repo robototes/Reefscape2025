@@ -18,8 +18,8 @@ import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import java.util.List;
 
 public class AutoAlignTwo extends Command {
-  private PIDController pidX = new PIDController(6, 0, 0);
-  private PIDController pidY = new PIDController(6, 0, 0);
+  private PIDController pidX = new PIDController(4, 0, 0);
+  private PIDController pidY = new PIDController(4, 0, 0);
   private PIDController pidRotate = new PIDController(8, 0, 0);
 
   private CommandSwerveDrivetrain drive;
