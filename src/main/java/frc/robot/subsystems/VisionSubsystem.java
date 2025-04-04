@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -24,7 +23,6 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
-import java.util.EnumSet;
 import java.util.Optional;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -124,17 +122,6 @@ public class VisionSubsystem extends SubsystemBase {
         new PhotonPoseEstimator(
             fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_RIGHT);
 
-    var networkTables = NetworkTableInstance.getDefault();
-    networkTables.addListener(
-        networkTables.getTable("photonvision").getSubTable(Hardware.LEFT_CAM).getEntry("rawBytes"),
-        EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-        event -> update());
-
-    networkTables.addListener(
-        networkTables.getTable("photonvision").getSubTable(Hardware.RIGHT_CAM).getEntry("rawBytes"),
-        EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-        event -> update());
-
     ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("AprilTags");
 
     shuffleboardTab
@@ -155,7 +142,7 @@ public class VisionSubsystem extends SubsystemBase {
         .withSize(1, 1);
   }
 
-  private void update() {
+  public void update() {
     for (PhotonPipelineResult result : leftCamera.getAllUnreadResults()) {
       process(result, photonPoseEstimatorLeftCamera, rawFieldPose3dEntryLeft);
     }
