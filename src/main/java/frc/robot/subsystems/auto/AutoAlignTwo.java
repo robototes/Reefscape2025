@@ -82,7 +82,7 @@ public class AutoAlignTwo extends Command {
   private static final Pose2d blueBranchK =
       aprilTagFieldLayout.getTagPose(19).get().toPose2d().plus(rightReef);
   private static final Pose2d blueBranchL =
-      aprilTagFieldLayout.getTagPose(19).get().toPose2d().plus(rightReef);
+      aprilTagFieldLayout.getTagPose(19).get().toPose2d().plus(leftReef);
 
   private static final Pose2d redBranchA =
       aprilTagFieldLayout.getTagPose(7).get().toPose2d().plus(rightReef);
@@ -107,7 +107,7 @@ public class AutoAlignTwo extends Command {
   private static final Pose2d redBranchK =
       aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(rightReef);
   private static final Pose2d redBranchL =
-      aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(rightReef);
+      aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(leftReef);
 
   public static Pose2d getNearestTag(Pose2d p, boolean isBlue) {
     List<Pose2d> tagPose2ds = isBlue ? blueAprilTags : redAprilTags;
