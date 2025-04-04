@@ -145,6 +145,13 @@ public class AutoAlign {
     return drivebaseSubsystem.defer(() -> autoPathAlign(drivebaseSubsystem)).withName("Auto Align");
   }
 
+  public static Command autoAlignTwo(
+      CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
+    return drivebaseSubsystem
+        .defer(() -> new AutoAlignTwo(drivebaseSubsystem, controls))
+        .withName("Auto Align Two");
+  }
+
   public static Boolean isBlue() {
     boolean isBlue;
 
@@ -156,7 +163,7 @@ public class AutoAlign {
     return isBlue;
   }
 
-  private static Pose2d getClosestBranch(Pose2d robotPose) {
+  public static Pose2d getClosestBranch(Pose2d robotPose) {
 
     // figures out which branch to go to
     List<Pose2d> branchesPoses = isBlue() ? blueBranchesPoses : redBranchesPoses;
@@ -188,8 +195,11 @@ public class AutoAlign {
   }
 
   public static boolean readyToScore() {
-
     return (isStationary() && isLevel() && isCloseEnough()) || oneSecondLeft();
+  }
+
+  public static boolean readyToScoreTwo() {
+    return (isStationary() && isLevel() && isCloseEnoughTwo()) || oneSecondLeft();
   }
 
   public static boolean isStationary() {
@@ -208,6 +218,12 @@ public class AutoAlign {
   public static boolean isCloseEnough() {
     var currentPose = AutoLogic.s.drivebaseSubsystem.getState().Pose;
     var branchPose = getClosestBranch(currentPose);
+    return currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
+  }
+
+  public static boolean isCloseEnoughTwo() {
+    var currentPose = AutoLogic.s.drivebaseSubsystem.getState().Pose;
+    var branchPose = AutoAlignTwo.getNearestBranch(currentPose, isBlue());
     return currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
   }
 
