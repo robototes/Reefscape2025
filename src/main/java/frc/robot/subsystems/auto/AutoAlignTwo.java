@@ -54,10 +54,10 @@ public class AutoAlignTwo extends Command {
   // left and right offsets from the april tags ()
   private static final Transform2d leftReef =
       new Transform2d(
-          Units.inchesToMeters(36.5 / 2), Units.inchesToMeters(12.97 / 2), Rotation2d.kZero);
+          Units.inchesToMeters(36.5 / 2), Units.inchesToMeters(12.97 / 2), Rotation2d.k180deg);
   private static final Transform2d rightReef =
       new Transform2d(
-          Units.inchesToMeters(36.5 / 2), Units.inchesToMeters(-12.97 / 2), Rotation2d.kZero);
+          Units.inchesToMeters(36.5 / 2), Units.inchesToMeters(-12.97 / 2), Rotation2d.k180deg);
 
   private static final Pose2d blueBranchA =
       aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(rightReef);
