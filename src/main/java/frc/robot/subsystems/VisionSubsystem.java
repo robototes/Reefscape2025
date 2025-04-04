@@ -155,9 +155,6 @@ public class VisionSubsystem extends SubsystemBase {
       PhotonPipelineResult result,
       PhotonPoseEstimator estimator,
       StructPublisher<Pose3d> rawFieldPose3dEntry) {
-    if (BadAprilTagDetector(result)) {
-      return;
-    }
     var RawTimestampSeconds = result.getTimestampSeconds();
     if (!MathUtil.isNear(Timer.getFPGATimestamp(), RawTimestampSeconds, 5.0)) {
       return;
@@ -167,6 +164,9 @@ public class VisionSubsystem extends SubsystemBase {
       var TimestampSeconds = estimatedPose.get().timestampSeconds;
       var FieldPose3d = estimatedPose.get().estimatedPose;
       rawFieldPose3dEntry.set(FieldPose3d);
+      if (BadAprilTagDetector(result)) {
+        return;
+      }
       if (!MathUtil.isNear(0, FieldPose3d.getZ(), 0.10)
           || !MathUtil.isNear(0, FieldPose3d.getRotation().getX(), Units.degreesToRadians(3))
           || !MathUtil.isNear(0, FieldPose3d.getRotation().getY(), Units.degreesToRadians(3))) {
