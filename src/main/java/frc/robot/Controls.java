@@ -494,12 +494,6 @@ public class Controls {
                 .moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
                 .withName("Arm Preset Down"));
     connected(armPivotSpinnyClawController)
-        .and(operatorController.povRight())
-        .onTrue(
-            s.armPivotSubsystem
-                .moveToPosition(ArmPivot.CORAL_PRESET_OUT)
-                .withName("Arm Preset Out"));
-    connected(armPivotSpinnyClawController)
         .and(armPivotSpinnyClawController.y())
         .onTrue(
             s.armPivotSubsystem
