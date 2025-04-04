@@ -35,9 +35,9 @@ public class ClimbPivot extends SubsystemBase {
   private final DigitalInput sensor;
   private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Climb");
 
-  private final double STOWED_MAX_PRESET = -0.450;
-  private final double STOWED_MIN_PRESET = -0.459;
-  private final double CLIMB_OUT_MAX_PRESET = -0.14;
+  private final double STOWED_MAX_PRESET = -0.447;
+  private final double STOWED_MIN_PRESET = -0.450;
+  private final double CLIMB_OUT_MAX_PRESET = -0.150;
   private final double CLIMB_OUT_MIN_PRESET = -0.177;
   private final double CLIMBED_MAX_PRESET = -0.325;
   private final double CLIMBED_MIN_PRESET = -0.333;
