@@ -195,6 +195,7 @@ public class Controls {
                 .withName("coral level 4 PLUS, algae level 3-4"));
     operatorController
         .y()
+        .and(operatorController.povUp().negate())
         .onTrue(
             selectScoringHeight(
                     BranchHeight.CORAL_LEVEL_FOUR, AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
