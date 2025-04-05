@@ -70,7 +70,8 @@ public class AutoLogic {
 
   // paths lists
 
-  private static AutoPath defaultPath = new AutoPath("do nothing", "M0");
+  private static AutoPath nothingPath = new AutoPath("do nothing", "Nothing");
+  private static AutoPath defaultPath = new AutoPath("drive forward (M0)", "M0");
 
   private static List<AutoPath> noPiecePaths =
       List.of(
@@ -229,6 +230,7 @@ public class AutoLogic {
 
     // filter based off gameobject count
     availableAutos.setDefaultOption(defaultPath.getDisplayName(), defaultPath);
+    availableAutos.addOption(nothingPath.getDisplayName(), nothingPath);
 
     List<AutoPath> autoCommandsList = commandsMap.get(numGameObjects);
 

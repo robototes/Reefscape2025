@@ -78,6 +78,9 @@ public class AutoPath {
    * @return if it is matching
    */
   public boolean matchesStartPosition(StartPosition expectedStartPosition) {
+    if (startPose2d == null) {
+      return true;
+    }
     return (MathUtil.isNear(expectedStartPosition.startPose.getX(), startPose2d.getX(), .05)
         && MathUtil.isNear(expectedStartPosition.startPose.getY(), startPose2d.getY(), .05)
         && MathUtil.isNear(
