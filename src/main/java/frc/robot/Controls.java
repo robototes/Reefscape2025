@@ -457,7 +457,7 @@ public class Controls {
                     rumble(operatorController, 0.5, Seconds.of(0.3)))
                 .ignoringDisable(true)
                 .withName("Reset elevator zero"));
-    operatorController.rightBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
+    //operatorController.rightBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
     var elevatorCoastButton =
         Shuffleboard.getTab("Controls")
             .add("Elevator Coast Mode", false)
@@ -673,6 +673,7 @@ public class Controls {
             .moveToPosition(GroundArm.STOWED_POSITION)
             .andThen(Commands.idle())
             .withName("Ground stowed position wait"));
+    operatorController.rightBumper().whileTrue(s.groundArm.moveToPosition(GroundArm.GROUND_POSITION).andThen(Commands.idle()).withName("ground up position"));
   }
 
   private Command selectScoringHeight(BranchHeight b, AlgaeIntakeHeight a) {
