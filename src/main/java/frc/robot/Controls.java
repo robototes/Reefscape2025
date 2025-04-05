@@ -653,6 +653,7 @@ public class Controls {
     driverController
         .rightTrigger()
         .and(() -> scoringMode == ScoringMode.CORAL)
+        .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
         .whileTrue(AutoAlign.autoAlignTwo(s.drivebaseSubsystem, this));
   }
 
