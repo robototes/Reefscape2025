@@ -45,7 +45,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double ALGAE_NET_SCORE = 38; // untested
   public static final double ALGAE_GROUND_INTAKE = 0.05;
   public static final double CORAL_STOWED = 3.9;
-  public static final double CORAL_GROUND_INTAKE_POS = 3.9; // trying stow pos - untested
+  public static final double CORAL_GROUND_INTAKE_POS = 7.2;
   public static final double CORAL_INTAKE_POS = 1.55;
   public static final double CORAL_PRE_INTAKE = 4.0;
   public static final double MANUAL = 0.1;

@@ -11,7 +11,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 
 public class GroundSpinny extends SubsystemBase {
-  public static final double GROUND_INTAKE_SPEED = -2;
+  public static final double GROUND_INTAKE_SPEED = -10;
+  public static final double FUNNEL_INTAKE_SPEED = -2;
 
   // TalonFX
   private final TalonFX motor;
@@ -67,12 +68,20 @@ public class GroundSpinny extends SubsystemBase {
         () -> motor.stopMotor());
   }
 
-  public Command setIntakePower() {
-    return setPower(GROUND_INTAKE_SPEED).withName("set intake power");
+  public Command setFunnelIntakePower() {
+    return setPower(FUNNEL_INTAKE_SPEED).withName("set funnel intake power");
   }
 
-  public Command holdIntakePower() {
-    return holdPower(GROUND_INTAKE_SPEED).withName("hold intake power");
+  public Command holdFunnelIntakePower() {
+    return holdPower(FUNNEL_INTAKE_SPEED).withName("hold funnel intake power");
+  }
+
+  public Command setGroundIntakePower() {
+    return setPower(GROUND_INTAKE_SPEED).withName("set ground intake power");
+  }
+
+  public Command holdGroundIntakePower() {
+    return holdPower(GROUND_INTAKE_SPEED).withName("hold ground intake power");
   }
 
   public Command stop() {

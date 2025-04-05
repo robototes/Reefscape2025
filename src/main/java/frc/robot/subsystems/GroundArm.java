@@ -16,10 +16,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 
 public class GroundArm extends SubsystemBase {
-  private final double ARMPIVOT_KP = 3.8;
+  private final double ARMPIVOT_KP = 20;
   private final double ARMPIVOT_KI = 0;
   private final double ARMPIVOT_KD = 0;
-  private final double ARMPIVOT_KS = 0.7;
+  private final double ARMPIVOT_KS = 0.9;
   private final double ARMPIVOT_KV = 4;
   private final double ARMPIVOT_KG = 0.048;
   private final double ARMPIVOT_KA = 0;
@@ -75,9 +75,9 @@ public class GroundArm extends SubsystemBase {
     talonFXConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
     // set Motion Magic settings in rps not mechanism units
-    talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity = 0.5;
-    talonFXConfiguration.MotionMagic.MotionMagicAcceleration = 1;
-    talonFXConfiguration.MotionMagic.MotionMagicJerk = 2;
+    talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity = 80;
+    talonFXConfiguration.MotionMagic.MotionMagicAcceleration = 160;
+    talonFXConfiguration.MotionMagic.MotionMagicJerk = 200;
 
     cfg.apply(talonFXConfiguration);
   }

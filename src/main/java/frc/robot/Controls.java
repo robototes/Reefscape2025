@@ -661,7 +661,7 @@ public class Controls {
     if (s.groundSpinny == null) {
       return;
     }
-    s.groundSpinny.setDefaultCommand(s.groundSpinny.holdIntakePower());
+    s.groundSpinny.setDefaultCommand(s.groundSpinny.holdFunnelIntakePower());
   }
 
   private void configureGroundArmBindings() {

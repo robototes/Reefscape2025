@@ -162,7 +162,7 @@ public class SuperStructure {
                   elevator.setLevel(ElevatorSubsystem.CORAL_GROUND_INTAKE_POS),
                   armPivot.moveToPosition(ArmPivot.CORAL_PRESET_GROUND_INTAKE),
                   spinnyClaw.stop(), // just as a backup in case things are silly
-                  groundSpinny.setIntakePower()),
+                  groundSpinny.setGroundIntakePower()),
               groundArm
                   .moveToPosition(GroundArm.GROUND_POSITION)
                   .withDeadline(Commands.waitUntil(intakeSensor.inIntake().or(retract))),
