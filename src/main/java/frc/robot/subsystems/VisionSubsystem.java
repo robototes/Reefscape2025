@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -24,7 +23,6 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
-import java.util.EnumSet;
 import java.util.Optional;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -73,7 +71,7 @@ public class VisionSubsystem extends SubsystemBase {
   private static final Vector<N3> STANDARD_DEVS =
       VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(20));
   private static final Vector<N3> DISTANCE_SC_STANDARD_DEVS =
-      VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(6));
+      VecBuilder.fill(1, 1, Units.degreesToRadians(50));
 
   private final PhotonCamera leftCamera;
   private final PhotonCamera rightCamera;
@@ -124,17 +122,6 @@ public class VisionSubsystem extends SubsystemBase {
         new PhotonPoseEstimator(
             fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_RIGHT);
 
-    var networkTables = NetworkTableInstance.getDefault();
-    networkTables.addListener(
-        networkTables.getTable("photonvision").getSubTable(Hardware.LEFT_CAM).getEntry("rawBytes"),
-        EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-        event -> update());
-
-    networkTables.addListener(
-        networkTables.getTable("photonvision").getSubTable(Hardware.RIGHT_CAM).getEntry("rawBytes"),
-        EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-        event -> update());
-
     ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("AprilTags");
 
     shuffleboardTab
@@ -155,7 +142,7 @@ public class VisionSubsystem extends SubsystemBase {
         .withSize(1, 1);
   }
 
-  private void update() {
+  public void update() {
     for (PhotonPipelineResult result : leftCamera.getAllUnreadResults()) {
       process(result, photonPoseEstimatorLeftCamera, rawFieldPose3dEntryLeft);
     }
@@ -168,9 +155,6 @@ public class VisionSubsystem extends SubsystemBase {
       PhotonPipelineResult result,
       PhotonPoseEstimator estimator,
       StructPublisher<Pose3d> rawFieldPose3dEntry) {
-    if (BadAprilTagDetector(result)) {
-      return;
-    }
     var RawTimestampSeconds = result.getTimestampSeconds();
     if (!MathUtil.isNear(Timer.getFPGATimestamp(), RawTimestampSeconds, 5.0)) {
       return;
@@ -180,9 +164,12 @@ public class VisionSubsystem extends SubsystemBase {
       var TimestampSeconds = estimatedPose.get().timestampSeconds;
       var FieldPose3d = estimatedPose.get().estimatedPose;
       rawFieldPose3dEntry.set(FieldPose3d);
+      // if (BadAprilTagDetector(result)) {
+      //   return;
+      // }
       if (!MathUtil.isNear(0, FieldPose3d.getZ(), 0.10)
-          || !MathUtil.isNear(0, FieldPose3d.getRotation().getX(), Units.degreesToRadians(3))
-          || !MathUtil.isNear(0, FieldPose3d.getRotation().getY(), Units.degreesToRadians(3))) {
+          || !MathUtil.isNear(0, FieldPose3d.getRotation().getX(), Units.degreesToRadians(8))
+          || !MathUtil.isNear(0, FieldPose3d.getRotation().getY(), Units.degreesToRadians(8))) {
         return;
       }
       var FieldPose = FieldPose3d.toPose2d();

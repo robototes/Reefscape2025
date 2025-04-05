@@ -70,7 +70,8 @@ public class AutoLogic {
 
   // paths lists
 
-  private static AutoPath defaultPath = new AutoPath("do nothing", "M0");
+  private static AutoPath nothingPath = new AutoPath("do nothing", "Nothing");
+  private static AutoPath defaultPath = new AutoPath("drive forward (M0)", "M0");
 
   private static List<AutoPath> noPiecePaths =
       List.of(
@@ -229,6 +230,7 @@ public class AutoLogic {
 
     // filter based off gameobject count
     availableAutos.setDefaultOption(defaultPath.getDisplayName(), defaultPath);
+    availableAutos.addOption(nothingPath.getDisplayName(), nothingPath);
 
     List<AutoPath> autoCommandsList = commandsMap.get(numGameObjects);
 
@@ -255,7 +257,6 @@ public class AutoLogic {
   }
 
   public static Command getSelectedAuto() {
-
     double waitTimer = autoDelayEntry.getDouble(0);
     String autoName = availableAutos.getSelected().getAutoName();
 
@@ -276,11 +277,8 @@ public class AutoLogic {
   }
 
   public static Command intakeCommand() {
-
     if (r.superStructure != null) {
-
       if (ARMSENSOR_ENABLED) {
-
         return Commands.sequence(r.superStructure.coralPreIntake(), r.superStructure.coralIntake())
             .withName("intake");
       }
@@ -290,8 +288,9 @@ public class AutoLogic {
 
   public static Command isCollected() {
     if (ARMSENSOR_ENABLED && r.sensors.armSensor != null) {
-
-      return Commands.waitUntil(r.sensors.armSensor.inTrough()).withName("isCollected");
+      return Commands.waitUntil(r.sensors.armSensor.inTrough())
+          .withTimeout(3)
+          .withName("isCollected");
     }
     return Commands.none().withName("isCollected");
   }

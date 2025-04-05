@@ -349,7 +349,6 @@ public class Controls {
                             case CORAL -> getCoralBranchHeightCommand();
                             case ALGAE -> Commands.sequence(
                                     superStructure.algaeNetScore(driverController.rightBumper()),
-                                    Commands.waitSeconds(0.7),
                                     getAlgaeIntakeCommand())
                                 .withName("Algae score then intake");
                           };
@@ -510,12 +509,6 @@ public class Controls {
                 .moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
                 .withName("Arm Preset Down"));
     connected(armPivotSpinnyClawController)
-        .and(operatorController.povRight())
-        .onTrue(
-            s.armPivotSubsystem
-                .moveToPosition(ArmPivot.CORAL_PRESET_OUT)
-                .withName("Arm Preset Out"));
-    connected(armPivotSpinnyClawController)
         .and(armPivotSpinnyClawController.y())
         .onTrue(
             s.armPivotSubsystem
@@ -552,15 +545,17 @@ public class Controls {
         .and(climbTestController.start())
         .onTrue(s.climbPivotSubsystem.advanceClimbTarget());
     operatorController.start().onTrue(s.climbPivotSubsystem.advanceClimbTarget());
-    operatorController
-        .rightTrigger(0.1)
-        .whileTrue(
-            s.climbPivotSubsystem
-                .moveClimbManual(
-                    () ->
-                        -0.6
-                            * MathUtil.applyDeadband(operatorController.getRightTriggerAxis(), 0.1))
-                .withName("Climb Manual Control"));
+    // operatorController
+    //     .rightTrigger(0.1)
+    //     .whileTrue(
+    //         s.climbPivotSubsystem
+    //             .moveClimbManual(
+    //                 () ->
+    //                     -0.6
+    //                         * MathUtil.applyDeadband(operatorController.getRightTriggerAxis(),
+    // 0.1))
+    // .withName("Climb Manual Control"));
+    operatorController.rightTrigger().onTrue(s.climbPivotSubsystem.stow());
     connected(climbTestController)
         .and(climbTestController.rightTrigger(0.1))
         .whileTrue(
@@ -592,7 +587,7 @@ public class Controls {
     if (s.spinnyClawSubsytem == null) {
       return;
     }
-    s.spinnyClawSubsytem.setScoringMode(() -> ScoringMode.CORAL);
+    s.spinnyClawSubsytem.setScoringMode(() -> scoringMode);
     // Claw controls bindings go here
     connected(armPivotSpinnyClawController)
         .and(armPivotSpinnyClawController.leftBumper())
@@ -655,7 +650,10 @@ public class Controls {
     if (s.drivebaseSubsystem == null) {
       return;
     }
-    driverController.rightTrigger().whileTrue(AutoAlign.autoAlignTwo(s.drivebaseSubsystem, this));
+    driverController
+        .rightTrigger()
+        .and(() -> scoringMode == ScoringMode.CORAL)
+        .whileTrue(AutoAlign.autoAlignTwo(s.drivebaseSubsystem, this));
   }
 
   private void configureGroundSpinnyBindings() {
