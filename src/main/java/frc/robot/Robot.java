@@ -5,6 +5,7 @@
 package frc.robot;
 
 import au.grapplerobotics.CanBridge;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -100,12 +101,16 @@ public class Robot extends TimedRobot {
       AutoLogic.registerCommands();
       AutonomousField.initShuffleBoard("Field", 0, 0, this::addPeriodic);
       AutoLogic.initShuffleBoard();
+      FollowPathCommand.warmupCommand().schedule();
     }
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    if (subsystems.visionSubsystem != null) {
+      subsystems.visionSubsystem.update();
+    }
   }
 
   @Override
@@ -133,6 +138,9 @@ public class Robot extends TimedRobot {
     Shuffleboard.startRecording();
     if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.getSelectedAuto() != null) {
       AutoLogic.getSelectedAuto().schedule();
+    }
+    if (subsystems.climbPivotSubsystem != null) {
+      subsystems.climbPivotSubsystem.moveCompleteFalse();
     }
   }
 

@@ -27,29 +27,29 @@ public class AutoAlign {
   private static final double MaxAcceleration = 1;
   private static final double MaxAngularAcceleraition = 1;
   private static final Pose2d BRANCH_B_A =
-      new Pose2d(new Translation2d(3.200, 4.190), Rotation2d.fromDegrees(0));
+      new Pose2d(new Translation2d(3.17, 4.22), Rotation2d.fromDegrees(-4)); // PNCMP field cal
   private static final Pose2d BRANCH_B_B =
-      new Pose2d(new Translation2d(3.200, 3.860), Rotation2d.fromDegrees(0));
+      new Pose2d(new Translation2d(3.22, 3.82), Rotation2d.fromDegrees(0)); // WAAHS values
   private static final Pose2d BRANCH_B_C =
-      new Pose2d(new Translation2d(3.700, 2.990), Rotation2d.fromDegrees(60));
+      new Pose2d(new Translation2d(3.69, 2.99), Rotation2d.fromDegrees(60)); // WAAHS values
   private static final Pose2d BRANCH_B_D =
-      new Pose2d(new Translation2d(3.980, 2.820), Rotation2d.fromDegrees(60));
+      new Pose2d(new Translation2d(3.97, 2.85), Rotation2d.fromDegrees(60)); // WAAHS values
   private static final Pose2d BRANCH_B_E =
-      new Pose2d(new Translation2d(4.990, 2.820), Rotation2d.fromDegrees(120));
+      new Pose2d(new Translation2d(5.00, 2.78), Rotation2d.fromDegrees(120)); // WAAHS values
   private static final Pose2d BRANCH_B_F =
-      new Pose2d(new Translation2d(5.270, 2.990), Rotation2d.fromDegrees(120));
+      new Pose2d(new Translation2d(5.30, 3.01), Rotation2d.fromDegrees(120)); // WAAHS values
   private static final Pose2d BRANCH_B_G =
-      new Pose2d(new Translation2d(5.775, 3.860), Rotation2d.fromDegrees(180));
+      new Pose2d(new Translation2d(5.80, 3.89), Rotation2d.fromDegrees(180)); // WAAHS values
   private static final Pose2d BRANCH_B_H =
-      new Pose2d(new Translation2d(5.775, 4.190), Rotation2d.fromDegrees(180));
+      new Pose2d(new Translation2d(5.75, 4.23), Rotation2d.fromDegrees(180)); // WAAHS values
   private static final Pose2d BRANCH_B_I =
-      new Pose2d(new Translation2d(5.270, 5.060), Rotation2d.fromDegrees(240));
+      new Pose2d(new Translation2d(5.32, 5.06), Rotation2d.fromDegrees(-125)); // PNCMP field cal
   private static final Pose2d BRANCH_B_J =
-      new Pose2d(new Translation2d(4.990, 5.230), Rotation2d.fromDegrees(240));
+      new Pose2d(new Translation2d(4.99, 5.21), Rotation2d.fromDegrees(-119)); // PNCMP field cal
   private static final Pose2d BRANCH_B_K =
-      new Pose2d(new Translation2d(3.980, 5.230), Rotation2d.fromDegrees(300));
+      new Pose2d(new Translation2d(3.99, 5.25), Rotation2d.fromDegrees(-63)); // PNCMP field cal
   private static final Pose2d BRANCH_B_L =
-      new Pose2d(new Translation2d(3.700, 5.060), Rotation2d.fromDegrees(300));
+      new Pose2d(new Translation2d(3.70, 5.05), Rotation2d.fromDegrees(-59)); // PNCMP field cal
   private static final List<Pose2d> blueBranchesPoses =
       Arrays.asList(
           BRANCH_B_A,
@@ -66,29 +66,39 @@ public class AutoAlign {
           BRANCH_B_L);
 
   private static final Pose2d BRANCH_R_A =
-      new Pose2d(new Translation2d(14.490, 3.930), Rotation2d.fromDegrees(179.3));
+      new Pose2d(
+          new Translation2d(14.41, 3.77),
+          Rotation2d.fromDegrees(172.51)); // Practice matach log values
   private static final Pose2d BRANCH_R_B =
-      new Pose2d(new Translation2d(14.350, 4.190), Rotation2d.fromDegrees(180));
+      new Pose2d(new Translation2d(14.31, 4.24), Rotation2d.fromDegrees(-173.25)); // WAAHS values
   private static final Pose2d BRANCH_R_C =
-      new Pose2d(new Translation2d(13.85, 5.04), Rotation2d.fromDegrees(-124));
+      new Pose2d(
+          new Translation2d(13.88, 5.07),
+          Rotation2d.fromDegrees(-125.86)); // Practice matach log values
   private static final Pose2d BRANCH_R_D =
-      new Pose2d(new Translation2d(13.59, 5.2), Rotation2d.fromDegrees(-119));
+      new Pose2d(new Translation2d(13.54, 5.24), Rotation2d.fromDegrees(240)); // WAAHS values
   private static final Pose2d BRANCH_R_E =
-      new Pose2d(new Translation2d(12.510, 5.250), Rotation2d.fromDegrees(-54));
+      new Pose2d(
+          new Translation2d(12.50, 5.24),
+          Rotation2d.fromDegrees(-56.40)); // Practice matach log values
   private static final Pose2d BRANCH_R_F =
-      new Pose2d(new Translation2d(12.56, 5.27), Rotation2d.fromDegrees(300));
+      new Pose2d(
+          new Translation2d(12.31, 4.97),
+          Rotation2d.fromDegrees(-62.1)); // Practice matach log values
   private static final Pose2d BRANCH_R_G =
-      new Pose2d(new Translation2d(11.740, 4.240), Rotation2d.fromDegrees(-2.35));
+      new Pose2d(new Translation2d(11.73, 4.18), Rotation2d.fromDegrees(-2.35)); // WAAHS values
   private static final Pose2d BRANCH_R_H =
-      new Pose2d(new Translation2d(11.780, 3.920), Rotation2d.fromDegrees(-4.9));
+      new Pose2d(
+          new Translation2d(11.88, 3.91),
+          Rotation2d.fromDegrees(.78)); // Practice matach log values
   private static final Pose2d BRANCH_R_I =
-      new Pose2d(new Translation2d(12.205, 2.980), Rotation2d.fromDegrees(50.4));
+      new Pose2d(new Translation2d(12.29, 2.95), Rotation2d.fromDegrees(50.4)); // WAAHS values
   private static final Pose2d BRANCH_R_J =
-      new Pose2d(new Translation2d(12.440, 2.850), Rotation2d.fromDegrees(49.9));
+      new Pose2d(new Translation2d(12.60, 2.82), Rotation2d.fromDegrees(49.9)); // WAAHS values
   private static final Pose2d BRANCH_R_K =
-      new Pose2d(new Translation2d(13.570, 2.820), Rotation2d.fromDegrees(120));
+      new Pose2d(new Translation2d(13.59, 2.80), Rotation2d.fromDegrees(120)); // WAAHS values
   private static final Pose2d BRANCH_R_L =
-      new Pose2d(new Translation2d(13.920, 2.950), Rotation2d.fromDegrees(121.1));
+      new Pose2d(new Translation2d(13.86, 3.03), Rotation2d.fromDegrees(121.1)); // WAAHS values
   private static final List<Pose2d> redBranchesPoses =
       Arrays.asList(
           BRANCH_R_A,
@@ -135,6 +145,13 @@ public class AutoAlign {
     return drivebaseSubsystem.defer(() -> autoPathAlign(drivebaseSubsystem)).withName("Auto Align");
   }
 
+  public static Command autoAlignTwo(
+      CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
+    return drivebaseSubsystem
+        .defer(() -> new AutoAlignTwo(drivebaseSubsystem, controls))
+        .withName("Auto Align Two");
+  }
+
   public static Boolean isBlue() {
     boolean isBlue;
 
@@ -146,7 +163,7 @@ public class AutoAlign {
     return isBlue;
   }
 
-  private static Pose2d getClosestBranch(Pose2d robotPose) {
+  public static Pose2d getClosestBranch(Pose2d robotPose) {
 
     // figures out which branch to go to
     List<Pose2d> branchesPoses = isBlue() ? blueBranchesPoses : redBranchesPoses;
@@ -178,8 +195,11 @@ public class AutoAlign {
   }
 
   public static boolean readyToScore() {
-
     return (isStationary() && isLevel() && isCloseEnough()) || oneSecondLeft();
+  }
+
+  public static boolean readyToScoreTwo() {
+    return (isStationary() && isLevel() && isCloseEnoughTwo()) || oneSecondLeft();
   }
 
   public static boolean isStationary() {
@@ -198,6 +218,12 @@ public class AutoAlign {
   public static boolean isCloseEnough() {
     var currentPose = AutoLogic.s.drivebaseSubsystem.getState().Pose;
     var branchPose = getClosestBranch(currentPose);
+    return currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
+  }
+
+  public static boolean isCloseEnoughTwo() {
+    var currentPose = AutoLogic.s.drivebaseSubsystem.getState().Pose;
+    var branchPose = AutoAlignTwo.getNearestBranch(currentPose, isBlue());
     return currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
   }
 

@@ -201,9 +201,9 @@ public class SuperStructure {
   }
 
   public Command algaeGroundIntake() {
-    return Commands.sequence(
-            Commands.parallel(
-                spinnyClaw.algaeIntakePower(),
+    return Commands.parallel(
+            spinnyClaw.algaeIntakePower(),
+            Commands.sequence(
                 armPivot.moveToPosition(ArmPivot.ALGAE_GROUND_INTAKE),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_GROUND_INTAKE)))
         .withName("Algae Ground Intake");
@@ -221,9 +221,10 @@ public class SuperStructure {
   public Command algaeProcessorScore(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
-                elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE),
-                armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
-                spinnyClaw.algaeGripIntakePower()),
+                spinnyClaw.algaeGripIntakePower(),
+                Commands.sequence(
+                    armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
+                    elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE))),
             Commands.waitUntil(score),
             spinnyClaw.algaeExtakeProcessorPower())
         .withName("Algae Processor Score");
@@ -236,7 +237,10 @@ public class SuperStructure {
                 armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE),
                 spinnyClaw.algaeGripIntakePower()),
             Commands.waitUntil(score),
-            spinnyClaw.algaeHoldExtakePower().withTimeout(0.7))
+            spinnyClaw.algaeHoldExtakePower().withTimeout(0.7),
+            Commands.waitSeconds(0.7),
+            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
+            elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR))
         .withName("Algae Net Score");
   }
 
