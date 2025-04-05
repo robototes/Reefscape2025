@@ -13,7 +13,6 @@ import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 
 public class BargeAlign extends Command {
   private PIDController pidX = new PIDController(4, 0, 0);
-  private PIDController pidY = new PIDController(4, 0, 0);
   private PIDController pidRotate = new PIDController(8, 0, 0);
 
   private CommandSwerveDrivetrain drive;
@@ -28,7 +27,6 @@ public class BargeAlign extends Command {
       new SwerveRequest.FieldCentric() // Add a 10% deadband
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-
   public BargeAlign(CommandSwerveDrivetrain drive) {
     this.drive = drive;
     pidRotate.enableContinuousInput(-Math.PI, Math.PI);
@@ -38,7 +36,7 @@ public class BargeAlign extends Command {
   private boolean atTargetPosition() {
     Pose2d currentPose = drive.getState().Pose;
     return Math.abs(targetX - currentPose.getX()) < 0.01
-      && Math.abs(targetAngle.minus(currentPose.getRotation()).getDegrees()) < 1;
+        && Math.abs(targetAngle.minus(currentPose.getRotation()).getDegrees()) < 1;
   }
 
   @Override
@@ -58,19 +56,15 @@ public class BargeAlign extends Command {
     }
     // Calculate the power for X direction and clamp it between -1 and 1
     double powerX = pidX.calculate(currentPose.getX());
-    double powerY = pidY.calculate(currentPose.getY());
     powerX = MathUtil.clamp(powerX, -2, 2);
-    powerY = MathUtil.clamp(powerY, -2, 2);
     powerX += .05 * Math.signum(powerX);
-    powerY += .05 * Math.signum(powerY);
     if (redAlliance) {
       powerX *= -1;
-      powerY *= -1;
     }
     double powerRotate = pidRotate.calculate(currentPose.getRotation().getRadians());
     powerRotate = MathUtil.clamp(powerRotate, -4, 4);
     SwerveRequest request =
-        driveRequest.withVelocityX(powerX).withVelocityY(powerY).withRotationalRate(powerRotate);
+        driveRequest.withVelocityX(powerX).withVelocityY(0).withRotationalRate(powerRotate);
     // Set the drive control with the created request
     drive.setControl(request);
   }
