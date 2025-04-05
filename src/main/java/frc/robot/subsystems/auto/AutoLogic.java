@@ -255,7 +255,6 @@ public class AutoLogic {
   }
 
   public static Command getSelectedAuto() {
-
     double waitTimer = autoDelayEntry.getDouble(0);
     String autoName = availableAutos.getSelected().getAutoName();
 
@@ -276,11 +275,8 @@ public class AutoLogic {
   }
 
   public static Command intakeCommand() {
-
     if (r.superStructure != null) {
-
       if (ARMSENSOR_ENABLED) {
-
         return Commands.sequence(r.superStructure.coralPreIntake(), r.superStructure.coralIntake())
             .withName("intake");
       }
@@ -290,7 +286,6 @@ public class AutoLogic {
 
   public static Command isCollected() {
     if (ARMSENSOR_ENABLED && r.sensors.armSensor != null) {
-
       return Commands.waitUntil(r.sensors.armSensor.inTrough())
           .withTimeout(3)
           .withName("isCollected");
