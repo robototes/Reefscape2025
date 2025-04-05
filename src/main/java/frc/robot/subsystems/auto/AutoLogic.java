@@ -121,7 +121,7 @@ public class AutoLogic {
           new AutoPath("YSWLSC_K-L-A", "YSWLSC_K-L-A"),
           new AutoPath("OSWRSF_D_C_B", "OSWRSF_D_C_B"),
           new AutoPath("YSMLSC_K-L-A", "YSMLSC_K-L-A"));
-          ;
+  ;
 
   private static List<AutoPath> fourPiecePaths =
       List.of(
