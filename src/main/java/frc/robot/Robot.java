@@ -5,6 +5,7 @@
 package frc.robot;
 
 import au.grapplerobotics.CanBridge;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -15,7 +16,6 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Sensors.SensorConstants;
 import frc.robot.Subsystems.SubsystemConstants;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoBuilderConfig;
@@ -58,15 +58,17 @@ public class Robot extends TimedRobot {
     }
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
-        && SubsystemConstants.SPINNYCLAW_ENABLED
-        && SensorConstants.ARMSENSOR_ENABLED) {
+        && SubsystemConstants.SPINNYCLAW_ENABLED) {
       superStructure =
           new SuperStructure(
               subsystems.elevatorSubsystem,
               subsystems.armPivotSubsystem,
               subsystems.spinnyClawSubsytem,
+              subsystems.groundArm,
+              subsystems.groundSpinny,
               subsystems.elevatorLEDSubsystem,
-              sensors.armSensor);
+              sensors.armSensor,
+              sensors.intakeSensor);
     } else {
       superStructure = null;
     }
@@ -100,12 +102,16 @@ public class Robot extends TimedRobot {
       AutoLogic.registerCommands();
       AutonomousField.initShuffleBoard("Field", 0, 0, this::addPeriodic);
       AutoLogic.initShuffleBoard();
+      FollowPathCommand.warmupCommand().schedule();
     }
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    if (subsystems.visionSubsystem != null) {
+      subsystems.visionSubsystem.update();
+    }
   }
 
   @Override
@@ -133,6 +139,9 @@ public class Robot extends TimedRobot {
     Shuffleboard.startRecording();
     if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.getSelectedAuto() != null) {
       AutoLogic.getSelectedAuto().schedule();
+    }
+    if (subsystems.climbPivotSubsystem != null) {
+      subsystems.climbPivotSubsystem.moveCompleteFalse();
     }
   }
 

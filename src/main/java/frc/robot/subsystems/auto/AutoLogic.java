@@ -70,7 +70,8 @@ public class AutoLogic {
 
   // paths lists
 
-  private static AutoPath defaultPath = new AutoPath("do nothing", "M0");
+  private static AutoPath nothingPath = new AutoPath("do nothing", "Nothing");
+  private static AutoPath defaultPath = new AutoPath("drive forward (M0)", "M0");
 
   private static List<AutoPath> noPiecePaths =
       List.of(
@@ -118,6 +119,7 @@ public class AutoLogic {
           new AutoPath("YSMLSF_J-K-L", "YSMLSF_J-K-L"),
           new AutoPath("YSMLSF_K-L-A", "YSMLSF_K-L-A"),
           new AutoPath("YSWLSC_K-L-A", "YSWLSC_K-L-A"),
+          new AutoPath("OSWRSF_D_C_B", "OSWRSF_D_C_B"),
           new AutoPath("YSMLSC_K-L-A", "YSMLSC_K-L-A"));
 
   private static List<AutoPath> fourPiecePaths =
@@ -166,7 +168,6 @@ public class AutoLogic {
 
     // Intake
     NamedCommands.registerCommand("scoreCommand", scoreCommand());
-    NamedCommands.registerCommand("branchAlign", autoBranchAlign());
     NamedCommands.registerCommand("intake", intakeCommand());
     NamedCommands.registerCommand("isCollected", isCollected());
   }
@@ -207,9 +208,9 @@ public class AutoLogic {
     tab.add("Launch Type", isVision).withPosition(4, 1);
     tab.add("Game Objects", gameObjects).withPosition(5, 1);
     tab.add("Available Auto Variants", availableAutos).withPosition(4, 2).withSize(2, 1);
-    tab.addBoolean("readyToScore?", () -> AutoAlign.readyToScore());
+    tab.addBoolean("readyToScore?", () -> AutoAlign.readyToScoreTwo());
     tab.addBoolean("Level?", () -> AutoAlign.isLevel());
-    tab.addBoolean("Close Enough?", () -> AutoAlign.isCloseEnough());
+    tab.addBoolean("Close Enough?", () -> AutoAlign.isCloseEnoughTwo());
     tab.addBoolean("Stationary?", () -> AutoAlign.isStationary());
     tab.addBoolean("Low on time?", () -> AutoAlign.oneSecondLeft());
     tab.addDouble("MATCH TIME(TIMER FOR AUTO)", () -> DriverStation.getMatchTime());
@@ -230,6 +231,7 @@ public class AutoLogic {
 
     // filter based off gameobject count
     availableAutos.setDefaultOption(defaultPath.getDisplayName(), defaultPath);
+    availableAutos.addOption(nothingPath.getDisplayName(), nothingPath);
 
     List<AutoPath> autoCommandsList = commandsMap.get(numGameObjects);
 
@@ -256,7 +258,6 @@ public class AutoLogic {
   }
 
   public static Command getSelectedAuto() {
-
     double waitTimer = autoDelayEntry.getDouble(0);
     String autoName = availableAutos.getSelected().getAutoName();
 
@@ -268,20 +269,17 @@ public class AutoLogic {
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
-      return AutoAlign.autoAlign(s.drivebaseSubsystem)
+      return AutoAlign.autoAlignTwo(s.drivebaseSubsystem, controls)
           .repeatedly()
-          .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
+          .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScoreTwo()))
           .withName("scoreCommand");
     }
     return Commands.none().withName("scoreCommand");
   }
 
   public static Command intakeCommand() {
-
     if (r.superStructure != null) {
-
       if (ARMSENSOR_ENABLED) {
-
         return Commands.sequence(r.superStructure.coralPreIntake(), r.superStructure.coralIntake())
             .withName("intake");
       }
@@ -289,14 +287,11 @@ public class AutoLogic {
     return Commands.none().withName("intake");
   }
 
-  public static Command autoBranchAlign() {
-    return AutoAlign.autoAlign(s.drivebaseSubsystem).withName("autoAlign");
-  }
-
   public static Command isCollected() {
     if (ARMSENSOR_ENABLED && r.sensors.armSensor != null) {
-
-      return Commands.waitUntil(r.sensors.armSensor.inTrough()).withName("isCollected");
+      return Commands.waitUntil(r.sensors.armSensor.inTrough())
+          .withTimeout(3)
+          .withName("isCollected");
     }
     return Commands.none().withName("isCollected");
   }

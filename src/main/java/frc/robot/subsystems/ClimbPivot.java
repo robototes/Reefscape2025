@@ -35,9 +35,9 @@ public class ClimbPivot extends SubsystemBase {
   private final DigitalInput sensor;
   private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Climb");
 
-  private final double STOWED_MAX_PRESET = -0.450;
-  private final double STOWED_MIN_PRESET = -0.459;
-  private final double CLIMB_OUT_MAX_PRESET = -0.14;
+  private final double STOWED_MAX_PRESET = -0.447;
+  private final double STOWED_MIN_PRESET = -0.450;
+  private final double CLIMB_OUT_MAX_PRESET = -0.150;
   private final double CLIMB_OUT_MIN_PRESET = -0.177;
   private final double CLIMBED_MAX_PRESET = -0.325;
   private final double CLIMBED_MIN_PRESET = -0.333;
@@ -146,9 +146,12 @@ public class ClimbPivot extends SubsystemBase {
                   moveComplete = false;
                 }
                 case CLIMBED -> {
-                  selectedPos = TargetPositions.STOWED; // Commented out due to ratchet
-                  maxTargetPos = STOWED_MAX_PRESET;
-                  minTargetPos = STOWED_MIN_PRESET;
+                  // selectedPos = TargetPositions.STOWED;
+                  selectedPos = TargetPositions.CLIMB_OUT;
+                  // maxTargetPos = STOWED_MAX_PRESET;
+                  // minTargetPos = STOWED_MIN_PRESET;
+                  maxTargetPos = CLIMB_OUT_MAX_PRESET;
+                  minTargetPos = CLIMB_OUT_MIN_PRESET;
                   holdSpeed = CLIMB_HOLD_CLIMBED;
                   moveComplete = false;
                 }
@@ -321,5 +324,19 @@ public class ClimbPivot extends SubsystemBase {
   public void moveCompleteTrue() {
     moveComplete = true;
     motorLeft.stopMotor();
+  }
+
+  public void moveCompleteFalse() {
+    moveComplete = false;
+  }
+
+  public Command stow() {
+    return runOnce(
+        () -> {
+          selectedPos = TargetPositions.STOWED;
+          maxTargetPos = STOWED_MAX_PRESET;
+          minTargetPos = STOWED_MIN_PRESET;
+          moveComplete = false;
+        });
   }
 }
