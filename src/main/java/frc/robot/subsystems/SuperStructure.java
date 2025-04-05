@@ -156,6 +156,7 @@ public class SuperStructure {
     if (groundSpinny == null || groundArm == null || intakeSensor == null) {
       return Commands.none().withName("ground intake disabled");
     } else {
+      BooleanSupplier clawFull = armSensor != null ? armSensor.inClaw() : () -> false;
       return Commands.sequence(
               Commands.parallel(
                   elevator.setLevel(ElevatorSubsystem.CORAL_GROUND_INTAKE_POS),
@@ -167,7 +168,7 @@ public class SuperStructure {
                   .withDeadline(Commands.waitUntil(intakeSensor.inIntake().or(retract))),
               groundArm.moveToPosition(GroundArm.STOWED_POSITION),
               groundSpinny.stop(),
-              coralPreIntake())
+              coralPreIntake()).unless(clawFull)
           .withName("Ground Intake");
     }
   }
