@@ -41,7 +41,7 @@ public class BargeAlign extends Command {
 
   @Override
   public void initialize() {
-    redAlliance = DriverStation.getAlliance().get() == Alliance.Red;
+    redAlliance = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
     targetX = redAlliance ? redBlacklineX : blueBlacklineX;
     targetAngle = redAlliance ? Rotation2d.k180deg : Rotation2d.kZero;
     pidX.setSetpoint(targetX);

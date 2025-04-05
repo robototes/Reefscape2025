@@ -163,7 +163,7 @@ public class AutoAlignTwo extends Command {
 
   @Override
   public void initialize() {
-    redAlliance = DriverStation.getAlliance().get() == Alliance.Red;
+    redAlliance = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
     Pose2d robotPose = drive.getState().Pose;
     branchPose = getNearestBranch(robotPose, !redAlliance);
     pidX.setSetpoint(branchPose.getX());
