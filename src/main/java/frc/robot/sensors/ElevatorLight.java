@@ -1,6 +1,7 @@
 package frc.robot.sensors;
 
-import static edu.wpi.first.units.Units.Seconds;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
@@ -9,6 +10,8 @@ import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.LarsonAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
+
+import static edu.wpi.first.units.Units.Seconds;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.LEDPattern;
@@ -19,8 +22,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Hardware;
 import frc.robot.util.ScoringMode;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
 public class ElevatorLight extends SubsystemBase {
 
@@ -71,12 +72,6 @@ public class ElevatorLight extends SubsystemBase {
   public Command blink(int r, int g, int b, String name) {
     return animate(
             LEDPattern.solid(new Color(r, g, b)).blink(Seconds.of(0.25), Seconds.of(0.50)), name)
-        .withName("Animate" + name);
-  }
-
-  public Command blinky(int r, int g, int b, String name) {
-    return animate(
-            LEDPattern.solid(new Color(r, g, b)).blink(Seconds.of(0.25), Seconds.of(0.25)), name)
         .withName("Animate" + name);
   }
 

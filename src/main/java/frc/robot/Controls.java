@@ -1,14 +1,14 @@
 package frc.robot;
 
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-
-import edu.wpi.first.math.MathUtil;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
+
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -671,16 +671,22 @@ public class Controls {
         .thirtySecondsLeft()
         .onTrue(
             Commands.sequence(
-                s.elevatorLEDSubsystem.blinky(255, 0, 0, "red half blink - 30 sec remaining"),
-                s.elevatorLEDSubsystem.blinky(
-                    255, 255, 0, "Yellow half blink - 30 sec remaining")));
+                s.elevatorLEDSubsystem
+                    .colorSet(255, 0, 0, "red half blink - 30 sec remaining")
+                    .withTimeout(0.5),
+                s.elevatorLEDSubsystem
+                    .colorSet(255, 255, 0, "Yellow half blink - 30 sec remaining")
+                    .withTimeout(0.5)));
     s.elevatorLEDSubsystem
         .fifteenSecondsLeft()
         .onTrue(
             Commands.sequence(
-                s.elevatorLEDSubsystem.blinky(255, 0, 0, "Red half blink - 15 sec remaining"),
-                s.elevatorLEDSubsystem.blinky(
-                    255, 255, 0, "Yellow half blink - 15 sec remaining")));
+                s.elevatorLEDSubsystem
+                    .colorSet(255, 0, 0, "Red half blink - 15 sec remaining")
+                    .withTimeout(0.5),
+                s.elevatorLEDSubsystem
+                    .colorSet(255, 255, 0, "Yellow half blink - 15 sec remaining")
+                    .withTimeout(0.5)));
   }
 
   private void configureAutoAlignBindings() {
