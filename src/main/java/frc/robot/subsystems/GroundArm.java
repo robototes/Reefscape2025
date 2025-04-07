@@ -26,7 +26,7 @@ public class GroundArm extends SubsystemBase {
   public static final double STOWED_POSITION = 0.476;
   public static final double UP_POSITION =
       0.27; // untested - should be somewhere in between stowed and ground
-  public static final double GROUND_POSITION = -0.045;
+  public static final double GROUND_POSITION = -0.040;
   public static final double POS_TOLERANCE = Units.degreesToRotations(5);
   // ratio from motor rotations to output rotations
   private static final double ARM_RATIO = 60;
