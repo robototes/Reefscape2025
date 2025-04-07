@@ -18,7 +18,7 @@ import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import java.util.List;
 
 public class AutoAlign {
-  public static Command autoAlignTwo(
+  public static Command autoAlign(
       CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
     return drivebaseSubsystem
         .defer(() -> new AutoAlignCommand(drivebaseSubsystem, controls))
@@ -36,8 +36,8 @@ public class AutoAlign {
     return isBlue;
   }
 
-  public static boolean readyToScoreTwo() {
-    return (isStationary() && isLevel() && isCloseEnoughTwo()) || oneSecondLeft();
+  public static boolean readyToScore() {
+    return (isStationary() && isLevel() && isCloseEnough()) || oneSecondLeft();
   }
 
   public static boolean isStationary() {
@@ -53,7 +53,7 @@ public class AutoAlign {
         && MathUtil.isNear(0, rotation.getY(), Units.degreesToRadians(2));
   }
 
-  public static boolean isCloseEnoughTwo() {
+  public static boolean isCloseEnough() {
     var currentPose = AutoLogic.s.drivebaseSubsystem.getState().Pose;
     var branchPose = AutoAlignCommand.getNearestBranch(currentPose, isBlue());
     return currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
