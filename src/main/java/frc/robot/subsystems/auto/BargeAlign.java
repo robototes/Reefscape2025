@@ -1,14 +1,12 @@
 package frc.robot.subsystems.auto;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 
@@ -24,7 +22,7 @@ public class BargeAlign extends Command {
   private static final double redBargeLineX = fieldLength - blueBargeLineX;
   private double targetX;
   private Rotation2d targetAngle;
-  private boolean redAlliance;
+  private boolean onRedSide;
 
   private final SwerveRequest.FieldCentric blackLineDriveRequest =
       new SwerveRequest.FieldCentric() // Add a 10% deadband
@@ -37,25 +35,28 @@ public class BargeAlign extends Command {
   }
 
   public static Command driveToBlackLine(CommandSwerveDrivetrain drivebaseSubsystem) {
-    return new BargeAlign(drivebaseSubsystem)
-        .withName("Drive to Black Line");
+    return new BargeAlign(drivebaseSubsystem).withName("Drive to Black Line");
   }
 
   private static final SwerveRequest.FieldCentric bargeDriveRequest =
       new SwerveRequest.FieldCentric()
           .withDeadband(0.0001)
           .withRotationalDeadband(0.0001)
-          .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+          .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+          .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
   private static final double xBargeDriveSpeed = 0.5;
 
   public static Command driveToBarge(CommandSwerveDrivetrain drivebaseSubsystem) {
     return drivebaseSubsystem.applyRequest(
         () ->
-            bargeDriveRequest
-                .withVelocityX(xBargeDriveSpeed)
+            {
+              boolean onRedSide = drivebaseSubsystem.getState().Pose.getX() > fieldLength / 2;
+              return bargeDriveRequest
+                .withVelocityX(onRedSide ? -xBargeDriveSpeed : xBargeDriveSpeed)
                 .withVelocityY(0)
-                .withRotationalRate(0));
+                .withRotationalRate(0);
+              });
   }
 
   private BargeAlign(CommandSwerveDrivetrain drive) {
@@ -72,9 +73,9 @@ public class BargeAlign extends Command {
 
   @Override
   public void initialize() {
-    redAlliance = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
-    targetX = redAlliance ? redBlacklineX : blueBlacklineX;
-    targetAngle = redAlliance ? Rotation2d.k180deg : Rotation2d.kZero;
+    onRedSide = drive.getState().Pose.getX() > fieldLength / 2;
+    targetX = onRedSide ? redBlacklineX : blueBlacklineX;
+    targetAngle = onRedSide ? Rotation2d.k180deg : Rotation2d.kZero;
     pidX.setSetpoint(targetX);
     pidRotate.setSetpoint(targetAngle.getRadians());
   }
