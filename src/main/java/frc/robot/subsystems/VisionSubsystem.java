@@ -210,6 +210,10 @@ public class VisionSubsystem extends SubsystemBase {
     return lastRawTimestampSeconds;
   }
 
+  public double getTimeSinceLastReading() {
+    return Timer.getFPGATimestamp() - lastTimestampSeconds;
+  }
+
   public double getDistanceToTarget() {
     return (double) Math.round(Distance * 1000) / 1000;
   }
