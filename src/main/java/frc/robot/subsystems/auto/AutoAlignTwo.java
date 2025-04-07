@@ -29,25 +29,6 @@ public class AutoAlignTwo extends Command {
   private static final AprilTagFieldLayout aprilTagFieldLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
-  private static final List<Pose2d> redAprilTags =
-      List.of(
-          aprilTagFieldLayout.getTagPose(6).get().toPose2d(),
-          aprilTagFieldLayout.getTagPose(7).get().toPose2d(),
-          aprilTagFieldLayout.getTagPose(8).get().toPose2d(),
-          aprilTagFieldLayout.getTagPose(9).get().toPose2d(),
-          aprilTagFieldLayout.getTagPose(10).get().toPose2d(),
-          aprilTagFieldLayout.getTagPose(11).get().toPose2d());
-  // robot dimensions - 36.5 32.5
-  // reef face from april tag center 12.97/2
-  private static final List<Pose2d> blueAprilTags =
-      List.of(
-          aprilTagFieldLayout.getTagPose(17).get().toPose2d(),
-          aprilTagFieldLayout.getTagPose(18).get().toPose2d(),
-          aprilTagFieldLayout.getTagPose(19).get().toPose2d(),
-          aprilTagFieldLayout.getTagPose(20).get().toPose2d(),
-          aprilTagFieldLayout.getTagPose(21).get().toPose2d(),
-          aprilTagFieldLayout.getTagPose(22).get().toPose2d());
-
   private static final List<Pose2d> blueBranchPoses;
   private static final List<Pose2d> redBranchPoses;
 
@@ -108,11 +89,6 @@ public class AutoAlignTwo extends Command {
       aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(rightReef);
   private static final Pose2d redBranchL =
       aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(leftReef);
-
-  public static Pose2d getNearestTag(Pose2d p, boolean isBlue) {
-    List<Pose2d> tagPose2ds = isBlue ? blueAprilTags : redAprilTags;
-    return p.nearest(tagPose2ds);
-  }
 
   public static Pose2d getNearestBranch(Pose2d p, boolean isBlue) {
     List<Pose2d> branchPose2ds = isBlue ? blueBranchPoses : redBranchPoses;
