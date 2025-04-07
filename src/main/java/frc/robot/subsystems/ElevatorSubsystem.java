@@ -171,14 +171,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     // create brake mode for motors
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    // motor 2 gets current limits and motor output mode, but not softlimits or PID
-    talonFXConfigurator2.apply(configuration);
 
-    // soft limits
-    configuration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    configuration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    configuration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = FORWARD_SOFT_LIMIT;
-    configuration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_SOFT_LIMIT;
+    // motor 2 gets current limits and motor output mode, but not PID
+    talonFXConfigurator2.apply(configuration);
 
     // set slot 0 gains
     configuration.Slot0.kS = ELEVATOR_KS;
