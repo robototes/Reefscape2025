@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 
 public class GroundArm extends SubsystemBase {
-  private final double ARMPIVOT_KP = 20;
+  private final double ARMPIVOT_KP = 40;
   private final double ARMPIVOT_KI = 0;
   private final double ARMPIVOT_KD = 0;
   private final double ARMPIVOT_KS = 0.9;
@@ -58,9 +58,9 @@ public class GroundArm extends SubsystemBase {
     talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     // enabling current limits
-    talonFXConfiguration.CurrentLimits.StatorCurrentLimit = 20; // starting low for testing
+    talonFXConfiguration.CurrentLimits.StatorCurrentLimit = 40;
     talonFXConfiguration.CurrentLimits.StatorCurrentLimitEnable = true;
-    talonFXConfiguration.CurrentLimits.SupplyCurrentLimit = 10; // starting low for testing
+    talonFXConfiguration.CurrentLimits.SupplyCurrentLimit = 20;
     talonFXConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     // PID
@@ -74,10 +74,10 @@ public class GroundArm extends SubsystemBase {
     talonFXConfiguration.Slot0.kG = ARMPIVOT_KG;
     talonFXConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
-    // set Motion Magic settings in rps not mechanism units
-    talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity = 80;
-    talonFXConfiguration.MotionMagic.MotionMagicAcceleration = 160;
-    talonFXConfiguration.MotionMagic.MotionMagicJerk = 200;
+    // set Motion Magic settings in motor rps not mechanism units
+    talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity = 5000;
+    talonFXConfiguration.MotionMagic.MotionMagicAcceleration = 5000;
+    talonFXConfiguration.MotionMagic.MotionMagicJerk = 100000;
 
     cfg.apply(talonFXConfiguration);
   }
