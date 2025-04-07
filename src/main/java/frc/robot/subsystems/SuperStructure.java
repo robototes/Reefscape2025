@@ -167,7 +167,7 @@ public class SuperStructure {
                   .moveToPosition(GroundArm.GROUND_POSITION)
                   .withDeadline(Commands.waitUntil(intakeSensor.inIntake().or(retract))),
               groundArm.moveToPosition(GroundArm.STOWED_POSITION),
-              groundSpinny.stop(),
+              groundSpinny.setFunnelIntakePower(),
               coralPreIntake())
           .unless(clawFull)
           .withName("Ground Intake");
