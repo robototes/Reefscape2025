@@ -18,10 +18,8 @@ import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import java.util.List;
 
 public class AutoAlign {
-  public static Command autoAlign(
-      CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
-    return new AutoAlignCommand(drivebaseSubsystem, controls)
-        .withName("Auto Align");
+  public static Command autoAlign(CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
+    return new AutoAlignCommand(drivebaseSubsystem, controls).withName("Auto Align");
   }
 
   public static Boolean isBlue() {
@@ -75,9 +73,6 @@ public class AutoAlign {
     private Controls controls;
     private static final AprilTagFieldLayout aprilTagFieldLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
-
-    private static final List<Pose2d> blueBranchPoses;
-    private static final List<Pose2d> redBranchPoses;
 
     // left and right offsets from the april tags ()
     private static final Transform2d leftReef =
@@ -137,6 +132,36 @@ public class AutoAlign {
     private static final Pose2d redBranchL =
         aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(leftReef);
 
+    private static final List<Pose2d> blueBranchPoses =
+        List.of(
+            blueBranchA,
+            blueBranchB,
+            blueBranchC,
+            blueBranchD,
+            blueBranchE,
+            blueBranchF,
+            blueBranchG,
+            blueBranchH,
+            blueBranchI,
+            blueBranchJ,
+            blueBranchK,
+            blueBranchL);
+    ;
+    private static final List<Pose2d> redBranchPoses =
+        List.of(
+            redBranchA,
+            redBranchB,
+            redBranchC,
+            redBranchD,
+            redBranchE,
+            redBranchF,
+            redBranchG,
+            redBranchH,
+            redBranchI,
+            redBranchJ,
+            redBranchK,
+            redBranchL);
+
     public static Pose2d getNearestBranch(Pose2d p, boolean isBlue) {
       List<Pose2d> branchPose2ds = isBlue ? blueBranchPoses : redBranchPoses;
       return p.nearest(branchPose2ds);
@@ -145,37 +170,6 @@ public class AutoAlign {
     private final SwerveRequest.FieldCentric driveRequest =
         new SwerveRequest.FieldCentric() // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-
-    static {
-      blueBranchPoses =
-          List.of(
-              blueBranchA,
-              blueBranchB,
-              blueBranchC,
-              blueBranchD,
-              blueBranchE,
-              blueBranchF,
-              blueBranchG,
-              blueBranchH,
-              blueBranchI,
-              blueBranchJ,
-              blueBranchK,
-              blueBranchL);
-      redBranchPoses =
-          List.of(
-              redBranchA,
-              redBranchB,
-              redBranchC,
-              redBranchD,
-              redBranchE,
-              redBranchF,
-              redBranchG,
-              redBranchH,
-              redBranchI,
-              redBranchJ,
-              redBranchK,
-              redBranchL);
-    }
 
     public AutoAlignCommand(CommandSwerveDrivetrain drive, Controls controls) {
       this.drive = drive;
