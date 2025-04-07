@@ -656,7 +656,8 @@ public class Controls {
               .colorSet(0, 170, 0, "Green - Elevator Zeroed")
               .withTimeout(2)
               .andThen(s.elevatorLEDSubsystem.colorSet(0, 32, 0, "dimmed Green - Elevator Zeroed"))
-              .ignoringDisable(true));
+              .ignoringDisable(true)
+              .withName("Green - Elevator Zeroed"));
       RobotModeTriggers.disabled()
           .and(hasBeenZeroed.negate())
           .onTrue(
