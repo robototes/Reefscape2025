@@ -17,9 +17,9 @@ public class BargeAlign extends Command {
 
   private CommandSwerveDrivetrain drive;
   private static final double fieldLength = 17.548; // Welded field
-  private static final double blueBlacklineX = 7.557;
+  private static final double blueBlacklineX = 7.09;
   private static final double redBlacklineX = fieldLength - blueBlacklineX;
-  private static final double blueBargeLineX = 8.224;
+  private static final double blueBargeLineX = 7.76;
   private static final double redBargeLineX = fieldLength - blueBargeLineX;
 
   private final SwerveRequest.FieldCentric blackLineDriveRequest =
@@ -47,14 +47,13 @@ public class BargeAlign extends Command {
 
   public static Command driveToBarge(CommandSwerveDrivetrain drivebaseSubsystem) {
     return drivebaseSubsystem.applyRequest(
-        () ->
-            {
-              boolean onRedSide = drivebaseSubsystem.getState().Pose.getX() > fieldLength / 2;
-              return bargeDriveRequest
-                .withVelocityX(onRedSide ? -xBargeDriveSpeed : xBargeDriveSpeed)
-                .withVelocityY(0)
-                .withRotationalRate(0);
-              });
+        () -> {
+          boolean onRedSide = drivebaseSubsystem.getState().Pose.getX() > fieldLength / 2;
+          return bargeDriveRequest
+              .withVelocityX(onRedSide ? -xBargeDriveSpeed : xBargeDriveSpeed)
+              .withVelocityY(0)
+              .withRotationalRate(0);
+        });
   }
 
   private BargeAlign(CommandSwerveDrivetrain drive) {
