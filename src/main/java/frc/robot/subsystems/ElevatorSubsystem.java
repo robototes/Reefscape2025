@@ -50,7 +50,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double CORAL_PRE_INTAKE = 4.0;
   public static final double MANUAL = 0.1;
   private static final double POS_TOLERANCE = 0.1;
-  private final double ELEVATOR_KP = 13.804;
+  private final double ELEVATOR_KP = 7.804;
   private final double ELEVATOR_KI = 0;
   private final double ELEVATOR_KD = 0.079221;
   private final double ELEVATOR_KS = 0.33878;
@@ -127,6 +127,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     Shuffleboard.getTab("Elevator")
         .addBoolean(
             "M2 at reverse softstop", () -> m_motor2.getFault_ReverseSoftLimit().getValue());
+    Shuffleboard.getTab("Elevator")
+        .addDouble("Elevator Speed", () -> m_motor.getVelocity().getValueAsDouble());
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
@@ -212,10 +214,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     //   a = 12 (40 rot) / (0.75 s)^2
     //     = (7680 / 9) rot/s^2
     //     = 853.33 rot/s^2
-    // MotionMagic uses mechanism rotations per second*
+    // MotionMagic uses motor rotations per second*
     configuration.MotionMagic.MotionMagicCruiseVelocity = 80;
-    configuration.MotionMagic.MotionMagicAcceleration = 750;
-    configuration.MotionMagic.MotionMagicJerk = 1875;
+    configuration.MotionMagic.MotionMagicAcceleration = 400;
+    configuration.MotionMagic.MotionMagicJerk = 2500;
 
     talonFXConfigurator.apply(configuration);
   }
