@@ -1,6 +1,7 @@
 package frc.robot.subsystems.auto;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -27,7 +28,8 @@ public class BargeAlign extends Command {
 
   private final SwerveRequest.FieldCentric blackLineDriveRequest =
       new SwerveRequest.FieldCentric() // Add a 10% deadband
-          .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+          .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+          .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
   public static boolean atScoringXPosition(CommandSwerveDrivetrain drivebasesubsystem) {
     double robotX = drivebasesubsystem.getState().Pose.getX();
@@ -35,8 +37,7 @@ public class BargeAlign extends Command {
   }
 
   public static Command driveToBlackLine(CommandSwerveDrivetrain drivebaseSubsystem) {
-    return drivebaseSubsystem
-        .defer(() -> new BargeAlign(drivebaseSubsystem))
+    return new BargeAlign(drivebaseSubsystem)
         .withName("Drive to Black Line");
   }
 
@@ -57,10 +58,10 @@ public class BargeAlign extends Command {
                 .withRotationalRate(0));
   }
 
-  public BargeAlign(CommandSwerveDrivetrain drive) {
+  private BargeAlign(CommandSwerveDrivetrain drive) {
     this.drive = drive;
     pidRotate.enableContinuousInput(-Math.PI, Math.PI);
-    setName("BargeAlign");
+    setName("drive to black line");
   }
 
   private boolean atTargetPosition() {
@@ -88,9 +89,6 @@ public class BargeAlign extends Command {
     double powerX = pidX.calculate(currentPose.getX());
     powerX = MathUtil.clamp(powerX, -2, 2);
     powerX += .05 * Math.signum(powerX);
-    if (redAlliance) {
-      powerX *= -1;
-    }
     double powerRotate = pidRotate.calculate(currentPose.getRotation().getRadians());
     powerRotate = MathUtil.clamp(powerRotate, -4, 4);
     SwerveRequest request =
