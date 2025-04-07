@@ -7,6 +7,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 
@@ -20,9 +21,6 @@ public class BargeAlign extends Command {
   private static final double redBlacklineX = fieldLength - blueBlacklineX;
   private static final double blueBargeLineX = 8.224;
   private static final double redBargeLineX = fieldLength - blueBargeLineX;
-  private double targetX;
-  private Rotation2d targetAngle;
-  private boolean onRedSide;
 
   private final SwerveRequest.FieldCentric blackLineDriveRequest =
       new SwerveRequest.FieldCentric() // Add a 10% deadband
@@ -65,17 +63,11 @@ public class BargeAlign extends Command {
     setName("drive to black line");
   }
 
-  private boolean atTargetPosition() {
-    Pose2d currentPose = drive.getState().Pose;
-    return Math.abs(targetX - currentPose.getX()) < 0.01
-        && Math.abs(targetAngle.minus(currentPose.getRotation()).getDegrees()) < 1;
-  }
-
   @Override
   public void initialize() {
-    onRedSide = drive.getState().Pose.getX() > fieldLength / 2;
-    targetX = onRedSide ? redBlacklineX : blueBlacklineX;
-    targetAngle = onRedSide ? Rotation2d.k180deg : Rotation2d.kZero;
+    boolean onRedSide = drive.getState().Pose.getX() > fieldLength / 2;
+    double targetX = onRedSide ? redBlacklineX : blueBlacklineX;
+    Rotation2d targetAngle = onRedSide ? Rotation2d.k180deg : Rotation2d.kZero;
     pidX.setSetpoint(targetX);
     pidRotate.setSetpoint(targetAngle.getRadians());
   }
@@ -83,9 +75,6 @@ public class BargeAlign extends Command {
   @Override
   public void execute() {
     Pose2d currentPose = drive.getState().Pose;
-    if (atTargetPosition()) {
-      return;
-    }
     // Calculate the power for X direction and clamp it between -1 and 1
     double powerX = pidX.calculate(currentPose.getX());
     powerX = MathUtil.clamp(powerX, -2, 2);
@@ -103,7 +92,8 @@ public class BargeAlign extends Command {
 
   @Override
   public boolean isFinished() {
-    return atTargetPosition();
+    return Math.abs(pidX.getError()) < 0.01
+        && Math.abs(Units.radiansToDegrees(pidRotate.getError())) < 1;
   }
 
   @Override
