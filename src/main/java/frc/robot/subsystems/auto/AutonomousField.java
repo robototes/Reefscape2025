@@ -42,8 +42,7 @@ public class AutonomousField {
         // .withPosition(columnIndex, rowIndex)
         .withSize(10, 6);
 
-    Shuffleboard.getTab("Start Positions(AUTO)")
-        .add("Start pose", autonomousField.getStartPose())
+    tab.add("Start pose", autonomousField.getStartPose())
         .withPosition(0, 0)
         // .withPosition(columnIndex, rowIndex)
         .withSize(12, 6);

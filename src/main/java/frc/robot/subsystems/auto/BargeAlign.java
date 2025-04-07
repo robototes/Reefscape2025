@@ -19,7 +19,7 @@ public class BargeAlign extends Command {
   private static final double fieldLength = 17.548; // Welded field
   private static final double blueBlacklineX = 7.09;
   private static final double redBlacklineX = fieldLength - blueBlacklineX;
-  private static final double blueBargeLineX = 7.76;
+  private static final double blueBargeLineX = 7.67;
   private static final double redBargeLineX = fieldLength - blueBargeLineX;
 
   private final SwerveRequest.FieldCentric blackLineDriveRequest =
@@ -29,7 +29,7 @@ public class BargeAlign extends Command {
 
   public static boolean atScoringXPosition(CommandSwerveDrivetrain drivebasesubsystem) {
     double robotX = drivebasesubsystem.getState().Pose.getX();
-    return Math.abs(robotX - blueBargeLineX) < 0.01 || Math.abs(robotX - redBargeLineX) < 0.01;
+    return blueBargeLineX < robotX && robotX < redBargeLineX;
   }
 
   public static Command driveToBlackLine(CommandSwerveDrivetrain drivebaseSubsystem) {
@@ -46,19 +46,26 @@ public class BargeAlign extends Command {
   private static final double xBargeDriveSpeed = 0.5;
 
   public static Command driveToBarge(CommandSwerveDrivetrain drivebaseSubsystem) {
-    return drivebaseSubsystem.applyRequest(
-        () -> {
-          boolean onRedSide = drivebaseSubsystem.getState().Pose.getX() > fieldLength / 2;
-          return bargeDriveRequest
-              .withVelocityX(onRedSide ? -xBargeDriveSpeed : xBargeDriveSpeed)
-              .withVelocityY(0)
-              .withRotationalRate(0);
-        });
+    return drivebaseSubsystem
+        .applyRequest(
+            () -> {
+              boolean onRedSide = drivebaseSubsystem.getState().Pose.getX() > fieldLength / 2;
+              return bargeDriveRequest
+                  .withVelocityX(onRedSide ? -xBargeDriveSpeed : xBargeDriveSpeed)
+                  .withVelocityY(0)
+                  .withRotationalRate(0);
+            })
+        .finallyDo(
+            () ->
+                drivebaseSubsystem.setControl(
+                    bargeDriveRequest.withVelocityX(0).withVelocityY(0).withRotationalRate(0)))
+        .withName("Drive to barge");
   }
 
   private BargeAlign(CommandSwerveDrivetrain drive) {
     this.drive = drive;
     pidRotate.enableContinuousInput(-Math.PI, Math.PI);
+    addRequirements(drive);
     setName("drive to black line");
   }
 
