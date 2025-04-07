@@ -24,6 +24,7 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.GroundArm;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoAlign;
+import frc.robot.subsystems.auto.BargeAlign;
 import frc.robot.util.AlgaeIntakeHeight;
 import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
@@ -332,8 +333,13 @@ public class Controls {
                           switch (scoringMode) {
                             case CORAL -> getCoralBranchHeightCommand();
                             case ALGAE -> Commands.sequence(
-                                    superStructure.algaeNetScore(driverController.rightBumper()),
-                                    Commands.waitSeconds(0.7),
+                                    BargeAlign.driveToBlackLine(s.drivebaseSubsystem),
+                                    BargeAlign.driveToBarge(s.drivebaseSubsystem)
+                                        .withDeadline(
+                                            superStructure.algaeNetScore(
+                                                () ->
+                                                    BargeAlign.atScoringXPosition(
+                                                        s.drivebaseSubsystem))),
                                     getAlgaeIntakeCommand())
                                 .withName("Algae score then intake");
                           };

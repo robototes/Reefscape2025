@@ -19,13 +19,43 @@ public class BargeAlign extends Command {
   private static final double fieldLength = 17.548; // Welded field
   private static final double blueBlacklineX = 7.557;
   private static final double redBlacklineX = fieldLength - blueBlacklineX;
+  private static final double blueBargeLineX = 8.224;
+  private static final double redBargeLineX = fieldLength - blueBargeLineX;
   private double targetX;
   private Rotation2d targetAngle;
   private boolean redAlliance;
 
-  private final SwerveRequest.FieldCentric driveRequest =
+  private final SwerveRequest.FieldCentric blackLineDriveRequest =
       new SwerveRequest.FieldCentric() // Add a 10% deadband
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
+  public static boolean atScoringXPosition(CommandSwerveDrivetrain drivebasesubsystem) {
+    double robotX = drivebasesubsystem.getState().Pose.getX();
+    return Math.abs(robotX - blueBargeLineX) < 0.01 || Math.abs(robotX - redBargeLineX) < 0.01;
+  }
+
+  public static Command driveToBlackLine(CommandSwerveDrivetrain drivebaseSubsystem) {
+    return drivebaseSubsystem
+        .defer(() -> new BargeAlign(drivebaseSubsystem))
+        .withName("Drive to Black Line");
+  }
+
+  private static final SwerveRequest.FieldCentric bargeDriveRequest =
+      new SwerveRequest.FieldCentric()
+          .withDeadband(0.0001)
+          .withRotationalDeadband(0.0001)
+          .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
+  private static final double xBargeDriveSpeed = 0.5;
+
+  public static Command driveToBarge(CommandSwerveDrivetrain drivebaseSubsystem) {
+    return drivebaseSubsystem.applyRequest(
+        () ->
+            bargeDriveRequest
+                .withVelocityX(xBargeDriveSpeed)
+                .withVelocityY(0)
+                .withRotationalRate(0));
+  }
 
   public BargeAlign(CommandSwerveDrivetrain drive) {
     this.drive = drive;
@@ -64,7 +94,10 @@ public class BargeAlign extends Command {
     double powerRotate = pidRotate.calculate(currentPose.getRotation().getRadians());
     powerRotate = MathUtil.clamp(powerRotate, -4, 4);
     SwerveRequest request =
-        driveRequest.withVelocityX(powerX).withVelocityY(0).withRotationalRate(powerRotate);
+        blackLineDriveRequest
+            .withVelocityX(powerX)
+            .withVelocityY(0)
+            .withRotationalRate(powerRotate);
     // Set the drive control with the created request
     drive.setControl(request);
   }
@@ -77,7 +110,8 @@ public class BargeAlign extends Command {
   @Override
   public void end(boolean interrupted) {
     // Create a swerve request to stop all motion by setting velocities and rotational rate to 0
-    SwerveRequest stop = driveRequest.withVelocityX(0).withVelocityY(0).withRotationalRate(0);
+    SwerveRequest stop =
+        blackLineDriveRequest.withVelocityX(0).withVelocityY(0).withRotationalRate(0);
     // Set the drive control with the stop request to halt all movement
     drive.setControl(stop);
   }
