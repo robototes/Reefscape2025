@@ -1,10 +1,14 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import edu.wpi.first.math.MathUtil;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -651,7 +655,7 @@ public class Controls {
           s.elevatorLEDSubsystem
               .colorSet(0, 170, 0, "Green - Elevator Zeroed")
               .withTimeout(2)
-              .andThen(s.elevatorLEDSubsystem.colorSet(0, 0, 0, "LED off"))
+              .andThen(s.elevatorLEDSubsystem.colorSet(0, 32, 0, "dimmed Green - Elevator Zeroed"))
               .ignoringDisable(true));
       RobotModeTriggers.disabled()
           .and(hasBeenZeroed.negate())
