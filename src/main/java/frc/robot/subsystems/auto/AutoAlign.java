@@ -20,8 +20,7 @@ import java.util.List;
 public class AutoAlign {
   public static Command autoAlign(
       CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
-    return drivebaseSubsystem
-        .defer(() -> new AutoAlignCommand(drivebaseSubsystem, controls))
+    return new AutoAlignCommand(drivebaseSubsystem, controls)
         .withName("Auto Align");
   }
 
