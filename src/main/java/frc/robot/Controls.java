@@ -262,7 +262,8 @@ public class Controls {
             Commands.runOnce(() -> scoringMode = ScoringMode.CORAL)
                 .alongWith(scoringModeSelectRumble())
                 .withName("Coral Scoring Mode"))
-        .onTrue(superStructure.coralPreIntake());
+        .onTrue(superStructure.coralPreIntake())
+        .onTrue(s.climbPivotSubsystem.toStow());
     operatorController
         .povLeft()
         .onTrue(
@@ -274,6 +275,17 @@ public class Controls {
                         })
                 .withName("Stow"));
     operatorController
+        .povDown()
+        .onTrue(
+            Commands.deferredProxy(
+                    () ->
+                        switch (scoringMode) {
+                          case CORAL -> superStructure.coralPreIntake();
+                          case ALGAE -> superStructure.algaeStow();
+                        })
+                .withName("pre-intake, algae stow"));
+    // JUST TESTING ONLY
+    climbTestController
         .povDown()
         .onTrue(
             Commands.deferredProxy(
@@ -306,6 +318,11 @@ public class Controls {
                       CommandScheduler.getInstance().schedule(intakeCommand);
                     })
                 .withName("Driver Intake"));
+
+    driverController
+        .b()
+        .onTrue(superStructure.groundIntake(driverController.x()).withName("Ground intake"));
+
     if (sensors.armSensor != null) {
       sensors
           .armSensor
@@ -451,7 +468,7 @@ public class Controls {
                     rumble(operatorController, 0.5, Seconds.of(0.3)))
                 .ignoringDisable(true)
                 .withName("Reset elevator zero"));
-    operatorController.rightBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
+    // operatorController.rightBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
     var elevatorCoastButton =
         Shuffleboard.getTab("Controls")
             .add("Elevator Coast Mode", false)
@@ -538,18 +555,8 @@ public class Controls {
     connected(climbTestController)
         .and(climbTestController.start())
         .onTrue(s.climbPivotSubsystem.advanceClimbTarget());
-    operatorController.start().onTrue(s.climbPivotSubsystem.advanceClimbTarget());
-    // operatorController
-    //     .rightTrigger(0.1)
-    //     .whileTrue(
-    //         s.climbPivotSubsystem
-    //             .moveClimbManual(
-    //                 () ->
-    //                     -0.6
-    //                         * MathUtil.applyDeadband(operatorController.getRightTriggerAxis(),
-    // 0.1))
-    // .withName("Climb Manual Control"));
-    operatorController.rightTrigger().onTrue(s.climbPivotSubsystem.stow());
+    operatorController.start().onTrue(s.climbPivotSubsystem.toClimbed());
+    operatorController.rightTrigger().onTrue(s.climbPivotSubsystem.toClimbOut());
     connected(climbTestController)
         .and(climbTestController.rightTrigger(0.1))
         .whileTrue(
@@ -647,6 +654,7 @@ public class Controls {
     driverController
         .rightTrigger()
         .and(() -> scoringMode == ScoringMode.CORAL)
+        .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
         .whileTrue(AutoAlign.autoAlignTwo(s.drivebaseSubsystem, this));
   }
 
@@ -654,7 +662,7 @@ public class Controls {
     if (s.groundSpinny == null) {
       return;
     }
-    s.groundSpinny.setDefaultCommand(s.groundSpinny.holdIntakePower());
+    s.groundSpinny.setDefaultCommand(s.groundSpinny.holdFunnelIntakePower());
   }
 
   private void configureGroundArmBindings() {
@@ -666,6 +674,13 @@ public class Controls {
             .moveToPosition(GroundArm.STOWED_POSITION)
             .andThen(Commands.idle())
             .withName("Ground stowed position wait"));
+    operatorController
+        .rightBumper()
+        .whileTrue(
+            s.groundArm
+                .moveToPosition(GroundArm.GROUND_POSITION)
+                .andThen(Commands.idle())
+                .withName("ground up position"));
   }
 
   private Command selectScoringHeight(BranchHeight b, AlgaeIntakeHeight a) {

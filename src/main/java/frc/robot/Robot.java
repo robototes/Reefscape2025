@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Sensors.SensorConstants;
 import frc.robot.Subsystems.SubsystemConstants;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoBuilderConfig;
@@ -59,15 +58,17 @@ public class Robot extends TimedRobot {
     }
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
-        && SubsystemConstants.SPINNYCLAW_ENABLED
-        && SensorConstants.ARMSENSOR_ENABLED) {
+        && SubsystemConstants.SPINNYCLAW_ENABLED) {
       superStructure =
           new SuperStructure(
               subsystems.elevatorSubsystem,
               subsystems.armPivotSubsystem,
               subsystems.spinnyClawSubsytem,
+              subsystems.groundArm,
+              subsystems.groundSpinny,
               subsystems.elevatorLEDSubsystem,
-              sensors.armSensor);
+              sensors.armSensor,
+              sensors.intakeSensor);
     } else {
       superStructure = null;
     }

@@ -43,10 +43,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double ALGAE_STOWED = 2;
   public static final double ALGAE_PROCESSOR_SCORE = 2;
   public static final double ALGAE_NET_SCORE = 38; // untested
-  public static final double ALGAE_GROUND_INTAKE = 0.01;
+  public static final double ALGAE_GROUND_INTAKE = 0.05;
   public static final double CORAL_STOWED = 3.9;
+  public static final double CORAL_GROUND_INTAKE_POS = 7.2;
   public static final double CORAL_INTAKE_POS = 1.55;
-  public static final double CORAL_PRE_INTAKE = 3.9;
+  public static final double CORAL_PRE_INTAKE = 4.0;
   public static final double MANUAL = 0.1;
   private static final double POS_TOLERANCE = 0.1;
   private final double ELEVATOR_KP = 13.804;
@@ -170,14 +171,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     // create brake mode for motors
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    // motor 2 gets current limits and motor output mode, but not softlimits or PID
-    talonFXConfigurator2.apply(configuration);
 
-    // soft limits
-    configuration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    configuration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    configuration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = FORWARD_SOFT_LIMIT;
-    configuration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_SOFT_LIMIT;
+    // motor 2 gets current limits and motor output mode, but not PID
+    talonFXConfigurator2.apply(configuration);
 
     // set slot 0 gains
     configuration.Slot0.kS = ELEVATOR_KS;
