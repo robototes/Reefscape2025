@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Volts;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -650,7 +651,7 @@ public class Controls {
     Timer teleopTimer = new Timer();
     // when in teleop for less than 5 seconds after autononomous ends, restart the timer
     RobotModeTriggers.autonomous()
-        .debounce(5)
+        .debounce(5, DebounceType.kFalling)
         .and(RobotModeTriggers.teleop())
         .onTrue(Commands.runOnce(() -> teleopTimer.restart()));
     RobotModeTriggers.teleop().onFalse(Commands.runOnce(() -> teleopTimer.stop()));
