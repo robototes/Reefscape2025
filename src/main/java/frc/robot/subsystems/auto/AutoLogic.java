@@ -107,7 +107,13 @@ public class AutoLogic {
           new AutoPath("OSMRSF_D-C", "OSMRSF_D-C"),
           new AutoPath("OSWRSF_F-E", "OSWRSF_F-E"),
           new AutoPath("OSWRSF_E-D", "OSWRSF_E-D"),
-          new AutoPath("OSWRSF_D-C", "OSWRSF_D-C"));
+          new AutoPath("OSWRSF_D-C", "OSWRSF_D-C"),
+          new AutoPath("MLSF_H-I", "MLSF_H-I"),
+          new AutoPath("MLSF_H-I_WithWait", "MLSF_H-I_WithWait"),
+          new AutoPath("MRSF_G-F", "MRSF_G-F"),
+          new AutoPath("MRSF_G-F_WithWait", "MRSF_G-F_WithWait"),
+          new AutoPath("MRSF_G-H", "MRSF_G-H"),
+          new AutoPath("MLSF_H-G", "MLSF_H-G"));
 
   private static List<AutoPath> threePiecePaths =
       List.of(

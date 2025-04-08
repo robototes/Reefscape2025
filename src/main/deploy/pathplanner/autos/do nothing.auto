@@ -3,17 +3,10 @@
   "command": {
     "type": "sequential",
     "data": {
-      "commands": [
-        {
-          "type": "path",
-          "data": {
-            "pathName": "do nothing"
-          }
-        }
-      ]
+      "commands": []
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }
