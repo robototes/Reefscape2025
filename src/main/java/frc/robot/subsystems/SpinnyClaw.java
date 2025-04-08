@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 import frc.robot.sensors.ArmSensor;
+import frc.robot.util.ScoringMode;
 import java.util.function.Supplier;
 
 public class SpinnyClaw extends SubsystemBase {
@@ -24,8 +25,8 @@ public class SpinnyClaw extends SubsystemBase {
   public static final double CORAL_EXTAKE_SPEED = 5;
   public static final double CORAL_REJECT_SPEED = 1;
   public static final double CORAL_L1_EXTAKE_SPEED = 2.5;
-  public static final double ALGAE_INTAKE_SPEED = -3;
-  public static final double ALGAE_GRIP_INTAKE_SPEED = -2.5;
+  public static final double ALGAE_INTAKE_SPEED = -4; // started at -3.5
+  public static final double ALGAE_GRIP_INTAKE_SPEED = -3; // started at -2.5
   public static final double ALGAE_EXTAKE_SPEED = 14;
   public static final double ALGAE_PROCESSOR_EXTAKE_SPEED = 8;
   public static final double ALGAE_FLING_SPEED = 10;
@@ -36,6 +37,7 @@ public class SpinnyClaw extends SubsystemBase {
   private final TalonFX motor;
   // ArmSensor
   private final ArmSensor armSensor;
+  private Supplier<ScoringMode> scoringMode = () -> ScoringMode.CORAL;
 
   // alerts
   private final Alert NotConnectedError =
@@ -48,6 +50,10 @@ public class SpinnyClaw extends SubsystemBase {
     this.armSensor = armSensor;
     configMotors();
     logTabs();
+  }
+
+  public void setScoringMode(Supplier<ScoringMode> scoringMode) {
+    this.scoringMode = scoringMode;
   }
 
   // (+) is to intake out, and (-) is in
@@ -87,8 +93,8 @@ public class SpinnyClaw extends SubsystemBase {
     if (armSensor != null) {
       return runOnce(
           () -> {
-            // if (armSensor.booleanInClaw() && pow < 0) {
-            //   motor.stopMotor();
+            // if (armSensor.booleanInClaw() && pow < 0 && scoringMode.get() == ScoringMode.CORAL) {
+            // motor.stopMotor();
             // } else {
             motor.setVoltage(pow);
             lastSetPower = pow;
@@ -107,12 +113,11 @@ public class SpinnyClaw extends SubsystemBase {
     if (armSensor != null) {
       return startEnd(
           () -> {
-            // if (armSensor.booleanInClaw() && pow < 0) {
-            //   motor.stopMotor();
+            // if (armSensor.booleanInClaw() && pow < 0 && scoringMode.get() == ScoringMode.CORAL) {
+            // motor.stopMotor();
             // } else {
             motor.setVoltage(pow);
             lastSetPower = pow;
-
             // }
           },
           () -> motor.stopMotor());

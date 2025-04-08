@@ -16,15 +16,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 
 public class GroundArm extends SubsystemBase {
-  private final double ARMPIVOT_KP = 0;
+  private final double ARMPIVOT_KP = 40;
   private final double ARMPIVOT_KI = 0;
   private final double ARMPIVOT_KD = 0;
-  private final double ARMPIVOT_KS = 0.3;
+  private final double ARMPIVOT_KS = 0.9;
   private final double ARMPIVOT_KV = 4;
   private final double ARMPIVOT_KG = 0.048;
   private final double ARMPIVOT_KA = 0;
   public static final double STOWED_POSITION = 0.476;
-  public static final double GRAB_POSITION = 0;
+  public static final double UP_POSITION =
+      0.27; // untested - should be somewhere in between stowed and ground
+  public static final double GROUND_POSITION = -0.040;
   public static final double POS_TOLERANCE = Units.degreesToRotations(5);
   // ratio from motor rotations to output rotations
   private static final double ARM_RATIO = 60;
@@ -56,9 +58,9 @@ public class GroundArm extends SubsystemBase {
     talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     // enabling current limits
-    talonFXConfiguration.CurrentLimits.StatorCurrentLimit = 20; // starting low for testing
+    talonFXConfiguration.CurrentLimits.StatorCurrentLimit = 40;
     talonFXConfiguration.CurrentLimits.StatorCurrentLimitEnable = true;
-    talonFXConfiguration.CurrentLimits.SupplyCurrentLimit = 10; // starting low for testing
+    talonFXConfiguration.CurrentLimits.SupplyCurrentLimit = 20;
     talonFXConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     // PID
@@ -72,10 +74,10 @@ public class GroundArm extends SubsystemBase {
     talonFXConfiguration.Slot0.kG = ARMPIVOT_KG;
     talonFXConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
-    // set Motion Magic settings in rps not mechanism units
-    talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity = 0.5;
-    talonFXConfiguration.MotionMagic.MotionMagicAcceleration = 1;
-    talonFXConfiguration.MotionMagic.MotionMagicJerk = 2;
+    // set Motion Magic settings in motor rps not mechanism units
+    talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity = 5000;
+    talonFXConfiguration.MotionMagic.MotionMagicAcceleration = 5000;
+    talonFXConfiguration.MotionMagic.MotionMagicJerk = 100000;
 
     cfg.apply(talonFXConfiguration);
   }
@@ -114,5 +116,9 @@ public class GroundArm extends SubsystemBase {
     return setTargetPosition(position)
         .andThen(
             Commands.waitUntil(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE));
+  }
+
+  public Command stop() {
+    return runOnce(() -> motor.stopMotor());
   }
 }

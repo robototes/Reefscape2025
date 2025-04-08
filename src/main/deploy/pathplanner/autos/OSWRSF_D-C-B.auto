@@ -52,6 +52,43 @@
           "data": {
             "name": "scoreCommand"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "C to RSF"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "isCollected"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RSF to B"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCommand"
+          }
         }
       ]
     }

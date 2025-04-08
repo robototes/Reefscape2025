@@ -12,9 +12,9 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
-import java.util.EnumSet;
+import java.util.Optional;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
@@ -36,39 +36,42 @@ import org.photonvision.targeting.PhotonPipelineResult;
  * station (+X is forward from blue driver station, +Y is left, +Z is up).
  */
 public class VisionSubsystem extends SubsystemBase {
-
-  private static final double CAMERA_X_POS_METERS_LEFT = 0.3;
-  private static final double CAMERA_X_POS_METERS_RIGHT = 0.28;
-  private static final double CAMERA_Y_POS_METERS_LEFT = 0.26;
+  private static final double CAMERA_X_POS_METERS_LEFT = 0.26;
+  private static final double CAMERA_X_POS_METERS_RIGHT = 0.27;
+  private static final double CAMERA_Y_POS_METERS_LEFT = 0.25;
   private static final double CAMERA_Y_POS_METERS_RIGHT = -0.25;
-  private static final double CAMERA_Z_POS_METERS_LEFT = 0.22;
-  private static final double CAMERA_Z_POS_METERS_RIGHT = 0.22;
-  private static final double CAMERA_ROLL_LEFT = Units.degreesToRadians(-1.5);
-  private static final double CAMERA_ROLL_RIGHT = Units.degreesToRadians(1.87);
-  private static final double CAMERA_PITCH_LEFT = Units.degreesToRadians(-9.18);
-  private static final double CAMERA_PITCH_RIGHT = Units.degreesToRadians(-6.55);
-  private static final double CAMERA_YAW_LEFT = Units.degreesToRadians(-40);
-  private static final double CAMERA_YAW_RIGHT = Units.degreesToRadians(45);
+  private static final double CAMERA_Z_POS_METERS_LEFT = 0.20;
+  private static final double CAMERA_Z_POS_METERS_RIGHT = 0.21;
+  private static final double CAMERA_ROLL_LEFT = Units.degreesToRadians(3);
+  private static final double CAMERA_ROLL_RIGHT = Units.degreesToRadians(0.92);
+  private static final double CAMERA_PITCH_LEFT = Units.degreesToRadians(-6.3);
+  private static final double CAMERA_PITCH_RIGHT = Units.degreesToRadians(-8.3);
+  private static final double CAMERA_YAW_LEFT = Units.degreesToRadians(-44.64);
+  private static final double CAMERA_YAW_RIGHT = Units.degreesToRadians(46.42);
 
   public static final Transform3d ROBOT_TO_CAM_LEFT =
       new Transform3d(
+          // Translation3d.kZero,
           CAMERA_X_POS_METERS_LEFT,
           CAMERA_Y_POS_METERS_LEFT,
           CAMERA_Z_POS_METERS_LEFT,
+          // Rotation3d.kZero);
           new Rotation3d(CAMERA_ROLL_LEFT, CAMERA_PITCH_LEFT, CAMERA_YAW_LEFT));
 
   public static final Transform3d ROBOT_TO_CAM_RIGHT =
       new Transform3d(
+          // Translation3d.kZero,
           CAMERA_X_POS_METERS_RIGHT,
           CAMERA_Y_POS_METERS_RIGHT,
           CAMERA_Z_POS_METERS_RIGHT,
+          // Rotation3d.kZero);
           new Rotation3d(CAMERA_ROLL_RIGHT, CAMERA_PITCH_RIGHT, CAMERA_YAW_RIGHT));
 
   // TODO Measure these
   private static final Vector<N3> STANDARD_DEVS =
       VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(20));
   private static final Vector<N3> DISTANCE_SC_STANDARD_DEVS =
-      VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(6));
+      VecBuilder.fill(1, 1, Units.degreesToRadians(50));
 
   private final PhotonCamera leftCamera;
   private final PhotonCamera rightCamera;
@@ -119,17 +122,6 @@ public class VisionSubsystem extends SubsystemBase {
         new PhotonPoseEstimator(
             fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_RIGHT);
 
-    var networkTables = NetworkTableInstance.getDefault();
-    networkTables.addListener(
-        networkTables.getTable("photonvision").getSubTable(Hardware.LEFT_CAM).getEntry("rawBytes"),
-        EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-        event -> update());
-
-    networkTables.addListener(
-        networkTables.getTable("photonvision").getSubTable(Hardware.RIGHT_CAM).getEntry("rawBytes"),
-        EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-        event -> update());
-
     ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("AprilTags");
 
     shuffleboardTab
@@ -148,9 +140,13 @@ public class VisionSubsystem extends SubsystemBase {
         .addDouble("april tag distance meters", this::getDistanceToTarget)
         .withPosition(1, 1)
         .withSize(1, 1);
+    shuffleboardTab
+        .addDouble("time since last reading", this::getTimeSinceLastReading)
+        .withPosition(2, 0)
+        .withSize(1, 1);
   }
 
-  private void update() {
+  public void update() {
     for (PhotonPipelineResult result : leftCamera.getAllUnreadResults()) {
       process(result, photonPoseEstimatorLeftCamera, rawFieldPose3dEntryLeft);
     }
@@ -172,9 +168,12 @@ public class VisionSubsystem extends SubsystemBase {
       var TimestampSeconds = estimatedPose.get().timestampSeconds;
       var FieldPose3d = estimatedPose.get().estimatedPose;
       rawFieldPose3dEntry.set(FieldPose3d);
+      // if (BadAprilTagDetector(result)) {
+      //   return;
+      // }
       if (!MathUtil.isNear(0, FieldPose3d.getZ(), 0.10)
-          || !MathUtil.isNear(0, FieldPose3d.getRotation().getX(), Units.degreesToRadians(3))
-          || !MathUtil.isNear(0, FieldPose3d.getRotation().getY(), Units.degreesToRadians(3))) {
+          || !MathUtil.isNear(0, FieldPose3d.getRotation().getX(), Units.degreesToRadians(8))
+          || !MathUtil.isNear(0, FieldPose3d.getRotation().getY(), Units.degreesToRadians(8))) {
         return;
       }
       var FieldPose = FieldPose3d.toPose2d();
@@ -185,7 +184,7 @@ public class VisionSubsystem extends SubsystemBase {
       aprilTagsHelper.addVisionMeasurement(
           FieldPose,
           TimestampSeconds,
-          STANDARD_DEVS.plus(DISTANCE_SC_STANDARD_DEVS).times(Distance));
+          DISTANCE_SC_STANDARD_DEVS.times(Math.max(0, Distance - 1)).plus(STANDARD_DEVS));
       robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       if (RawTimestampSeconds > lastRawTimestampSeconds) {
         fieldPose3dEntry.set(FieldPose3d);
@@ -215,7 +214,26 @@ public class VisionSubsystem extends SubsystemBase {
     return lastRawTimestampSeconds;
   }
 
+  public double getTimeSinceLastReading() {
+    return Timer.getFPGATimestamp() - lastTimestampSeconds;
+  }
+
   public double getDistanceToTarget() {
-    return (double) Math.round(Distance * 10) / 10;
+    return (double) Math.round(Distance * 1000) / 1000;
+  }
+
+  // configured for 2025 reefscape
+  private static boolean BadAprilTagDetector(PhotonPipelineResult r) {
+    boolean isRed = DriverStation.getAlliance().equals(Optional.of(DriverStation.Alliance.Red));
+    boolean isBlue = DriverStation.getAlliance().equals(Optional.of(DriverStation.Alliance.Blue));
+    for (var t : r.getTargets()) {
+      boolean isRedReef = 6 <= t.getFiducialId() && t.getFiducialId() <= 11;
+      boolean isBlueReef = 17 <= t.getFiducialId() && t.getFiducialId() <= 22;
+      boolean isValid = isBlueReef && !isRed || isRedReef && !isBlue;
+      if (!isValid) {
+        return true;
+      }
+    }
+    return false;
   }
 }

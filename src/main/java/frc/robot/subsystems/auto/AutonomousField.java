@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -37,26 +36,13 @@ public class AutonomousField {
     var autonomousField =
         new AutonomousField(() -> speedMultiplier.getDouble(DEFAULT_PLAYBACK_SPEED));
 
-    var watchdog =
-        new Watchdog(0.001, () -> DriverStation.reportWarning("auto field loop overrun", false));
-    addPeriodic.accept(
-        () -> {
-          watchdog.reset();
-          autonomousField.update(AutoLogic.getSelectedAutoName());
-          watchdog.addEpoch("AutonomousField.update()");
-          watchdog.disable();
-          if (watchdog.isExpired()) {
-            watchdog.printEpochs();
-          }
-        },
-        UPDATE_RATE);
+    addPeriodic.accept(() -> autonomousField.update(AutoLogic.getSelectedAutoName()), UPDATE_RATE);
     tab.add("Selected auto", autonomousField.getField())
         .withPosition(0, 0)
         // .withPosition(columnIndex, rowIndex)
         .withSize(10, 6);
 
-    Shuffleboard.getTab("Start Positions(AUTO)")
-        .add("Start pose", autonomousField.getStartPose())
+    tab.add("Start pose", autonomousField.getStartPose())
         .withPosition(0, 0)
         // .withPosition(columnIndex, rowIndex)
         .withSize(12, 6);
