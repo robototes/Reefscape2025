@@ -654,6 +654,7 @@ public class Controls {
         .and(RobotModeTriggers.teleop())
         .onTrue(Commands.runOnce(() -> teleopTimer.restart()));
     RobotModeTriggers.teleop().onFalse(Commands.runOnce(() -> teleopTimer.stop()));
+    Shuffleboard.getTab("Controls").addDouble("Teleop time", () -> teleopTimer.get());
     new Trigger(() -> teleopTimer.hasElapsed(135 - 30))
         .onTrue(
             Commands.sequence(
