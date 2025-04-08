@@ -69,6 +69,6 @@ public class BranchSensors {
               return (LEFT_SENSOR_MIN < leftDistance && leftDistance < LEFT_SENSOR_MAX)
                   && (RIGHT_SENSOR_MIN < rightDistance && rightDistance < RIGHT_SENSOR_MAX);
             })
-        .debounce(0.5);
+        .debounce(0.2);
   }
 }
