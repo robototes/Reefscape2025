@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 
 public class GroundSpinny extends SubsystemBase {
-  public static final double GROUND_INTAKE_SPEED = -10;
+  public static final double GROUND_INTAKE_SPEED = -8;
   public static final double FUNNEL_INTAKE_SPEED = -2;
 
   // TalonFX

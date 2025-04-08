@@ -265,7 +265,8 @@ public class Controls {
             Commands.runOnce(() -> scoringMode = ScoringMode.CORAL)
                 .alongWith(scoringModeSelectRumble())
                 .withName("Coral Scoring Mode"))
-        .onTrue(superStructure.coralPreIntake());
+        .onTrue(superStructure.coralPreIntake())
+        .onTrue(s.climbPivotSubsystem.toStow());
     operatorController
         .povLeft()
         .onTrue(
@@ -548,18 +549,8 @@ public class Controls {
     connected(climbTestController)
         .and(climbTestController.start())
         .onTrue(s.climbPivotSubsystem.advanceClimbTarget());
-    operatorController.start().onTrue(s.climbPivotSubsystem.advanceClimbTarget());
-    // operatorController
-    //     .rightTrigger(0.1)
-    //     .whileTrue(
-    //         s.climbPivotSubsystem
-    //             .moveClimbManual(
-    //                 () ->
-    //                     -0.6
-    //                         * MathUtil.applyDeadband(operatorController.getRightTriggerAxis(),
-    // 0.1))
-    // .withName("Climb Manual Control"));
-    operatorController.rightTrigger().onTrue(s.climbPivotSubsystem.stow());
+    operatorController.start().onTrue(s.climbPivotSubsystem.toClimbed());
+    operatorController.rightTrigger().onTrue(s.climbPivotSubsystem.toClimbOut());
     connected(climbTestController)
         .and(climbTestController.rightTrigger(0.1))
         .whileTrue(
@@ -662,7 +653,7 @@ public class Controls {
         .rightTrigger()
         .and(() -> scoringMode == ScoringMode.CORAL)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignTwo(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem, this));
   }
 
   private void configureGroundSpinnyBindings() {

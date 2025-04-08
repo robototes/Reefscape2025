@@ -16,7 +16,7 @@ public class IntakeSensor {
   private final LaserCan intakeSensor;
   // VALUES ARE IN METERS
   private static final double INTAKE_LOWER_LIMIT = 0.010;
-  private static final double INTAKE_UPPER_LIMIT = 0.07;
+  private static final double INTAKE_UPPER_LIMIT = 0.1;
 
   public IntakeSensor() {
     intakeSensor = new LaserCan(Hardware.GROUND_INTAKE_SENSOR);
