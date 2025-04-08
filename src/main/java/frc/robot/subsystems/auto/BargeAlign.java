@@ -23,7 +23,7 @@ public class BargeAlign extends Command {
   private static final double redBargeLineX = fieldLength - blueBargeLineX;
 
   private final SwerveRequest.FieldCentric blackLineDriveRequest =
-      new SwerveRequest.FieldCentric() // Add a 10% deadband
+      new SwerveRequest.FieldCentric() 
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
           .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
@@ -81,7 +81,7 @@ public class BargeAlign extends Command {
   @Override
   public void execute() {
     Pose2d currentPose = drive.getState().Pose;
-    // Calculate the power for X direction and clamp it between -1 and 1
+    // Calculate the power for X direction and clamp it between -2 and 2
     double powerX = pidX.calculate(currentPose.getX());
     powerX = MathUtil.clamp(powerX, -2, 2);
     powerX += .05 * Math.signum(powerX);
