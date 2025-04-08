@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Hardware;
 import java.util.function.DoubleConsumer;
@@ -48,6 +49,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double CORAL_GROUND_INTAKE_POS = 7.2;
   public static final double CORAL_INTAKE_POS = 1.55;
   public static final double CORAL_PRE_INTAKE = 4.0;
+  public static final double MIN_EMPTY_GROUND_INTAKE = 4.5;
+  public static final double MIN_FULL_GROUND_INTAKE = 8.0;
   public static final double MANUAL = 0.1;
   private static final double POS_TOLERANCE = 0.1;
   private final double ELEVATOR_KP = 7.804;
@@ -240,6 +243,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private void setCurrentPosition(double pos) {
     m_motor.setPosition(pos);
+  }
+
+  public Trigger above(double position) {
+    return new Trigger(() -> getCurrentPosition() >= position - POS_TOLERANCE);
   }
 
   public Command resetPosZero() {

@@ -119,7 +119,7 @@ public class AutoLogic {
           new AutoPath("YSMLSF_J-K-L", "YSMLSF_J-K-L"),
           new AutoPath("YSMLSF_K-L-A", "YSMLSF_K-L-A"),
           new AutoPath("YSWLSC_K-L-A", "YSWLSC_K-L-A"),
-          new AutoPath("OSWRSF_D_C_B", "OSWRSF_D_C_B"),
+          new AutoPath("OSWRSF_D-C-B", "OSWRSF_D-C-B"),
           new AutoPath("YSMLSC_K-L-A", "YSMLSC_K-L-A"));
 
   private static List<AutoPath> fourPiecePaths =
