@@ -140,6 +140,10 @@ public class VisionSubsystem extends SubsystemBase {
         .addDouble("april tag distance meters", this::getDistanceToTarget)
         .withPosition(1, 1)
         .withSize(1, 1);
+    shuffleboardTab
+        .addDouble("time since last reading", this::getTimeSinceLastReading)
+        .withPosition(2, 0)
+        .withSize(1, 1);
   }
 
   public void update() {
@@ -208,6 +212,10 @@ public class VisionSubsystem extends SubsystemBase {
 
   public double getLastRawTimestampSeconds() {
     return lastRawTimestampSeconds;
+  }
+
+  public double getTimeSinceLastReading() {
+    return Timer.getFPGATimestamp() - lastTimestampSeconds;
   }
 
   public double getDistanceToTarget() {

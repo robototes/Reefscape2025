@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 
 public class ArmPivot extends SubsystemBase {
   // Presets
-  private final double ARMPIVOT_KP = 20;
+  private final double ARMPIVOT_KP = 38.5;
   private final double ARMPIVOT_KI = 0;
   private final double ARMPIVOT_KD = 0;
   private final double ARMPIVOT_KS = 0.1;
@@ -52,7 +52,7 @@ public class ArmPivot extends SubsystemBase {
   public static final double ALGAE_NET_SCORE = 0.175; // untested - old value was 0.18
   public static final double CORAL_PRESET_STOWED = 0.125;
   public static final double CORAL_PRESET_OUT = 0;
-  public static final double CORAL_PRESET_UP = 0.25; // Pointing directly upwards
+  public static final double CORAL_PRESET_UP = 0.245; // Stop a little short of the hardstop
   public static final double CORAL_PRESET_GROUND_INTAKE = 0;
   public static final double CORAL_PRESET_DOWN = -0.25;
   public static final double HARDSTOP_HIGH = 0.32;
@@ -181,11 +181,11 @@ public class ArmPivot extends SubsystemBase {
 
     // set Motion Magic settings in rps not mechanism units
     talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity =
-        80; // Target cruise velocity of 80 rps
+        160; // Target cruise velocity of 2560 rps
     talonFXConfiguration.MotionMagic.MotionMagicAcceleration =
-        160; // Target acceleration of 160 rps/s (0.5 seconds)
+        320; // Target acceleration of 4960 rps/s (0.5 seconds)
     talonFXConfiguration.MotionMagic.MotionMagicJerk =
-        1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
+        1600; // Target jerk of 6400 rps/s/s (0.1 seconds)
 
     cfg.apply(talonFXConfiguration);
   }

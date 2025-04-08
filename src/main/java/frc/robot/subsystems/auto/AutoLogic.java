@@ -71,8 +71,7 @@ public class AutoLogic {
 
   // paths lists
 
-  private static AutoPath nothingPath = new AutoPath("do nothing", "Nothing");
-  private static AutoPath defaultPath = new AutoPath("drive forward (M0)", "M0");
+  private static AutoPath defaultPath = new AutoPath("do nothing", "do nothing");
 
   private static List<AutoPath> noPiecePaths =
       List.of(
@@ -120,7 +119,7 @@ public class AutoLogic {
           new AutoPath("YSMLSF_J-K-L", "YSMLSF_J-K-L"),
           new AutoPath("YSMLSF_K-L-A", "YSMLSF_K-L-A"),
           new AutoPath("YSWLSC_K-L-A", "YSWLSC_K-L-A"),
-          new AutoPath("OSWRSF_D_C_B", "OSWRSF_D_C_B"),
+          new AutoPath("OSWRSF_D-C-B", "OSWRSF_D-C-B"),
           new AutoPath("YSMLSC_K-L-A", "YSMLSC_K-L-A"));
 
   private static List<AutoPath> fourPiecePaths =
@@ -210,6 +209,11 @@ public class AutoLogic {
     tab.add("Launch Type", isVision).withPosition(4, 1);
     tab.add("Game Objects", gameObjects).withPosition(5, 1);
     tab.add("Available Auto Variants", availableAutos).withPosition(4, 2).withSize(2, 1);
+    tab.addBoolean("readyToScore?", () -> AutoAlign.readyToScore());
+    tab.addBoolean("Level?", () -> AutoAlign.isLevel());
+    tab.addBoolean("Close Enough?", () -> AutoAlign.isCloseEnough());
+    tab.addBoolean("Stationary?", () -> AutoAlign.isStationary());
+    tab.addBoolean("Low on time?", () -> AutoAlign.oneSecondLeft());
     tab.addDouble("MATCH TIME(TIMER FOR AUTO)", () -> DriverStation.getMatchTime());
     autoDelayEntry = tab.add("Auto Delay", 0).withPosition(4, 3).withSize(1, 1).getEntry();
 
@@ -228,7 +232,6 @@ public class AutoLogic {
 
     // filter based off gameobject count
     availableAutos.setDefaultOption(defaultPath.getDisplayName(), defaultPath);
-    availableAutos.addOption(nothingPath.getDisplayName(), nothingPath);
 
     List<AutoPath> autoCommandsList = commandsMap.get(numGameObjects);
 
@@ -266,9 +269,9 @@ public class AutoLogic {
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
-      return new AutoAlignTwo(s.drivebaseSubsystem, controls)
+      return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
           .repeatedly()
-          .withDeadline(r.superStructure.coralLevelFourAuto(() -> AutoAlign.readyToScore()))
+          .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
           .withName("scoreCommand");
     }
     return Commands.none().withName("scoreCommand");

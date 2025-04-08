@@ -127,33 +127,44 @@ public class ClimbPivot extends SubsystemBase {
     return runOnce(() -> motorLeft.stopMotor());
   }
 
+  private void setTargetPos(TargetPositions newTargetPos) {
+    switch (newTargetPos) {
+      case STOWED -> {
+        selectedPos = TargetPositions.STOWED;
+        maxTargetPos = STOWED_MAX_PRESET;
+        minTargetPos = STOWED_MIN_PRESET;
+        moveComplete = false;
+      }
+      case CLIMB_OUT -> {
+        selectedPos = TargetPositions.CLIMB_OUT;
+        maxTargetPos = CLIMB_OUT_MAX_PRESET;
+        minTargetPos = CLIMB_OUT_MIN_PRESET;
+        holdSpeed = CLIMB_HOLD_STOWED;
+        moveComplete = false;
+      }
+      case CLIMBED -> {
+        selectedPos = TargetPositions.CLIMBED;
+        maxTargetPos = CLIMBED_MAX_PRESET;
+        minTargetPos = CLIMBED_MIN_PRESET;
+        holdSpeed = CLIMB_HOLD_CLIMBOUT;
+        moveComplete = false;
+      }
+    }
+  }
+
   public Command advanceClimbTarget() {
     return runOnce(
             () -> {
               switch (selectedPos) {
                 case STOWED -> {
-                  selectedPos = TargetPositions.CLIMB_OUT;
-                  maxTargetPos = CLIMB_OUT_MAX_PRESET;
-                  minTargetPos = CLIMB_OUT_MIN_PRESET;
-                  holdSpeed = CLIMB_HOLD_STOWED;
-                  moveComplete = false;
+                  setTargetPos(TargetPositions.CLIMB_OUT);
                 }
                 case CLIMB_OUT -> {
-                  selectedPos = TargetPositions.CLIMBED;
-                  maxTargetPos = CLIMBED_MAX_PRESET;
-                  minTargetPos = CLIMBED_MIN_PRESET;
-                  holdSpeed = CLIMB_HOLD_CLIMBOUT;
-                  moveComplete = false;
+                  setTargetPos(TargetPositions.CLIMBED);
                 }
                 case CLIMBED -> {
-                  // selectedPos = TargetPositions.STOWED;
-                  selectedPos = TargetPositions.CLIMB_OUT;
-                  // maxTargetPos = STOWED_MAX_PRESET;
-                  // minTargetPos = STOWED_MIN_PRESET;
-                  maxTargetPos = CLIMB_OUT_MAX_PRESET;
-                  minTargetPos = CLIMB_OUT_MIN_PRESET;
-                  holdSpeed = CLIMB_HOLD_CLIMBED;
-                  moveComplete = false;
+                  // setTargetPos(TargetPositions.STOWED);
+
                 }
               }
             })
@@ -330,13 +341,15 @@ public class ClimbPivot extends SubsystemBase {
     moveComplete = false;
   }
 
-  public Command stow() {
-    return runOnce(
-        () -> {
-          selectedPos = TargetPositions.STOWED;
-          maxTargetPos = STOWED_MAX_PRESET;
-          minTargetPos = STOWED_MIN_PRESET;
-          moveComplete = false;
-        });
+  public Command toStow() {
+    return runOnce(() -> setTargetPos(TargetPositions.STOWED)).withName("to stow climb");
+  }
+
+  public Command toClimbOut() {
+    return runOnce(() -> setTargetPos(TargetPositions.CLIMB_OUT)).withName("to climb out");
+  }
+
+  public Command toClimbed() {
+    return runOnce(() -> setTargetPos(TargetPositions.CLIMBED)).withName("to climbed");
   }
 }

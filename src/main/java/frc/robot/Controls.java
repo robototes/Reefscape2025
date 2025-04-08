@@ -1,14 +1,20 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,6 +30,7 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.GroundArm;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoAlign;
+import frc.robot.subsystems.auto.BargeAlign;
 import frc.robot.util.AlgaeIntakeHeight;
 import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
@@ -169,6 +176,7 @@ public class Controls {
                 .runOnce(() -> s.drivebaseSubsystem.seedFieldCentric())
                 .alongWith(rumble(driverController, 0.5, Seconds.of(0.3)))
                 .withName("Reset gyro"));
+
     s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
     var swerveCoastButton =
         Shuffleboard.getTab("Controls")
@@ -261,7 +269,8 @@ public class Controls {
             Commands.runOnce(() -> scoringMode = ScoringMode.CORAL)
                 .alongWith(scoringModeSelectRumble())
                 .withName("Coral Scoring Mode"))
-        .onTrue(superStructure.coralPreIntake());
+        .onTrue(superStructure.coralPreIntake())
+        .onTrue(s.climbPivotSubsystem.toStow());
     operatorController
         .povLeft()
         .onTrue(
@@ -348,7 +357,7 @@ public class Controls {
                           switch (scoringMode) {
                             case CORAL -> getCoralBranchHeightCommand();
                             case ALGAE -> Commands.sequence(
-                                    superStructure.algaeNetScore(driverController.rightBumper()),
+                                    BargeAlign.bargeScore(s.drivebaseSubsystem, superStructure),
                                     getAlgaeIntakeCommand())
                                 .withName("Algae score then intake");
                           };
@@ -544,18 +553,8 @@ public class Controls {
     connected(climbTestController)
         .and(climbTestController.start())
         .onTrue(s.climbPivotSubsystem.advanceClimbTarget());
-    operatorController.start().onTrue(s.climbPivotSubsystem.advanceClimbTarget());
-    // operatorController
-    //     .rightTrigger(0.1)
-    //     .whileTrue(
-    //         s.climbPivotSubsystem
-    //             .moveClimbManual(
-    //                 () ->
-    //                     -0.6
-    //                         * MathUtil.applyDeadband(operatorController.getRightTriggerAxis(),
-    // 0.1))
-    // .withName("Climb Manual Control"));
-    operatorController.rightTrigger().onTrue(s.climbPivotSubsystem.stow());
+    operatorController.start().onTrue(s.climbPivotSubsystem.toClimbed());
+    operatorController.rightTrigger().onTrue(s.climbPivotSubsystem.toClimbOut());
     connected(climbTestController)
         .and(climbTestController.rightTrigger(0.1))
         .whileTrue(
@@ -630,31 +629,68 @@ public class Controls {
       Commands.waitSeconds(1)
           .andThen(
               s.elevatorLEDSubsystem
-                  .colorSet(255, 0, 0, "Red - Elevator Not Zeroed")
+                  .blink(120, 0, 0, "Red - Elevator Not Zeroed")
                   .ignoringDisable(true))
           .schedule();
       hasBeenZeroed.onTrue(
           s.elevatorLEDSubsystem
-              .colorSet(0, 255, 0, "Green - Elevator Zeroed")
-              .ignoringDisable(true));
-      hasBeenZeroed.onFalse(
-          s.elevatorLEDSubsystem
-              .colorSet(255, 0, 0, "Red - Elevator Not Zeroed")
-              .ignoringDisable(false));
+              .colorSet(0, 170, 0, "Green - Elevator Zeroed")
+              .withTimeout(2)
+              .andThen(s.elevatorLEDSubsystem.colorSet(0, 32, 0, "dimmed Green - Elevator Zeroed"))
+              .ignoringDisable(true)
+              .withName("Green - Elevator Zeroed"));
+      RobotModeTriggers.disabled()
+          .and(hasBeenZeroed.negate())
+          .onTrue(
+              s.elevatorLEDSubsystem
+                  .blink(120, 0, 0, "Red - Elevator Not Zeroed")
+                  .ignoringDisable(true));
     }
     RobotModeTriggers.autonomous()
         .whileTrue(s.elevatorLEDSubsystem.animate(LEDPattern.rainbow(255, 255), "Auto Rainbow"));
+    Timer teleopTimer = new Timer();
+    // when in teleop for less than 5 seconds after autononomous ends, restart the timer
+    RobotModeTriggers.autonomous()
+        .debounce(5, DebounceType.kFalling)
+        .and(RobotModeTriggers.teleop())
+        .onTrue(Commands.runOnce(() -> teleopTimer.restart()));
+    RobotModeTriggers.teleop()
+        .onFalse(Commands.runOnce(() -> teleopTimer.stop()).ignoringDisable(true));
+    Shuffleboard.getTab("Controls").addDouble("Teleop time", () -> teleopTimer.get());
+    new Trigger(() -> teleopTimer.hasElapsed(135 - 30))
+        .onTrue(
+            Commands.sequence(
+                s.elevatorLEDSubsystem
+                    .colorSet(255, 0, 0, "red half blink - 30 sec remaining")
+                    .withTimeout(0.5),
+                s.elevatorLEDSubsystem
+                    .colorSet(255, 255, 0, "Yellow half blink - 30 sec remaining")
+                    .withTimeout(0.5)));
+    new Trigger(() -> teleopTimer.hasElapsed(135 - 15))
+        .onTrue(
+            Commands.sequence(
+                s.elevatorLEDSubsystem
+                    .colorSet(255, 0, 0, "Red half blink - 15 sec remaining")
+                    .withTimeout(0.5),
+                s.elevatorLEDSubsystem
+                    .colorSet(255, 255, 0, "Yellow half blink - 15 sec remaining")
+                    .withTimeout(0.5)));
   }
 
   private void configureAutoAlignBindings() {
     if (s.drivebaseSubsystem == null) {
       return;
     }
+    if (s.visionSubsystem != null) {
+      new Trigger(() -> s.visionSubsystem.getTimeSinceLastReading() >= 5)
+          .and(RobotModeTriggers.teleop())
+          .whileTrue(rumble(operatorController, 0.1, Seconds.of(10)));
+    }
     driverController
         .rightTrigger()
         .and(() -> scoringMode == ScoringMode.CORAL)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignTwo(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem, this));
   }
 
   private void configureGroundSpinnyBindings() {

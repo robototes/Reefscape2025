@@ -183,15 +183,16 @@ public class SuperStructure {
       BooleanSupplier clawFull = armSensor != null ? armSensor.inClaw() : () -> false;
       return Commands.sequence(
               Commands.parallel(
-                  elevator.setLevel(ElevatorSubsystem.CORAL_GROUND_INTAKE_POS),
-                  armPivot.moveToPosition(ArmPivot.CORAL_PRESET_GROUND_INTAKE),
-                  spinnyClaw.stop(), // just as a backup in case things are silly
-                  groundSpinny.setGroundIntakePower()),
+                      elevator.setLevel(ElevatorSubsystem.CORAL_GROUND_INTAKE_POS),
+                      armPivot.moveToPosition(ArmPivot.CORAL_PRESET_GROUND_INTAKE),
+                      spinnyClaw.stop(), // just as a backup in case things are silly
+                      groundSpinny.setGroundIntakePower())
+                  .until(elevator.above(ElevatorSubsystem.MIN_EMPTY_GROUND_INTAKE)),
               groundArm
                   .moveToPosition(GroundArm.GROUND_POSITION)
                   .withDeadline(Commands.waitUntil(intakeSensor.inIntake().or(retract))),
               groundArm.moveToPosition(GroundArm.STOWED_POSITION),
-              groundSpinny.stop(),
+              groundSpinny.setFunnelIntakePower(),
               coralPreIntake())
           .unless(clawFull)
           .withName("Ground Intake");
@@ -321,5 +322,5 @@ public class SuperStructure {
             Commands.waitUntil(finish),
             algaeStow())
         .withName("Algae L2-L3 Fling");
-  }*/
+        }*/
 }
