@@ -647,7 +647,7 @@ public class Controls {
     }
     if (s.visionSubsystem != null) {
       new Trigger(() -> s.visionSubsystem.getTimeSinceLastReading() >= 5)
-          .whileTrue(rumble(operatorController, 0.1, Seconds.of(1000)));
+          .whileTrue(rumble(operatorController, 0.1, Seconds.of(10)));
     }
     driverController
         .rightTrigger()
