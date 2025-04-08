@@ -13,6 +13,7 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -667,8 +668,14 @@ public class Controls {
     }
     RobotModeTriggers.autonomous()
         .whileTrue(s.elevatorLEDSubsystem.animate(LEDPattern.rainbow(255, 255), "Auto Rainbow"));
-    s.elevatorLEDSubsystem
-        .thirtySecondsLeft()
+    Timer teleopTimer = new Timer();
+    // when in teleop for less than 5 seconds after autononomous ends, restart the timer
+    RobotModeTriggers.autonomous()
+        .debounce(5)
+        .and(RobotModeTriggers.teleop())
+        .onTrue(Commands.runOnce(() -> teleopTimer.restart()));
+    RobotModeTriggers.teleop().onFalse(Commands.runOnce(() -> teleopTimer.stop()));
+    new Trigger(() -> teleopTimer.hasElapsed(135 - 30))
         .onTrue(
             Commands.sequence(
                 s.elevatorLEDSubsystem
@@ -677,8 +684,7 @@ public class Controls {
                 s.elevatorLEDSubsystem
                     .colorSet(255, 255, 0, "Yellow half blink - 30 sec remaining")
                     .withTimeout(0.5)));
-    s.elevatorLEDSubsystem
-        .fifteenSecondsLeft()
+    new Trigger(() -> teleopTimer.hasElapsed(135 - 15))
         .onTrue(
             Commands.sequence(
                 s.elevatorLEDSubsystem
