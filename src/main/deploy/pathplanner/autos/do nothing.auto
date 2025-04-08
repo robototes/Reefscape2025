@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RSF to D"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "scoreCommand"
+            "pathName": "do nothing"
           }
         }
       ]

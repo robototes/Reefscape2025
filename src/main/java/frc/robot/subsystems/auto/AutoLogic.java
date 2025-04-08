@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -39,19 +40,16 @@ public class AutoLogic {
   public static final double STAGE_ANGLE = 262;
 
   public static enum StartPosition {
-    ALLIANCE_SIDE_WALL(
-        "Alliance Side Wall",
-        new Pose2d(7.187, 7.277, new Rotation2d(Units.degreesToRadians(-90)))),
-    ALLIANCE_SIDE_MIDDLE(
-        "Alliance Side Middle",
-        new Pose2d(7.187, 6.171, new Rotation2d(Units.degreesToRadians(-90)))),
-    MIDDLE("MIDDLE", new Pose2d(7.187, 4.044, new Rotation2d(Units.degreesToRadians(180)))),
-    OPPOSITE_ALLIANCE_SIDE_MIDDLE(
-        "Opposite Alliance Side Middle",
-        new Pose2d(7.187, 1.908, new Rotation2d(Units.degreesToRadians(90)))),
-    OPPOSITE_ALLIANCE_SIDE_WALL(
-        "Opposite Alliance Side Wall",
-        new Pose2d(7.187, 0.811, new Rotation2d(Units.degreesToRadians(90)))),
+    FAR_LEFT_CAGE(
+        "Far Left Cage", new Pose2d(7.187, 7.277, new Rotation2d(Units.degreesToRadians(-90)))),
+    CENTER_LEFT_CAGE(
+        "Center Left Cage", new Pose2d(7.187, 6.171, new Rotation2d(Units.degreesToRadians(-90)))),
+    MIDDLE_MIDDLE(
+        "MIDDLE MIDDLE", new Pose2d(7.187, 4.044, new Rotation2d(Units.degreesToRadians(180)))),
+    CENTER_RIGHT_CAGE(
+        "Center Right Cage", new Pose2d(7.187, 1.908, new Rotation2d(Units.degreesToRadians(90)))),
+    FAR_RIGHT_CAGE(
+        "Far Right Cage", new Pose2d(7.187, 0.811, new Rotation2d(Units.degreesToRadians(90)))),
     MISC("Misc", null);
 
     final String title; // for shuffleboard display
@@ -72,7 +70,7 @@ public class AutoLogic {
 
   // paths lists
 
-  private static AutoPath defaultPath = new AutoPath("do nothing", "M0");
+  private static AutoPath defaultPath = new AutoPath("do nothing", "do nothing");
 
   private static List<AutoPath> noPiecePaths =
       List.of(
@@ -104,12 +102,12 @@ public class AutoLogic {
           new AutoPath("YSMLSF_I-J", "YSMLSF_I-J"),
           new AutoPath("YSMLSF_J-K", "YSMLSF_J-K"),
           new AutoPath("YSMLSF_K-L", "YSMLSF_K-L"),
-          new AutoPath("OSMLSF_F-E", "OSMRSF_F-E"),
-          new AutoPath("OSMLSF_E-D", "OSMRSF_E-D"),
-          new AutoPath("OSMLSF_D-C", "OSMRSF_D-C"),
-          new AutoPath("OSWLSF_F-E", "OSWRSF_F-E"),
-          new AutoPath("OSWLSF_E-D", "OSWRSF_E-D"),
-          new AutoPath("OSWLSF_D-C", "OSWRSF_D-C"));
+          new AutoPath("OSMRSF_F-E", "OSMRSF_F-E"),
+          new AutoPath("OSMRSF_E-D", "OSMRSF_E-D"),
+          new AutoPath("OSMRSF_D-C", "OSMRSF_D-C"),
+          new AutoPath("OSWRSF_F-E", "OSWRSF_F-E"),
+          new AutoPath("OSWRSF_E-D", "OSWRSF_E-D"),
+          new AutoPath("OSWRSF_D-C", "OSWRSF_D-C"));
 
   private static List<AutoPath> threePiecePaths =
       List.of(
@@ -120,6 +118,7 @@ public class AutoLogic {
           new AutoPath("YSMLSF_J-K-L", "YSMLSF_J-K-L"),
           new AutoPath("YSMLSF_K-L-A", "YSMLSF_K-L-A"),
           new AutoPath("YSWLSC_K-L-A", "YSWLSC_K-L-A"),
+          new AutoPath("OSWRSF_D-C-B", "OSWRSF_D-C-B"),
           new AutoPath("YSMLSC_K-L-A", "YSMLSC_K-L-A"));
 
   private static List<AutoPath> fourPiecePaths =
@@ -168,7 +167,6 @@ public class AutoLogic {
 
     // Intake
     NamedCommands.registerCommand("scoreCommand", scoreCommand());
-    NamedCommands.registerCommand("branchAlign", autoBranchAlign());
     NamedCommands.registerCommand("intake", intakeCommand());
     NamedCommands.registerCommand("isCollected", isCollected());
   }
@@ -209,6 +207,12 @@ public class AutoLogic {
     tab.add("Launch Type", isVision).withPosition(4, 1);
     tab.add("Game Objects", gameObjects).withPosition(5, 1);
     tab.add("Available Auto Variants", availableAutos).withPosition(4, 2).withSize(2, 1);
+    tab.addBoolean("readyToScore?", () -> AutoAlign.readyToScore());
+    tab.addBoolean("Level?", () -> AutoAlign.isLevel());
+    tab.addBoolean("Close Enough?", () -> AutoAlign.isCloseEnough());
+    tab.addBoolean("Stationary?", () -> AutoAlign.isStationary());
+    tab.addBoolean("Low on time?", () -> AutoAlign.oneSecondLeft());
+    tab.addDouble("MATCH TIME(TIMER FOR AUTO)", () -> DriverStation.getMatchTime());
     autoDelayEntry = tab.add("Auto Delay", 0).withPosition(4, 3).withSize(1, 1).getEntry();
 
     isVision.onChange((dummyVar) -> AutoLogic.filterAutos(gameObjects.getSelected()));
@@ -252,7 +256,6 @@ public class AutoLogic {
   }
 
   public static Command getSelectedAuto() {
-
     double waitTimer = autoDelayEntry.getDouble(0);
     String autoName = availableAutos.getSelected().getAutoName();
 
@@ -264,7 +267,7 @@ public class AutoLogic {
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
-      return AutoAlign.autoAlign(s.drivebaseSubsystem)
+      return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
           .repeatedly()
           .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
           .withName("scoreCommand");
@@ -273,11 +276,8 @@ public class AutoLogic {
   }
 
   public static Command intakeCommand() {
-
     if (r.superStructure != null) {
-
       if (ARMSENSOR_ENABLED) {
-
         return Commands.sequence(r.superStructure.coralPreIntake(), r.superStructure.coralIntake())
             .withName("intake");
       }
@@ -285,14 +285,11 @@ public class AutoLogic {
     return Commands.none().withName("intake");
   }
 
-  public static Command autoBranchAlign() {
-    return AutoAlign.autoAlign(s.drivebaseSubsystem).withName("autoAlign");
-  }
-
   public static Command isCollected() {
     if (ARMSENSOR_ENABLED && r.sensors.armSensor != null) {
-
-      return Commands.waitUntil(r.sensors.armSensor.inTrough()).withName("isCollected");
+      return Commands.waitUntil(r.sensors.armSensor.inTrough())
+          .withTimeout(3)
+          .withName("isCollected");
     }
     return Commands.none().withName("isCollected");
   }

@@ -4,16 +4,19 @@ import static frc.robot.Sensors.SensorConstants.*;
 
 import frc.robot.sensors.ArmSensor;
 import frc.robot.sensors.BranchSensors;
+import frc.robot.sensors.IntakeSensor;
 
 public class Sensors {
   public static class SensorConstants {
     // <SENSOR>_ENABLED constants go here
     public static final boolean ARMSENSOR_ENABLED = true;
+    public static final boolean INTAKE_SENSOR_ENABLED = true;
     public static final boolean BRANCHSENSORS_ENABLED = true;
   }
 
   // Sensors go here
   public final ArmSensor armSensor;
+  public final IntakeSensor intakeSensor;
   public final BranchSensors branchSensors;
 
   public Sensors() {
@@ -23,6 +26,12 @@ public class Sensors {
       armSensor = new ArmSensor();
     } else {
       armSensor = null;
+    }
+
+    if (INTAKE_SENSOR_ENABLED) {
+      intakeSensor = new IntakeSensor();
+    } else {
+      intakeSensor = null;
     }
 
     if (BRANCHSENSORS_ENABLED) {

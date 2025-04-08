@@ -1,0 +1,99 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "OSW to D"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCommand"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "D to RSF"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "isCollected"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RSF to C"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCommand"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "C to RSF"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "isCollected"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RSF to B"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCommand"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
