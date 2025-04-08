@@ -1,6 +1,10 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -642,11 +646,16 @@ public class Controls {
     if (s.drivebaseSubsystem == null) {
       return;
     }
+    if (s.visionSubsystem != null) {
+      new Trigger(() -> s.visionSubsystem.getTimeSinceLastReading() >= 5)
+          .and(RobotModeTriggers.teleop())
+          .whileTrue(rumble(operatorController, 0.1, Seconds.of(10)));
+    }
     driverController
         .rightTrigger()
         .and(() -> scoringMode == ScoringMode.CORAL)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignTwo(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem, this));
   }
 
   private void configureGroundSpinnyBindings() {
