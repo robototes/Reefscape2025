@@ -63,14 +63,6 @@ public class AutoAlign {
   }
 
   private static class AutoAlignCommand extends Command {
-    private PIDController pidX = new PIDController(4, 0, 0);
-    private PIDController pidY = new PIDController(4, 0, 0);
-    private PIDController pidRotate = new PIDController(8, 0, 0);
-
-    private CommandSwerveDrivetrain drive;
-    private Pose2d branchPose;
-    private boolean redAlliance;
-    private Controls controls;
     private static final AprilTagFieldLayout aprilTagFieldLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
@@ -166,6 +158,15 @@ public class AutoAlign {
       List<Pose2d> branchPose2ds = isBlue ? blueBranchPoses : redBranchPoses;
       return p.nearest(branchPose2ds);
     }
+
+    private PIDController pidX = new PIDController(4, 0, 0);
+    private PIDController pidY = new PIDController(4, 0, 0);
+    private PIDController pidRotate = new PIDController(8, 0, 0);
+
+    private CommandSwerveDrivetrain drive;
+    private Pose2d branchPose;
+    private boolean redAlliance;
+    private Controls controls;
 
     private final SwerveRequest.FieldCentric driveRequest =
         new SwerveRequest.FieldCentric() // Add a 10% deadband
