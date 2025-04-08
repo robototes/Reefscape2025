@@ -1,14 +1,14 @@
 package frc.robot;
 
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
+import edu.wpi.first.math.MathUtil;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -655,8 +655,8 @@ public class Controls {
       return;
     }
     if (s.visionSubsystem != null) {
-      new Trigger(() -> s.visionSubsystem.getTimeSinceLastReading() >= 0.5)
-          .whileTrue(rumble(driverController, 0.1, Seconds.of(1000)));
+      new Trigger(() -> s.visionSubsystem.getTimeSinceLastReading() >= 5)
+          .whileTrue(rumble(operatorController, 0.1, Seconds.of(1000)));
     }
     driverController
         .rightTrigger()
