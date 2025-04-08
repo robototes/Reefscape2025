@@ -14,10 +14,6 @@ import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 
 public class BargeAlign extends Command {
-  private PIDController pidX = new PIDController(4, 0, 0);
-  private PIDController pidRotate = new PIDController(8, 0, 0);
-
-  private CommandSwerveDrivetrain drive;
   private static final double fieldLength = 17.548; // Welded field
   private static final double blueBlacklineX = 7.09;
   private static final double redBlacklineX = fieldLength - blueBlacklineX;
@@ -47,14 +43,14 @@ public class BargeAlign extends Command {
 
   private static final double xBargeDriveSpeed = 0.5;
 
-  public static Command bargeScore(CommandSwerveDrivetrain drivebaseSubsystem, SuperStructure superStructure) {
-    return Commands.sequence(BargeAlign.driveToBlackLine(drivebaseSubsystem),
-    BargeAlign.driveToBarge(drivebaseSubsystem)
-        .withDeadline(
-            superStructure.algaeNetScore(
-                () ->
-                    BargeAlign.atScoringXPosition(
-                        drivebaseSubsystem))));
+  public static Command bargeScore(
+      CommandSwerveDrivetrain drivebaseSubsystem, SuperStructure superStructure) {
+    return Commands.sequence(
+        BargeAlign.driveToBlackLine(drivebaseSubsystem),
+        BargeAlign.driveToBarge(drivebaseSubsystem)
+            .withDeadline(
+                superStructure.algaeNetScore(
+                    () -> BargeAlign.atScoringXPosition(drivebaseSubsystem))));
   }
 
   private static Command driveToBarge(CommandSwerveDrivetrain drivebaseSubsystem) {
@@ -74,6 +70,11 @@ public class BargeAlign extends Command {
                     bargeDriveRequest.withVelocityX(0).withVelocityY(0).withRotationalRate(0)))
         .withName("Drive to barge");
   }
+
+  private PIDController pidX = new PIDController(4, 0, 0);
+  private PIDController pidRotate = new PIDController(8, 0, 0);
+
+  private CommandSwerveDrivetrain drive;
 
   private BargeAlign(CommandSwerveDrivetrain drive) {
     this.drive = drive;
