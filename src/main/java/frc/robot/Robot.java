@@ -68,6 +68,7 @@ public class Robot extends TimedRobot {
               subsystems.groundSpinny,
               subsystems.elevatorLEDSubsystem,
               sensors.armSensor,
+              sensors.branchSensors,
               sensors.intakeSensor);
     } else {
       superStructure = null;

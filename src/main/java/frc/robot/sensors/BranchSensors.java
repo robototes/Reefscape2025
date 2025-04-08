@@ -17,10 +17,10 @@ public class BranchSensors {
   private final LaserCan rightSensor;
 
   // temporary
-  private static final double RIGHT_SENSOR_MIN = 0.0;
-  private static final double RIGHT_SENSOR_MAX = 0.0;
-  private static final double LEFT_SENSOR_MAX = 0.0;
-  private static final double LEFT_SENSOR_MIN = 0.0;
+  private static final double RIGHT_SENSOR_MIN = 0.25;
+  private static final double RIGHT_SENSOR_MAX = 0.35;
+  private static final double LEFT_SENSOR_MIN = 0.25;
+  private static final double LEFT_SENSOR_MAX = 0.35;
 
   public BranchSensors() {
     leftSensor = new LaserCan(Hardware.BRANCH_SENSOR_LEFT);
@@ -30,6 +30,7 @@ public class BranchSensors {
     ShuffleboardTab tab = Shuffleboard.getTab("BranchSensor");
     tab.addDouble("LeftDistance(m)", () -> getLeftSensorDistance().in(Meters));
     tab.addDouble("RightDistance(m)", () -> getRightSensorDistance().in(Meters));
+    tab.addBoolean("In L4 score range", withinScoreRange());
   }
 
   private void ConfigureSensor(LaserCan Sensor) {
