@@ -1,10 +1,8 @@
 package frc.robot.subsystems.auto;
 
-import java.util.List;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
@@ -18,6 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Controls;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
+import java.util.List;
 
 public class AutoAlign {
   public static Command autoAlign(CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
@@ -166,13 +165,13 @@ public class AutoAlign {
     private final PIDController pidRotate = new PIDController(8, 0, 0);
 
     private final CommandSwerveDrivetrain drive;
-    private Pose2d branchPose;
-    private boolean redAlliance;
     private final Controls controls;
+    private Pose2d branchPose;
 
     private final SwerveRequest.FieldCentric driveRequest =
         new SwerveRequest.FieldCentric() // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+            .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
     public AutoAlignCommand(CommandSwerveDrivetrain drive, Controls controls) {
       this.drive = drive;
@@ -183,7 +182,7 @@ public class AutoAlign {
 
     @Override
     public void initialize() {
-      redAlliance = DriverStation.getAlliance().get() == Alliance.Red;
+      boolean redAlliance = DriverStation.getAlliance().get() == Alliance.Red;
       Pose2d robotPose = drive.getState().Pose;
       branchPose = getNearestBranch(robotPose, !redAlliance);
       pidX.setSetpoint(branchPose.getX());
@@ -201,10 +200,6 @@ public class AutoAlign {
       powerY = MathUtil.clamp(powerY, -2, 2);
       powerX += .05 * Math.signum(powerX);
       powerY += .05 * Math.signum(powerY);
-      if (redAlliance) {
-        powerX *= -1;
-        powerY *= -1;
-      }
       double powerRotate = pidRotate.calculate(currentPose.getRotation().getRadians());
       powerRotate = MathUtil.clamp(powerRotate, -4, 4);
       SwerveRequest request =
