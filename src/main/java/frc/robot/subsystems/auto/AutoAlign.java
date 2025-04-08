@@ -35,7 +35,7 @@ public class AutoAlign {
   }
 
   public static boolean readyToScore() {
-    return (isStationary() && isLevel() && isCloseEnough()) || oneSecondLeft();
+    return isStationary() && isLevel() && isCloseEnough();
   }
 
   public static boolean isStationary() {
