@@ -171,6 +171,7 @@ public class AutoLogic {
     NamedCommands.registerCommand("scoreCommand", scoreCommand());
     NamedCommands.registerCommand("intake", intakeCommand());
     NamedCommands.registerCommand("isCollected", isCollected());
+    NamedCommands.registerCommand("readyIntake", readyIntakeCommand());
   }
 
   // public Command getConditionalCommand(){}
@@ -276,7 +277,7 @@ public class AutoLogic {
   public static Command intakeCommand() {
     if (r.superStructure != null) {
       if (ARMSENSOR_ENABLED) {
-        return Commands.sequence(r.superStructure.coralPreIntake(), r.superStructure.coralIntake())
+        return Commands.sequence(r.superStructure.coralIntake())
             .withName("intake");
       }
     }
@@ -291,11 +292,13 @@ public class AutoLogic {
     }
     return Commands.none().withName("isCollected");
   }
-  public static Command isScored() {
-    if (ARMSENSOR_ENABLED && r.sensors.armSensor != null) {
-        return Commands.waitUntil(r.sensors.armSensor.inClaw().onFalse(r.superStructure.coralPreIntake())
-        ).withTimeout(3).withName("isScored");
+  public static Command readyIntakeCommand() {
+    if (r.superStructure != null) {
+      if (ARMSENSOR_ENABLED) {
+        return Commands.sequence(r.superStructure.coralPreIntake())
+            .withName("readyIntake");
+      }
     }
-    return Commands.none().withName("isScored");
+    return Commands.none().withName("readyIntake");
 }
 }
