@@ -343,27 +343,7 @@ public class Controls {
                               .asProxy()
                           : Commands.none())
                   .withName("Automatic Intake"));
-      if (sensors.branchSensors != null) {
-        sensors
-            .branchSensors
-            .withinScoreRange()
-            .and(superStructure.inCoralPreScorePosition())
-            .and(RobotModeTriggers.teleop())
-            .onTrue(
-                Commands.runOnce(
-                        () -> {
-                          switch (scoringMode) {
-                            case CORAL -> getCoralBranchHeightCommand();
-                            case ALGAE -> Commands.none();
-                          }
-                          ;
-                        })
-                    /*.alongWith(
-                    s.elevatorLEDSubsystem
-                        .tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
-                        .asProxy())*/
-                    .withName("Automatic Score"));
-      }
+    }
 
     driverController
         .rightTrigger()
