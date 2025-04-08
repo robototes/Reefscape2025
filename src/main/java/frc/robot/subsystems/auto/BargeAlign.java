@@ -9,6 +9,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 
 public class BargeAlign extends Command {
@@ -32,7 +34,7 @@ public class BargeAlign extends Command {
     return blueBargeLineX < robotX && robotX < redBargeLineX;
   }
 
-  public static Command driveToBlackLine(CommandSwerveDrivetrain drivebaseSubsystem) {
+  private static Command driveToBlackLine(CommandSwerveDrivetrain drivebaseSubsystem) {
     return new BargeAlign(drivebaseSubsystem).withName("Drive to Black Line");
   }
 
@@ -45,7 +47,17 @@ public class BargeAlign extends Command {
 
   private static final double xBargeDriveSpeed = 0.5;
 
-  public static Command driveToBarge(CommandSwerveDrivetrain drivebaseSubsystem) {
+  public static Command bargeScore(CommandSwerveDrivetrain drivebaseSubsystem, SuperStructure superStructure) {
+    return Commands.sequence(BargeAlign.driveToBlackLine(drivebaseSubsystem),
+    BargeAlign.driveToBarge(drivebaseSubsystem)
+        .withDeadline(
+            superStructure.algaeNetScore(
+                () ->
+                    BargeAlign.atScoringXPosition(
+                        drivebaseSubsystem))));
+  }
+
+  private static Command driveToBarge(CommandSwerveDrivetrain drivebaseSubsystem) {
     return drivebaseSubsystem
         .applyRequest(
             () -> {

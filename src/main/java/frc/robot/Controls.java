@@ -350,13 +350,7 @@ public class Controls {
                           switch (scoringMode) {
                             case CORAL -> getCoralBranchHeightCommand();
                             case ALGAE -> Commands.sequence(
-                                    BargeAlign.driveToBlackLine(s.drivebaseSubsystem),
-                                    BargeAlign.driveToBarge(s.drivebaseSubsystem)
-                                        .withDeadline(
-                                            superStructure.algaeNetScore(
-                                                () ->
-                                                    BargeAlign.atScoringXPosition(
-                                                        s.drivebaseSubsystem))),
+                                    BargeAlign.bargeScore(s.drivebaseSubsystem, superStructure),
                                     getAlgaeIntakeCommand())
                                 .withName("Algae score then intake");
                           };
