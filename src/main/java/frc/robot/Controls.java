@@ -352,9 +352,6 @@ public class Controls {
                             case ALGAE -> Commands.sequence(
                                     BargeAlign.driveToBlackLine(s.drivebaseSubsystem),
                                     BargeAlign.driveToBarge(s.drivebaseSubsystem)
-                                        .until(
-                                            () ->
-                                                BargeAlign.atScoringXPosition(s.drivebaseSubsystem))
                                         .withDeadline(
                                             superStructure.algaeNetScore(
                                                 () ->

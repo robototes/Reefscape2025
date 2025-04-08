@@ -23,7 +23,7 @@ public class BargeAlign extends Command {
   private static final double redBargeLineX = fieldLength - blueBargeLineX;
 
   private final SwerveRequest.FieldCentric blackLineDriveRequest =
-      new SwerveRequest.FieldCentric() 
+      new SwerveRequest.FieldCentric()
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
           .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
@@ -55,6 +55,7 @@ public class BargeAlign extends Command {
                   .withVelocityY(0)
                   .withRotationalRate(0);
             })
+        .until(() -> BargeAlign.atScoringXPosition(drivebaseSubsystem))
         .finallyDo(
             () ->
                 drivebaseSubsystem.setControl(
