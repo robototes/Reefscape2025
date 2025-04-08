@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.sensors.ArmSensor;
 import frc.robot.sensors.ElevatorLight;
@@ -83,7 +84,7 @@ public class SuperStructure {
                         .until(armPivot.atAngle(ArmPivot.CORAL_POST_SCORE))),
                 score),
             Commands.print("Pre preIntake()"),
-            coralPreIntake(),
+            coralPreIntake().unless(RobotModeTriggers.autonomous()),
             Commands.print("Post preIntake()"))
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L4").asProxy())
         .withName("Coral Level 4");
