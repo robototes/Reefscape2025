@@ -654,7 +654,8 @@ public class Controls {
         .debounce(5, DebounceType.kFalling)
         .and(RobotModeTriggers.teleop())
         .onTrue(Commands.runOnce(() -> teleopTimer.restart()));
-    RobotModeTriggers.teleop().onFalse(Commands.runOnce(() -> teleopTimer.stop()));
+    RobotModeTriggers.teleop()
+        .onFalse(Commands.runOnce(() -> teleopTimer.stop()).ignoringDisable(true));
     Shuffleboard.getTab("Controls").addDouble("Teleop time", () -> teleopTimer.get());
     new Trigger(() -> teleopTimer.hasElapsed(135 - 30))
         .onTrue(
