@@ -114,13 +114,4 @@ public class BargeAlign extends Command {
     return Math.abs(pidX.getError()) < 0.01
         && Math.abs(Units.radiansToDegrees(pidRotate.getError())) < 1;
   }
-
-  @Override
-  public void end(boolean interrupted) {
-    // Create a swerve request to stop all motion by setting velocities and rotational rate to 0
-    SwerveRequest stop =
-        blackLineDriveRequest.withVelocityX(0).withVelocityY(0).withRotationalRate(0);
-    // Set the drive control with the stop request to halt all movement
-    drive.setControl(stop);
-  }
 }
