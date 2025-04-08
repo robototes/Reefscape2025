@@ -288,17 +288,6 @@ public class Controls {
                           case ALGAE -> superStructure.algaeStow();
                         })
                 .withName("pre-intake, algae stow"));
-    // JUST TESTING ONLY
-    climbTestController
-        .povDown()
-        .onTrue(
-            Commands.deferredProxy(
-                    () ->
-                        switch (scoringMode) {
-                          case CORAL -> superStructure.coralPreIntake();
-                          case ALGAE -> superStructure.algaeStow();
-                        })
-                .withName("pre-intake, algae stow"));
 
     driverController
         .a()
