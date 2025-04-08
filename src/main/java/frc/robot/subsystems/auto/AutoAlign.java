@@ -1,7 +1,10 @@
 package frc.robot.subsystems.auto;
 
+import java.util.List;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
@@ -15,7 +18,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Controls;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
-import java.util.List;
 
 public class AutoAlign {
   public static Command autoAlign(CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
@@ -159,14 +161,14 @@ public class AutoAlign {
       return p.nearest(branchPose2ds);
     }
 
-    private PIDController pidX = new PIDController(4, 0, 0);
-    private PIDController pidY = new PIDController(4, 0, 0);
-    private PIDController pidRotate = new PIDController(8, 0, 0);
+    private final PIDController pidX = new PIDController(4, 0, 0);
+    private final PIDController pidY = new PIDController(4, 0, 0);
+    private final PIDController pidRotate = new PIDController(8, 0, 0);
 
-    private CommandSwerveDrivetrain drive;
+    private final CommandSwerveDrivetrain drive;
     private Pose2d branchPose;
     private boolean redAlliance;
-    private Controls controls;
+    private final Controls controls;
 
     private final SwerveRequest.FieldCentric driveRequest =
         new SwerveRequest.FieldCentric() // Add a 10% deadband
@@ -192,12 +194,6 @@ public class AutoAlign {
     @Override
     public void execute() {
       Pose2d currentPose = drive.getState().Pose;
-      Transform2d robotToBranch = branchPose.minus(currentPose);
-      if (robotToBranch.getTranslation().getNorm() < 0.01
-          && Math.abs(robotToBranch.getRotation().getDegrees()) < 1) {
-        controls.vibrateDriveController(0.5);
-        return;
-      }
       // Calculate the power for X direction and clamp it between -1 and 1
       double powerX = pidX.calculate(currentPose.getX());
       double powerY = pidY.calculate(currentPose.getY());
@@ -225,9 +221,8 @@ public class AutoAlign {
           && Math.abs(robotToBranch.getRotation().getDegrees()) < 1) {
         controls.vibrateDriveController(0.5);
         return true;
-      } else {
-        return false;
       }
+      return false;
     }
 
     @Override
