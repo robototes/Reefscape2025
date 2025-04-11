@@ -278,7 +278,8 @@ public class AutoLogic {
           .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
           .withName("scoreCommand");
     }
-    return Commands.none().withName("scoreCommand");
+    return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
+        .withName("scoreCommand-noSuperstructure");
   }
 
   public static Command intakeCommand() {
