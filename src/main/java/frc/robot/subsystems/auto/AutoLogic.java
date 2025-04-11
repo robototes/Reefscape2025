@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -175,6 +176,7 @@ public class AutoLogic {
     NamedCommands.registerCommand("scoreCommand", scoreCommand());
     NamedCommands.registerCommand("intake", intakeCommand());
     NamedCommands.registerCommand("isCollected", isCollected());
+    NamedCommands.registerCommand("readyIntake", readyIntakeCommand());
   }
 
   // public Command getConditionalCommand(){}
@@ -284,8 +286,7 @@ public class AutoLogic {
   public static Command intakeCommand() {
     if (r.superStructure != null) {
       if (ARMSENSOR_ENABLED) {
-        return Commands.sequence(r.superStructure.coralPreIntake(), r.superStructure.coralIntake())
-            .withName("intake");
+        return r.superStructure.coralIntake().withName("intake");
       }
     }
     return Commands.none().withName("intake");
@@ -299,4 +300,7 @@ public class AutoLogic {
     }
     return Commands.none().withName("isCollected");
   }
+  public static Command readyIntakeCommand() {
+    return r.superStructure.coralPreIntake().withName("readyIntake");
+}
 }
