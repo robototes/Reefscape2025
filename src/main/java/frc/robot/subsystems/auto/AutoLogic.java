@@ -280,8 +280,7 @@ public class AutoLogic {
   public static Command intakeCommand() {
     if (r.superStructure != null) {
       if (ARMSENSOR_ENABLED) {
-        return Commands.sequence(r.superStructure.coralIntake())
-            .withName("intake");
+        return r.superStructure.coralIntake().withName("intake");
       }
     }
     return Commands.none().withName("intake");
@@ -296,12 +295,6 @@ public class AutoLogic {
     return Commands.none().withName("isCollected");
   }
   public static Command readyIntakeCommand() {
-    if (r.superStructure != null) {
-      if (ARMSENSOR_ENABLED) {
-        return Commands.sequence(r.superStructure.coralPreIntake())
-            .withName("readyIntake");
-      }
-    }
-    return Commands.none().withName("readyIntake");
+    return r.superStructure.coralPreIntake().withName("readyIntake");
 }
 }
