@@ -41,5 +41,14 @@ public class MatchTab {
         .withSize(1, 1)
         .withPosition(1, 1)
         .withWidget(BuiltInWidgets.kBooleanBox);
+
+    tab.addBoolean(
+            "has recent vision measurements",
+            () ->
+                (subsystems.visionSubsystem != null
+                    && subsystems.visionSubsystem.getTimeSinceLastReading() < 10))
+        .withSize(2, 2)
+        .withPosition(3, 0)
+        .withWidget(BuiltInWidgets.kBooleanBox);
   }
 }
