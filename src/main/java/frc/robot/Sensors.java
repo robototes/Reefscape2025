@@ -5,13 +5,17 @@ import static frc.robot.Sensors.SensorConstants.*;
 import frc.robot.sensors.ArmSensor;
 import frc.robot.sensors.BranchSensors;
 import frc.robot.sensors.IntakeSensor;
+import frc.robot.util.RobotType;
 
 public class Sensors {
   public static class SensorConstants {
     // <SENSOR>_ENABLED constants go here
-    public static final boolean ARMSENSOR_ENABLED = true;
-    public static final boolean INTAKE_SENSOR_ENABLED = true;
-    public static final boolean BRANCHSENSORS_ENABLED = true;
+    public static final boolean ARMSENSOR_ENABLED =
+        RobotType.getCurrent() == RobotType.COMPETITION && true;
+    public static final boolean INTAKE_SENSOR_ENABLED =
+        RobotType.getCurrent() == RobotType.COMPETITION && true;
+    public static final boolean BRANCHSENSORS_ENABLED =
+        RobotType.getCurrent() == RobotType.COMPETITION && true;
   }
 
   // Sensors go here

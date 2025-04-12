@@ -22,6 +22,7 @@ import frc.robot.subsystems.auto.AutoBuilderConfig;
 import frc.robot.subsystems.auto.AutoLogic;
 import frc.robot.subsystems.auto.AutonomousField;
 import frc.robot.util.BuildInfo;
+import frc.robot.util.MatchTab;
 import frc.robot.util.RobotType;
 
 public class Robot extends TimedRobot {
@@ -105,6 +106,7 @@ public class Robot extends TimedRobot {
       AutoLogic.initShuffleBoard();
       FollowPathCommand.warmupCommand().schedule();
     }
+    MatchTab.create(sensors, subsystems);
   }
 
   @Override
