@@ -90,9 +90,6 @@ public class SuperStructure {
         .withName("Coral Level 4");
   }
 
-
-  
-
   public Command coralLevelThree(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
