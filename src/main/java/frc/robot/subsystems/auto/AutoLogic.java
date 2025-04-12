@@ -298,12 +298,9 @@ public class AutoLogic {
 
   public static Command netCommand() {
     if (r.superStructure != null) {
-      return AlgaeAlign.algaeAlign(s.drivebaseSubsystem, controls)
-          .repeatedly()
-          .withDeadline(r.superStructure.algaeNetScore(() -> AutoAlign.readyToScore()))
-          .withName("algaeCommand34");
+      return  BargeAlign.bargeScore(s.drivebaseSubsystem, r.superStructure).withName("net");
     }
-    return Commands.none().withName("algaeCommand34");
+    return Commands.none().withName("net");
   }
 
   public static Command intakeCommand() {
