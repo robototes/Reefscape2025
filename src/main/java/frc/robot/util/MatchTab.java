@@ -50,5 +50,11 @@ public class MatchTab {
         .withSize(2, 2)
         .withPosition(3, 0)
         .withWidget(BuiltInWidgets.kBooleanBox);
+    tab.addCamera("left cam", "left", "http://10.24.12.11:1184/stream.mjpg")
+        .withSize(4, 4)
+        .withPosition(2, 2);
+    tab.addCamera("right cam", "right", "http://10.24.12.11:1182/stream.mjpg")
+        .withSize(4, 4)
+        .withPosition(6, 2);
   }
 }
