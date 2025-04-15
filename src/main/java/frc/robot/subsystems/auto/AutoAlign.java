@@ -2,137 +2,25 @@ package frc.robot.subsystems.auto;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.Waypoint;
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Controls;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.DoubleSupplier;
 
 public class AutoAlign {
-  private static final double MaxAcceleration = 1;
-  private static final double MaxAngularAcceleraition = 1;
-  private static final Pose2d BRANCH_B_A =
-      new Pose2d(new Translation2d(3.200, 4.190), Rotation2d.fromDegrees(0));
-  private static final Pose2d BRANCH_B_B =
-      new Pose2d(new Translation2d(3.200, 3.860), Rotation2d.fromDegrees(0));
-  private static final Pose2d BRANCH_B_C =
-      new Pose2d(new Translation2d(3.700, 2.990), Rotation2d.fromDegrees(60));
-  private static final Pose2d BRANCH_B_D =
-      new Pose2d(new Translation2d(3.980, 2.820), Rotation2d.fromDegrees(60));
-  private static final Pose2d BRANCH_B_E =
-      new Pose2d(new Translation2d(4.990, 2.820), Rotation2d.fromDegrees(120));
-  private static final Pose2d BRANCH_B_F =
-      new Pose2d(new Translation2d(5.270, 2.990), Rotation2d.fromDegrees(120));
-  private static final Pose2d BRANCH_B_G =
-      new Pose2d(new Translation2d(5.775, 3.860), Rotation2d.fromDegrees(180));
-  private static final Pose2d BRANCH_B_H =
-      new Pose2d(new Translation2d(5.775, 4.190), Rotation2d.fromDegrees(180));
-  private static final Pose2d BRANCH_B_I =
-      new Pose2d(new Translation2d(5.270, 5.060), Rotation2d.fromDegrees(240));
-  private static final Pose2d BRANCH_B_J =
-      new Pose2d(new Translation2d(4.990, 5.230), Rotation2d.fromDegrees(240));
-  private static final Pose2d BRANCH_B_K =
-      new Pose2d(new Translation2d(3.980, 5.230), Rotation2d.fromDegrees(300));
-  private static final Pose2d BRANCH_B_L =
-      new Pose2d(new Translation2d(3.700, 5.060), Rotation2d.fromDegrees(300));
-  private static final List<Pose2d> blueBranchesPoses =
-      Arrays.asList(
-          BRANCH_B_A,
-          BRANCH_B_B,
-          BRANCH_B_C,
-          BRANCH_B_D,
-          BRANCH_B_E,
-          BRANCH_B_F,
-          BRANCH_B_G,
-          BRANCH_B_H,
-          BRANCH_B_I,
-          BRANCH_B_J,
-          BRANCH_B_K,
-          BRANCH_B_L);
-
-  private static final Pose2d BRANCH_R_A =
-      new Pose2d(new Translation2d(14.490, 3.930), Rotation2d.fromDegrees(179.3));
-  private static final Pose2d BRANCH_R_B =
-      new Pose2d(new Translation2d(14.350, 4.190), Rotation2d.fromDegrees(180));
-  private static final Pose2d BRANCH_R_C =
-      new Pose2d(new Translation2d(13.85, 5.04), Rotation2d.fromDegrees(-124));
-  private static final Pose2d BRANCH_R_D =
-      new Pose2d(new Translation2d(13.59, 5.2), Rotation2d.fromDegrees(-119));
-  private static final Pose2d BRANCH_R_E =
-      new Pose2d(new Translation2d(12.510, 5.250), Rotation2d.fromDegrees(-54));
-  private static final Pose2d BRANCH_R_F =
-      new Pose2d(new Translation2d(12.56, 5.27), Rotation2d.fromDegrees(300));
-  private static final Pose2d BRANCH_R_G =
-      new Pose2d(new Translation2d(11.740, 4.240), Rotation2d.fromDegrees(-2.35));
-  private static final Pose2d BRANCH_R_H =
-      new Pose2d(new Translation2d(11.780, 3.920), Rotation2d.fromDegrees(-4.9));
-  private static final Pose2d BRANCH_R_I =
-      new Pose2d(new Translation2d(12.205, 2.980), Rotation2d.fromDegrees(50.4));
-  private static final Pose2d BRANCH_R_J =
-      new Pose2d(new Translation2d(12.440, 2.850), Rotation2d.fromDegrees(49.9));
-  private static final Pose2d BRANCH_R_K =
-      new Pose2d(new Translation2d(13.570, 2.820), Rotation2d.fromDegrees(120));
-  private static final Pose2d BRANCH_R_L =
-      new Pose2d(new Translation2d(13.920, 2.950), Rotation2d.fromDegrees(121.1));
-  private static final List<Pose2d> redBranchesPoses =
-      Arrays.asList(
-          BRANCH_R_A,
-          BRANCH_R_B,
-          BRANCH_R_C,
-          BRANCH_R_D,
-          BRANCH_R_E,
-          BRANCH_R_F,
-          BRANCH_R_G,
-          BRANCH_R_H,
-          BRANCH_R_I,
-          BRANCH_R_J,
-          BRANCH_R_K,
-          BRANCH_R_L);
-
-  private static Command autoPathAlign(CommandSwerveDrivetrain drivebaseSubsystem) {
-    Pose2d robotPose = drivebaseSubsystem.getState().Pose;
-    Pose2d branchPose = getClosestBranch(robotPose);
-    Transform2d robotToBranch = branchPose.minus(robotPose);
-    if (robotToBranch.getTranslation().getNorm() < 0.01
-        && Math.abs(robotToBranch.getRotation().getDegrees()) < 1) {
-      return Commands.none();
-    }
-
-    // sets the point for the path to go to
-    List<Waypoint> waypointsPoeses = PathPlannerPath.waypointsFromPoses(robotPose, branchPose);
-    // creates path
-    PathPlannerPath path =
-        new PathPlannerPath(
-            waypointsPoeses,
-            new PathConstraints(
-                Controls.MaxSpeed,
-                MaxAcceleration,
-                Controls.MaxAngularRate,
-                MaxAngularAcceleraition),
-            null,
-            new GoalEndState(0.0, branchPose.getRotation()));
-    path.preventFlipping = true;
-
-    return AutoBuilder.followPath(path);
-  }
-
-  public static Command autoAlign(CommandSwerveDrivetrain drivebaseSubsystem) {
-    return drivebaseSubsystem.defer(() -> autoPathAlign(drivebaseSubsystem)).withName("Auto Align");
+  public static Command autoAlign(CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
+    return new AutoAlignCommand(drivebaseSubsystem, controls).withName("Auto Align");
   }
 
   public static Boolean isBlue() {
@@ -146,47 +34,199 @@ public class AutoAlign {
     return isBlue;
   }
 
-  private static Pose2d getClosestBranch(Pose2d robotPose) {
-
-    // figures out which branch to go to
-    List<Pose2d> branchesPoses = isBlue() ? blueBranchesPoses : redBranchesPoses;
-    return robotPose.nearest(branchesPoses);
-  }
-
-  private static final SwerveRequest.FieldCentricFacingAngle angle =
-      new SwerveRequest.FieldCentricFacingAngle()
-          .withDeadband(Controls.MaxSpeed * 0.1)
-          .withRotationalDeadband(Controls.MaxAngularRate * 0.1) // Add a 10% deadband
-          .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-
-  public static Command aim(CommandSwerveDrivetrain drivebase, DoubleSupplier x, DoubleSupplier y) {
-    return drivebase.applyRequest(
-        () -> {
-          // use the other method to calculate target pose
-          Pose2d currentPose = drivebase.getState().Pose;
-          Pose2d targetPose = getClosestBranch(currentPose);
-          // calculate Rotation2d that's the angle from current Translation2d and target pose
-          // Translation2d
-          Translation2d distance = targetPose.getTranslation().minus(currentPose.getTranslation());
-          Rotation2d targetRotation = distance.getAngle();
-          // apply request
-          return angle
-              .withVelocityX(x.getAsDouble())
-              .withVelocityY(y.getAsDouble())
-              .withTargetDirection(targetRotation);
-        });
-  }
-
   public static boolean readyToScore() {
-    var currentPose = AutoLogic.s.drivebaseSubsystem.getState().Pose;
-    var branchPose = getClosestBranch(currentPose);
+    return isStationary() && isLevel() && isCloseEnough();
+  }
+
+  public static boolean isStationary() {
     var speeds = AutoLogic.s.drivebaseSubsystem.getState().Speeds;
-    var rotation = AutoLogic.s.drivebaseSubsystem.getRotation3d();
     return MathUtil.isNear(0, speeds.vxMetersPerSecond, 0.01)
         && MathUtil.isNear(0, speeds.vyMetersPerSecond, 0.01)
-        && MathUtil.isNear(0, speeds.omegaRadiansPerSecond, Units.degreesToRadians(2))
-        && MathUtil.isNear(0, rotation.getX(), Units.degreesToRadians(2))
-        && MathUtil.isNear(0, rotation.getY(), Units.degreesToRadians(2))
-        && currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
+        && MathUtil.isNear(0, speeds.omegaRadiansPerSecond, Units.degreesToRadians(2));
+  }
+
+  public static boolean isLevel() {
+    var rotation = AutoLogic.s.drivebaseSubsystem.getRotation3d();
+    return MathUtil.isNear(0, rotation.getX(), Units.degreesToRadians(2))
+        && MathUtil.isNear(0, rotation.getY(), Units.degreesToRadians(2));
+  }
+
+  public static boolean isCloseEnough() {
+    var currentPose = AutoLogic.s.drivebaseSubsystem.getState().Pose;
+    var branchPose = AutoAlignCommand.getNearestBranch(currentPose, isBlue());
+    return currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
+  }
+
+  public static boolean
+      oneSecondLeft() { // THIS WILL ONLY WORK ON THE REAL FIELD AND IN PRACTICE MODE!
+
+    return DriverStation.getMatchTime() <= 1;
+  }
+
+  private static class AutoAlignCommand extends Command {
+    private static final AprilTagFieldLayout aprilTagFieldLayout =
+        AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+
+    // left and right offsets from the april tags ()
+    private static final Transform2d leftReef =
+        new Transform2d(
+            Units.inchesToMeters(36.5 / 2), Units.inchesToMeters(12.97 / 2), Rotation2d.k180deg);
+    private static final Transform2d rightReef =
+        new Transform2d(
+            Units.inchesToMeters(36.5 / 2), Units.inchesToMeters(-12.97 / 2), Rotation2d.k180deg);
+
+    private static final Pose2d blueBranchA =
+        aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(rightReef);
+    private static final Pose2d blueBranchB =
+        aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(leftReef);
+    private static final Pose2d blueBranchC =
+        aprilTagFieldLayout.getTagPose(17).get().toPose2d().plus(rightReef);
+    private static final Pose2d blueBranchD =
+        aprilTagFieldLayout.getTagPose(17).get().toPose2d().plus(leftReef);
+    private static final Pose2d blueBranchE =
+        aprilTagFieldLayout.getTagPose(22).get().toPose2d().plus(rightReef);
+    private static final Pose2d blueBranchF =
+        aprilTagFieldLayout.getTagPose(22).get().toPose2d().plus(leftReef);
+    private static final Pose2d blueBranchG =
+        aprilTagFieldLayout.getTagPose(21).get().toPose2d().plus(rightReef);
+    private static final Pose2d blueBranchH =
+        aprilTagFieldLayout.getTagPose(21).get().toPose2d().plus(leftReef);
+    private static final Pose2d blueBranchI =
+        aprilTagFieldLayout.getTagPose(20).get().toPose2d().plus(rightReef);
+    private static final Pose2d blueBranchJ =
+        aprilTagFieldLayout.getTagPose(20).get().toPose2d().plus(leftReef);
+    private static final Pose2d blueBranchK =
+        aprilTagFieldLayout.getTagPose(19).get().toPose2d().plus(rightReef);
+    private static final Pose2d blueBranchL =
+        aprilTagFieldLayout.getTagPose(19).get().toPose2d().plus(leftReef);
+
+    private static final Pose2d redBranchA =
+        aprilTagFieldLayout.getTagPose(7).get().toPose2d().plus(rightReef);
+    private static final Pose2d redBranchB =
+        aprilTagFieldLayout.getTagPose(7).get().toPose2d().plus(leftReef);
+    private static final Pose2d redBranchC =
+        aprilTagFieldLayout.getTagPose(8).get().toPose2d().plus(rightReef);
+    private static final Pose2d redBranchD =
+        aprilTagFieldLayout.getTagPose(8).get().toPose2d().plus(leftReef);
+    private static final Pose2d redBranchE =
+        aprilTagFieldLayout.getTagPose(9).get().toPose2d().plus(rightReef);
+    private static final Pose2d redBranchF =
+        aprilTagFieldLayout.getTagPose(9).get().toPose2d().plus(leftReef);
+    private static final Pose2d redBranchG =
+        aprilTagFieldLayout.getTagPose(10).get().toPose2d().plus(rightReef);
+    private static final Pose2d redBranchH =
+        aprilTagFieldLayout.getTagPose(10).get().toPose2d().plus(leftReef);
+    private static final Pose2d redBranchI =
+        aprilTagFieldLayout.getTagPose(11).get().toPose2d().plus(rightReef);
+    private static final Pose2d redBranchJ =
+        aprilTagFieldLayout.getTagPose(11).get().toPose2d().plus(leftReef);
+    private static final Pose2d redBranchK =
+        aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(rightReef);
+    private static final Pose2d redBranchL =
+        aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(leftReef);
+
+    private static final List<Pose2d> blueBranchPoses =
+        List.of(
+            blueBranchA,
+            blueBranchB,
+            blueBranchC,
+            blueBranchD,
+            blueBranchE,
+            blueBranchF,
+            blueBranchG,
+            blueBranchH,
+            blueBranchI,
+            blueBranchJ,
+            blueBranchK,
+            blueBranchL);
+    ;
+    private static final List<Pose2d> redBranchPoses =
+        List.of(
+            redBranchA,
+            redBranchB,
+            redBranchC,
+            redBranchD,
+            redBranchE,
+            redBranchF,
+            redBranchG,
+            redBranchH,
+            redBranchI,
+            redBranchJ,
+            redBranchK,
+            redBranchL);
+
+    public static Pose2d getNearestBranch(Pose2d p, boolean isBlue) {
+      List<Pose2d> branchPose2ds = isBlue ? blueBranchPoses : redBranchPoses;
+      return p.nearest(branchPose2ds);
+    }
+
+    private final PIDController pidX = new PIDController(4, 0, 0);
+    private final PIDController pidY = new PIDController(4, 0, 0);
+    private final PIDController pidRotate = new PIDController(8, 0, 0);
+
+    private final CommandSwerveDrivetrain drive;
+    private final Controls controls;
+    private Pose2d branchPose;
+
+    private final SwerveRequest.FieldCentric driveRequest =
+        new SwerveRequest.FieldCentric() // Add a 10% deadband
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+            .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
+
+    public AutoAlignCommand(CommandSwerveDrivetrain drive, Controls controls) {
+      this.drive = drive;
+      pidRotate.enableContinuousInput(-Math.PI, Math.PI);
+      this.controls = controls;
+      setName("Auto Align Two");
+    }
+
+    @Override
+    public void initialize() {
+      boolean redAlliance = DriverStation.getAlliance().get() == Alliance.Red;
+      Pose2d robotPose = drive.getState().Pose;
+      branchPose = getNearestBranch(robotPose, !redAlliance);
+      pidX.setSetpoint(branchPose.getX());
+      pidY.setSetpoint(branchPose.getY());
+      pidRotate.setSetpoint(branchPose.getRotation().getRadians());
+    }
+
+    @Override
+    public void execute() {
+      Pose2d currentPose = drive.getState().Pose;
+      // Calculate the power for X direction and clamp it between -1 and 1
+      double powerX = pidX.calculate(currentPose.getX());
+      double powerY = pidY.calculate(currentPose.getY());
+      powerX = MathUtil.clamp(powerX, -2, 2);
+      powerY = MathUtil.clamp(powerY, -2, 2);
+      powerX += .05 * Math.signum(powerX);
+      powerY += .05 * Math.signum(powerY);
+      double powerRotate = pidRotate.calculate(currentPose.getRotation().getRadians());
+      powerRotate = MathUtil.clamp(powerRotate, -4, 4);
+      SwerveRequest request =
+          driveRequest.withVelocityX(powerX).withVelocityY(powerY).withRotationalRate(powerRotate);
+      // Set the drive control with the created request
+      drive.setControl(request);
+    }
+
+    @Override
+    public boolean isFinished() {
+      Pose2d currentPose = drive.getState().Pose;
+      Transform2d robotToBranch = branchPose.minus(currentPose);
+      if (robotToBranch.getTranslation().getNorm() < 0.01
+          && Math.abs(robotToBranch.getRotation().getDegrees()) < 1) {
+        controls.vibrateDriveController(0.5);
+        return true;
+      }
+      return false;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+      // Create a swerve request to stop all motion by setting velocities and rotational rate to 0
+      SwerveRequest stop = driveRequest.withVelocityX(0).withVelocityY(0).withRotationalRate(0);
+      // Set the drive control with the stop request to halt all movement
+      drive.setControl(stop);
+      controls.vibrateDriveController(0);
+    }
   }
 }

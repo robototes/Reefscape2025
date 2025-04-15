@@ -4,9 +4,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.sensors.ArmSensor;
+import frc.robot.sensors.BranchSensors;
 import frc.robot.sensors.ElevatorLight;
+import frc.robot.sensors.IntakeSensor;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.GroundArm;
+import frc.robot.subsystems.GroundSpinny;
 import frc.robot.subsystems.SpinnyClaw;
 import java.util.function.BooleanSupplier;
 
@@ -14,20 +18,32 @@ public class SuperStructure {
   private final ElevatorSubsystem elevator;
   private final ArmPivot armPivot;
   private final SpinnyClaw spinnyClaw;
+  private final GroundArm groundArm;
+  private final GroundSpinny groundSpinny;
   private final ElevatorLight elevatorLight;
   private final ArmSensor armSensor;
+  private final BranchSensors branchSensors;
+  private final IntakeSensor intakeSensor;
 
   public SuperStructure(
       ElevatorSubsystem elevator,
       ArmPivot armPivot,
       SpinnyClaw spinnyClaw,
+      GroundArm groundArm,
+      GroundSpinny groundSpinny,
       ElevatorLight elevatorLight,
-      ArmSensor armSensor) {
+      ArmSensor armSensor,
+      BranchSensors branchSensors,
+      IntakeSensor intakeSensor) {
     this.elevator = elevator;
     this.armPivot = armPivot;
     this.spinnyClaw = spinnyClaw;
+    this.groundArm = groundArm;
+    this.groundSpinny = groundSpinny;
     this.elevatorLight = elevatorLight;
     this.armSensor = armSensor;
+    this.branchSensors = branchSensors;
+    this.intakeSensor = intakeSensor;
   }
 
   private Command colorSet(int r, int g, int b, String name) {
@@ -55,6 +71,9 @@ public class SuperStructure {
   }
 
   public Command coralLevelFour(BooleanSupplier score) {
+    if (branchSensors != null) {
+      score = branchSensors.withinScoreRange().or(score);
+    }
     return Commands.sequence(
             Commands.parallel(
                     Commands.print("Pre position"),
@@ -70,7 +89,10 @@ public class SuperStructure {
                             elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS),
                             armPivot.moveToPosition(ArmPivot.CORAL_PRESET_PRE_L4))
                         .withDeadline(Commands.waitUntil(score)),
-                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN).withTimeout(0.4)),
+                    armPivot
+                        .moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
+                        .withTimeout(1.5)
+                        .until(armPivot.atAngle(ArmPivot.CORAL_POST_SCORE))),
                 score),
             Commands.print("Pre preIntake()"),
             coralPreIntake(),
@@ -84,16 +106,19 @@ public class SuperStructure {
             Commands.parallel(
                     elevator
                         .setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS)
-                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
+                        .deadlineFor(
+                            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP).until(score)),
                     spinnyClaw.stop())
-                .until(score)
                 .withTimeout(0.5),
             repeatPrescoreScoreSwing(
                 Commands.repeatingSequence(
                     armPivot
                         .moveToPosition(ArmPivot.CORAL_PRESET_L3)
                         .withDeadline(Commands.waitUntil(score)),
-                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN).withTimeout(0.4)),
+                    armPivot
+                        .moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
+                        .withTimeout(1.5)
+                        .until(armPivot.atAngle(ArmPivot.CORAL_POST_SCORE))),
                 score),
             coralPreIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L3").asProxy())
@@ -105,16 +130,19 @@ public class SuperStructure {
             Commands.parallel(
                     elevator
                         .setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS)
-                        .deadlineFor(armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
+                        .deadlineFor(
+                            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP).until(score)),
                     spinnyClaw.stop())
-                .until(score)
                 .withTimeout(0.5),
             repeatPrescoreScoreSwing(
                 Commands.sequence(
                     armPivot
                         .moveToPosition(ArmPivot.CORAL_PRESET_L2)
                         .withDeadline(Commands.waitUntil(score)),
-                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN).withTimeout(0.4)),
+                    armPivot
+                        .moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
+                        .withTimeout(1.5)
+                        .until(armPivot.atAngle(ArmPivot.CORAL_POST_SCORE))),
                 score),
             coralPreIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L2").asProxy())
@@ -129,10 +157,34 @@ public class SuperStructure {
                     spinnyClaw.stop())
                 .withTimeout(0.5)
                 .withDeadline(Commands.waitUntil(score)),
-            spinnyClaw.coralLevelOneHoldExtakePower().withTimeout(0.25),
+            spinnyClaw.coralHoldExtakePower().withTimeout(0.25),
+            Commands.waitSeconds(1), // Wait to clear the reef
             coralPreIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L1").asProxy())
         .withName("Coral Level 1");
+  }
+
+  public Command groundIntake(BooleanSupplier retract) { // untested
+    if (groundSpinny == null || groundArm == null || intakeSensor == null) {
+      return Commands.none().withName("ground intake disabled");
+    } else {
+      BooleanSupplier clawFull = armSensor != null ? armSensor.inClaw() : () -> false;
+      return Commands.sequence(
+              Commands.parallel(
+                      elevator.setLevel(ElevatorSubsystem.CORAL_GROUND_INTAKE_POS),
+                      armPivot.moveToPosition(ArmPivot.CORAL_PRESET_GROUND_INTAKE),
+                      spinnyClaw.stop(), // just as a backup in case things are silly
+                      groundSpinny.setGroundIntakePower())
+                  .until(elevator.above(ElevatorSubsystem.MIN_EMPTY_GROUND_INTAKE)),
+              groundArm
+                  .moveToPosition(GroundArm.GROUND_POSITION)
+                  .withDeadline(Commands.waitUntil(intakeSensor.inIntake().or(retract))),
+              groundArm.moveToPosition(GroundArm.STOWED_POSITION),
+              groundSpinny.setFunnelIntakePower(),
+              coralPreIntake())
+          .unless(clawFull)
+          .withName("Ground Intake");
+    }
   }
 
   public Command coralStow() {
@@ -147,7 +199,7 @@ public class SuperStructure {
     return Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
             armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN),
-            spinnyClaw.stop())
+            spinnyClaw.coralRejectPower())
         .andThen(Commands.print("end of preIntake()"))
         .withName("PreIntake");
   }
@@ -168,7 +220,7 @@ public class SuperStructure {
                         armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN)),
                     elevator.setLevel(ElevatorSubsystem.CORAL_INTAKE_POS))),
             spinnyClaw.stop(),
-            elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
+            elevator.setLevel(ElevatorSubsystem.CORAL_STOWED),
             coralStow())
         .withName("Coral Intake");
   }
@@ -179,8 +231,6 @@ public class SuperStructure {
                 spinnyClaw.algaeIntakePower(),
                 armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)))
-        //     .until(armSensor.inClaw()), // if statement to check armsensor enabled
-        // algaeStow())
         .withName("Algae L3-L4 Intake");
   }
 
@@ -194,9 +244,9 @@ public class SuperStructure {
   }
 
   public Command algaeGroundIntake() {
-    return Commands.sequence(
-            Commands.parallel(
-                spinnyClaw.algaeIntakePower(),
+    return Commands.parallel(
+            spinnyClaw.algaeIntakePower(),
+            Commands.sequence(
                 armPivot.moveToPosition(ArmPivot.ALGAE_GROUND_INTAKE),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_GROUND_INTAKE)))
         .withName("Algae Ground Intake");
@@ -214,9 +264,10 @@ public class SuperStructure {
   public Command algaeProcessorScore(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
-                elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE),
-                armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
-                spinnyClaw.algaeGripIntakePower()),
+                spinnyClaw.algaeGripIntakePower(),
+                Commands.sequence(
+                    armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
+                    elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE))),
             Commands.waitUntil(score),
             spinnyClaw.algaeExtakeProcessorPower())
         .withName("Algae Processor Score");
@@ -227,9 +278,12 @@ public class SuperStructure {
             Commands.parallel(
                 elevator.setLevel(ElevatorSubsystem.ALGAE_NET_SCORE),
                 armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE),
-                spinnyClaw.algaeGripIntakePower()),
+                spinnyClaw.algaeIntakePower()),
             Commands.waitUntil(score),
-            spinnyClaw.algaeHoldExtakePower().withTimeout(0.7))
+            spinnyClaw.algaeHoldExtakePower().withTimeout(0.7),
+            Commands.waitSeconds(0.7),
+            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
+            elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR))
         .withName("Algae Net Score");
   }
 
@@ -253,5 +307,5 @@ public class SuperStructure {
             Commands.waitUntil(finish),
             algaeStow())
         .withName("Algae L2-L3 Fling");
-  }*/
+        }*/
 }

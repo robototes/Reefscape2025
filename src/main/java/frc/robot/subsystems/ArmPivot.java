@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Hardware;
@@ -29,7 +30,7 @@ import java.util.function.Supplier;
 
 public class ArmPivot extends SubsystemBase {
   // Presets
-  private final double ARMPIVOT_KP = 20;
+  private final double ARMPIVOT_KP = 38.5;
   private final double ARMPIVOT_KI = 0;
   private final double ARMPIVOT_KD = 0;
   private final double ARMPIVOT_KS = 0.1;
@@ -41,16 +42,18 @@ public class ArmPivot extends SubsystemBase {
   public static final double CORAL_PRESET_L3 = 0.13;
   public static final double CORAL_PRESET_L4 = 0.0;
   public static final double CORAL_PRESET_PRE_L4 = 1.0 / 16.0;
+  public static final double CORAL_POST_SCORE = -0.15;
   public static final double ALGAE_REMOVE_PREPOS = 0;
   public static final double ALGAE_REMOVE = 0;
   public static final double ALGAE_FLING = -0.08;
   public static final double ALGAE_STOWED = -0.05;
   public static final double ALGAE_PROCESSOR_SCORE = -0.05;
-  public static final double ALGAE_GROUND_INTAKE = -0.07;
+  public static final double ALGAE_GROUND_INTAKE = -0.085;
   public static final double ALGAE_NET_SCORE = 0.175; // untested - old value was 0.18
   public static final double CORAL_PRESET_STOWED = 0.125;
   public static final double CORAL_PRESET_OUT = 0;
-  public static final double CORAL_PRESET_UP = 0.25; // Pointing directly upwards
+  public static final double CORAL_PRESET_UP = 0.245; // Stop a little short of the hardstop
+  public static final double CORAL_PRESET_GROUND_INTAKE = 0;
   public static final double CORAL_PRESET_DOWN = -0.25;
   public static final double HARDSTOP_HIGH = 0.32;
   public static final double HARDSTOP_LOW = -0.26;
@@ -123,9 +126,11 @@ public class ArmPivot extends SubsystemBase {
 
   // preset command placeholder
   public Command moveToPosition(double position) {
-    return setTargetPosition(position)
-        .andThen(
-            Commands.waitUntil(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE));
+    return setTargetPosition(position).andThen(Commands.waitUntil(atAngle(position)));
+  }
+
+  public Trigger atAngle(double position) {
+    return new Trigger(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE);
   }
 
   // (+) is to move arm up, and (-) is down
@@ -176,11 +181,11 @@ public class ArmPivot extends SubsystemBase {
 
     // set Motion Magic settings in rps not mechanism units
     talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity =
-        80; // Target cruise velocity of 80 rps
+        160; // Target cruise velocity of 2560 rps
     talonFXConfiguration.MotionMagic.MotionMagicAcceleration =
-        160; // Target acceleration of 160 rps/s (0.5 seconds)
+        320; // Target acceleration of 4960 rps/s (0.5 seconds)
     talonFXConfiguration.MotionMagic.MotionMagicJerk =
-        1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
+        1600; // Target jerk of 6400 rps/s/s (0.1 seconds)
 
     cfg.apply(talonFXConfiguration);
   }
