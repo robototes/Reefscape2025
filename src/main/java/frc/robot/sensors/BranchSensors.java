@@ -48,7 +48,7 @@ public class BranchSensors {
     if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
       return Millimeter.of(measurement.distance_mm);
     } else {
-      return Millimeter.of(10000);
+      return Millimeter.of(-1);
     }
   }
 
