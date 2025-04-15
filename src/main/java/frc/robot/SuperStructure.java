@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -7,6 +7,11 @@ import frc.robot.sensors.ArmSensor;
 import frc.robot.sensors.BranchSensors;
 import frc.robot.sensors.ElevatorLight;
 import frc.robot.sensors.IntakeSensor;
+import frc.robot.subsystems.ArmPivot;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.GroundArm;
+import frc.robot.subsystems.GroundSpinny;
+import frc.robot.subsystems.SpinnyClaw;
 import java.util.function.BooleanSupplier;
 
 public class SuperStructure {
