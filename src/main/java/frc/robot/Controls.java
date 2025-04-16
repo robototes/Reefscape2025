@@ -319,6 +319,10 @@ public class Controls {
         .b()
         .onTrue(superStructure.groundIntake(driverController.x()).withName("Ground intake"));
 
+    driverController
+        .y()
+        .onTrue(superStructure.fastGroundIntake(driverController.x()).withName("Fast Ground intake"));
+
     if (sensors.armSensor != null) {
       sensors
           .armSensor
@@ -705,12 +709,7 @@ public class Controls {
                 .moveToPosition(GroundArm.GROUND_POSITION)
                 .andThen(Commands.idle())
                 .withName("ground up position"));
-    operatorController
-        .rightBumper()
-        .onTrue(
-            superStructure
-                .fastCoralHandoff()
-                .withName("fast handoff"));
+
   }
 
   private Command selectScoringHeight(BranchHeight b, AlgaeIntakeHeight a) {

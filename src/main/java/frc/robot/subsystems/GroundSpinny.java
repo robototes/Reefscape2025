@@ -13,6 +13,7 @@ import frc.robot.Hardware;
 public class GroundSpinny extends SubsystemBase {
   public static final double GROUND_INTAKE_SPEED = -8;
   public static final double FUNNEL_INTAKE_SPEED = -2;
+  public static final double GROUND_FAST_HANDOFF_SPEED = -6;
 
   // TalonFX
   private final TalonFX motor;
@@ -78,6 +79,10 @@ public class GroundSpinny extends SubsystemBase {
 
   public Command setGroundIntakePower() {
     return setPower(GROUND_INTAKE_SPEED).withName("set ground intake power");
+  }
+
+  public Command setGrountIntakeFastHandoffPower() {
+    return setPower(GROUND_FAST_HANDOFF_SPEED).withName("set fast handoff ground speed");
   }
 
   public Command holdGroundIntakePower() {

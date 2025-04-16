@@ -22,6 +22,7 @@ import java.util.function.Supplier;
 
 public class SpinnyClaw extends SubsystemBase {
   public static final double CORAL_INTAKE_SPEED = -6;
+  public static final double CORAL_FAST_INTAKE_SPEED = -14;
   public static final double CORAL_EXTAKE_SPEED = 5;
   public static final double CORAL_REJECT_SPEED = 1;
   public static final double CORAL_L1_EXTAKE_SPEED = 2.5;
@@ -133,6 +134,10 @@ public class SpinnyClaw extends SubsystemBase {
 
   public Command coralIntakePower() {
     return setPower(CORAL_INTAKE_SPEED).withName("Intake power");
+  }
+
+  public Command fastCoralIntakePower() {
+    return setPower(CORAL_FAST_INTAKE_SPEED).withName("Fast Intake Power");
   }
 
   public Command coralExtakePower() {

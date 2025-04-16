@@ -182,6 +182,30 @@ public class SuperStructure {
     }
   }
 
+  public Command fastGroundIntake(BooleanSupplier retract) {
+    if (groundSpinny == null || groundArm == null || intakeSensor == null) {
+      return Commands.none().withName("ground intake disabled");
+    } else {
+      return Commands.sequence(
+              Commands.parallel(
+                elevator.setLevel(ElevatorSubsystem.ELEV_FAST_HANDOFF),
+                armPivot.moveToPosition(ArmPivot.ARM_FAST_HANDOFF),
+                spinnyClaw.fastCoralIntakePower(),
+                groundSpinny.setGroundIntakePower(),
+                groundArm
+                  .moveToPosition(GroundArm.GROUND_POSITION)
+                  .withDeadline(Commands.waitUntil(intakeSensor.inIntake().or(retract)))),
+              Commands.parallel(
+                groundSpinny.setGrountIntakeFastHandoffPower(), //Slow the ground intake a bit to make coral easier to grab
+                groundArm.moveToPosition(GroundArm.STOWED_POSITION), //Move ground arm in paralel with grabing coral
+                untilClawFull(null) //Wait until coral is grabbed
+                  .withTimeout(1) //Wait a max of 1 second
+                  .andThen(coralStow())), //Then stow the coral
+              groundSpinny.setFunnelIntakePower()) //Prep for funnel cycle
+        .withName("Ground Intake");
+    }
+  }
+
   public Command coralStow() {
     return Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.CORAL_STOWED),
@@ -290,9 +314,7 @@ public class SuperStructure {
             elevator.setLevel(ElevatorSubsystem.ELEV_FAST_HANDOFF),
             armPivot.moveToPosition(ArmPivot.ARM_FAST_HANDOFF),
             spinnyClaw.coralIntakePower()))),
-          spinnyClaw.stop(),
-          elevator.setLevel(ElevatorSubsystem.CORAL_STOWED),
-          coralStow());
+      coralStow());
   }
 
   /*public Command algaeLevelThreeFourFling(BooleanSupplier finish) {
