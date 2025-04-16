@@ -1,0 +1,37 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "OSW to D"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ALGAE TEST"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "algaeCommand23"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "net"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
