@@ -705,6 +705,12 @@ public class Controls {
                 .moveToPosition(GroundArm.GROUND_POSITION)
                 .andThen(Commands.idle())
                 .withName("ground up position"));
+    operatorController
+        .rightBumper()
+        .onTrue(
+            superStructure
+                .fastCoralHandoff()
+                .withName("fast handoff"));
   }
 
   private Command selectScoringHeight(BranchHeight b, AlgaeIntakeHeight a) {

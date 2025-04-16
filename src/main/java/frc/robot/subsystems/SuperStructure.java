@@ -282,6 +282,19 @@ public class SuperStructure {
         .withName("Algae Net Score");
   }
 
+  public Command fastCoralHandoff() {
+    return Commands.sequence(
+      untilClawFull(
+        Commands.sequence(
+          Commands.parallel(
+            elevator.setLevel(ElevatorSubsystem.ELEV_FAST_HANDOFF),
+            armPivot.moveToPosition(ArmPivot.ARM_FAST_HANDOFF),
+            spinnyClaw.coralIntakePower()))),
+          spinnyClaw.stop(),
+          elevator.setLevel(ElevatorSubsystem.CORAL_STOWED),
+          coralStow());
+  }
+
   /*public Command algaeLevelThreeFourFling(BooleanSupplier finish) {
     return Commands.sequence(
             Commands.parallel(
