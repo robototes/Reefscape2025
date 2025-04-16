@@ -159,7 +159,7 @@ public class SuperStructure {
         .withName("Coral Level 1");
   }
 
-  public Command groundIntake(BooleanSupplier retract) { // untested
+  public Command groundIntake(BooleanSupplier retract) {
     if (groundSpinny == null || groundArm == null || intakeSensor == null) {
       return Commands.none().withName("ground intake disabled");
     } else {
@@ -177,6 +177,35 @@ public class SuperStructure {
               groundArm.moveToPosition(GroundArm.STOWED_POSITION),
               groundSpinny.setFunnelIntakePower(),
               coralPreIntake())
+          .unless(clawFull)
+          .withName("Ground Intake");
+    }
+  }
+
+  public Command quickGroundIntake(BooleanSupplier retract) {
+    if (groundSpinny == null || groundArm == null || intakeSensor == null) {
+      return Commands.none().withName("quick ground intake disabled");
+    } else {
+      BooleanSupplier clawFull = armSensor != null ? armSensor.inClaw() : () -> false;
+      return Commands.sequence(
+              Commands.parallel(
+                      elevator.setLevel(ElevatorSubsystem.MIN_EMPTY_GROUND_INTAKE),
+                      armPivot.moveToPosition(ArmPivot.CORAL_QUICK_INTAKE),
+                      spinnyClaw.stop(), // just as a backup in case things are silly
+                      groundSpinny.setGroundIntakePower())
+                  .until(elevator.above(ElevatorSubsystem.MIN_EMPTY_GROUND_INTAKE)),
+              Commands.sequence(
+                      groundArm.moveToPosition(GroundArm.GROUND_POSITION),
+                      Commands.parallel(
+                          elevator.setLevel(ElevatorSubsystem.CORAL_QUICK_INTAKE),
+                          armPivot.moveToPosition(ArmPivot.CORAL_QUICK_INTAKE),
+                          spinnyClaw.coralIntakePower()))
+                  .withDeadline(Commands.waitUntil(intakeSensor.inIntake().or(retract))),
+              groundArm
+                  .moveToPosition(GroundArm.STOWED_POSITION)
+                  .until(groundArm.atPosition(GroundArm.QUICK_INTAKE_POSITION)),
+              groundSpinny.setQuickHandoffExtakeSpeed(),
+              coralStow())
           .unless(clawFull)
           .withName("Ground Intake");
     }

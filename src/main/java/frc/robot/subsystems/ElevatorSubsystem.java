@@ -49,6 +49,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double CORAL_GROUND_INTAKE_POS = 7.2;
   public static final double CORAL_INTAKE_POS = 1.55;
   public static final double CORAL_PRE_INTAKE = 4.0;
+  public static final double CORAL_QUICK_INTAKE = 1.1;
   public static final double MIN_EMPTY_GROUND_INTAKE = 4.5;
   public static final double MIN_FULL_GROUND_INTAKE = 8.0;
   public static final double MANUAL = 0.1;

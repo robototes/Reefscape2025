@@ -317,7 +317,8 @@ public class Controls {
 
     driverController
         .b()
-        .onTrue(superStructure.groundIntake(driverController.x()).withName("Ground intake"));
+        .onTrue(
+            superStructure.quickGroundIntake(driverController.x()).withName("Quick Gound intake"));
 
     if (sensors.armSensor != null) {
       sensors
