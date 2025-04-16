@@ -543,8 +543,8 @@ public class Controls {
     connected(climbTestController)
         .and(climbTestController.start())
         .onTrue(s.climbPivotSubsystem.advanceClimbTarget());
-    operatorController.start().onTrue(s.climbPivotSubsystem.toClimbed());
-    operatorController.rightTrigger().onTrue(s.climbPivotSubsystem.toClimbOut());
+    operatorController.start().onTrue(s.climbPivotSubsystem.toClimbOut());
+    operatorController.rightTrigger().onTrue(s.climbPivotSubsystem.toClimbed());
     connected(climbTestController)
         .and(climbTestController.rightTrigger(0.1))
         .whileTrue(
