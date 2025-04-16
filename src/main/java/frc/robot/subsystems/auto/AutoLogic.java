@@ -170,6 +170,9 @@ public class AutoLogic {
     NamedCommands.registerCommand("intake", intakeCommand());
     NamedCommands.registerCommand("isCollected", isCollected());
     NamedCommands.registerCommand("readyIntake", readyIntakeCommand());
+    NamedCommands.registerCommand("algaeCommand23", algaeCommand23());
+    NamedCommands.registerCommand("algaeCommand34", algaeCommand34());
+    NamedCommands.registerCommand("net", netCommand());
   }
 
   // public Command getConditionalCommand(){}
@@ -323,5 +326,6 @@ public class AutoLogic {
 
   public static Command readyIntakeCommand() {
     return r.superStructure.coralPreIntake().withName("readyIntake");
+
   }
 }
