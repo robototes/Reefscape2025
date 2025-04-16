@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Hardware;
 
 public class GroundArm extends SubsystemBase {
@@ -113,9 +114,11 @@ public class GroundArm extends SubsystemBase {
 
   // preset command placeholder
   public Command moveToPosition(double position) {
-    return setTargetPosition(position)
-        .andThen(
-            Commands.waitUntil(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE));
+    return setTargetPosition(position).andThen(Commands.waitUntil(atPosition(position)));
+  }
+
+  public Trigger atPosition(double position) {
+    return new Trigger(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE);
   }
 
   public Command stop() {
