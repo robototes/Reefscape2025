@@ -38,11 +38,17 @@ public class IntakeSensor {
 
   public Distance getSensorDistance() {
     LaserCan.Measurement measurement = intakeSensor.getMeasurement();
-    if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
-      return Millimeter.of(measurement.distance_mm);
-    } else {
+    if (measurement == null) {
       return Millimeter.of(-1);
     }
+    if (measurement.status != LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
+      if (measurement.status != LaserCan.LASERCAN_STATUS_OUT_OF_BOUNDS) {
+        return Millimeter.of(-2);
+      } else {
+        return Millimeter.of(-3);
+      }
+    }
+    return Millimeter.of(measurement.distance_mm);
   }
 
   public Trigger inIntake() {
