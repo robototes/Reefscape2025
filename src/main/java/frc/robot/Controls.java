@@ -321,7 +321,8 @@ public class Controls {
 
     driverController
         .y()
-        .onTrue(superStructure.fastGroundIntake(driverController.x()).withName("Fast Ground intake"));
+        .onTrue(
+            superStructure.fastGroundIntake(driverController.x()).withName("Fast Ground intake"));
 
     if (sensors.armSensor != null) {
       sensors
@@ -709,7 +710,6 @@ public class Controls {
                 .moveToPosition(GroundArm.GROUND_POSITION)
                 .andThen(Commands.idle())
                 .withName("ground up position"));
-
   }
 
   private Command selectScoringHeight(BranchHeight b, AlgaeIntakeHeight a) {
