@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "OSW to D"
+            "pathName": "M to H"
           }
         },
         {
@@ -17,13 +17,31 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "algaeAlign23"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GHA to Net"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "net"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "D to RSF"
+                  "pathName": "Net to LSF"
                 }
               },
               {
@@ -48,7 +66,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RSF to C"
+                  "pathName": "LSF to I"
                 }
               },
               {
@@ -64,12 +82,6 @@
           "type": "named",
           "data": {
             "name": "scoreCommand"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": null
           }
         }
       ]

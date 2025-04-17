@@ -113,7 +113,8 @@ public class AutoLogic {
           new AutoPath("MRSF_G-F", "MRSF_G-F"),
           new AutoPath("MRSF_G-F_WithWait", "MRSF_G-F_WithWait"),
           new AutoPath("MRSF_G-H", "MRSF_G-H"),
-          new AutoPath("MLSF_H-G", "MLSF_H-G"));
+          new AutoPath("MLSF_H-G","MLSF_H-G"),
+          new AutoPath("MLSF_H-GHA-I", "MLSF_H-GHA-I"));
 
   private static List<AutoPath> threePiecePaths =
       List.of(
@@ -176,7 +177,9 @@ public class AutoLogic {
     NamedCommands.registerCommand("intake", intakeCommand());
     NamedCommands.registerCommand("isCollected", isCollected());
     NamedCommands.registerCommand("readyIntake", readyIntakeCommand());
-  }
+    NamedCommands.registerCommand("algaeAlign23", algaeCommand23());
+    NamedCommands.registerCommand("algaeAlign34", algaeCommand34());
+    NamedCommands.registerCommand("net", netCommand());  }
 
   // public Command getConditionalCommand(){}
 
