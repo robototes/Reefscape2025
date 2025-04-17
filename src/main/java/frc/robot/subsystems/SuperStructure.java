@@ -57,14 +57,6 @@ public class SuperStructure {
     }
   }
 
-  private Command untilClawFull(Command command) {
-    if (armSensor == null) {
-      return command;
-    } else {
-      return command.withDeadline(Commands.waitUntil(armSensor.inClaw()));
-    }
-  }
-
   public Command coralLevelFour(BooleanSupplier score) {
     if (branchSensors != null) {
       score = branchSensors.withinScoreRange().or(score);
@@ -237,12 +229,11 @@ public class SuperStructure {
 
   public Command coralIntake() {
     return Commands.sequence(
-            untilClawFull(
-                Commands.sequence(
-                    Commands.parallel(
-                        spinnyClaw.coralIntakePower(),
-                        armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN)),
-                    elevator.setLevel(ElevatorSubsystem.CORAL_INTAKE_POS))),
+            Commands.sequence(
+                Commands.parallel(
+                    spinnyClaw.coralIntakePower(),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN)),
+                elevator.setLevel(ElevatorSubsystem.CORAL_INTAKE_POS)),
             spinnyClaw.stop(),
             elevator.setLevel(ElevatorSubsystem.CORAL_STOWED),
             coralStow())
