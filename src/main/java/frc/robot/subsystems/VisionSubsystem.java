@@ -12,10 +12,12 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -90,6 +92,8 @@ public class VisionSubsystem extends SubsystemBase {
   private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
   private double Distance = 0;
 
+  private final GenericSubscriber disableVision;
+
   private final StructPublisher<Pose3d> fieldPose3dEntry =
       NetworkTableInstance.getDefault()
           .getStructTopic("vision/fieldPose3d", Pose3d.struct)
@@ -144,6 +148,13 @@ public class VisionSubsystem extends SubsystemBase {
         .addDouble("time since last reading", this::getTimeSinceLastReading)
         .withPosition(2, 0)
         .withSize(1, 1);
+    disableVision =
+        shuffleboardTab
+            .add("Disable vision", false)
+            .withPosition(4, 0)
+            .withSize(3, 2)
+            .withWidget(BuiltInWidgets.kToggleButton)
+            .getEntry();
   }
 
   public void update() {
@@ -168,6 +179,9 @@ public class VisionSubsystem extends SubsystemBase {
       var TimestampSeconds = estimatedPose.get().timestampSeconds;
       var FieldPose3d = estimatedPose.get().estimatedPose;
       rawFieldPose3dEntry.set(FieldPose3d);
+      if (disableVision.getBoolean(false)) {
+        return;
+      }
       // if (BadAprilTagDetector(result)) {
       //   return;
       // }
