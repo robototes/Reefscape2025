@@ -8,12 +8,19 @@ import au.grapplerobotics.LaserCan;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Hardware;
 
 public class BranchSensors {
 
   private final LaserCan leftSensor;
   private final LaserCan rightSensor;
+
+  // temporary
+  private static final double RIGHT_SENSOR_MIN = 0.25;
+  private static final double RIGHT_SENSOR_MAX = 0.35;
+  private static final double LEFT_SENSOR_MIN = 0.25;
+  private static final double LEFT_SENSOR_MAX = 0.35;
 
   public BranchSensors() {
     leftSensor = new LaserCan(Hardware.BRANCH_SENSOR_LEFT);
@@ -23,6 +30,7 @@ public class BranchSensors {
     ShuffleboardTab tab = Shuffleboard.getTab("BranchSensor");
     tab.addDouble("LeftDistance(m)", () -> getLeftSensorDistance().in(Meters));
     tab.addDouble("RightDistance(m)", () -> getRightSensorDistance().in(Meters));
+    tab.addBoolean("In L4 score range", withinScoreRange());
   }
 
   private void ConfigureSensor(LaserCan Sensor) {
@@ -40,7 +48,7 @@ public class BranchSensors {
     if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
       return Millimeter.of(measurement.distance_mm);
     } else {
-      return Millimeter.of(10000);
+      return Millimeter.of(-1);
     }
   }
 
@@ -50,5 +58,17 @@ public class BranchSensors {
 
   public Distance getRightSensorDistance() {
     return getSensorDistance(rightSensor);
+  }
+
+  // APPROVED BY SENSEI WU LETSS GOOOOOOOO :D
+  public Trigger withinScoreRange() {
+    return new Trigger(
+            () -> {
+              double rightDistance = getRightSensorDistance().in(Meters);
+              double leftDistance = getLeftSensorDistance().in(Meters);
+              return (LEFT_SENSOR_MIN < leftDistance && leftDistance < LEFT_SENSOR_MAX)
+                  && (RIGHT_SENSOR_MIN < rightDistance && rightDistance < RIGHT_SENSOR_MAX);
+            })
+        .debounce(0.2);
   }
 }

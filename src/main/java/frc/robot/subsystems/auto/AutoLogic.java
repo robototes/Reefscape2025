@@ -107,7 +107,13 @@ public class AutoLogic {
           new AutoPath("OSMRSF_D-C", "OSMRSF_D-C"),
           new AutoPath("OSWRSF_F-E", "OSWRSF_F-E"),
           new AutoPath("OSWRSF_E-D", "OSWRSF_E-D"),
-          new AutoPath("OSWRSF_D-C", "OSWRSF_D-C"));
+          new AutoPath("OSWRSF_D-C", "OSWRSF_D-C"),
+          new AutoPath("MLSF_H-I", "MLSF_H-I"),
+          new AutoPath("MLSF_H-I_WithWait", "MLSF_H-I_WithWait"),
+          new AutoPath("MRSF_G-F", "MRSF_G-F"),
+          new AutoPath("MRSF_G-F_WithWait", "MRSF_G-F_WithWait"),
+          new AutoPath("MRSF_G-H", "MRSF_G-H"),
+          new AutoPath("MLSF_H-G", "MLSF_H-G"));
 
   private static List<AutoPath> threePiecePaths =
       List.of(
@@ -273,7 +279,8 @@ public class AutoLogic {
           .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
           .withName("scoreCommand");
     }
-    return Commands.none().withName("scoreCommand");
+    return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
+        .withName("scoreCommand-noSuperstructure");
   }
 
   public static Command algaeCommand23() {
@@ -315,7 +322,7 @@ public class AutoLogic {
   public static Command isCollected() {
     if (ARMSENSOR_ENABLED && r.sensors.armSensor != null) {
       return Commands.waitUntil(r.sensors.armSensor.inTrough())
-          .withTimeout(3)
+          .withTimeout(1.5)
           .withName("isCollected");
     }
     return Commands.none().withName("isCollected");
