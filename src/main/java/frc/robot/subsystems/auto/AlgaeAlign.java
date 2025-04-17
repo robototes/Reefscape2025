@@ -23,46 +23,6 @@ public class AlgaeAlign {
     return new AlgaeAlignCommand(drivebaseSubsystem, controls).withName("Algae Align");
   }
 
-  public static Boolean isBlue() {
-    boolean isBlue;
-
-    if (!DriverStation.getAlliance().isEmpty()) {
-      isBlue = DriverStation.getAlliance().get().equals(Alliance.Blue);
-    } else {
-      isBlue = false;
-    }
-    return isBlue;
-  }
-
-  public static boolean readyToScore() {
-    return (isStationary() && isLevel() && isCloseEnough()) || oneSecondLeft();
-  }
-
-  public static boolean isStationary() {
-    var speeds = AutoLogic.s.drivebaseSubsystem.getState().Speeds;
-    return MathUtil.isNear(0, speeds.vxMetersPerSecond, 0.01)
-        && MathUtil.isNear(0, speeds.vyMetersPerSecond, 0.01)
-        && MathUtil.isNear(0, speeds.omegaRadiansPerSecond, Units.degreesToRadians(2));
-  }
-
-  public static boolean isLevel() {
-    var rotation = AutoLogic.s.drivebaseSubsystem.getRotation3d();
-    return MathUtil.isNear(0, rotation.getX(), Units.degreesToRadians(2))
-        && MathUtil.isNear(0, rotation.getY(), Units.degreesToRadians(2));
-  }
-
-  public static boolean isCloseEnough() {
-    var currentPose = AutoLogic.s.drivebaseSubsystem.getState().Pose;
-    var algaePose = AlgaeAlignCommand.getNearestAlgae(currentPose, isBlue());
-    return currentPose.getTranslation().getDistance(algaePose.getTranslation()) < 0.05;
-  }
-
-  public static boolean
-      oneSecondLeft() { // THIS WILL ONLY WORK ON THE REAL FIELD AND IN PRACTICE MODE!
-
-    return DriverStation.getMatchTime() <= 1;
-  }
-
   private static class AlgaeAlignCommand extends Command {
     private static final AprilTagFieldLayout aprilTagFieldLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
