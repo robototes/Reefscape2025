@@ -28,42 +28,42 @@ public class AlgaeAlign {
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
 
-
+private static Transform2d robotOffset =   new Transform2d(Units.inchesToMeters(36.5 / 2), Units.inchesToMeters(-12.97 / 2), Rotation2d.k180deg);
     private static final Pose2d blueAlgaeAB =
-        aprilTagFieldLayout.getTagPose(18).get().toPose2d();
+        aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(robotOffset);
    
     private static final Pose2d blueAlgaeCD =
-        aprilTagFieldLayout.getTagPose(17).get().toPose2d();
+        aprilTagFieldLayout.getTagPose(17).get().toPose2d().plus(robotOffset);
    
     private static final Pose2d blueAlgaeEF =
-        aprilTagFieldLayout.getTagPose(22).get().toPose2d();
+        aprilTagFieldLayout.getTagPose(22).get().toPose2d().plus(robotOffset);
  
     private static final Pose2d blueAlgaeGH =
-        aprilTagFieldLayout.getTagPose(21).get().toPose2d();
+        aprilTagFieldLayout.getTagPose(21).get().toPose2d().plus(robotOffset);
     
     private static final Pose2d blueAlgaeIJ =
-        aprilTagFieldLayout.getTagPose(20).get().toPose2d();
+        aprilTagFieldLayout.getTagPose(20).get().toPose2d().plus(robotOffset);
 
     private static final Pose2d blueAlgaeKL =
-        aprilTagFieldLayout.getTagPose(19).get().toPose2d();
+        aprilTagFieldLayout.getTagPose(19).get().toPose2d().plus(robotOffset);
    
 
     private static final Pose2d redAlgaeAB =
-        aprilTagFieldLayout.getTagPose(7).get().toPose2d();
+        aprilTagFieldLayout.getTagPose(7).get().toPose2d().plus(robotOffset);
 
     private static final Pose2d redAlgaeCD =
-        aprilTagFieldLayout.getTagPose(8).get().toPose2d();
+        aprilTagFieldLayout.getTagPose(8).get().toPose2d().plus(robotOffset);
    
     private static final Pose2d redAlgaeEF =
-        aprilTagFieldLayout.getTagPose(9).get().toPose2d();
+        aprilTagFieldLayout.getTagPose(9).get().toPose2d().plus(robotOffset);
   
     private static final Pose2d redAlgaeGH =
-        aprilTagFieldLayout.getTagPose(10).get().toPose2d();
+        aprilTagFieldLayout.getTagPose(10).get().toPose2d().plus(robotOffset);
  
     private static final Pose2d redAlgaeIJ =
-        aprilTagFieldLayout.getTagPose(11).get().toPose2d();
+        aprilTagFieldLayout.getTagPose(11).get().toPose2d().plus(robotOffset);
    private static final Pose2d redAlgaeKL =
-        aprilTagFieldLayout.getTagPose(6).get().toPose2d();
+        aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(robotOffset);
   
 
     private static final List<Pose2d> blueAlgaePoses =
