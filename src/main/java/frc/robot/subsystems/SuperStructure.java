@@ -206,7 +206,9 @@ public class SuperStructure {
   public Command coralStow() {
     return Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.CORAL_STOWED),
-            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_STOWED),
+            Commands.sequence(
+                Commands.waitUntil(elevator.above(ElevatorSubsystem.CORAL_PRE_INTAKE)),
+                armPivot.moveToPosition(ArmPivot.CORAL_PRESET_STOWED)),
             spinnyClaw.stop())
         .withName("Coral Stow");
   }
@@ -234,8 +236,6 @@ public class SuperStructure {
                     spinnyClaw.coralIntakePower(),
                     armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN)),
                 elevator.setLevel(ElevatorSubsystem.CORAL_INTAKE_POS)),
-            spinnyClaw.stop(),
-            elevator.setLevel(ElevatorSubsystem.CORAL_STOWED),
             coralStow())
         .withName("Coral Intake");
   }
