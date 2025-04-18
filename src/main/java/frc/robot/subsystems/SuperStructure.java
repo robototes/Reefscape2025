@@ -207,8 +207,8 @@ public class SuperStructure {
               groundArm
                   .moveToPosition(GroundArm.STOWED_POSITION)
                   .until(groundArm.atPosition(GroundArm.QUICK_INTAKE_POSITION)),
-              groundSpinny.setQuickHandoffExtakeSpeed(),
-              coralStow())
+              groundSpinny.setQuickHandoffExtakeSpeed().onlyIf(armSensor.inClaw()),
+              coralStow().onlyIf(armSensor.inClaw()))
           .unless(clawFull)
           .withName("Ground Intake");
     }
