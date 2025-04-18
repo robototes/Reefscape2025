@@ -115,6 +115,12 @@
           "data": {
             "name": "scoreCommand"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "readyIntake"
+          }
         }
       ]
     }
