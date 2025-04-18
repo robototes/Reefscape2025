@@ -27,63 +27,48 @@ public class AlgaeAlign {
     private static final AprilTagFieldLayout aprilTagFieldLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
-
-private static Transform2d robotOffset =   new Transform2d(Units.inchesToMeters(36.5 / 2), 0, Rotation2d.k180deg);
+    private static Transform2d robotOffset =
+        new Transform2d(Units.inchesToMeters(36.5 / 2), 0, Rotation2d.k180deg);
     private static final Pose2d blueAlgaeAB =
         aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(robotOffset);
-   
+
     private static final Pose2d blueAlgaeCD =
         aprilTagFieldLayout.getTagPose(17).get().toPose2d().plus(robotOffset);
-   
+
     private static final Pose2d blueAlgaeEF =
         aprilTagFieldLayout.getTagPose(22).get().toPose2d().plus(robotOffset);
- 
+
     private static final Pose2d blueAlgaeGH =
         aprilTagFieldLayout.getTagPose(21).get().toPose2d().plus(robotOffset);
-    
+
     private static final Pose2d blueAlgaeIJ =
         aprilTagFieldLayout.getTagPose(20).get().toPose2d().plus(robotOffset);
 
     private static final Pose2d blueAlgaeKL =
         aprilTagFieldLayout.getTagPose(19).get().toPose2d().plus(robotOffset);
-   
 
     private static final Pose2d redAlgaeAB =
         aprilTagFieldLayout.getTagPose(7).get().toPose2d().plus(robotOffset);
 
     private static final Pose2d redAlgaeCD =
         aprilTagFieldLayout.getTagPose(8).get().toPose2d().plus(robotOffset);
-   
+
     private static final Pose2d redAlgaeEF =
         aprilTagFieldLayout.getTagPose(9).get().toPose2d().plus(robotOffset);
-  
+
     private static final Pose2d redAlgaeGH =
         aprilTagFieldLayout.getTagPose(10).get().toPose2d().plus(robotOffset);
- 
+
     private static final Pose2d redAlgaeIJ =
         aprilTagFieldLayout.getTagPose(11).get().toPose2d().plus(robotOffset);
-   private static final Pose2d redAlgaeKL =
+    private static final Pose2d redAlgaeKL =
         aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(robotOffset);
-  
 
     private static final List<Pose2d> blueAlgaePoses =
-        List.of(
-           blueAlgaeAB,
-            blueAlgaeCD,
-            blueAlgaeEF,
-            blueAlgaeGH,
-            blueAlgaeIJ,
-            blueAlgaeKL);
-           
+        List.of(blueAlgaeAB, blueAlgaeCD, blueAlgaeEF, blueAlgaeGH, blueAlgaeIJ, blueAlgaeKL);
+
     private static final List<Pose2d> redAlgaePoses =
-        List.of(
-            redAlgaeAB,
-            redAlgaeCD,
-            redAlgaeEF,
-            redAlgaeGH,
-            redAlgaeIJ,
-            redAlgaeKL);
-           
+        List.of(redAlgaeAB, redAlgaeCD, redAlgaeEF, redAlgaeGH, redAlgaeIJ, redAlgaeKL);
 
     public static Pose2d getNearestAlgae(Pose2d p, boolean isBlue) {
       List<Pose2d> algaePose2ds = isBlue ? blueAlgaePoses : redAlgaePoses;

@@ -47,7 +47,8 @@ public class BargeAlign extends Command {
       CommandSwerveDrivetrain drivebaseSubsystem, SuperStructure superStructure) {
     return Commands.sequence(
         BargeAlign.driveToBlackLine(drivebaseSubsystem).asProxy(),
-        BargeAlign.driveToBarge(drivebaseSubsystem).asProxy()
+        BargeAlign.driveToBarge(drivebaseSubsystem)
+            .asProxy()
             .withDeadline(
                 superStructure.algaeNetScore(
                     () -> BargeAlign.atScoringXPosition(drivebaseSubsystem))));
