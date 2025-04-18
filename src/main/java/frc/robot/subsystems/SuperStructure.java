@@ -174,6 +174,7 @@ public class SuperStructure {
                   .until(elevator.above(ElevatorSubsystem.MIN_EMPTY_GROUND_INTAKE)),
               groundArm
                   .moveToPosition(GroundArm.GROUND_POSITION)
+                  .andThen(groundArm.setVoltage(GroundArm.GROUND_HOLD_VOLTAGE))
                   .withDeadline(Commands.waitUntil(intakeSensor.inIntake().or(retract))),
               groundArm.moveToPosition(GroundArm.STOWED_POSITION),
               groundSpinny.setFunnelIntakePower(),
@@ -197,6 +198,7 @@ public class SuperStructure {
                   .until(elevator.above(ElevatorSubsystem.MIN_EMPTY_GROUND_INTAKE)),
               Commands.sequence(
                       groundArm.moveToPosition(GroundArm.GROUND_POSITION),
+                      groundArm.setVoltage(GroundArm.GROUND_HOLD_VOLTAGE),
                       Commands.parallel(
                           elevator.setLevel(ElevatorSubsystem.CORAL_QUICK_INTAKE),
                           armPivot.moveToPosition(ArmPivot.CORAL_QUICK_INTAKE),

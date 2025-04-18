@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -27,14 +28,16 @@ public class GroundArm extends SubsystemBase {
   public static final double STOWED_POSITION = 0.45;
   public static final double UP_POSITION =
       0.27; // untested - should be somewhere in between stowed and ground
-  public static final double GROUND_POSITION = -0.043;
+  public static final double GROUND_POSITION = -0.050;
   public static final double QUICK_INTAKE_POSITION = 0.31;
   public static final double POS_TOLERANCE = Units.degreesToRotations(5);
+  public static final double GROUND_HOLD_VOLTAGE = -0.5;
   // ratio from motor rotations to output rotations
   private static final double ARM_RATIO = 60;
 
   // MotionMagic voltage
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
+  private final VoltageOut m_voltageRequest = new VoltageOut(0);
 
   // TalonFX
   private final TalonFX motor;
@@ -116,6 +119,11 @@ public class GroundArm extends SubsystemBase {
   // preset command placeholder
   public Command moveToPosition(double position) {
     return setTargetPosition(position).andThen(Commands.waitUntil(atPosition(position)));
+  }
+
+  public Command setVoltage(double voltage) {
+    return runOnce(() -> motor.setControl(m_voltageRequest.withOutput(voltage)))
+        .withName("Set voltage " + voltage);
   }
 
   public Trigger atPosition(double position) {
