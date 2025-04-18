@@ -8,7 +8,10 @@ import frc.robot.sensors.ArmSensor;
 import frc.robot.sensors.BranchSensors;
 import frc.robot.sensors.ElevatorLight;
 import frc.robot.sensors.IntakeSensor;
+import frc.robot.util.BranchHeight;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 public class SuperStructure {
   private final ElevatorSubsystem elevator;
@@ -20,6 +23,7 @@ public class SuperStructure {
   private final ArmSensor armSensor;
   private final BranchSensors branchSensors;
   private final IntakeSensor intakeSensor;
+  private Supplier<BranchHeight> branchHeight = () -> BranchHeight.CORAL_LEVEL_TWO;
 
   public SuperStructure(
       ElevatorSubsystem elevator,
@@ -40,6 +44,10 @@ public class SuperStructure {
     this.armSensor = armSensor;
     this.branchSensors = branchSensors;
     this.intakeSensor = intakeSensor;
+  }
+  
+  public void setBranchHeightSupplier(Supplier<BranchHeight> branchHeight) {
+    this.branchHeight = branchHeight;
   }
 
   private Command colorSet(int r, int g, int b, String name) {
@@ -205,12 +213,24 @@ public class SuperStructure {
   }
 
   public Command coralStow() {
-    return Commands.parallel(
-            elevator.setLevel(ElevatorSubsystem.CORAL_STOWED),
-            Commands.sequence(
-                Commands.waitUntil(elevator.above(ElevatorSubsystem.CORAL_PRE_INTAKE)),
-                armPivot.moveToPosition(ArmPivot.CORAL_PRESET_STOWED)),
-            spinnyClaw.stop())
+    return Commands.defer(
+            () -> {
+              BranchHeight currentBranchHeight = branchHeight.get();
+              double elevatorHeight =
+                  switch (currentBranchHeight) {
+                    case CORAL_LEVEL_FOUR -> ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS;
+                    case CORAL_LEVEL_THREE -> ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS;
+                    case CORAL_LEVEL_TWO -> ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS;
+                    case CORAL_LEVEL_ONE -> ElevatorSubsystem.CORAL_LEVEL_ONE_POS;
+                  };
+              return Commands.parallel(
+                  elevator.setLevel(elevatorHeight),
+                  Commands.sequence(
+                      Commands.waitUntil(elevator.above(ElevatorSubsystem.CORAL_PRE_INTAKE)),
+                      armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
+                  spinnyClaw.stop());
+            },
+            Set.of(elevator, armPivot, spinnyClaw))
         .withName("Coral Stow");
   }
 

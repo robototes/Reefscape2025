@@ -191,6 +191,7 @@ public class Controls {
     if (superStructure == null) {
       return;
     }
+    superStructure.setBranchHeightSupplier(() -> branchHeight);
     // operator start button used for climb - bound in climb bindings
     operatorController
         .y()
