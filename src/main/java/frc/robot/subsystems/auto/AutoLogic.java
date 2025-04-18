@@ -147,7 +147,7 @@ public class AutoLogic {
           threePiecePaths,
           4,
           fourPiecePaths);
-  
+
   private static final Map<String, AutoPath> namesToAuto = new HashMap<>();
 
   static {
