@@ -17,6 +17,12 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "H to GHA"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "algaeAlign23"
@@ -35,53 +41,27 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Net to LSF"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "readyIntake"
-                }
-              }
-            ]
+            "pathName": "Net to IJA"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "isCollected"
+            "name": "algaeAlign34"
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "LSF to I"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intake"
-                }
-              }
-            ]
+            "pathName": "IJA to Net"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "scoreCommand"
+            "name": "net"
           }
         }
       ]

@@ -113,8 +113,7 @@ public class AutoLogic {
           new AutoPath("MRSF_G-F", "MRSF_G-F"),
           new AutoPath("MRSF_G-F_WithWait", "MRSF_G-F_WithWait"),
           new AutoPath("MRSF_G-H", "MRSF_G-H"),
-          new AutoPath("MLSF_H-G","MLSF_H-G"),
-          new AutoPath("MLSF_H-GHA-I", "MLSF_H-GHA-I"));
+          new AutoPath("MLSF_H-G","MLSF_H-G"));
 
   private static List<AutoPath> threePiecePaths =
       List.of(
@@ -126,7 +125,8 @@ public class AutoLogic {
           new AutoPath("YSMLSF_K-L-A", "YSMLSF_K-L-A"),
           new AutoPath("YSWLSC_K-L-A", "YSWLSC_K-L-A"),
           new AutoPath("OSWRSF_D-C-B", "OSWRSF_D-C-B"),
-          new AutoPath("YSMLSC_K-L-A", "YSMLSC_K-L-A"));
+          new AutoPath("YSMLSC_K-L-A", "YSMLSC_K-L-A"),
+          new AutoPath("M_H-GHA-IJA", "M_H-GHA-IJA"));
 
   private static List<AutoPath> fourPiecePaths =
       List.of(
