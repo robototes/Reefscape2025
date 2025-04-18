@@ -1,0 +1,73 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M to H"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCommand"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "H to GHA"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "algaeAlign23"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GHA to Net"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "net"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Net to IJA"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "algaeAlign34"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "IJA to Net"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "net"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

@@ -17,9 +17,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "D to RSF"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "readyIntake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "D to RSF"
+                }
+              }
+            ]
           }
         },
         {
