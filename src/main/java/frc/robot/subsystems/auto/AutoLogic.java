@@ -257,7 +257,7 @@ public class AutoLogic {
 
   public static String getSelectedAutoName() {
     if (availableAutos.getSelected() == null) {
-      return "nullAuto";
+      return "do nothing";
     }
     return availableAutos.getSelected().getAutoName();
   }
