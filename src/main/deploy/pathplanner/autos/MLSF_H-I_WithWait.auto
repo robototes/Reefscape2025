@@ -23,9 +23,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "H to LSF"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "H to LSF"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "readyIntake"
+                }
+              }
+            ]
           }
         },
         {
@@ -57,6 +70,12 @@
           "type": "named",
           "data": {
             "name": "scoreCommand"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "readyIntake"
           }
         }
       ]

@@ -17,6 +17,25 @@
           }
         },
         {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "E to RSF"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "readyIntake"
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "E to RSF"
@@ -51,6 +70,12 @@
           "type": "named",
           "data": {
             "name": "scoreCommand"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "readyIntake"
           }
         }
       ]

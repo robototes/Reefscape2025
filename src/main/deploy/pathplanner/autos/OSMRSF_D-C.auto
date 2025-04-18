@@ -21,15 +21,15 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "readyIntake"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
                   "pathName": "D to RSF"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "readyIntake"
                 }
               }
             ]
@@ -64,6 +64,12 @@
           "type": "named",
           "data": {
             "name": "scoreCommand"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "readyIntake"
           }
         }
       ]
