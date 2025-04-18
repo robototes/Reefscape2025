@@ -268,7 +268,7 @@ public class AutoLogic {
 
   public static Command getSelectedAuto() {
     double waitTimer = autoDelayEntry.getDouble(0);
-    String autoName = availableAutos.getSelected().getAutoName();
+    String autoName = getSelectedAutoName();
 
     return Commands.waitSeconds(waitTimer)
         .andThen(AutoBuilder.buildAuto(autoName))
