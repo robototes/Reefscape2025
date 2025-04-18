@@ -153,7 +153,7 @@ public class SuperStructure {
                     spinnyClaw.stop())
                 .withTimeout(0.5)
                 .withDeadline(Commands.waitUntil(score)),
-            spinnyClaw.coralHoldExtakePower().withTimeout(0.25),
+            spinnyClaw.coralLevelOneHoldExtakePower().withTimeout(0.25),
             Commands.waitSeconds(1), // Wait to clear the reef
             coralPreIntake())
         .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L1").asProxy())
