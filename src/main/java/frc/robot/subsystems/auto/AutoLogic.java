@@ -325,7 +325,7 @@ public class AutoLogic {
   public static Command isCollected() {
     if (ARMSENSOR_ENABLED && r.sensors.armSensor != null) {
       return Commands.waitUntil(r.sensors.armSensor.inTrough())
-          .withTimeout(1.5)
+          .withTimeout(0.5)
           .withName("isCollected");
     }
     return Commands.none().withName("isCollected");
