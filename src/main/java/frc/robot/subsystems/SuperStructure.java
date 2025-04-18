@@ -202,7 +202,16 @@ public class SuperStructure {
                       Commands.parallel(
                           elevator.setLevel(ElevatorSubsystem.CORAL_QUICK_INTAKE),
                           armPivot.moveToPosition(ArmPivot.CORAL_QUICK_INTAKE),
-                          spinnyClaw.coralIntakePower()))
+                          spinnyClaw.coralIntakePower(),
+                          Commands.sequence(
+                                  Commands.waitUntil(
+                                      groundSpinny
+                                          .stalling()
+                                          .debounce(0.25)
+                                          .and(intakeSensor.inIntake().negate())),
+                                  groundSpinny.holdGroundIntakeJitterSpeed().withTimeout(0.1))
+                              .finallyDo(() -> groundSpinny.imperativeSetGroundIntakePower())
+                              .repeatedly()))
                   .withDeadline(Commands.waitUntil(intakeSensor.inIntake().or(retract))),
               groundArm
                   .moveToPosition(GroundArm.STOWED_POSITION)
