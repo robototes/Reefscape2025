@@ -24,6 +24,7 @@ import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.json.simple.parser.ParseException;
@@ -146,6 +147,16 @@ public class AutoLogic {
           threePiecePaths,
           4,
           fourPiecePaths);
+  
+  private static final Map<String, AutoPath> namesToAuto = new HashMap<>();
+
+  static {
+    for (List<AutoPath> autoPaths : commandsMap.values()) {
+      for (AutoPath autoPath : autoPaths) {
+        namesToAuto.put(autoPath.getDisplayName(), autoPath);
+      }
+    }
+  }
 
   // vars
 
@@ -161,8 +172,8 @@ public class AutoLogic {
 
   private static SendableChooser<StartPosition> startPositionChooser =
       new SendableChooser<StartPosition>();
-  private static DynamicSendableChooser<AutoPath> availableAutos =
-      new DynamicSendableChooser<AutoPath>();
+  private static DynamicSendableChooser<String> availableAutos =
+      new DynamicSendableChooser<String>();
   private static SendableChooser<Integer> gameObjects = new SendableChooser<Integer>();
   private static SendableChooser<Boolean> isVision = new SendableChooser<Boolean>();
 
@@ -240,7 +251,7 @@ public class AutoLogic {
     availableAutos.clearOptions();
 
     // filter based off gameobject count
-    availableAutos.setDefaultOption(defaultPath.getDisplayName(), defaultPath);
+    availableAutos.setDefaultOption(defaultPath.getDisplayName(), defaultPath.getDisplayName());
 
     List<AutoPath> autoCommandsList = commandsMap.get(numGameObjects);
 
@@ -248,7 +259,7 @@ public class AutoLogic {
     for (AutoPath auto : autoCommandsList) {
       if (auto.getStartPose().equals(startPositionChooser.getSelected())
           && auto.isVision() == isVision.getSelected()) {
-        availableAutos.addOption(auto.getDisplayName(), auto);
+        availableAutos.addOption(auto.getDisplayName(), auto.getDisplayName());
       }
     }
   }
@@ -256,10 +267,7 @@ public class AutoLogic {
   // get auto
 
   public static String getSelectedAutoName() {
-    if (availableAutos.getSelected() == null) {
-      return "do nothing";
-    }
-    return availableAutos.getSelected().getAutoName();
+    return availableAutos.getSelectedName();
   }
 
   public static boolean chooserHasAutoSelected() {
@@ -268,7 +276,11 @@ public class AutoLogic {
 
   public static Command getSelectedAuto() {
     double waitTimer = autoDelayEntry.getDouble(0);
-    String autoName = getSelectedAutoName();
+    AutoPath path = namesToAuto.get(getSelectedAutoName());
+    if (path == null) {
+      path = defaultPath;
+    }
+    String autoName = path.getAutoName();
 
     return Commands.waitSeconds(waitTimer)
         .andThen(AutoBuilder.buildAuto(autoName))
