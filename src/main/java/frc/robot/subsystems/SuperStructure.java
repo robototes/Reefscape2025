@@ -45,7 +45,7 @@ public class SuperStructure {
     this.branchSensors = branchSensors;
     this.intakeSensor = intakeSensor;
   }
-  
+
   public void setBranchHeightSupplier(Supplier<BranchHeight> branchHeight) {
     this.branchHeight = branchHeight;
   }
