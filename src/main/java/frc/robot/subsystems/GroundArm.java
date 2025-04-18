@@ -31,7 +31,7 @@ public class GroundArm extends SubsystemBase {
   public static final double GROUND_POSITION = -0.050;
   public static final double QUICK_INTAKE_POSITION = 0.31;
   public static final double POS_TOLERANCE = Units.degreesToRotations(5);
-  public static final double GROUND_HOLD_VOLTAGE = -0.45;
+  public static final double GROUND_HOLD_VOLTAGE = -0.40;
   // ratio from motor rotations to output rotations
   private static final double ARM_RATIO = 60;
 
