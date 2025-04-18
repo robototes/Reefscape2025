@@ -99,7 +99,7 @@ public class DynamicSendableChooser<T> implements Sendable, AutoCloseable {
   public T getSelected() {
     m_mutex.lock();
     try {
-      if (m_selected != null) {
+      if (m_selected != null && m_map.containsKey(m_selected)) {
         return m_map.get(m_selected);
       } else {
         return m_map.get(m_defaultChoice);
