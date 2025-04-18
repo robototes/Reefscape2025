@@ -28,7 +28,7 @@ public class AlgaeAlign {
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
 
-private static Transform2d robotOffset =   new Transform2d(Units.inchesToMeters(36.5 / 2), Units.inchesToMeters(-12.97 / 2), Rotation2d.k180deg);
+private static Transform2d robotOffset =   new Transform2d(Units.inchesToMeters(36.5 / 2), 0, Rotation2d.k180deg);
     private static final Pose2d blueAlgaeAB =
         aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(robotOffset);
    
@@ -114,7 +114,7 @@ private static Transform2d robotOffset =   new Transform2d(Units.inchesToMeters(
     public void initialize() {
       boolean redAlliance = DriverStation.getAlliance().get() == Alliance.Red;
       Pose2d robotPose = drive.getState().Pose;
-      Pose2d algaePose = getNearestAlgae(robotPose, !redAlliance);
+      algaePose = getNearestAlgae(robotPose, !redAlliance);
       pidX.setSetpoint(algaePose.getX());
       pidY.setSetpoint(algaePose.getY());
       pidRotate.setSetpoint(algaePose.getRotation().getRadians());
