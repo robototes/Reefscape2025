@@ -208,7 +208,12 @@ public class SuperStructure {
                   .moveToPosition(GroundArm.STOWED_POSITION)
                   .until(groundArm.atPosition(GroundArm.QUICK_INTAKE_POSITION)),
               groundSpinny.setQuickHandoffExtakeSpeed().onlyIf(armSensor.inClaw()),
-              coralStow().onlyIf(armSensor.inClaw()))
+              coralStow().onlyIf(armSensor.inClaw()),
+              Commands.parallel(
+                      elevator.setLevel(ElevatorSubsystem.MIN_EMPTY_GROUND_INTAKE),
+                      armPivot.moveToPosition(ArmPivot.CORAL_QUICK_INTAKE),
+                      spinnyClaw.stop())
+                  .onlyIf(armSensor.inClaw().negate()))
           .unless(clawFull)
           .withName("Ground Intake");
     }
