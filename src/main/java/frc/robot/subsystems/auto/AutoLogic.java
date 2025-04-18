@@ -113,7 +113,7 @@ public class AutoLogic {
           new AutoPath("MRSF_G-F", "MRSF_G-F"),
           new AutoPath("MRSF_G-F_WithWait", "MRSF_G-F_WithWait"),
           new AutoPath("MRSF_G-H", "MRSF_G-H"),
-          new AutoPath("MLSF_H-G", "MLSF_H-G"));
+          new AutoPath("MLSF_H-G","MLSF_H-G"));
 
   private static List<AutoPath> threePiecePaths =
       List.of(
@@ -125,7 +125,8 @@ public class AutoLogic {
           new AutoPath("YSMLSF_K-L-A", "YSMLSF_K-L-A"),
           new AutoPath("YSWLSC_K-L-A", "YSWLSC_K-L-A"),
           new AutoPath("OSWRSF_D-C-B", "OSWRSF_D-C-B"),
-          new AutoPath("YSMLSC_K-L-A", "YSMLSC_K-L-A"));
+          new AutoPath("YSMLSC_K-L-A", "YSMLSC_K-L-A"),
+          new AutoPath("M_H-GHA-IJA", "M_H-GHA-IJA"));
 
   private static List<AutoPath> fourPiecePaths =
       List.of(
@@ -175,7 +176,10 @@ public class AutoLogic {
     NamedCommands.registerCommand("scoreCommand", scoreCommand());
     NamedCommands.registerCommand("intake", intakeCommand());
     NamedCommands.registerCommand("isCollected", isCollected());
-  }
+    NamedCommands.registerCommand("readyIntake", readyIntakeCommand());
+    NamedCommands.registerCommand("algaeAlign23", algaeCommand23());
+    NamedCommands.registerCommand("algaeAlign34", algaeCommand34());
+    NamedCommands.registerCommand("net", netCommand());  }
 
   // public Command getConditionalCommand(){}
 
@@ -282,11 +286,37 @@ public class AutoLogic {
         .withName("scoreCommand-noSuperstructure");
   }
 
+  public static Command algaeCommand23() {
+    if (r.superStructure != null) {
+      return AlgaeAlign.algaeAlign(s.drivebaseSubsystem, controls)
+          .repeatedly()
+          .withDeadline(r.superStructure.algaeLevelTwoThreeIntake())
+          .withName("algaeCommand23");
+    }
+    return Commands.none().withName("algaeCommand23");
+  }
+
+  public static Command algaeCommand34() {
+    if (r.superStructure != null) {
+      return AlgaeAlign.algaeAlign(s.drivebaseSubsystem, controls)
+          .repeatedly()
+          .withDeadline(r.superStructure.algaeLevelThreeFourIntake())
+          .withName("algaeCommand34");
+    }
+    return Commands.none().withName("algaeCommand34");
+  }
+
+  public static Command netCommand() {
+    if (r.superStructure != null) {
+      return  BargeAlign.bargeScore(s.drivebaseSubsystem, r.superStructure).withName("net");
+    }
+    return Commands.none().withName("net");
+  }
+
   public static Command intakeCommand() {
     if (r.superStructure != null) {
       if (ARMSENSOR_ENABLED) {
-        return Commands.sequence(r.superStructure.coralPreIntake(), r.superStructure.coralIntake())
-            .withName("intake");
+        return r.superStructure.coralIntake().withName("intake");
       }
     }
     return Commands.none().withName("intake");
@@ -295,9 +325,19 @@ public class AutoLogic {
   public static Command isCollected() {
     if (ARMSENSOR_ENABLED && r.sensors.armSensor != null) {
       return Commands.waitUntil(r.sensors.armSensor.inTrough())
-          .withTimeout(1.5)
+          .withTimeout(0.5)
           .withName("isCollected");
     }
     return Commands.none().withName("isCollected");
+  }
+
+  public static Command readyIntakeCommand() {
+    if (r.superStructure != null) {
+
+    
+    return r.superStructure.coralPreIntake().withName("readyIntake");
+    }
+    return Commands.none().withName("readyIntake");
+    
   }
 }
