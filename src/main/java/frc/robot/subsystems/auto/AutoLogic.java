@@ -322,7 +322,9 @@ public class AutoLogic {
 
   public static Command netCommand() {
     if (r.superStructure != null) {
-      return BargeAlign.bargeScore(s.drivebaseSubsystem, r.superStructure).withName("net");
+      return BargeAlign.bargeScore(
+              s.drivebaseSubsystem, r.superStructure, () -> 0, () -> 0, () -> 0)
+          .withName("net");
     }
     return Commands.none().withName("net");
   }
