@@ -113,7 +113,7 @@ public class BargeAlign extends Command {
 
   @Override
   public boolean isFinished() {
-    return Math.abs(pidX.getError()) < 0.01
+    return Math.abs(pidX.getError()) < 0.05
         && Math.abs(Units.radiansToDegrees(pidRotate.getError())) < 1;
   }
 }
