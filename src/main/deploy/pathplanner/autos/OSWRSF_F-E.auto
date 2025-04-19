@@ -17,9 +17,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "F to RSF"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "F to RSF"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "readyIntake"
+                }
+              }
+            ]
           }
         },
         {
@@ -51,6 +64,12 @@
           "type": "named",
           "data": {
             "name": "scoreCommand"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "readyIntake"
           }
         }
       ]

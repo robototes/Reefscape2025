@@ -17,21 +17,28 @@
           }
         },
         {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "K to LSF"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "readyIntake"
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "isCollected"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": []
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "K to LSF"
           }
         },
         {
@@ -60,9 +67,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "L to LSF"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "L to LSF"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "readyIntake"
+                }
+              }
+            ]
           }
         },
         {
@@ -94,6 +114,12 @@
           "type": "named",
           "data": {
             "name": "scoreCommand"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "readyIntake"
           }
         }
       ]
