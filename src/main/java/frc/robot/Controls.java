@@ -36,6 +36,7 @@ import frc.robot.util.AlgaeIntakeHeight;
 import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
 import frc.robot.util.ScoringMode;
+import java.util.function.BooleanSupplier;
 
 public class Controls {
   private static final int DRIVER_CONTROLLER_PORT = 0;
@@ -80,6 +81,8 @@ public class Controls {
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
+  private final BooleanSupplier driveSlowMode;
+
   public Controls(Subsystems s, Sensors sensors, SuperStructure superStructure) {
     driverController = new CommandXboxController(DRIVER_CONTROLLER_PORT);
     operatorController = new CommandXboxController(OPERATOR_CONTROLLER_PORT);
@@ -89,6 +92,7 @@ public class Controls {
     this.s = s;
     this.sensors = sensors;
     this.superStructure = superStructure;
+    driveSlowMode = driverController.start();
     configureDrivebaseBindings();
     configureSuperStructureBindings();
     configureElevatorBindings();
@@ -105,6 +109,30 @@ public class Controls {
     return new Trigger(() -> controller.isConnected());
   }
 
+  private double getDriveX() {
+    // Joystick +Y is back
+    // Robot +X is forward
+    double input = MathUtil.applyDeadband(-driverController.getLeftY(), 0.1);
+    double inputScale = driveSlowMode.getAsBoolean() ? 0.5 : 1;
+    return input * MaxSpeed * inputScale;
+  }
+
+  private double getDriveY() {
+    // Joystick +X is right
+    // Robot +Y is left
+    double input = MathUtil.applyDeadband(-driverController.getLeftX(), 0.1);
+    double inputScale = driveSlowMode.getAsBoolean() ? 0.5 : 1;
+    return input * MaxSpeed * inputScale;
+  }
+
+  private double getDriveRotate() {
+    // Joystick +X is right
+    // Robot +angle is CCW (left)
+    double input = MathUtil.applyDeadband(-driverController.getRightX(), 0.1);
+    double inputScale = driveSlowMode.getAsBoolean() ? 0.5 : 1;
+    return input * MaxSpeed * inputScale;
+  }
+
   private void configureDrivebaseBindings() {
     if (s.drivebaseSubsystem == null) {
       // Stop running this method
@@ -117,23 +145,11 @@ public class Controls {
         // s.drivebaseSubsystem will execute this command periodically
         s.drivebaseSubsystem
             .applyRequest(
-                () -> {
-                  double getLeftX = MathUtil.applyDeadband(driverController.getLeftX(), 0.1);
-                  double getLeftY = MathUtil.applyDeadband(driverController.getLeftY(), 0.1);
-                  double getRightX = MathUtil.applyDeadband(driverController.getRightX(), 0.1);
-                  double inputScale = driverController.start().getAsBoolean() ? 0.5 : 1;
-                  return drive
-                      .withVelocityX(
-                          -getLeftY
-                              * MaxSpeed
-                              * inputScale) // Drive forward with negative Y (forward)
-                      .withVelocityY(
-                          -getLeftX * MaxSpeed * inputScale) // Drive left with negative X (left)
-                      .withRotationalRate(
-                          -getRightX
-                              * MaxAngularRate
-                              * inputScale); // Drive counterclockwise with negative X (left)
-                })
+                () ->
+                    drive
+                        .withVelocityX(getDriveX())
+                        .withVelocityY(getDriveY())
+                        .withRotationalRate(getDriveRotate()))
             .withName("Drive"));
     // operatorController
     //     .povUp()
