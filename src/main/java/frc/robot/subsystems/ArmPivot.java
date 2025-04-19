@@ -18,6 +18,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -121,6 +122,9 @@ public class ArmPivot extends SubsystemBase {
   }
 
   private double getCurrentPosition() {
+    if (RobotBase.isSimulation()) {
+      return targetPos;
+    }
     var curPos = motor.getPosition();
     return curPos.getValueAsDouble();
   }
