@@ -370,7 +370,8 @@ public class Controls {
                                         superStructure,
                                         () -> getDriveX(),
                                         () -> getDriveY(),
-                                        () -> getDriveRotate()),
+                                        () -> getDriveRotate(),
+                                        driverController.rightBumper()),
                                     getAlgaeIntakeCommand())
                                 .withName("Algae score then intake");
                           };

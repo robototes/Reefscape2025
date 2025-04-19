@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
+
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class BargeAlign extends Command {
@@ -54,7 +56,8 @@ public class BargeAlign extends Command {
       SuperStructure superStructure,
       DoubleSupplier manualXSpeed,
       DoubleSupplier manualYSpeed,
-      DoubleSupplier manualRotateSpeed) {
+      DoubleSupplier manualRotateSpeed,
+      BooleanSupplier manualScore) {
     return Commands.sequence(
         BargeAlign.driveToBlackLine(
                 drivebaseSubsystem, manualXSpeed, manualYSpeed, manualRotateSpeed)
@@ -63,7 +66,7 @@ public class BargeAlign extends Command {
             .asProxy()
             .withDeadline(
                 superStructure.algaeNetScore(
-                    () -> BargeAlign.atScoringXPosition(drivebaseSubsystem))));
+                    () -> manualScore.getAsBoolean() || BargeAlign.atScoringXPosition(drivebaseSubsystem)   )));
   }
 
   private static Command driveToBarge(
