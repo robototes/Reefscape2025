@@ -19,7 +19,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 4.5
           }
         },
         {
@@ -54,7 +54,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LSF to I"
+                  "pathName": "LSF to K"
                 }
               },
               {
@@ -76,6 +76,12 @@
           "type": "named",
           "data": {
             "name": "readyIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "K to LSF"
           }
         }
       ]

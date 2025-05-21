@@ -8,11 +8,15 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Hardware;
 
 public class GroundSpinny extends SubsystemBase {
   public static final double GROUND_INTAKE_SPEED = -8;
+  public static final double GROUND_INTAKE_JITTER_SPEED = 1;
   public static final double FUNNEL_INTAKE_SPEED = -2;
+  public static final double QUICK_HANDOFF_EXTAKE_SPEED = 1;
+  private static final double STATOR_CURRENT_STALL_THRESHOLD = 20;
 
   // TalonFX
   private final TalonFX motor;
@@ -44,9 +48,9 @@ public class GroundSpinny extends SubsystemBase {
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     cfg.apply(configuration);
     // enabling stator current limits
-    currentLimits.StatorCurrentLimit = 10; // subject to change
+    currentLimits.StatorCurrentLimit = 40; // subject to change
     currentLimits.StatorCurrentLimitEnable = true;
-    currentLimits.SupplyCurrentLimit = 10; // subject to change
+    currentLimits.SupplyCurrentLimit = 20; // subject to change
     currentLimits.SupplyCurrentLimitEnable = true;
     cfg.apply(currentLimits);
   }
@@ -76,12 +80,38 @@ public class GroundSpinny extends SubsystemBase {
     return holdPower(FUNNEL_INTAKE_SPEED).withName("hold funnel intake power");
   }
 
+  public void imperativeSetGroundIntakePower() {
+    motor.setVoltage(GROUND_INTAKE_SPEED);
+    lastSetPower = GROUND_INTAKE_SPEED;
+  }
+
   public Command setGroundIntakePower() {
     return setPower(GROUND_INTAKE_SPEED).withName("set ground intake power");
   }
 
   public Command holdGroundIntakePower() {
     return holdPower(GROUND_INTAKE_SPEED).withName("hold ground intake power");
+  }
+
+  public Command setQuickHandoffExtakeSpeed() {
+    return setPower(QUICK_HANDOFF_EXTAKE_SPEED).withName("set quick handoff extake power");
+  }
+
+  public Command holdQuickHandoffExtakeSpeed() {
+    return holdPower(QUICK_HANDOFF_EXTAKE_SPEED).withName("hold quick handoff extake power");
+  }
+
+  public Command setGroundIntakeJitterSpeed() {
+    return setPower(GROUND_INTAKE_JITTER_SPEED).withName("set ground intake jitter power");
+  }
+
+  public Command holdGroundIntakeJitterSpeed() {
+    return holdPower(GROUND_INTAKE_JITTER_SPEED).withName("hold ground intake jitter power");
+  }
+
+  public Trigger stalling() {
+    return new Trigger(
+        () -> motor.getStatorCurrent().getValueAsDouble() > STATOR_CURRENT_STALL_THRESHOLD);
   }
 
   public Command stop() {

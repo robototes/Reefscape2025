@@ -18,6 +18,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -43,6 +44,7 @@ public class ArmPivot extends SubsystemBase {
   public static final double CORAL_PRESET_L4 = 0.0;
   public static final double CORAL_PRESET_PRE_L4 = 1.0 / 16.0;
   public static final double CORAL_POST_SCORE = -0.15;
+  public static final double CORAL_QUICK_INTAKE = -0.07;
   public static final double ALGAE_REMOVE_PREPOS = 0;
   public static final double ALGAE_REMOVE = 0;
   public static final double ALGAE_FLING = -0.08;
@@ -50,7 +52,7 @@ public class ArmPivot extends SubsystemBase {
   public static final double ALGAE_PROCESSOR_SCORE = -0.05;
   public static final double ALGAE_GROUND_INTAKE = -0.085;
   public static final double ALGAE_NET_SCORE = 0.175; // untested - old value was 0.18
-  public static final double CORAL_PRESET_STOWED = 0.125;
+  public static final double CORAL_PRESET_STOWED = CORAL_PRESET_L2;
   public static final double CORAL_PRESET_OUT = 0;
   public static final double CORAL_PRESET_UP = 0.245; // Stop a little short of the hardstop
   public static final double CORAL_PRESET_GROUND_INTAKE = 0;
@@ -120,6 +122,9 @@ public class ArmPivot extends SubsystemBase {
   }
 
   private double getCurrentPosition() {
+    if (RobotBase.isSimulation()) {
+      return targetPos;
+    }
     var curPos = motor.getPosition();
     return curPos.getValueAsDouble();
   }
