@@ -39,7 +39,6 @@ public class Robot extends TimedRobot {
   private final RobotType robotType;
   public final Controls controls;
   public final Subsystems subsystems;
-
   public final Sensors sensors;
   public final SuperStructure superStructure;
   private final PowerDistribution PDH;
