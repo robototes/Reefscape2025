@@ -6,7 +6,6 @@ package frc.robot;
 
 import au.grapplerobotics.CanBridge;
 import com.pathplanner.lib.commands.FollowPathCommand;
-
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -27,7 +26,7 @@ import frc.robot.subsystems.auto.AutonomousField;
 import frc.robot.util.BuildInfo;
 import frc.robot.util.MatchTab;
 import frc.robot.util.RobotType;
-import edu.wpi.first.wpilibj.Filesystem;
+
 public class Robot extends TimedRobot {
   /** Singleton Stuff */
   private static Robot instance = null;
