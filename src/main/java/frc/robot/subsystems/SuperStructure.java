@@ -239,12 +239,21 @@ public class SuperStructure {
                     case CORAL_LEVEL_TWO -> ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS;
                     case CORAL_LEVEL_ONE -> ElevatorSubsystem.CORAL_LEVEL_ONE_POS;
                   };
-              return Commands.parallel(
-                  elevator.setLevel(elevatorHeight),
-                  Commands.sequence(
-                      Commands.waitUntil(elevator.above(ElevatorSubsystem.CORAL_PRE_INTAKE)),
-                      armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
-                  spinnyClaw.stop());
+              if (elevatorHeight > ElevatorSubsystem.CORAL_PRE_INTAKE) {
+                return Commands.parallel(
+                    elevator.setLevel(elevatorHeight),
+                    Commands.sequence(
+                        Commands.waitUntil(elevator.above(ElevatorSubsystem.CORAL_PRE_INTAKE)),
+                        armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
+                    spinnyClaw.stop());
+              } else {
+                return Commands.parallel(
+                    Commands.sequence(
+                        elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
+                        armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP),
+                        elevator.setLevel(elevatorHeight)),
+                    spinnyClaw.stop());
+              }
             },
             Set.of(elevator, armPivot, spinnyClaw))
         .withName("Coral Stow");
