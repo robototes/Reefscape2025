@@ -52,6 +52,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double CORAL_QUICK_INTAKE = 1.6;
   public static final double MIN_EMPTY_GROUND_INTAKE = 4.5;
   public static final double MIN_FULL_GROUND_INTAKE = 8.0;
+  private static final double MOTOR_ROTATIONS_PER_METER = 40; //Inaccurate
   public static final double MANUAL = 0.1;
   private static final double POS_TOLERANCE = 0.1;
   private final double ELEVATOR_KP = 7.804;
@@ -240,6 +241,10 @@ public class ElevatorSubsystem extends SubsystemBase {
   private double getCurrentPosition() {
     curPos = m_motor.getPosition().getValueAsDouble();
     return curPos;
+  }
+
+  public double getHeightMeters() { // Elevator height converted to Meters
+    return getCurrentPosition() / MOTOR_ROTATIONS_PER_METER;
   }
 
   private void setCurrentPosition(double pos) {
