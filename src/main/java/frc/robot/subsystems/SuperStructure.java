@@ -58,6 +58,7 @@ public class SuperStructure {
   }
 
   private Command repeatPrescoreScoreSwing(Command command, BooleanSupplier score) {
+    //repeats scoring sequence if the coral is still in the claw
     if (armSensor == null) {
       return Commands.sequence(
           command, Commands.waitUntil(() -> !score.getAsBoolean()), Commands.waitUntil(score));
@@ -67,7 +68,7 @@ public class SuperStructure {
   }
 
   public Command coralLevelFour(BooleanSupplier score) {
-    if (branchSensors != null) {
+    if (branchSensors != null) { //checks if sensor enabled then use for faster scoring
       score = branchSensors.withinScoreRange().or(score);
     }
     return Commands.sequence(
@@ -75,7 +76,7 @@ public class SuperStructure {
                     Commands.print("Pre position"),
                     elevator
                         .setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_PRE_POS)
-                        .deadlineFor(
+                        .deadlineFor( //keeps spinny claw engaged until coral has been scored
                             armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP).until(score)),
                     spinnyClaw.stop())
                 .withTimeout(0.7),
