@@ -6,8 +6,11 @@ package frc.robot;
 
 import au.grapplerobotics.CanBridge;
 import com.pathplanner.lib.commands.FollowPathCommand;
+
+import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -24,7 +27,7 @@ import frc.robot.subsystems.auto.AutonomousField;
 import frc.robot.util.BuildInfo;
 import frc.robot.util.MatchTab;
 import frc.robot.util.RobotType;
-
+import edu.wpi.first.wpilibj.Filesystem;
 public class Robot extends TimedRobot {
   /** Singleton Stuff */
   private static Robot instance = null;
@@ -107,6 +110,7 @@ public class Robot extends TimedRobot {
       FollowPathCommand.warmupCommand().schedule();
     }
     MatchTab.create(sensors, subsystems);
+    WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
   }
 
   @Override
