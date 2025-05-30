@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -130,9 +129,9 @@ public class ArmPivot extends SubsystemBase {
     var curPos = motor.getPosition();
     return curPos.getValueAsDouble();
   }
+
   public Rotation2d getAngle() { // 0 is forward, + is up
     return Rotation2d.fromRotations(getCurrentPosition());
-
   }
 
   // preset command placeholder

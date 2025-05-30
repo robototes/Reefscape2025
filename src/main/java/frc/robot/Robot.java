@@ -6,7 +6,6 @@ package frc.robot;
 
 import au.grapplerobotics.CanBridge;
 import com.pathplanner.lib.commands.FollowPathCommand;
-
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -16,7 +15,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -63,12 +61,19 @@ public class Robot extends TimedRobot {
     PDH = new PowerDistribution(Hardware.PDH_ID, ModuleType.kRev);
     LiveWindow.disableAllTelemetry();
     LiveWindow.enableTelemetry(PDH);
-    mech = new Mechanism2d(1,2);
+    mech = new Mechanism2d(1, 2);
     root = mech.getRoot("climber", 0.5 + Units.inchesToMeters(5.5), Units.inchesToMeters(19.5));
     SmartDashboard.putData("Mechanism", mech);
-    m_elevator = root.append(new MechanismLigament2d("elevator", 1, 90, 2, new Color8Bit(Color.kRed)));
-    var pivot = m_elevator.append(new MechanismLigament2d("pivot offset", Units.inchesToMeters(4), -90, 2, new Color8Bit(Color.kDarkRed)));
-    m_wrist = pivot.append(new MechanismLigament2d("wrist", Units.inchesToMeters(14.5), 270, 6, new Color8Bit(Color.kFirstRed)));
+    m_elevator =
+        root.append(new MechanismLigament2d("elevator", 1, 90, 2, new Color8Bit(Color.kRed)));
+    var pivot =
+        m_elevator.append(
+            new MechanismLigament2d(
+                "pivot offset", Units.inchesToMeters(4), -90, 2, new Color8Bit(Color.kDarkRed)));
+    m_wrist =
+        pivot.append(
+            new MechanismLigament2d(
+                "wrist", Units.inchesToMeters(14.5), 270, 6, new Color8Bit(Color.kFirstRed)));
 
     sensors = new Sensors();
     subsystems = new Subsystems(sensors);
