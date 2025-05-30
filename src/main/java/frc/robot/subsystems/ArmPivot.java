@@ -36,11 +36,17 @@ public class ArmPivot extends SubsystemBase {
   private final double ARMPIVOT_KV = 0.69;
   private final double ARMPIVOT_KG = 0.18;
   private final double ARMPIVOT_KA = 0.0;
+  // Preset positions for Arm with Coral
   public static final double CORAL_PRESET_L1 = 0;
   public static final double CORAL_PRESET_L2 = 0.13;
   public static final double CORAL_PRESET_L3 = 0.13;
   public static final double CORAL_PRESET_L4 = 0.0;
   public static final double CORAL_PRESET_PRE_L4 = 1.0 / 16.0;
+  public static final double CORAL_PRESET_STOWED = 0.125;
+  public static final double CORAL_PRESET_OUT = 0;
+  public static final double CORAL_PRESET_UP = 0.25; // Pointing directly upwards
+  public static final double CORAL_PRESET_DOWN = -0.25;
+  // Preset positions for Arm with Algae
   public static final double ALGAE_REMOVE_PREPOS = 0;
   public static final double ALGAE_REMOVE = 0;
   public static final double ALGAE_FLING = -0.08;
@@ -48,10 +54,7 @@ public class ArmPivot extends SubsystemBase {
   public static final double ALGAE_PROCESSOR_SCORE = -0.05;
   public static final double ALGAE_GROUND_INTAKE = -0.07;
   public static final double ALGAE_NET_SCORE = 0.175; // untested - old value was 0.18
-  public static final double CORAL_PRESET_STOWED = 0.125;
-  public static final double CORAL_PRESET_OUT = 0;
-  public static final double CORAL_PRESET_UP = 0.25; // Pointing directly upwards
-  public static final double CORAL_PRESET_DOWN = -0.25;
+  // Other Presets
   public static final double HARDSTOP_HIGH = 0.32;
   public static final double HARDSTOP_LOW = -0.26;
   public static final double POS_TOLERANCE = Units.degreesToRotations(5);
@@ -74,6 +77,7 @@ public class ArmPivot extends SubsystemBase {
 
   private double targetPos;
 
+  // Arm Pivot Contructor
   public ArmPivot() {
     motor = new TalonFX(Hardware.ARM_PIVOT_MOTOR_ID);
     routine =
@@ -91,15 +95,21 @@ public class ArmPivot extends SubsystemBase {
     logTabs();
   }
 
-  // commands
+  // ***ALL COMMANDS*** //
+
+  // SysID quasistatic test, tests mechanism at a constant speed
   public Command SysIDQuasistatic(Direction direction) {
     return routine.quasistatic(direction);
   }
 
+  // SysID dynamic test, tests mechanism at a exponentially growing speed
   public Command SysIDDynamic(Direction direction) {
     return routine.dynamic(direction);
   }
 
+  /*  Sets the desired position to move the motor to
+      - one time command using motor control 
+  */
   private Command setTargetPosition(double pos) {
     return runOnce(
         () -> {
@@ -108,32 +118,44 @@ public class ArmPivot extends SubsystemBase {
         });
   }
 
+  // Boolean returning whether or not the arm is at the desired position
   public boolean atPosition(double position) {
     return MathUtil.isNear(position, getCurrentPosition(), POS_TOLERANCE);
   }
 
+  // Returns the current target position (position the arm is to move to)
   private double getTargetPosition() {
     return targetPos;
   }
 
+  /* Returns the current position of the arm in a double measuring degrees
+      - get the current positions and conversts it to a double (number with decimal)
+  */
   private double getCurrentPosition() {
     var curPos = motor.getPosition();
     return curPos.getValueAsDouble();
   }
 
-  // preset command placeholder
+  /*  moves arm to inputted position 
+        - sets the target position to the inputted position
+        - shrinks the difference between the current position and the target position until they are close enough to work
+  */
   public Command moveToPosition(double position) {
     return setTargetPosition(position)
         .andThen(
             Commands.waitUntil(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE));
   }
 
-  // (+) is to move arm up, and (-) is down
+  // (+) is to move arm up, and (-) is down. sets a voltage to pass to motor to move.
   public Command startMovingVoltage(Supplier<Voltage> speedControl) {
     return runEnd(() -> motor.setVoltage(speedControl.get().in(Volts)), () -> motor.stopMotor());
   }
 
-  // logging
+  /* logging come back later 
+   * - working on logging information to shufflboard
+   * - "getTab" indicates what tab it would like to edit
+   * - each command adds a new trackable value with a name found in quotations marks
+  */
   public void logTabs() {
     Shuffleboard.getTab("Arm Pivot")
         .addDouble("Pivot Speed", () -> motor.getVelocity().getValueAsDouble());
@@ -145,16 +167,18 @@ public class ArmPivot extends SubsystemBase {
         .addDouble("Pivot Motor rotor Pos", () -> motor.getRotorPosition().getValueAsDouble());
   }
 
-  // TalonFX config
+  // TalonFX config come back later
   public void factoryDefaults() {
     TalonFXConfigurator cfg = motor.getConfigurator();
     var talonFXConfiguration = new TalonFXConfiguration();
-
+    // specifies what the sensor is, what port its on, and what the gearing ratio for the sensor is relative to the motor
     talonFXConfiguration.Feedback.FeedbackRemoteSensorID = Hardware.ARM_PIVOT_CANDI_ID;
     talonFXConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANdiPWM1;
     talonFXConfiguration.Feedback.RotorToSensorRatio = 1 / ARM_RATIO;
 
+    //Inverting motor output direction
     talonFXConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    //Setting the motor to brake when not moving
     talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     // enabling current limits
@@ -188,6 +212,7 @@ public class ArmPivot extends SubsystemBase {
   // alert
   @Override
   public void periodic() {
+    // Error that ensures the motor is connected
     NotConnectedError.set(notConnectedDebouncer.calculate(!motor.getMotorVoltage().hasUpdated()));
   }
 }
