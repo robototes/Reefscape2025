@@ -4,22 +4,30 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.generated.CompTunerConstants;
+import frc.robot.utils.simulation.MapleSimSwerveDrivetrain;
+
 import java.util.function.Supplier;
 
 /**
@@ -30,6 +38,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
+  private MapleSimSwerveDrivetrain m_mapleSimSwerveDrivetrain = null;
 
   /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
   private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -108,10 +117,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
    * @param modules Constants for each specific module
    */
   public CommandSwerveDrivetrain(
-      SwerveDrivetrainConstants drivetrainConstants, SwerveModuleConstants<?, ?, ?>... modules) {
-    super(drivetrainConstants, modules);
+      SwerveDrivetrainConstants drivetrainConstants, 
+      SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>... modules) {
+    super(drivetrainConstants, MapleSimSwerveDrivetrain.regulateModuleConstantsForSimulation(modules));
     if (Utils.isSimulation()) {
-      startSimThread();
+      startSimThread(modules);
     }
   }
 
@@ -129,10 +139,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   public CommandSwerveDrivetrain(
       SwerveDrivetrainConstants drivetrainConstants,
       double odometryUpdateFrequency,
-      SwerveModuleConstants<?, ?, ?>... modules) {
-    super(drivetrainConstants, odometryUpdateFrequency, modules);
+      SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>... modules) {
+    super(drivetrainConstants, odometryUpdateFrequency, MapleSimSwerveDrivetrain.regulateModuleConstantsForSimulation(modules));
     if (Utils.isSimulation()) {
-      startSimThread();
+      startSimThread(modules);
     }
   }
 
@@ -156,15 +166,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       double odometryUpdateFrequency,
       Matrix<N3, N1> odometryStandardDeviation,
       Matrix<N3, N1> visionStandardDeviation,
-      SwerveModuleConstants<?, ?, ?>... modules) {
+      SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>... modules) {
     super(
         drivetrainConstants,
         odometryUpdateFrequency,
         odometryStandardDeviation,
         visionStandardDeviation,
-        modules);
+        MapleSimSwerveDrivetrain.regulateModuleConstantsForSimulation(modules));
     if (Utils.isSimulation()) {
-      startSimThread();
+      startSimThread(modules);
     }
   }
 
@@ -222,7 +232,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
   }
 
-  private void startSimThread() {
+  private void startSimThread(SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>... modules) {
+    //startSimThreadOriginal();
+    startMapleSimThread(modules);
+  }
+
+  private void startSimThreadOriginal() {
     m_lastSimTime = Utils.getCurrentTimeSeconds();
 
     /* Run simulation at a faster rate so PID gains behave more reasonably */
@@ -237,6 +252,34 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
               updateSimState(deltaTime, RobotController.getBatteryVoltage());
             });
     m_simNotifier.startPeriodic(kSimLoopPeriod);
+  }
+
+  private void startMapleSimThread(SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>... modules) {
+    m_mapleSimSwerveDrivetrain = new MapleSimSwerveDrivetrain(
+            Seconds.of(kSimLoopPeriod),
+            // TODO: modify the following constants according to your robot
+            Pounds.of(115), // robot weight
+            Inches.of(30), // bumper length
+            Inches.of(30), // bumper width
+            DCMotor.getKrakenX60(1), // drive motor type
+            DCMotor.getKrakenX60(1), // steer motor type
+            1.2, // wheel COF
+            getModuleLocations(),
+            getPigeon2(),
+            getModules(),
+            modules);
+    /* Run simulation at a faster rate so PID gains behave more reasonably */
+    m_simNotifier = new Notifier(m_mapleSimSwerveDrivetrain::update);
+    m_simNotifier.startPeriodic(kSimLoopPeriod);
+  }
+
+  @Override
+  public void resetPose(Pose2d pose) {
+      if (this.m_mapleSimSwerveDrivetrain != null) {
+        m_mapleSimSwerveDrivetrain.mapleSimDrive.setSimulationWorldPose(pose);
+        Timer.delay(0.05); // Wait for simulation to update
+      }
+      super.resetPose(pose);
   }
 
   public ChassisSpeeds returnSpeeds() {
