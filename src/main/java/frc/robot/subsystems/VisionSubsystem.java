@@ -51,7 +51,7 @@ public class VisionSubsystem extends SubsystemBase {
   private static final double CAMERA_PITCH_RIGHT = Units.degreesToRadians(-8.3);
   private static final double CAMERA_YAW_LEFT = Units.degreesToRadians(-44.64);
   private static final double CAMERA_YAW_RIGHT = Units.degreesToRadians(46.42);
-  // left camera pose full compile 
+  // left camera pose full compile
   public static final Transform3d ROBOT_TO_CAM_LEFT =
       new Transform3d(
           // Translation3d.kZero,
@@ -60,7 +60,7 @@ public class VisionSubsystem extends SubsystemBase {
           CAMERA_Z_POS_METERS_LEFT,
           // Rotation3d.kZero);
           new Rotation3d(CAMERA_ROLL_LEFT, CAMERA_PITCH_LEFT, CAMERA_YAW_LEFT));
-  // right camera pose full compile 
+  // right camera pose full compile
   public static final Transform3d ROBOT_TO_CAM_RIGHT =
       new Transform3d(
           // Translation3d.kZero,
@@ -76,7 +76,7 @@ public class VisionSubsystem extends SubsystemBase {
   private static final Vector<N3> DISTANCE_SC_STANDARD_DEVS =
       VecBuilder.fill(1, 1, Units.degreesToRadians(50));
 
-  // making the cameras, pose estimator, field2d, fieldObject2d, april tags helper objects    
+  // making the cameras, pose estimator, field2d, fieldObject2d, april tags helper objects
   private final PhotonCamera leftCamera;
   private final PhotonCamera rightCamera;
   private final PhotonPoseEstimator photonPoseEstimatorLeftCamera;
@@ -88,7 +88,8 @@ public class VisionSubsystem extends SubsystemBase {
   // These are always set with every pipeline result
   private PhotonPipelineResult latestResult = null;
 
-  // These are only set when there's a valid pose & last timestamps, last poses and distance creation
+  // These are only set when there's a valid pose & last timestamps, last poses and distance
+  // creation
   private double lastTimestampSeconds = 0;
   private double lastRawTimestampSeconds = 0;
   private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
@@ -115,6 +116,7 @@ public class VisionSubsystem extends SubsystemBase {
   // field jpg overlay (configured for 2025)
   private static final AprilTagFieldLayout fieldLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+
   // method creation for subsystem init in subsystems.java
   public VisionSubsystem(DrivebaseWrapper aprilTagsHelper) {
     // inits for field
@@ -125,7 +127,8 @@ public class VisionSubsystem extends SubsystemBase {
     // cameras init hardware wise
     leftCamera = new PhotonCamera(Hardware.LEFT_CAM);
     rightCamera = new PhotonCamera(Hardware.RIGHT_CAM);
-    // pose estimator inits for cameras with full field, multi-tag april tag detection and camera differences
+    // pose estimator inits for cameras with full field, multi-tag april tag detection and camera
+    // differences
     photonPoseEstimatorLeftCamera =
         new PhotonPoseEstimator(
             fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_LEFT);
@@ -169,6 +172,7 @@ public class VisionSubsystem extends SubsystemBase {
             .withWidget(BuiltInWidgets.kToggleButton)
             .getEntry();
   }
+
   // method called to update results that cameras detect
   public void update() {
     for (PhotonPipelineResult result : leftCamera.getAllUnreadResults()) {
@@ -178,6 +182,7 @@ public class VisionSubsystem extends SubsystemBase {
       process(result, photonPoseEstimatorRightCamera, rawFieldPose3dEntryRight);
     }
   }
+
   // processs current result with camera and pose estimator
   private void process(
       PhotonPipelineResult result,
@@ -197,7 +202,7 @@ public class VisionSubsystem extends SubsystemBase {
       var FieldPose3d = estimatedPose.get().estimatedPose;
       // sets full pose3d for logging
       rawFieldPose3dEntry.set(FieldPose3d);
-      //if you disabled vision then vision doesn't do anything anymore
+      // if you disabled vision then vision doesn't do anything anymore
       if (disableVision.getBoolean(false)) {
         return;
       }
@@ -225,9 +230,10 @@ public class VisionSubsystem extends SubsystemBase {
           FieldPose,
           // timestamp
           TimestampSeconds,
-          // start with STANDARD_DEVS, and for every meter of distance past 1 meter, add another DISTANCE_SC_STANDARD_DEVS to the standard devs
+          // start with STANDARD_DEVS, and for every meter of distance past 1 meter, add another
+          // DISTANCE_SC_STANDARD_DEVS to the standard devs
           DISTANCE_SC_STANDARD_DEVS.times(Math.max(0, Distance - 1)).plus(STANDARD_DEVS));
-      // sets current pose to vision pose    
+      // sets current pose to vision pose
       robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       // updates shuffleboard values
       if (RawTimestampSeconds > lastRawTimestampSeconds) {
@@ -250,10 +256,12 @@ public class VisionSubsystem extends SubsystemBase {
   public double getLastTimestampSeconds() {
     return lastTimestampSeconds;
   }
+
   // returns lastRawTimestampSeconds
   public double getLastRawTimestampSeconds() {
     return lastRawTimestampSeconds;
   }
+
   /**
    * Returns the last time we saw an AprilTag.
    *
@@ -263,7 +271,8 @@ public class VisionSubsystem extends SubsystemBase {
     return Timer.getFPGATimestamp() - lastTimestampSeconds;
   }
 
-  // gets Distance times by 1000 which is in milimeters then gets rid of all the decimals then divides to get it in meters with 4 decimal places to meters and then converts it to double
+  // gets Distance times by 1000 which is in milimeters then gets rid of all the decimals then
+  // divides to get it in meters with 4 decimal places to meters and then converts it to double
   public double getDistanceToTarget() {
     return (double) Math.round(Distance * 1000) / 1000;
   }
