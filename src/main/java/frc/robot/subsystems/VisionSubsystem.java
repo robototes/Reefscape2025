@@ -51,7 +51,7 @@ public class VisionSubsystem extends SubsystemBase {
   private static final double CAMERA_PITCH_RIGHT = Units.degreesToRadians(-8.3);
   private static final double CAMERA_YAW_LEFT = Units.degreesToRadians(-44.64);
   private static final double CAMERA_YAW_RIGHT = Units.degreesToRadians(46.42);
-  // left camera pose full compile
+  // left camera diffs
   public static final Transform3d ROBOT_TO_CAM_LEFT =
       new Transform3d(
           // Translation3d.kZero,
@@ -60,7 +60,7 @@ public class VisionSubsystem extends SubsystemBase {
           CAMERA_Z_POS_METERS_LEFT,
           // Rotation3d.kZero);
           new Rotation3d(CAMERA_ROLL_LEFT, CAMERA_PITCH_LEFT, CAMERA_YAW_LEFT));
-  // right camera pose full compile
+  // right camera diffs
   public static final Transform3d ROBOT_TO_CAM_RIGHT =
       new Transform3d(
           // Translation3d.kZero,
@@ -113,7 +113,7 @@ public class VisionSubsystem extends SubsystemBase {
       NetworkTableInstance.getDefault()
           .getStructTopic("vision/rawFieldPose3dRight", Pose3d.struct)
           .publish();
-  // field jpg overlay (configured for 2025)
+  // field map for bot to april tag (configured for 2025)
   private static final AprilTagFieldLayout fieldLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
