@@ -11,14 +11,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.simple.parser.ParseException;
-
+// Displays data about Pathplanner trajectories
 public class PathPlannerAutoData {
   private static List<PathPlannerTrajectory> pathsToTrajectories(
       List<PathPlannerPath> paths, Rotation2d startingRotation) throws IOException, ParseException {
     if (paths.isEmpty()) {
       return List.of();
     }
-    RobotConfig robotConfig = RobotConfig.fromGUISettings();
+    RobotConfig robotConfig = RobotConfig.fromGUISettings(); //Pathplanner settings
     ChassisSpeeds startingSpeeds = new ChassisSpeeds();
     List<PathPlannerTrajectory> trajectories = new ArrayList<>(paths.size());
     for (var path : paths) {
@@ -62,7 +62,7 @@ public class PathPlannerAutoData {
     autoDuration = totalTime;
   }
 
-  public List<PathPlannerTrajectory> getTrajectories() {
+  public List<PathPlannerTrajectory> getTrajectories() { // Returns the List of the trajectories
     return this.trajectories;
   }
 

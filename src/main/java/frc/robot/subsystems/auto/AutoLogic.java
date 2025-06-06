@@ -40,7 +40,7 @@ public class AutoLogic {
   public static final double REV_RPM = 2500;
   public static final double STAGE_ANGLE = 262;
 
-  public static enum StartPosition {
+  public static enum StartPosition { //Types of Start Positions
     FAR_LEFT_CAGE(
         "Far Left Cage", new Pose2d(7.187, 7.277, new Rotation2d(Units.degreesToRadians(-90)))),
     CENTER_LEFT_CAGE(
@@ -73,7 +73,7 @@ public class AutoLogic {
 
   private static AutoPath defaultPath = new AutoPath("do nothing", "do nothing");
 
-  private static List<AutoPath> noPiecePaths =
+  private static List<AutoPath> noPiecePaths = // 0 L4s
       List.of(
           new AutoPath("YSW0", "YSW0"),
           new AutoPath("YSM0", "YSM0"),
@@ -82,8 +82,8 @@ public class AutoLogic {
           new AutoPath("OSW0", "OSW0"),
           new AutoPath("PIDTESTING", "PID TESTING"));
 
-  private static List<AutoPath> onePiecePaths =
-      List.of(
+  private static List<AutoPath> onePiecePaths = // 1 L4s
+      List.of( 
           new AutoPath("YSW_J", "YSW_J"),
           new AutoPath("YSW_I", "YSW_I"),
           new AutoPath("YSM_I", "YSM_I"),
@@ -95,7 +95,7 @@ public class AutoLogic {
           new AutoPath("M alliance push to G", "M alliance push to G"),
           new AutoPath("M alliance push to H", "M alliance push to H"));
 
-  private static List<AutoPath> twoPiecePaths =
+  private static List<AutoPath> twoPiecePaths = // 2 L4s
       List.of(
           new AutoPath("YSWLSF_I-J", "YSWLSF_I-J"),
           new AutoPath("YSWLSF_J-K", "YSWLSF_J-K"),
@@ -117,7 +117,7 @@ public class AutoLogic {
           new AutoPath("MLSF_H-K_Cooking", "MLSF_H-K_Cooking"),
           new AutoPath("MLSF_H-G", "MLSF_H-G"));
 
-  private static List<AutoPath> threePiecePaths =
+  private static List<AutoPath> threePiecePaths = //3 L4s
       List.of(
           new AutoPath("YSWLSF_I-J-K", "YSWLSF_I-J-K"),
           new AutoPath("YSWLSF_J-K-L", "YSWLSF_J-K-L"),
@@ -130,7 +130,7 @@ public class AutoLogic {
           new AutoPath("YSMLSC_K-L-A", "YSMLSC_K-L-A"),
           new AutoPath("M_H-GHA-IJA", "M_H-GHA-IJA"));
 
-  private static List<AutoPath> fourPiecePaths =
+  private static List<AutoPath> fourPiecePaths = //4 L4s
       List.of(
           new AutoPath("YSWLSF_J-K-L-A", "YSWLSF_J-K-L-A"),
           new AutoPath("YSWLSF_I-J-K-L", "YSWLSF_I-J-K-L"));
@@ -182,16 +182,14 @@ public class AutoLogic {
 
   /** Registers commands in PathPlanner */
   public static void registerCommands() {
-    // param: String commandName, Command command
-
-    // Intake
-    NamedCommands.registerCommand("scoreCommand", scoreCommand());
-    NamedCommands.registerCommand("intake", intakeCommand());
-    NamedCommands.registerCommand("isCollected", isCollected());
-    NamedCommands.registerCommand("readyIntake", readyIntakeCommand());
-    NamedCommands.registerCommand("algaeAlign23", algaeCommand23());
-    NamedCommands.registerCommand("algaeAlign34", algaeCommand34());
-    NamedCommands.registerCommand("net", netCommand());
+  
+    NamedCommands.registerCommand("scoreCommand", scoreCommand());  //Command to score on L4
+    NamedCommands.registerCommand("intake", intakeCommand()); // Command for intaking coral
+    NamedCommands.registerCommand("isCollected", isCollected()); //Command for making sure the coral is in funnel
+    NamedCommands.registerCommand("readyIntake", readyIntakeCommand()); // Command to prepare the intake for coral
+    NamedCommands.registerCommand("algaeAlign23", algaeCommand23()); // Command for Algae bewteen L2 and L3
+    NamedCommands.registerCommand("algaeAlign34", algaeCommand34()); // Command for Algae bewteen L3 and L4
+    NamedCommands.registerCommand("net", netCommand()); // Command for Net scoring
   }
 
   // public Command getConditionalCommand(){}
@@ -284,7 +282,7 @@ public class AutoLogic {
     String autoName = path.getAutoName();
 
     return Commands.waitSeconds(waitTimer)
-        .andThen(AutoBuilder.buildAuto(autoName))
+        .andThen(AutoBuilder.buildAuto(autoName)) // Gets the auto ready in PathPlanner
         .withName(autoName);
   }
 

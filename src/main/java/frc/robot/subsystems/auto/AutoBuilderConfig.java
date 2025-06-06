@@ -11,7 +11,7 @@ import frc.robot.Subsystems;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import java.io.IOException;
 import org.json.simple.parser.ParseException;
-
+//Configuration values for PathPlanner
 public class AutoBuilderConfig {
   public static Robot r = Robot.getInstance();
   public static final Subsystems s = r.subsystems;

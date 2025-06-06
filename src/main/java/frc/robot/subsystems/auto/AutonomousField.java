@@ -20,8 +20,8 @@ public class AutonomousField {
   private static final double UPDATE_RATE = 0.05;
   private static final double lowerPlaybackSpeedLimit = 0.5;
   private static final double upperPlaybackSpeedLimit = 2.0;
-
-  public static void initShuffleBoard(
+//Displays auto pathing on a field
+  public static void initShuffleBoard( 
       String tabName, int columnIndex, int rowIndex, ObjDoubleConsumer<Runnable> addPeriodic) {
     ShuffleboardTab tab = Shuffleboard.getTab(tabName);
     GenericEntry speedMultiplier =
@@ -36,7 +36,7 @@ public class AutonomousField {
     var autonomousField =
         new AutonomousField(() -> speedMultiplier.getDouble(DEFAULT_PLAYBACK_SPEED));
 
-    addPeriodic.accept(() -> autonomousField.update(AutoLogic.getSelectedAutoName()), UPDATE_RATE);
+    addPeriodic.accept(() -> autonomousField.update(AutoLogic.getSelectedAutoName()), UPDATE_RATE); //Updates the field with the currently selected auto
     tab.add("Selected auto", autonomousField.getField())
         .withPosition(0, 0)
         // .withPosition(columnIndex, rowIndex)
@@ -102,7 +102,7 @@ public class AutonomousField {
    * @param autoName The selected auto name.
    * @return The pose along the auto trajectory
    */
-  public Pose2d getUpdatedPose(String autoName) {
+  public Pose2d getUpdatedPose(String autoName) {  //Updates the robots positions on the field
     double speed = speedMultiplier.getAsDouble();
     double fpgaTime = Timer.getFPGATimestamp();
     if (lastName.isEmpty() || !lastName.get().equals(autoName)) {
@@ -115,7 +115,7 @@ public class AutonomousField {
     }
     if (trajectories.isEmpty()) {
       if (autoData.getStartingPose() != null) {
-        return autoData.getStartingPose();
+        return autoData.getStartingPose();  // Default starting pose displayed
       }
       return Pose2d.kZero;
     }
