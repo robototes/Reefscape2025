@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -23,6 +24,7 @@ import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.json.simple.parser.ParseException;
@@ -39,19 +41,16 @@ public class AutoLogic {
   public static final double STAGE_ANGLE = 262;
 
   public static enum StartPosition {
-    ALLIANCE_SIDE_WALL(
-        "Alliance Side Wall",
-        new Pose2d(7.187, 7.277, new Rotation2d(Units.degreesToRadians(-90)))),
-    ALLIANCE_SIDE_MIDDLE(
-        "Alliance Side Middle",
-        new Pose2d(7.187, 6.171, new Rotation2d(Units.degreesToRadians(-90)))),
-    MIDDLE("MIDDLE", new Pose2d(7.187, 4.044, new Rotation2d(Units.degreesToRadians(180)))),
-    OPPOSITE_ALLIANCE_SIDE_MIDDLE(
-        "Opposite Alliance Side Middle",
-        new Pose2d(7.187, 1.908, new Rotation2d(Units.degreesToRadians(90)))),
-    OPPOSITE_ALLIANCE_SIDE_WALL(
-        "Opposite Alliance Side Wall",
-        new Pose2d(7.187, 0.811, new Rotation2d(Units.degreesToRadians(90)))),
+    FAR_LEFT_CAGE(
+        "Far Left Cage", new Pose2d(7.187, 7.277, new Rotation2d(Units.degreesToRadians(-90)))),
+    CENTER_LEFT_CAGE(
+        "Center Left Cage", new Pose2d(7.187, 6.171, new Rotation2d(Units.degreesToRadians(-90)))),
+    MIDDLE_MIDDLE(
+        "MIDDLE MIDDLE", new Pose2d(7.187, 4.044, new Rotation2d(Units.degreesToRadians(180)))),
+    CENTER_RIGHT_CAGE(
+        "Center Right Cage", new Pose2d(7.187, 1.908, new Rotation2d(Units.degreesToRadians(90)))),
+    FAR_RIGHT_CAGE(
+        "Far Right Cage", new Pose2d(7.187, 0.811, new Rotation2d(Units.degreesToRadians(90)))),
     MISC("Misc", null);
 
     final String title; // for shuffleboard display
@@ -72,7 +71,7 @@ public class AutoLogic {
 
   // paths lists
 
-  private static AutoPath defaultPath = new AutoPath("do nothing", "M0");
+  private static AutoPath defaultPath = new AutoPath("do nothing", "do nothing");
 
   private static List<AutoPath> noPiecePaths =
       List.of(
@@ -104,12 +103,19 @@ public class AutoLogic {
           new AutoPath("YSMLSF_I-J", "YSMLSF_I-J"),
           new AutoPath("YSMLSF_J-K", "YSMLSF_J-K"),
           new AutoPath("YSMLSF_K-L", "YSMLSF_K-L"),
-          new AutoPath("OSMLSF_F-E", "OSMRSF_F-E"),
-          new AutoPath("OSMLSF_E-D", "OSMRSF_E-D"),
-          new AutoPath("OSMLSF_D-C", "OSMRSF_D-C"),
-          new AutoPath("OSWLSF_F-E", "OSWRSF_F-E"),
-          new AutoPath("OSWLSF_E-D", "OSWRSF_E-D"),
-          new AutoPath("OSWLSF_D-C", "OSWRSF_D-C"));
+          new AutoPath("OSMRSF_F-E", "OSMRSF_F-E"),
+          new AutoPath("OSMRSF_E-D", "OSMRSF_E-D"),
+          new AutoPath("OSMRSF_D-C", "OSMRSF_D-C"),
+          new AutoPath("OSWRSF_F-E", "OSWRSF_F-E"),
+          new AutoPath("OSWRSF_E-D", "OSWRSF_E-D"),
+          new AutoPath("OSWRSF_D-C", "OSWRSF_D-C"),
+          new AutoPath("MLSF_H-I", "MLSF_H-I"),
+          new AutoPath("MLSF_H-I_WithWait", "MLSF_H-I_WithWait"),
+          new AutoPath("MRSF_G-F", "MRSF_G-F"),
+          new AutoPath("MRSF_G-F_WithWait", "MRSF_G-F_WithWait"),
+          new AutoPath("MRSF_G-H", "MRSF_G-H"),
+          new AutoPath("MLSF_H-K_Cooking", "MLSF_H-K_Cooking"),
+          new AutoPath("MLSF_H-G", "MLSF_H-G"));
 
   private static List<AutoPath> threePiecePaths =
       List.of(
@@ -120,7 +126,9 @@ public class AutoLogic {
           new AutoPath("YSMLSF_J-K-L", "YSMLSF_J-K-L"),
           new AutoPath("YSMLSF_K-L-A", "YSMLSF_K-L-A"),
           new AutoPath("YSWLSC_K-L-A", "YSWLSC_K-L-A"),
-          new AutoPath("YSMLSC_K-L-A", "YSMLSC_K-L-A"));
+          new AutoPath("OSWRSF_D-C-B", "OSWRSF_D-C-B"),
+          new AutoPath("YSMLSC_K-L-A", "YSMLSC_K-L-A"),
+          new AutoPath("M_H-GHA-IJA", "M_H-GHA-IJA"));
 
   private static List<AutoPath> fourPiecePaths =
       List.of(
@@ -141,6 +149,16 @@ public class AutoLogic {
           4,
           fourPiecePaths);
 
+  private static final Map<String, AutoPath> namesToAuto = new HashMap<>();
+
+  static {
+    for (List<AutoPath> autoPaths : commandsMap.values()) {
+      for (AutoPath autoPath : autoPaths) {
+        namesToAuto.put(autoPath.getDisplayName(), autoPath);
+      }
+    }
+  }
+
   // vars
 
   // in place of launching command cause launcher doesnt exist
@@ -155,8 +173,8 @@ public class AutoLogic {
 
   private static SendableChooser<StartPosition> startPositionChooser =
       new SendableChooser<StartPosition>();
-  private static DynamicSendableChooser<AutoPath> availableAutos =
-      new DynamicSendableChooser<AutoPath>();
+  private static DynamicSendableChooser<String> availableAutos =
+      new DynamicSendableChooser<String>();
   private static SendableChooser<Integer> gameObjects = new SendableChooser<Integer>();
   private static SendableChooser<Boolean> isVision = new SendableChooser<Boolean>();
 
@@ -168,9 +186,12 @@ public class AutoLogic {
 
     // Intake
     NamedCommands.registerCommand("scoreCommand", scoreCommand());
-    NamedCommands.registerCommand("branchAlign", autoBranchAlign());
     NamedCommands.registerCommand("intake", intakeCommand());
     NamedCommands.registerCommand("isCollected", isCollected());
+    NamedCommands.registerCommand("readyIntake", readyIntakeCommand());
+    NamedCommands.registerCommand("algaeAlign23", algaeCommand23());
+    NamedCommands.registerCommand("algaeAlign34", algaeCommand34());
+    NamedCommands.registerCommand("net", netCommand());
   }
 
   // public Command getConditionalCommand(){}
@@ -209,6 +230,12 @@ public class AutoLogic {
     tab.add("Launch Type", isVision).withPosition(4, 1);
     tab.add("Game Objects", gameObjects).withPosition(5, 1);
     tab.add("Available Auto Variants", availableAutos).withPosition(4, 2).withSize(2, 1);
+    tab.addBoolean("readyToScore?", () -> AutoAlign.readyToScore());
+    tab.addBoolean("Level?", () -> AutoAlign.isLevel());
+    tab.addBoolean("Close Enough?", () -> AutoAlign.isCloseEnough());
+    tab.addBoolean("Stationary?", () -> AutoAlign.isStationary());
+    tab.addBoolean("Low on time?", () -> AutoAlign.oneSecondLeft());
+    tab.addDouble("MATCH TIME(TIMER FOR AUTO)", () -> DriverStation.getMatchTime());
     autoDelayEntry = tab.add("Auto Delay", 0).withPosition(4, 3).withSize(1, 1).getEntry();
 
     isVision.onChange((dummyVar) -> AutoLogic.filterAutos(gameObjects.getSelected()));
@@ -225,7 +252,7 @@ public class AutoLogic {
     availableAutos.clearOptions();
 
     // filter based off gameobject count
-    availableAutos.setDefaultOption(defaultPath.getDisplayName(), defaultPath);
+    availableAutos.setDefaultOption(defaultPath.getDisplayName(), defaultPath.getDisplayName());
 
     List<AutoPath> autoCommandsList = commandsMap.get(numGameObjects);
 
@@ -233,7 +260,7 @@ public class AutoLogic {
     for (AutoPath auto : autoCommandsList) {
       if (auto.getStartPose().equals(startPositionChooser.getSelected())
           && auto.isVision() == isVision.getSelected()) {
-        availableAutos.addOption(auto.getDisplayName(), auto);
+        availableAutos.addOption(auto.getDisplayName(), auto.getDisplayName());
       }
     }
   }
@@ -241,10 +268,7 @@ public class AutoLogic {
   // get auto
 
   public static String getSelectedAutoName() {
-    if (availableAutos.getSelected() == null) {
-      return "nullAuto";
-    }
-    return availableAutos.getSelected().getAutoName();
+    return availableAutos.getSelectedName();
   }
 
   public static boolean chooserHasAutoSelected() {
@@ -252,9 +276,12 @@ public class AutoLogic {
   }
 
   public static Command getSelectedAuto() {
-
     double waitTimer = autoDelayEntry.getDouble(0);
-    String autoName = availableAutos.getSelected().getAutoName();
+    AutoPath path = namesToAuto.get(getSelectedAutoName());
+    if (path == null) {
+      path = defaultPath;
+    }
+    String autoName = path.getAutoName();
 
     return Commands.waitSeconds(waitTimer)
         .andThen(AutoBuilder.buildAuto(autoName))
@@ -264,36 +291,67 @@ public class AutoLogic {
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
-      return AutoAlign.autoAlign(s.drivebaseSubsystem)
+      return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
           .repeatedly()
           .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
           .withName("scoreCommand");
     }
-    return Commands.none().withName("scoreCommand");
+    return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
+        .withName("scoreCommand-noSuperstructure");
+  }
+
+  public static Command algaeCommand23() {
+    if (r.superStructure != null) {
+      return AlgaeAlign.algaeAlign(s.drivebaseSubsystem, controls)
+          .repeatedly()
+          .withDeadline(r.superStructure.algaeLevelTwoThreeIntake())
+          .withName("algaeCommand23");
+    }
+    return Commands.none().withName("algaeCommand23");
+  }
+
+  public static Command algaeCommand34() {
+    if (r.superStructure != null) {
+      return AlgaeAlign.algaeAlign(s.drivebaseSubsystem, controls)
+          .repeatedly()
+          .withDeadline(r.superStructure.algaeLevelThreeFourIntake())
+          .withName("algaeCommand34");
+    }
+    return Commands.none().withName("algaeCommand34");
+  }
+
+  public static Command netCommand() {
+    if (r.superStructure != null) {
+      return BargeAlign.bargeScore(
+              s.drivebaseSubsystem, r.superStructure, () -> 0, () -> 0, () -> 0, () -> false)
+          .withName("net");
+    }
+    return Commands.none().withName("net");
   }
 
   public static Command intakeCommand() {
-
     if (r.superStructure != null) {
-
       if (ARMSENSOR_ENABLED) {
-
-        return Commands.sequence(r.superStructure.coralPreIntake(), r.superStructure.coralIntake())
-            .withName("intake");
+        return r.superStructure.coralIntake().withName("intake");
       }
     }
     return Commands.none().withName("intake");
   }
 
-  public static Command autoBranchAlign() {
-    return AutoAlign.autoAlign(s.drivebaseSubsystem).withName("autoAlign");
-  }
-
   public static Command isCollected() {
     if (ARMSENSOR_ENABLED && r.sensors.armSensor != null) {
-
-      return Commands.waitUntil(r.sensors.armSensor.inTrough()).withName("isCollected");
+      return Commands.waitUntil(r.sensors.armSensor.inTrough())
+          .withTimeout(0.5)
+          .withName("isCollected");
     }
     return Commands.none().withName("isCollected");
+  }
+
+  public static Command readyIntakeCommand() {
+    if (r.superStructure != null) {
+
+      return r.superStructure.coralPreIntake().withName("readyIntake");
+    }
+    return Commands.none().withName("readyIntake");
   }
 }

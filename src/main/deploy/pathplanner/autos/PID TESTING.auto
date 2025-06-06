@@ -7,7 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "PID TESTING"
+            "pathName": "RSF to D"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCommand"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "readyIntake"
           }
         }
       ]

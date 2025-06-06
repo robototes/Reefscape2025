@@ -1,14 +1,21 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,10 +31,12 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.GroundArm;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoAlign;
+import frc.robot.subsystems.auto.BargeAlign;
 import frc.robot.util.AlgaeIntakeHeight;
 import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
 import frc.robot.util.ScoringMode;
+import java.util.function.BooleanSupplier;
 
 public class Controls {
   private static final int DRIVER_CONTROLLER_PORT = 0;
@@ -72,6 +81,8 @@ public class Controls {
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
+  private final BooleanSupplier driveSlowMode;
+
   public Controls(Subsystems s, Sensors sensors, SuperStructure superStructure) {
     driverController = new CommandXboxController(DRIVER_CONTROLLER_PORT);
     operatorController = new CommandXboxController(OPERATOR_CONTROLLER_PORT);
@@ -81,6 +92,7 @@ public class Controls {
     this.s = s;
     this.sensors = sensors;
     this.superStructure = superStructure;
+    driveSlowMode = driverController.start();
     configureDrivebaseBindings();
     configureSuperStructureBindings();
     configureElevatorBindings();
@@ -97,6 +109,30 @@ public class Controls {
     return new Trigger(() -> controller.isConnected());
   }
 
+  private double getDriveX() {
+    // Joystick +Y is back
+    // Robot +X is forward
+    double input = MathUtil.applyDeadband(-driverController.getLeftY(), 0.1);
+    double inputScale = driveSlowMode.getAsBoolean() ? 0.5 : 1;
+    return input * MaxSpeed * inputScale;
+  }
+
+  private double getDriveY() {
+    // Joystick +X is right
+    // Robot +Y is left
+    double input = MathUtil.applyDeadband(-driverController.getLeftX(), 0.1);
+    double inputScale = driveSlowMode.getAsBoolean() ? 0.5 : 1;
+    return input * MaxSpeed * inputScale;
+  }
+
+  private double getDriveRotate() {
+    // Joystick +X is right
+    // Robot +angle is CCW (left)
+    double input = MathUtil.applyDeadband(-driverController.getRightX(), 0.1);
+    double inputScale = driveSlowMode.getAsBoolean() ? 0.5 : 1;
+    return input * MaxSpeed * inputScale;
+  }
+
   private void configureDrivebaseBindings() {
     if (s.drivebaseSubsystem == null) {
       // Stop running this method
@@ -109,23 +145,11 @@ public class Controls {
         // s.drivebaseSubsystem will execute this command periodically
         s.drivebaseSubsystem
             .applyRequest(
-                () -> {
-                  double getLeftX = MathUtil.applyDeadband(driverController.getLeftX(), 0.1);
-                  double getLeftY = MathUtil.applyDeadband(driverController.getLeftY(), 0.1);
-                  double getRightX = MathUtil.applyDeadband(driverController.getRightX(), 0.1);
-                  double inputScale = driverController.start().getAsBoolean() ? 0.5 : 1;
-                  return drive
-                      .withVelocityX(
-                          -getLeftY
-                              * MaxSpeed
-                              * inputScale) // Drive forward with negative Y (forward)
-                      .withVelocityY(
-                          -getLeftX * MaxSpeed * inputScale) // Drive left with negative X (left)
-                      .withRotationalRate(
-                          -getRightX
-                              * MaxAngularRate
-                              * inputScale); // Drive counterclockwise with negative X (left)
-                })
+                () ->
+                    drive
+                        .withVelocityX(getDriveX())
+                        .withVelocityY(getDriveY())
+                        .withRotationalRate(getDriveRotate()))
             .withName("Drive"));
     // operatorController
     //     .povUp()
@@ -169,6 +193,7 @@ public class Controls {
                 .runOnce(() -> s.drivebaseSubsystem.seedFieldCentric())
                 .alongWith(rumble(driverController, 0.5, Seconds.of(0.3)))
                 .withName("Reset gyro"));
+
     s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
     var swerveCoastButton =
         Shuffleboard.getTab("Controls")
@@ -183,87 +208,53 @@ public class Controls {
     if (superStructure == null) {
       return;
     }
+    superStructure.setBranchHeightSupplier(() -> branchHeight);
     // operator start button used for climb - bound in climb bindings
     operatorController
         .y()
         .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      branchHeight = BranchHeight.CORAL_LEVEL_FOUR;
-                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
-                    })
-                .alongWith(heightSelectRumble())
+            selectScoringHeight(
+                    BranchHeight.CORAL_LEVEL_FOUR, AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
                 .withName("coral level 4, algae level 3-4"));
     operatorController
         .x()
         .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      branchHeight = BranchHeight.CORAL_LEVEL_THREE;
-                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;
-                    })
-                .alongWith(heightSelectRumble())
+            selectScoringHeight(
+                    BranchHeight.CORAL_LEVEL_THREE, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("coral level 3, algae level 2-3"));
     operatorController
         .b()
         .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      branchHeight = BranchHeight.CORAL_LEVEL_TWO;
-                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;
-                    })
-                .alongWith(heightSelectRumble())
+            selectScoringHeight(
+                    BranchHeight.CORAL_LEVEL_TWO, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("coral level 2, algae level 2-3"));
     operatorController
         .a()
         .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      branchHeight = BranchHeight.CORAL_LEVEL_ONE;
-                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;
-                    })
-                .alongWith(heightSelectRumble())
+            selectScoringHeight(BranchHeight.CORAL_LEVEL_ONE, AlgaeIntakeHeight.ALGAE_LEVEL_GROUND)
                 .withName("coral level 1, algae ground level"));
-
     driverController
         .povUp()
         .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      branchHeight = BranchHeight.CORAL_LEVEL_FOUR;
-                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
-                    })
-                .alongWith(heightSelectRumble())
+            selectScoringHeight(
+                    BranchHeight.CORAL_LEVEL_FOUR, AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
                 .withName("coral level 4, algae level 3-4"));
     driverController
         .povLeft()
         .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      branchHeight = BranchHeight.CORAL_LEVEL_THREE;
-                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;
-                    })
-                .alongWith(heightSelectRumble())
+            selectScoringHeight(
+                    BranchHeight.CORAL_LEVEL_THREE, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("coral level 3, algae level 2-3"));
     driverController
         .povRight()
         .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      branchHeight = BranchHeight.CORAL_LEVEL_TWO;
-                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE;
-                    })
-                .alongWith(heightSelectRumble())
+            selectScoringHeight(
+                    BranchHeight.CORAL_LEVEL_TWO, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("coral level 2, algae level 2-3"));
     driverController
         .povDown()
         .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      branchHeight = BranchHeight.CORAL_LEVEL_ONE;
-                      algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_GROUND;
-                    })
-                .alongWith(heightSelectRumble())
+            selectScoringHeight(BranchHeight.CORAL_LEVEL_ONE, AlgaeIntakeHeight.ALGAE_LEVEL_GROUND)
                 .withName("coral level 1, algae ground level"));
     driverController
         .leftTrigger()
@@ -286,14 +277,18 @@ public class Controls {
         .onTrue(
             Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE)
                 .alongWith(scoringModeSelectRumble())
-                .withName("Algae Scoring Mode"));
-    operatorController
+                .withName("Algae Scoring Mode"))
+        .onTrue(
+            Commands.runOnce(() -> CommandScheduler.getInstance().schedule(getAlgaeIntakeCommand()))
+                .withName("run algae intake"));
+    operatorController // should work???
         .leftTrigger()
         .onTrue(
             Commands.runOnce(() -> scoringMode = ScoringMode.CORAL)
                 .alongWith(scoringModeSelectRumble())
                 .withName("Coral Scoring Mode"))
-        .onTrue(superStructure.coralPreIntake());
+        .onTrue(superStructure.coralPreIntake())
+        .onTrue(s.climbPivotSubsystem.toStow());
     operatorController
         .povLeft()
         .onTrue(
@@ -326,15 +321,23 @@ public class Controls {
                             case CORAL -> superStructure
                                 .coralIntake()
                                 .alongWith(
-                                    s.elevatorLEDSubsystem
-                                        .tripleBlink(255, 92, 0, "Orange - Manual Coral Intake")
-                                        .asProxy())
+                                    s.elevatorLEDSubsystem != null
+                                        ? s.elevatorLEDSubsystem
+                                            .tripleBlink(255, 92, 0, "Orange - Manual Coral Intake")
+                                            .asProxy()
+                                        : Commands.none())
                                 .withName("Manual Coral Intake");
                             case ALGAE -> getAlgaeIntakeCommand();
                           };
                       CommandScheduler.getInstance().schedule(intakeCommand);
                     })
                 .withName("Driver Intake"));
+
+    driverController
+        .b()
+        .onTrue(
+            superStructure.quickGroundIntake(driverController.x()).withName("Quick Gound intake"));
+
     if (sensors.armSensor != null) {
       sensors
           .armSensor
@@ -345,9 +348,11 @@ public class Controls {
               superStructure
                   .coralIntake()
                   .alongWith(
-                      s.elevatorLEDSubsystem
-                          .tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
-                          .asProxy())
+                      s.elevatorLEDSubsystem != null
+                          ? s.elevatorLEDSubsystem
+                              .tripleBlink(255, 255, 0, "Yellow - Automatic Intake")
+                              .asProxy()
+                          : Commands.none())
                   .withName("Automatic Intake"));
     }
 
@@ -360,8 +365,13 @@ public class Controls {
                           switch (scoringMode) {
                             case CORAL -> getCoralBranchHeightCommand();
                             case ALGAE -> Commands.sequence(
-                                    superStructure.algaeNetScore(driverController.rightBumper()),
-                                    Commands.waitSeconds(0.7),
+                                    BargeAlign.bargeScore(
+                                        s.drivebaseSubsystem,
+                                        superStructure,
+                                        () -> getDriveX(),
+                                        () -> getDriveY(),
+                                        () -> getDriveRotate(),
+                                        driverController.rightBumper()),
                                     getAlgaeIntakeCommand())
                                 .withName("Algae score then intake");
                           };
@@ -470,7 +480,15 @@ public class Controls {
                     rumble(operatorController, 0.5, Seconds.of(0.3)))
                 .ignoringDisable(true)
                 .withName("Reset elevator zero"));
-    operatorController.rightBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
+    if (RobotBase.isSimulation()) {
+      s.elevatorSubsystem
+          .resetPosZero()
+          .ignoringDisable(true)
+          .withName("Sim - reset elevator zero")
+          .schedule();
+    }
+
+    // operatorController.rightBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
     var elevatorCoastButton =
         Shuffleboard.getTab("Controls")
             .add("Elevator Coast Mode", false)
@@ -478,6 +496,11 @@ public class Controls {
             .getEntry();
     new Trigger(() -> elevatorCoastButton.getBoolean(false))
         .whileTrue(s.elevatorSubsystem.holdCoastMode());
+    // var elevatorZeroButton = new DigitalInput(Hardware.ELEVATOR_ZERO_BUTTON);
+    // new Trigger(() -> elevatorZeroButton.get())
+    //     .debounce(1, DebounceType.kRising)
+    //     .and(RobotModeTriggers.disabled())
+    //     .onTrue(s.elevatorSubsystem.resetPosZero());
   }
 
   private void configureArmPivotBindings() {
@@ -517,12 +540,6 @@ public class Controls {
                 .moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
                 .withName("Arm Preset Down"));
     connected(armPivotSpinnyClawController)
-        .and(operatorController.povRight())
-        .onTrue(
-            s.armPivotSubsystem
-                .moveToPosition(ArmPivot.CORAL_PRESET_OUT)
-                .withName("Arm Preset Out"));
-    connected(armPivotSpinnyClawController)
         .and(armPivotSpinnyClawController.y())
         .onTrue(
             s.armPivotSubsystem
@@ -558,16 +575,8 @@ public class Controls {
     connected(climbTestController)
         .and(climbTestController.start())
         .onTrue(s.climbPivotSubsystem.advanceClimbTarget());
-    operatorController.start().onTrue(s.climbPivotSubsystem.advanceClimbTarget());
-    operatorController
-        .rightTrigger(0.1)
-        .whileTrue(
-            s.climbPivotSubsystem
-                .moveClimbManual(
-                    () ->
-                        -0.6
-                            * MathUtil.applyDeadband(operatorController.getRightTriggerAxis(), 0.1))
-                .withName("Climb Manual Control"));
+    operatorController.start().onTrue(s.climbPivotSubsystem.toClimbOut());
+    operatorController.rightTrigger().onTrue(s.climbPivotSubsystem.toClimbed());
     connected(climbTestController)
         .and(climbTestController.rightTrigger(0.1))
         .whileTrue(
@@ -599,7 +608,7 @@ public class Controls {
     if (s.spinnyClawSubsytem == null) {
       return;
     }
-    s.spinnyClawSubsytem.setScoringMode(() -> ScoringMode.CORAL);
+    s.spinnyClawSubsytem.setScoringMode(() -> scoringMode);
     // Claw controls bindings go here
     connected(armPivotSpinnyClawController)
         .and(armPivotSpinnyClawController.leftBumper())
@@ -642,41 +651,75 @@ public class Controls {
       Commands.waitSeconds(1)
           .andThen(
               s.elevatorLEDSubsystem
-                  .colorSet(255, 0, 0, "Red - Elevator Not Zeroed")
+                  .blink(120, 0, 0, "Red - Elevator Not Zeroed")
                   .ignoringDisable(true))
           .schedule();
       hasBeenZeroed.onTrue(
           s.elevatorLEDSubsystem
-              .colorSet(0, 255, 0, "Green - Elevator Zeroed")
-              .ignoringDisable(true));
-      hasBeenZeroed.onFalse(
-          s.elevatorLEDSubsystem
-              .colorSet(255, 0, 0, "Red - Elevator Not Zeroed")
-              .ignoringDisable(false));
+              .colorSet(0, 170, 0, "Green - Elevator Zeroed")
+              .withTimeout(2)
+              .andThen(s.elevatorLEDSubsystem.colorSet(0, 32, 0, "dimmed Green - Elevator Zeroed"))
+              .ignoringDisable(true)
+              .withName("Green - Elevator Zeroed"));
+      RobotModeTriggers.disabled()
+          .and(hasBeenZeroed.negate())
+          .onTrue(
+              s.elevatorLEDSubsystem
+                  .blink(120, 0, 0, "Red - Elevator Not Zeroed")
+                  .ignoringDisable(true));
     }
     RobotModeTriggers.autonomous()
         .whileTrue(s.elevatorLEDSubsystem.animate(LEDPattern.rainbow(255, 255), "Auto Rainbow"));
+    Timer teleopTimer = new Timer();
+    // when in teleop for less than 5 seconds after autononomous ends, restart the timer
+    RobotModeTriggers.autonomous()
+        .debounce(5, DebounceType.kFalling)
+        .and(RobotModeTriggers.teleop())
+        .onTrue(Commands.runOnce(() -> teleopTimer.restart()));
+    RobotModeTriggers.teleop()
+        .onFalse(Commands.runOnce(() -> teleopTimer.stop()).ignoringDisable(true));
+    Shuffleboard.getTab("Controls").addDouble("Teleop time", () -> teleopTimer.get());
+    new Trigger(() -> teleopTimer.hasElapsed(135 - 30))
+        .onTrue(
+            Commands.sequence(
+                s.elevatorLEDSubsystem
+                    .colorSet(255, 0, 0, "red half blink - 30 sec remaining")
+                    .withTimeout(0.5),
+                s.elevatorLEDSubsystem
+                    .colorSet(255, 255, 0, "Yellow half blink - 30 sec remaining")
+                    .withTimeout(0.5)));
+    new Trigger(() -> teleopTimer.hasElapsed(135 - 15))
+        .onTrue(
+            Commands.sequence(
+                s.elevatorLEDSubsystem
+                    .colorSet(255, 0, 0, "Red half blink - 15 sec remaining")
+                    .withTimeout(0.5),
+                s.elevatorLEDSubsystem
+                    .colorSet(255, 255, 0, "Yellow half blink - 15 sec remaining")
+                    .withTimeout(0.5)));
   }
 
   private void configureAutoAlignBindings() {
     if (s.drivebaseSubsystem == null) {
       return;
     }
+    if (s.visionSubsystem != null) {
+      new Trigger(() -> s.visionSubsystem.getTimeSinceLastReading() >= 5)
+          .and(RobotModeTriggers.teleop())
+          .whileTrue(rumble(operatorController, 0.1, Seconds.of(10)));
+    }
     driverController
-        .leftBumper()
-        .whileTrue(
-            AutoAlign.aim(
-                s.drivebaseSubsystem,
-                () -> -driverController.getLeftY() * MaxSpeed,
-                () -> -driverController.getLeftX() * MaxSpeed));
-    driverController.rightTrigger().whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem));
+        .rightTrigger()
+        .and(() -> scoringMode == ScoringMode.CORAL)
+        .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
+        .whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem, this));
   }
 
   private void configureGroundSpinnyBindings() {
     if (s.groundSpinny == null) {
       return;
     }
-    s.groundSpinny.setDefaultCommand(s.groundSpinny.holdIntakePower());
+    s.groundSpinny.setDefaultCommand(s.groundSpinny.holdFunnelIntakePower());
   }
 
   private void configureGroundArmBindings() {
@@ -688,6 +731,26 @@ public class Controls {
             .moveToPosition(GroundArm.STOWED_POSITION)
             .andThen(Commands.idle())
             .withName("Ground stowed position wait"));
+    operatorController
+        .rightBumper()
+        .whileTrue(
+            s.groundArm
+                .moveToPosition(GroundArm.GROUND_POSITION)
+                .andThen(Commands.idle())
+                .withName("ground up position"));
+  }
+
+  private Command selectScoringHeight(BranchHeight b, AlgaeIntakeHeight a) {
+    return Commands.runOnce(
+            () -> {
+              branchHeight = b;
+              algaeIntakeHeight = a;
+              if (scoringMode == ScoringMode.ALGAE
+                  && (sensors.armSensor == null || !sensors.armSensor.booleanInClaw())) {
+                CommandScheduler.getInstance().schedule(getAlgaeIntakeCommand());
+              }
+            })
+        .alongWith(heightSelectRumble());
   }
 
   private Command rumble(CommandXboxController controller, double vibration, Time duration) {

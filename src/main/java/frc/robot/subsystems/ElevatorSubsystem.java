@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Hardware;
 import java.util.function.DoubleConsumer;
@@ -35,7 +36,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double CORAL_LEVEL_THREE_POS = 14;
   public static final double CORAL_LEVEL_TWO_PRE_POS = 6.94;
   public static final double CORAL_LEVEL_TWO_POS = 4.4;
-  public static final double CORAL_LEVEL_ONE_POS = 8.3;
+  public static final double CORAL_LEVEL_ONE_POS = 4.2;
   public static final double ALGAE_LEVEL_TWO_THREE = 11;
   public static final double ALGAE_LEVEL_TWO_THREE_FLING = 16;
   public static final double ALGAE_LEVEL_THREE_FOUR = 21;
@@ -43,13 +44,17 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double ALGAE_STOWED = 2;
   public static final double ALGAE_PROCESSOR_SCORE = 2;
   public static final double ALGAE_NET_SCORE = 38; // untested
-  public static final double ALGAE_GROUND_INTAKE = 0.01;
-  public static final double CORAL_STOWED = 3.9;
+  public static final double ALGAE_GROUND_INTAKE = 0.05;
+  public static final double CORAL_STOWED = CORAL_LEVEL_TWO_PRE_POS;
+  public static final double CORAL_GROUND_INTAKE_POS = 7.2;
   public static final double CORAL_INTAKE_POS = 1.55;
-  public static final double CORAL_PRE_INTAKE = 3.9;
+  public static final double CORAL_PRE_INTAKE = 4.7;
+  public static final double CORAL_QUICK_INTAKE = 1.6;
+  public static final double MIN_EMPTY_GROUND_INTAKE = 4.5;
+  public static final double MIN_FULL_GROUND_INTAKE = 8.0;
   public static final double MANUAL = 0.1;
   private static final double POS_TOLERANCE = 0.1;
-  private final double ELEVATOR_KP = 13.804;
+  private final double ELEVATOR_KP = 7.804;
   private final double ELEVATOR_KI = 0;
   private final double ELEVATOR_KD = 0.079221;
   private final double ELEVATOR_KS = 0.33878;
@@ -126,6 +131,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     Shuffleboard.getTab("Elevator")
         .addBoolean(
             "M2 at reverse softstop", () -> m_motor2.getFault_ReverseSoftLimit().getValue());
+    Shuffleboard.getTab("Elevator")
+        .addDouble("Elevator Speed", () -> m_motor.getVelocity().getValueAsDouble());
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
@@ -170,14 +177,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     // create brake mode for motors
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    // motor 2 gets current limits and motor output mode, but not softlimits or PID
-    talonFXConfigurator2.apply(configuration);
 
-    // soft limits
-    configuration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    configuration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    configuration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = FORWARD_SOFT_LIMIT;
-    configuration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_SOFT_LIMIT;
+    // motor 2 gets current limits and motor output mode, but not PID
+    talonFXConfigurator2.apply(configuration);
 
     // set slot 0 gains
     configuration.Slot0.kS = ELEVATOR_KS;
@@ -211,10 +213,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     //   a = 12 (40 rot) / (0.75 s)^2
     //     = (7680 / 9) rot/s^2
     //     = 853.33 rot/s^2
-    // MotionMagic uses mechanism rotations per second*
+    // MotionMagic uses motor rotations per second*
     configuration.MotionMagic.MotionMagicCruiseVelocity = 80;
-    configuration.MotionMagic.MotionMagicAcceleration = 750;
-    configuration.MotionMagic.MotionMagicJerk = 1875;
+    configuration.MotionMagic.MotionMagicAcceleration = 400;
+    configuration.MotionMagic.MotionMagicJerk = 2500;
 
     talonFXConfigurator.apply(configuration);
   }
@@ -242,6 +244,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private void setCurrentPosition(double pos) {
     m_motor.setPosition(pos);
+  }
+
+  public Trigger above(double position) {
+    return new Trigger(() -> getCurrentPosition() >= position - POS_TOLERANCE);
   }
 
   public Command resetPosZero() {
