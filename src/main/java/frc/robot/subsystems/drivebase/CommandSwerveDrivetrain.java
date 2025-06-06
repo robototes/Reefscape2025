@@ -239,10 +239,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     m_simNotifier.startPeriodic(kSimLoopPeriod);
   }
 
+  // returns the speeds for logging purposes
   public ChassisSpeeds returnSpeeds() {
     return getState().Speeds;
   }
 
+  // method for on-demand coasting control
   public Command coastMotors() {
     return startEnd(
             () -> {
@@ -255,6 +257,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         .withName("Coast Swerve");
   }
 
+  // method for braking the motors after coasting
   public void brakeMotors() {
     configNeutralMode(NeutralModeValue.Brake);
   }
