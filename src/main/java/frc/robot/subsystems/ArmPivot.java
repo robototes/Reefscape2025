@@ -75,7 +75,7 @@ public class ArmPivot extends SubsystemBase {
   // TalonFX
   private final TalonFX motor;
 
-  // alerts
+  // alerts if motor is not connected.
   private final Alert NotConnectedError =
       new Alert("ArmPivot", "Motor not connected", AlertType.kError);
   private final Debouncer notConnectedDebouncer = new Debouncer(.1, DebounceType.kBoth);
