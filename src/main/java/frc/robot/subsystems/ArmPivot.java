@@ -51,7 +51,7 @@ public class ArmPivot extends SubsystemBase {
   public static final double CORAL_PRESET_DOWN = -0.25;
   // Preset positions for Arm with Algae
   public static final double CORAL_POST_SCORE = -0.15;
-  public static final double CORAL_QUICK_INTAKE = -0.07
+  public static final double CORAL_QUICK_INTAKE = -0.07;
   public static final double ALGAE_REMOVE_PREPOS = 0;
   public static final double ALGAE_REMOVE = 0;
   public static final double ALGAE_FLING = -0.08;
@@ -61,11 +61,7 @@ public class ArmPivot extends SubsystemBase {
   public static final double ALGAE_NET_SCORE = 0.175; // untested - old value was 0.18
 
   // Other Presets
-  public static final double CORAL_PRESET_STOWED = CORAL_PRESET_L2;
-  public static final double CORAL_PRESET_OUT = 0;
-  public static final double CORAL_PRESET_UP = 0.245; // Stop a little short of the hardstop
   public static final double CORAL_PRESET_GROUND_INTAKE = 0;
-  public static final double CORAL_PRESET_DOWN = -0.25;
   public static final double HARDSTOP_HIGH = 0.32;
   public static final double HARDSTOP_LOW = -0.26;
   public static final double POS_TOLERANCE = Units.degreesToRotations(5);
@@ -119,7 +115,7 @@ public class ArmPivot extends SubsystemBase {
   }
 
   /*  Sets the desired position to move the motor to
-      - one time command using motor control 
+      - one time command using motor control
   */
   private Command setTargetPosition(double pos) {
     return runOnce(
@@ -150,7 +146,7 @@ public class ArmPivot extends SubsystemBase {
     return curPos.getValueAsDouble();
   }
 
-  /*  moves arm to inputted position 
+  /*  moves arm to inputted position
         - sets the target position to the inputted position
         - shrinks the difference between the current position and the target position until they are close enough to work
   */
@@ -167,11 +163,11 @@ public class ArmPivot extends SubsystemBase {
     return runEnd(() -> motor.setVoltage(speedControl.get().in(Volts)), () -> motor.stopMotor());
   }
 
-  /* logging 
+  /* logging
    * - working on logging information to shufflboard
    * - "getTab" indicates what tab it would like to edit
    * - each command adds a new trackable value with a name found in quotations marks
-  */
+   */
   public void logTabs() {
     Shuffleboard.getTab("Arm Pivot")
         .addDouble("Pivot Speed", () -> motor.getVelocity().getValueAsDouble());
@@ -187,14 +183,15 @@ public class ArmPivot extends SubsystemBase {
   public void factoryDefaults() {
     TalonFXConfigurator cfg = motor.getConfigurator();
     var talonFXConfiguration = new TalonFXConfiguration();
-    // specifies what the sensor is, what port its on, and what the gearing ratio for the sensor is relative to the motor
+    // specifies what the sensor is, what port its on, and what the gearing ratio for the sensor is
+    // relative to the motor
     talonFXConfiguration.Feedback.FeedbackRemoteSensorID = Hardware.ARM_PIVOT_CANDI_ID;
     talonFXConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANdiPWM1;
     talonFXConfiguration.Feedback.RotorToSensorRatio = 1 / ARM_RATIO;
 
-    //Inverting motor output direction
+    // Inverting motor output direction
     talonFXConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    //Setting the motor to brake when not moving
+    // Setting the motor to brake when not moving
     talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     // enabling current limits
