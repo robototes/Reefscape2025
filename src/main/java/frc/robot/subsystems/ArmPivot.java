@@ -152,7 +152,7 @@ public class ArmPivot extends SubsystemBase {
     return runEnd(() -> motor.setVoltage(speedControl.get().in(Volts)), () -> motor.stopMotor());
   }
 
-  /* logging come back later 
+  /* logging 
    * - working on logging information to shufflboard
    * - "getTab" indicates what tab it would like to edit
    * - each command adds a new trackable value with a name found in quotations marks
@@ -217,3 +217,4 @@ public class ArmPivot extends SubsystemBase {
     NotConnectedError.set(notConnectedDebouncer.calculate(!motor.getMotorVoltage().hasUpdated()));
   }
 }
+//  -Samuel "Big North" Mallick
