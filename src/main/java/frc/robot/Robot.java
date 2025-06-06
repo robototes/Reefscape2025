@@ -125,6 +125,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledExit() {
+    // on the end of diabling, make sure all of the motors are set to break and wont move upon
+    // enabling
     if (subsystems.drivebaseSubsystem != null) {
       subsystems.drivebaseSubsystem.brakeMotors();
     }
