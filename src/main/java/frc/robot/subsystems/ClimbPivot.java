@@ -381,8 +381,7 @@ public class ClimbPivot extends SubsystemBase {
   }
 
   // checks if its in tolerance, then stops the movement. otherwise, if the target position is ahead
-  // of it
-  // move forward, if its behind it, move back
+  // of it move forward, if its behind it, move back
   public Command advanceClimbCheck() {
     return run(
         () -> {
