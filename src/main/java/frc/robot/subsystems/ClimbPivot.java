@@ -372,7 +372,7 @@ public class ClimbPivot extends SubsystemBase {
         .withName("Coast Climb");
   }
 
-  // brakes the motors the same was as the last method
+  // brakes the motors the same way as the previous method
   public void brakeMotors() {
     motorLeft.setNeutralMode(NeutralModeValue.Brake);
     if (DUAL_MOTORS) {

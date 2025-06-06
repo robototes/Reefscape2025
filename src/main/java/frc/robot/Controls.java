@@ -110,7 +110,7 @@ public class Controls {
     return new Trigger(() -> controller.isConnected());
   }
 
-  // sets the X value from the joystic, as well as some input scaling with a deadband
+  // takes the X value from the joystic, and applies a deadband and input scaling
   private double getDriveX() {
     // Joystick +Y is back
     // Robot +X is forward
@@ -119,7 +119,7 @@ public class Controls {
     return input * MaxSpeed * inputScale;
   }
 
-  // sets the Y value from the joystic, as well as some input scaling with a deadband
+  // takes the Y value from the joystic, and applies a deadband and input scaling
   private double getDriveY() {
     // Joystick +X is right
     // Robot +Y is left
@@ -128,7 +128,7 @@ public class Controls {
     return input * MaxSpeed * inputScale;
   }
 
-  // sets the rotation value from the joystic, as well as some input scaling with a deadband
+  // takes the rotation value from the joystic, and applies a deadband and input scaling
   private double getDriveRotate() {
     // Joystick +X is right
     // Robot +angle is CCW (left)
@@ -161,7 +161,7 @@ public class Controls {
                         .withRotationalRate(getDriveRotate()))
             .withName("Drive"));
 
-    // various vormer controls that were previously used and could be referenced in the future
+    // various former controls that were previously used and could be referenced in the future
 
     // operatorController
     //     .povUp()
