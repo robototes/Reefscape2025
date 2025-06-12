@@ -96,7 +96,7 @@ public class ClimbPivot extends SubsystemBase {
   public ClimbPivot() {
     motorLeft = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_LEFT_ID);
     // checking to instantiate the 2nd motor if two are installed. If only one is installed, the 2nd
-    // one is set to void.
+    // one is set to null.
     if (DUAL_MOTORS) {
       motorRight = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_RIGHT_ID);
     } else {
