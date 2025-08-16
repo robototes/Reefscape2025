@@ -648,6 +648,7 @@ public class Controls {
 
     if (s.elevatorSubsystem != null) {
       Trigger hasBeenZeroed = new Trigger(s.elevatorSubsystem::getHasBeenZeroed);
+      Trigger subZeroPosition = new Trigger(s.elevatorSubsystem::getPositionSubZero);
       Commands.waitSeconds(1)
           .andThen(
               s.elevatorLEDSubsystem
@@ -667,6 +668,13 @@ public class Controls {
               s.elevatorLEDSubsystem
                   .blink(120, 0, 0, "Red - Elevator Not Zeroed")
                   .ignoringDisable(true));
+      subZeroPosition.whileTrue(
+          Commands.waitSeconds(0.2)
+              .andThen(
+                  s.elevatorLEDSubsystem
+                      .blink(120, 0, 0, "Red - Elevator Position Error")
+                      .ignoringDisable(true)
+                      .withName("Red - Elevator Position Error")));
     }
     RobotModeTriggers.autonomous()
         .whileTrue(s.elevatorLEDSubsystem.animate(LEDPattern.rainbow(255, 255), "Auto Rainbow"));
