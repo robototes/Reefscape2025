@@ -1,13 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.Optional;
-
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.PhotonUtils;
-import org.photonvision.targeting.PhotonPipelineResult;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
@@ -33,6 +25,12 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
+import java.util.Optional;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 /*
  * All poses and transforms use the NWU (North-West-Up) coordinate system, where +X is
@@ -130,7 +128,8 @@ public class VisionSubsystem extends SubsystemBase {
     // cameras init hardware wise
     leftCamera = new PhotonCamera(Hardware.LEFT_CAM);
     rightCamera = new PhotonCamera(Hardware.RIGHT_CAM);
-    // pose estimator inits for cameras with full field, multi-tag april tag detection and camera differences from center robot
+    // pose estimator inits for cameras with full field, multi-tag april tag detection and camera
+    // differences from center robot
     // pose estimator is used to estimate the robot's position on the field based on the cameras
     photonPoseEstimatorLeftCamera =
         new PhotonPoseEstimator(
