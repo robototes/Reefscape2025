@@ -1,5 +1,13 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonPipelineResult;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
@@ -25,12 +33,6 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
-import java.util.Optional;
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.PhotonUtils;
-import org.photonvision.targeting.PhotonPipelineResult;
 
 /*
  * All poses and transforms use the NWU (North-West-Up) coordinate system, where +X is
@@ -51,7 +53,7 @@ public class VisionSubsystem extends SubsystemBase {
   private static final double CAMERA_PITCH_RIGHT = Units.degreesToRadians(-8.3);
   private static final double CAMERA_YAW_LEFT = Units.degreesToRadians(-44.64);
   private static final double CAMERA_YAW_RIGHT = Units.degreesToRadians(46.42);
-  // left camera diffs
+  // left camera diffrences from center robot
   public static final Transform3d ROBOT_TO_CAM_LEFT =
       new Transform3d(
           // Translation3d.kZero,
@@ -60,7 +62,7 @@ public class VisionSubsystem extends SubsystemBase {
           CAMERA_Z_POS_METERS_LEFT,
           // Rotation3d.kZero);
           new Rotation3d(CAMERA_ROLL_LEFT, CAMERA_PITCH_LEFT, CAMERA_YAW_LEFT));
-  // right camera diffs
+  // right camera diffrences from center robot
   public static final Transform3d ROBOT_TO_CAM_RIGHT =
       new Transform3d(
           // Translation3d.kZero,
