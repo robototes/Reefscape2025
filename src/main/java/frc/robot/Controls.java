@@ -669,7 +669,7 @@ public class Controls {
                   .blink(120, 0, 0, "Red - Elevator Not Zeroed")
                   .ignoringDisable(true));
       subZeroPosition.whileTrue(
-          Commands.waitSeconds(0.2)
+          Commands.waitSeconds(0.5)
               .andThen(
                   s.elevatorLEDSubsystem
                       .blink(120, 0, 0, "Red - Elevator Position Error")

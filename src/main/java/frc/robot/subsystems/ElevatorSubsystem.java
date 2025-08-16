@@ -234,7 +234,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean getPositionSubZero() {
-    if (curPos < -0.1) {
+    if (curPos < -0.1 && hasBeenZeroed) {
       return true;
     }
     return false;
