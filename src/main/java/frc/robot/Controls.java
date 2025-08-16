@@ -137,7 +137,7 @@ public class Controls {
     return input * MaxSpeed * inputScale;
   }
 
-  // all the controls binding for worlds
+  // all the current control bidings
   private void configureDrivebaseBindings() {
     if (s.drivebaseSubsystem == null) {
       // Stop running this method
@@ -597,7 +597,7 @@ public class Controls {
     // on start or right trigger, move to climb out or climbed respectively on operator
     operatorController.start().onTrue(s.climbPivotSubsystem.toClimbOut());
     operatorController.rightTrigger().onTrue(s.climbPivotSubsystem.toClimbed());
-    // manual control for climb test controller for - direction
+    // manual control for climb test controller for negative direction
     connected(climbTestController)
         .and(climbTestController.rightTrigger(0.1))
         .whileTrue(
@@ -608,7 +608,7 @@ public class Controls {
                             * MathUtil.applyDeadband(
                                 climbTestController.getRightTriggerAxis(), 0.1))
                 .withName("Climb Manual Control"));
-    // manual control for climb test controller for + direction
+    // manual control for climb test controller for positive direction
     connected(climbTestController)
         .and(climbTestController.leftTrigger(0.1))
         .whileTrue(
