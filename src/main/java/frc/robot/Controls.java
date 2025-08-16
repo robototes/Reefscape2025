@@ -60,6 +60,7 @@ public class Controls {
   private AlgaeIntakeHeight algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
 
   // Swerve stuff
+  // setting the max speed nad other similar variables depending on which drivebase it is
   public static final double MaxSpeed =
       RobotType.getCurrent() == RobotType.BONK
           ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
@@ -109,6 +110,7 @@ public class Controls {
     return new Trigger(() -> controller.isConnected());
   }
 
+  // takes the X value from the joystic, and applies a deadband and input scaling
   private double getDriveX() {
     // Joystick +Y is back
     // Robot +X is forward
@@ -117,6 +119,7 @@ public class Controls {
     return input * MaxSpeed * inputScale;
   }
 
+  // takes the Y value from the joystic, and applies a deadband and input scaling
   private double getDriveY() {
     // Joystick +X is right
     // Robot +Y is left
@@ -125,6 +128,7 @@ public class Controls {
     return input * MaxSpeed * inputScale;
   }
 
+  // takes the rotation value from the joystic, and applies a deadband and input scaling
   private double getDriveRotate() {
     // Joystick +X is right
     // Robot +angle is CCW (left)
@@ -133,6 +137,7 @@ public class Controls {
     return input * MaxSpeed * inputScale;
   }
 
+  // all the current control bidings
   private void configureDrivebaseBindings() {
     if (s.drivebaseSubsystem == null) {
       // Stop running this method
@@ -141,8 +146,12 @@ public class Controls {
 
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
+
+    // the driving command for just driving around
     s.drivebaseSubsystem.setDefaultCommand(
         // s.drivebaseSubsystem will execute this command periodically
+
+        // applying the request to drive with the inputs
         s.drivebaseSubsystem
             .applyRequest(
                 () ->
@@ -151,6 +160,9 @@ public class Controls {
                         .withVelocityY(getDriveY())
                         .withRotationalRate(getDriveRotate()))
             .withName("Drive"));
+
+    // various former controls that were previously used and could be referenced in the future
+
     // operatorController
     //     .povUp()
     //     .whileTrue(
@@ -194,12 +206,16 @@ public class Controls {
                 .alongWith(rumble(driverController, 0.5, Seconds.of(0.3)))
                 .withName("Reset gyro"));
 
+    // logging the telemetry
     s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
+
+    // creats a swerve button that coasts the wheels
     var swerveCoastButton =
         Shuffleboard.getTab("Controls")
             .add("Swerve Coast Mode", false)
             .withWidget(BuiltInWidgets.kToggleButton)
             .getEntry();
+    // coast the wheels
     new Trigger(() -> swerveCoastButton.getBoolean(false))
         .whileTrue(s.drivebaseSubsystem.coastMotors());
   }
@@ -569,14 +585,19 @@ public class Controls {
       s.climbPivotSubsystem.isClimbing().whileTrue(setClimbLEDs);
     }
 
+    // regularly run the advanced climb check
     s.climbPivotSubsystem.setDefaultCommand(
         s.climbPivotSubsystem.advanceClimbCheck().withName("Advance Climb Check"));
 
+    // check if the climb controller is connected, and whne start is pressed move to the next climb
+    // position
     connected(climbTestController)
         .and(climbTestController.start())
         .onTrue(s.climbPivotSubsystem.advanceClimbTarget());
+    // on start or right trigger, move to climb out or climbed respectively on operator
     operatorController.start().onTrue(s.climbPivotSubsystem.toClimbOut());
     operatorController.rightTrigger().onTrue(s.climbPivotSubsystem.toClimbed());
+    // manual control for climb test controller for negative direction
     connected(climbTestController)
         .and(climbTestController.rightTrigger(0.1))
         .whileTrue(
@@ -587,6 +608,7 @@ public class Controls {
                             * MathUtil.applyDeadband(
                                 climbTestController.getRightTriggerAxis(), 0.1))
                 .withName("Climb Manual Control"));
+    // manual control for climb test controller for positive direction
     connected(climbTestController)
         .and(climbTestController.leftTrigger(0.1))
         .whileTrue(
@@ -595,11 +617,14 @@ public class Controls {
                     () ->
                         0.6 * MathUtil.applyDeadband(climbTestController.getLeftTriggerAxis(), 0.1))
                 .withName("Climb Manual Control"));
+
+    // climb coast button
     var climbCoastButton =
         Shuffleboard.getTab("Controls")
             .add("Climb Coast Mode", false)
             .withWidget(BuiltInWidgets.kToggleButton)
             .getEntry();
+    // utilizes the climb coast button and coasts the climb
     new Trigger(() -> climbCoastButton.getBoolean(false))
         .whileTrue(s.climbPivotSubsystem.coastMotors());
   }
