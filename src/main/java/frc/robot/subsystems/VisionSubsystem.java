@@ -97,7 +97,8 @@ public class VisionSubsystem extends SubsystemBase {
   private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
   private double Distance = 0;
 
-  // fancy boolean button
+  // boolean to disable vision
+  // if you press the button on shuffleboard it disables vision
   private final GenericSubscriber disableVision;
 
   // full field pose for logging
@@ -129,43 +130,43 @@ public class VisionSubsystem extends SubsystemBase {
     // cameras init hardware wise
     leftCamera = new PhotonCamera(Hardware.LEFT_CAM);
     rightCamera = new PhotonCamera(Hardware.RIGHT_CAM);
-    // pose estimator inits for cameras with full field, multi-tag april tag detection and camera
-    // differences
+    // pose estimator inits for cameras with full field, multi-tag april tag detection and camera differences from center robot
+    // pose estimator is used to estimate the robot's position on the field based on the cameras
     photonPoseEstimatorLeftCamera =
         new PhotonPoseEstimator(
             fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_LEFT);
     photonPoseEstimatorRightCamera =
         new PhotonPoseEstimator(
             fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, ROBOT_TO_CAM_RIGHT);
-    // shuffle board tab creation
+    // vision shuffle board tab creation
     ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("AprilTags");
 
-    // last raw timestamp
+    // last raw timestamp shuffleboard entry
     shuffleboardTab
         .addDouble("Last raw timestamp", this::getLastRawTimestampSeconds)
         .withPosition(0, 0)
         .withSize(1, 1);
-    // number of april tags detected
+    // number of april tags detected shuffleboard entry
     shuffleboardTab
         .addInteger("Num targets", this::getNumTargets)
         .withPosition(0, 1)
         .withSize(1, 1);
-    // last timestamp read
+    // last timestamp read shuffleboard entry
     shuffleboardTab
         .addDouble("Last timestamp", this::getLastTimestampSeconds)
         .withPosition(1, 0)
         .withSize(1, 1);
-    // closest tag distance in meters
+    // closest tag distance in meters shuffleboard entry
     shuffleboardTab
         .addDouble("april tag distance meters", this::getDistanceToTarget)
         .withPosition(1, 1)
         .withSize(1, 1);
-    // time since last reading a tag
+    // time since last reading a tag shuffleboard entry
     shuffleboardTab
         .addDouble("time since last reading", this::getTimeSinceLastReading)
         .withPosition(2, 0)
         .withSize(1, 1);
-    // disable vision button if press button you disable vision
+    // disable vision button if press button you disable vision in shuffleboard
     disableVision =
         shuffleboardTab
             .add("Disable vision", false)
@@ -185,7 +186,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
   }
 
-  // processs current result with camera and pose estimator
+  // processs current result with cameras and camera pose estimator and where swerve believes it is
   private void process(
       PhotonPipelineResult result,
       PhotonPoseEstimator estimator,
@@ -235,7 +236,7 @@ public class VisionSubsystem extends SubsystemBase {
           // start with STANDARD_DEVS, and for every meter of distance past 1 meter, add another
           // DISTANCE_SC_STANDARD_DEVS to the standard devs
           DISTANCE_SC_STANDARD_DEVS.times(Math.max(0, Distance - 1)).plus(STANDARD_DEVS));
-      // sets current pose to vision pose
+      // sets estimated current pose to estimated vision pose
       robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       // updates shuffleboard values
       if (RawTimestampSeconds > lastRawTimestampSeconds) {
