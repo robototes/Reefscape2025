@@ -2,14 +2,12 @@ package frc.robot.subsystems.auto;
 
 import static frc.robot.Sensors.SensorConstants.ARMSENSOR_ENABLED;
 import static frc.robot.Sensors.SensorConstants.INTAKE_SENSOR_ENABLED;
-
 import static frc.robot.Subsystems.SubsystemConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -26,15 +24,11 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.json.simple.parser.ParseException;
-
-import frc.robot.sensors.IntakeSensor;
 
 public class AutoLogic {
   public static Robot r = Robot.getInstance();
@@ -339,7 +333,8 @@ public class AutoLogic {
   public static Command intakeCommand() {
     if (r.superStructure != null) {
       if (ARMSENSOR_ENABLED && INTAKE_SENSOR_ENABLED) {
-        return Commands.waitUntil(r.sensors.intakeSensor.inIntake()).withTimeout(1)
+        return Commands.waitUntil(r.sensors.intakeSensor.inIntake())
+            .withTimeout(1)
             .andThen(r.superStructure.coralIntake())
             .withName("intake");
       }
