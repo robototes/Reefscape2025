@@ -339,7 +339,7 @@ public class AutoLogic {
   public static Command intakeCommand() {
     if (r.superStructure != null) {
       if (ARMSENSOR_ENABLED && INTAKE_SENSOR_ENABLED) {
-        return Commands.waitUntil(r.sensors.intakeSensor.inIntake())
+        return Commands.waitUntil(r.sensors.intakeSensor.inIntake()).withTimeout(1)
             .andThen(r.superStructure.coralIntake())
             .withName("intake");
       }
