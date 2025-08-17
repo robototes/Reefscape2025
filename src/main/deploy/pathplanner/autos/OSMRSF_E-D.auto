@@ -36,12 +36,6 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "E to RSF"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "isCollected"
