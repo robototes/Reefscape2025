@@ -291,11 +291,15 @@ public class AutoLogic {
 
   // commands util
   public static Command scoreCommand() {
-    if (r.superStructure != null) {
-      return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
+    if (r.superStructure != null && ARMSENSOR_ENABLED) {
+        if (r.sensors.armSensor.inClaw().getAsBoolean()) {
+          return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
           .repeatedly()
           .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
           .withName("scoreCommand");
+        } else {
+          return Commands.none().withName("scoreCommand-empty");
+      }
     }
     return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
         .withName("scoreCommand-noSuperstructure");
@@ -334,7 +338,7 @@ public class AutoLogic {
     if (r.superStructure != null) {
       if (ARMSENSOR_ENABLED && INTAKE_SENSOR_ENABLED) {
         return Commands.waitUntil(r.sensors.intakeSensor.inIntake())
-            .withTimeout(1)
+            .withTimeout(0.5)
             .andThen(r.superStructure.coralIntake())
             .withName("intake");
       }
