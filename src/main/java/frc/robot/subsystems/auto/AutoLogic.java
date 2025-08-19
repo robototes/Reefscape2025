@@ -292,13 +292,13 @@ public class AutoLogic {
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null && ARMSENSOR_ENABLED) {
-        if (r.sensors.armSensor.inClaw().getAsBoolean()) {
-          return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
-          .repeatedly()
-          .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
-          .withName("scoreCommand");
-        } else {
-          return Commands.none().withName("scoreCommand-empty");
+      if (r.sensors.armSensor.inClaw().getAsBoolean()) {
+        return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
+            .repeatedly()
+            .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
+            .withName("scoreCommand");
+      } else {
+        return Commands.none().withName("scoreCommand-empty");
       }
     }
     return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
