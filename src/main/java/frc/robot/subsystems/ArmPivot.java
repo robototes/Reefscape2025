@@ -109,7 +109,7 @@ public class ArmPivot extends SubsystemBase {
     return routine.quasistatic(direction);
   }
 
-  // SysID dynamic test, tests mechanism at a exponentially growing speed
+  // SysID dynamic test, tests mechanism at a linear growing speed
   public Command SysIDDynamic(Direction direction) {
     return routine.dynamic(direction);
   }
@@ -179,7 +179,7 @@ public class ArmPivot extends SubsystemBase {
         .addDouble("Pivot Motor rotor Pos", () -> motor.getRotorPosition().getValueAsDouble());
   }
 
-  // TalonFX config come back later
+  // TalonFX config
   public void factoryDefaults() {
     TalonFXConfigurator cfg = motor.getConfigurator();
     var talonFXConfiguration = new TalonFXConfiguration();
