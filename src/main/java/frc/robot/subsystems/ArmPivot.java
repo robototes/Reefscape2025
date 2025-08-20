@@ -146,7 +146,7 @@ public class ArmPivot extends SubsystemBase {
     return curPos.getValueAsDouble();
   }
 
-  /*  moves arm to inputted position
+  /*  moves arm to the input position
         - sets the target position to the inputted position
         - shrinks the difference between the current position and the target position until they are close enough to work
   */
@@ -158,7 +158,7 @@ public class ArmPivot extends SubsystemBase {
     return new Trigger(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE);
   }
 
-  // (+) is to move arm up, and (-) is down. sets a voltage to pass to motor to move.
+  // (+) is to move arm up, and (-) is down. sets a voltage to pass to motor to move
   public Command startMovingVoltage(Supplier<Voltage> speedControl) {
     return runEnd(() -> motor.setVoltage(speedControl.get().in(Volts)), () -> motor.stopMotor());
   }
@@ -230,3 +230,4 @@ public class ArmPivot extends SubsystemBase {
   }
 }
 //  -Samuel "Big North" Mallick
+//  -Cleaned up and completed by Connor :)
