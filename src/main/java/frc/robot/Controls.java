@@ -30,7 +30,8 @@ import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.GroundArm;
 import frc.robot.subsystems.SuperStructure;
-import frc.robot.subsystems.auto.AutoAlign;
+import frc.robot.subsystems.auto.AutoAlignLeft;
+import frc.robot.subsystems.auto.AutoAlignRight;
 import frc.robot.subsystems.auto.BargeAlign;
 import frc.robot.util.AlgaeIntakeHeight;
 import frc.robot.util.BranchHeight;
@@ -371,7 +372,7 @@ public class Controls {
                           : Commands.none())
                   .withName("Automatic Intake"));
     }
-
+    // what is this
     driverController
         .rightTrigger()
         .onTrue(
@@ -737,7 +738,12 @@ public class Controls {
         .rightTrigger()
         .and(() -> scoringMode == ScoringMode.CORAL)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlignRight.autoAlign(s.drivebaseSubsystem, this));
+    driverController
+        .leftTrigger()
+        .and(() -> scoringMode == ScoringMode.CORAL)
+        .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
+        .whileTrue(AutoAlignLeft.autoAlign(s.drivebaseSubsystem, this));
   }
 
   private void configureGroundSpinnyBindings() {
