@@ -373,7 +373,6 @@ public class Controls {
                           : Commands.none())
                   .withName("Automatic Intake"));
     }
-    // what is this
     driverController
         .rightTrigger()
         .onTrue(
