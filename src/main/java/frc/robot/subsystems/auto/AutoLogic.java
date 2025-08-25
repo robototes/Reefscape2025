@@ -292,12 +292,12 @@ public class AutoLogic {
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
-     if(ARMSENSOR_ENABLED && r.sensors.armSensor.booleanInClaw()) {
+      if (ARMSENSOR_ENABLED && r.sensors.armSensor.booleanInClaw()) {
         return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
             .repeatedly()
             .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
             .withName("scoreCommand");
-      }else{
+      } else {
         return Commands.none().withName("scoreCommand-empty");
       }
     }
