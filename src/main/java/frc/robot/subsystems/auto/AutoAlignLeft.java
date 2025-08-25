@@ -1,8 +1,11 @@
 package frc.robot.subsystems.auto;
 
+import java.util.List;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
@@ -16,7 +19,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Controls;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
-import java.util.List;
 
 public class AutoAlignLeft {
   public static Command autoAlign(CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
@@ -34,29 +36,6 @@ public class AutoAlignLeft {
     return isBlue;
   }
 
-  public static boolean readyToScore() {
-    return isStationary() && isLevel() && isCloseEnough();
-  }
-
-  public static boolean isStationary() {
-    var speeds = AutoLogic.s.drivebaseSubsystem.getState().Speeds;
-    return MathUtil.isNear(0, speeds.vxMetersPerSecond, 0.01)
-        && MathUtil.isNear(0, speeds.vyMetersPerSecond, 0.01)
-        && MathUtil.isNear(0, speeds.omegaRadiansPerSecond, Units.degreesToRadians(2));
-  }
-
-  public static boolean isLevel() {
-    var rotation = AutoLogic.s.drivebaseSubsystem.getRotation3d();
-    return MathUtil.isNear(0, rotation.getX(), Units.degreesToRadians(2))
-        && MathUtil.isNear(0, rotation.getY(), Units.degreesToRadians(2));
-  }
-
-  public static boolean isCloseEnough() {
-    var currentPose = AutoLogic.s.drivebaseSubsystem.getState().Pose;
-    var branchPose = AutoAlignLeftCommand.getNearestBranch(currentPose, isBlue());
-    return currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
-  }
-
   // does this even get used? im scared to delete it
   public static boolean
       oneSecondLeft() { // THIS WILL ONLY WORK ON THE REAL FIELD AND IN PRACTICE MODE!
@@ -68,46 +47,45 @@ public class AutoAlignLeft {
     private static final AprilTagFieldLayout aprilTagFieldLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
-    // left and right offsets from the april tags ()
-    // why was this named backwards 😭😭
-    private static final Transform2d rightReef =
+    // left offset from the april tags ()
+    private static final Transform2d leftOfTag =
         new Transform2d(
             Units.inchesToMeters(36.5 / 2), Units.inchesToMeters(-12.97 / 2), Rotation2d.k180deg);
 
     private static final Pose2d blueBranchA =
-        aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(leftOfTag);
     private static final Pose2d blueBranchC =
-        aprilTagFieldLayout.getTagPose(17).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(17).get().toPose2d().plus(leftOfTag);
     private static final Pose2d blueBranchE =
-        aprilTagFieldLayout.getTagPose(22).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(22).get().toPose2d().plus(leftOfTag);
     private static final Pose2d blueBranchG =
-        aprilTagFieldLayout.getTagPose(21).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(21).get().toPose2d().plus(leftOfTag);
     private static final Pose2d blueBranchI =
-        aprilTagFieldLayout.getTagPose(20).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(20).get().toPose2d().plus(leftOfTag);
     private static final Pose2d blueBranchK =
-        aprilTagFieldLayout.getTagPose(19).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(19).get().toPose2d().plus(leftOfTag);
 
     private static final Pose2d redBranchA =
-        aprilTagFieldLayout.getTagPose(7).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(7).get().toPose2d().plus(leftOfTag);
     private static final Pose2d redBranchC =
-        aprilTagFieldLayout.getTagPose(8).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(8).get().toPose2d().plus(leftOfTag);
     private static final Pose2d redBranchE =
-        aprilTagFieldLayout.getTagPose(9).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(9).get().toPose2d().plus(leftOfTag);
     private static final Pose2d redBranchG =
-        aprilTagFieldLayout.getTagPose(10).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(10).get().toPose2d().plus(leftOfTag);
     private static final Pose2d redBranchI =
-        aprilTagFieldLayout.getTagPose(11).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(11).get().toPose2d().plus(leftOfTag);
     private static final Pose2d redBranchK =
-        aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(leftOfTag);
 
-    private static final List<Pose2d> blueBranchPoses =
+    private static final List<Pose2d> blueLeftBranchPoses =
         List.of(blueBranchA, blueBranchC, blueBranchE, blueBranchG, blueBranchI, blueBranchK);
     ;
-    private static final List<Pose2d> redBranchPoses =
+    private static final List<Pose2d> redLeftBranchPoses =
         List.of(redBranchA, redBranchC, redBranchE, redBranchG, redBranchI, redBranchK);
 
     public static Pose2d getNearestBranch(Pose2d p, boolean isBlue) {
-      List<Pose2d> branchPose2ds = isBlue ? blueBranchPoses : redBranchPoses;
+      List<Pose2d> branchPose2ds = isBlue ? blueLeftBranchPoses : redLeftBranchPoses;
       return p.nearest(branchPose2ds);
     }
 
