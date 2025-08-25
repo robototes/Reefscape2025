@@ -278,7 +278,7 @@ public class Controls {
             Commands.deferredProxy(
                     () ->
                         switch (scoringMode) {
-                          case CORAL -> Commands.none().withName("coral mode - no command");
+                          case CORAL -> getCoralBranchHeightCommand();
                           case ALGAE -> Commands.sequence(
                                   superStructure.algaeProcessorScore(
                                       driverController.rightBumper()),
@@ -371,7 +371,6 @@ public class Controls {
                           : Commands.none())
                   .withName("Automatic Intake"));
     }
-
     driverController
         .rightTrigger()
         .onTrue(
@@ -737,7 +736,12 @@ public class Controls {
         .rightTrigger()
         .and(() -> scoringMode == ScoringMode.CORAL)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlign.autoAlignRight(s.drivebaseSubsystem, this));
+    driverController
+        .leftTrigger()
+        .and(() -> scoringMode == ScoringMode.CORAL)
+        .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
+        .whileTrue(AutoAlign.autoAlignLeft(s.drivebaseSubsystem, this));
   }
 
   private void configureGroundSpinnyBindings() {
