@@ -1,6 +1,7 @@
 package frc.robot.subsystems.auto;
 
 import static frc.robot.Sensors.SensorConstants.ARMSENSOR_ENABLED;
+import static frc.robot.Sensors.SensorConstants.INTAKE_SENSOR_ENABLED;
 import static frc.robot.Subsystems.SubsystemConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -285,10 +286,14 @@ public class AutoLogic {
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
-      return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
-          .repeatedly()
-          .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
-          .withName("scoreCommand");
+      if (ARMSENSOR_ENABLED && r.sensors.armSensor.booleanInClaw()) {
+        return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
+            .repeatedly()
+            .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
+            .withName("scoreCommand");
+      } else {
+        return Commands.none().withName("scoreCommand-empty");
+      }
     }
     return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
         .withName("scoreCommand-noSuperstructure");
@@ -325,8 +330,11 @@ public class AutoLogic {
 
   public static Command intakeCommand() {
     if (r.superStructure != null) {
-      if (ARMSENSOR_ENABLED) {
-        return r.superStructure.coralIntake().withName("intake");
+      if (ARMSENSOR_ENABLED && INTAKE_SENSOR_ENABLED) {
+        return Commands.waitUntil(r.sensors.intakeSensor.inIntake())
+            .withTimeout(0.5)
+            .andThen(r.superStructure.coralIntake())
+            .withName("intake");
       }
     }
     return Commands.none().withName("intake");
@@ -335,7 +343,7 @@ public class AutoLogic {
   public static Command isCollected() {
     if (ARMSENSOR_ENABLED && r.sensors.armSensor != null) {
       return Commands.waitUntil(r.sensors.armSensor.inTrough())
-          .withTimeout(0.5)
+          .withTimeout(1.5)
           .withName("isCollected");
     }
     return Commands.none().withName("isCollected");
