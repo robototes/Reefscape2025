@@ -1,8 +1,11 @@
 package frc.robot.subsystems.auto;
 
+import java.util.List;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
@@ -16,7 +19,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Controls;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
-import java.util.List;
 
 public class AutoAlign {
   public static Command autoAlign(CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
@@ -68,62 +70,62 @@ public class AutoAlign {
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
     // left and right offsets from the april tags ()
-    private static final Transform2d leftReef =
-        new Transform2d(
-            Units.inchesToMeters(36.5 / 2), Units.inchesToMeters(12.97 / 2), Rotation2d.k180deg);
-    private static final Transform2d rightReef =
+    private static final Transform2d leftOfTag =
         new Transform2d(
             Units.inchesToMeters(36.5 / 2), Units.inchesToMeters(-12.97 / 2), Rotation2d.k180deg);
+    private static final Transform2d rightOfTag =
+        new Transform2d(
+            Units.inchesToMeters(36.5 / 2), Units.inchesToMeters(12.97 / 2), Rotation2d.k180deg);
 
     private static final Pose2d blueBranchA =
-        aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(leftOfTag);
     private static final Pose2d blueBranchB =
-        aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(leftReef);
+        aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(rightOfTag);
     private static final Pose2d blueBranchC =
-        aprilTagFieldLayout.getTagPose(17).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(17).get().toPose2d().plus(leftOfTag);
     private static final Pose2d blueBranchD =
-        aprilTagFieldLayout.getTagPose(17).get().toPose2d().plus(leftReef);
+        aprilTagFieldLayout.getTagPose(17).get().toPose2d().plus(rightOfTag);
     private static final Pose2d blueBranchE =
-        aprilTagFieldLayout.getTagPose(22).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(22).get().toPose2d().plus(leftOfTag);
     private static final Pose2d blueBranchF =
-        aprilTagFieldLayout.getTagPose(22).get().toPose2d().plus(leftReef);
+        aprilTagFieldLayout.getTagPose(22).get().toPose2d().plus(rightOfTag);
     private static final Pose2d blueBranchG =
-        aprilTagFieldLayout.getTagPose(21).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(21).get().toPose2d().plus(leftOfTag);
     private static final Pose2d blueBranchH =
-        aprilTagFieldLayout.getTagPose(21).get().toPose2d().plus(leftReef);
+        aprilTagFieldLayout.getTagPose(21).get().toPose2d().plus(rightOfTag);
     private static final Pose2d blueBranchI =
-        aprilTagFieldLayout.getTagPose(20).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(20).get().toPose2d().plus(leftOfTag);
     private static final Pose2d blueBranchJ =
-        aprilTagFieldLayout.getTagPose(20).get().toPose2d().plus(leftReef);
+        aprilTagFieldLayout.getTagPose(20).get().toPose2d().plus(rightOfTag);
     private static final Pose2d blueBranchK =
-        aprilTagFieldLayout.getTagPose(19).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(19).get().toPose2d().plus(leftOfTag);
     private static final Pose2d blueBranchL =
-        aprilTagFieldLayout.getTagPose(19).get().toPose2d().plus(leftReef);
+        aprilTagFieldLayout.getTagPose(19).get().toPose2d().plus(rightOfTag);
 
     private static final Pose2d redBranchA =
-        aprilTagFieldLayout.getTagPose(7).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(7).get().toPose2d().plus(leftOfTag);
     private static final Pose2d redBranchB =
-        aprilTagFieldLayout.getTagPose(7).get().toPose2d().plus(leftReef);
+        aprilTagFieldLayout.getTagPose(7).get().toPose2d().plus(rightOfTag);
     private static final Pose2d redBranchC =
-        aprilTagFieldLayout.getTagPose(8).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(8).get().toPose2d().plus(leftOfTag);
     private static final Pose2d redBranchD =
-        aprilTagFieldLayout.getTagPose(8).get().toPose2d().plus(leftReef);
+        aprilTagFieldLayout.getTagPose(8).get().toPose2d().plus(rightOfTag);
     private static final Pose2d redBranchE =
-        aprilTagFieldLayout.getTagPose(9).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(9).get().toPose2d().plus(leftOfTag);
     private static final Pose2d redBranchF =
-        aprilTagFieldLayout.getTagPose(9).get().toPose2d().plus(leftReef);
+        aprilTagFieldLayout.getTagPose(9).get().toPose2d().plus(rightOfTag);
     private static final Pose2d redBranchG =
-        aprilTagFieldLayout.getTagPose(10).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(10).get().toPose2d().plus(leftOfTag);
     private static final Pose2d redBranchH =
-        aprilTagFieldLayout.getTagPose(10).get().toPose2d().plus(leftReef);
+        aprilTagFieldLayout.getTagPose(10).get().toPose2d().plus(rightOfTag);
     private static final Pose2d redBranchI =
-        aprilTagFieldLayout.getTagPose(11).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(11).get().toPose2d().plus(leftOfTag);
     private static final Pose2d redBranchJ =
-        aprilTagFieldLayout.getTagPose(11).get().toPose2d().plus(leftReef);
+        aprilTagFieldLayout.getTagPose(11).get().toPose2d().plus(rightOfTag);
     private static final Pose2d redBranchK =
-        aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(rightReef);
+        aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(leftOfTag);
     private static final Pose2d redBranchL =
-        aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(leftReef);
+        aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(rightOfTag);
 
     private static final List<Pose2d> blueBranchPoses =
         List.of(
