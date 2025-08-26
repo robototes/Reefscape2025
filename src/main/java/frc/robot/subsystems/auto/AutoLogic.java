@@ -293,21 +293,20 @@ public class AutoLogic {
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
-        return new ConditionalCommand(
-            // If true:
-            AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
-                .repeatedly()
-                .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
-                .withName("scoreCommand"),
-            // If false:
-            Commands.none().withName("scoreCommand-empty"),
-            // Condition:
-            () -> ARMSENSOR_ENABLED && r.sensors.armSensor.booleanInClaw()
-        );
+      return new ConditionalCommand(
+          // If true:
+          AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
+              .repeatedly()
+              .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
+              .withName("scoreCommand"),
+          // If false:
+          Commands.none().withName("scoreCommand-empty"),
+          // Condition:
+          () -> ARMSENSOR_ENABLED && r.sensors.armSensor.booleanInClaw());
     }
     return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
         .withName("scoreCommand-noSuperstructure");
-}
+  }
 
   public static Command algaeCommand23() {
     if (r.superStructure != null) {
