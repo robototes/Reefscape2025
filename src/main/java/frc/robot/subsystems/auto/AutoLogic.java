@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -292,18 +293,21 @@ public class AutoLogic {
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
-      if (ARMSENSOR_ENABLED && r.sensors.armSensor.booleanInClaw()) {
-        return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
-            .repeatedly()
-            .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
-            .withName("scoreCommand");
-      } else {
-        return Commands.none().withName("scoreCommand-empty");
-      }
+        return new ConditionalCommand(
+            // If true:
+            AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
+                .repeatedly()
+                .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
+                .withName("scoreCommand"),
+            // If false:
+            Commands.none().withName("scoreCommand-empty"),
+            // Condition:
+            () -> ARMSENSOR_ENABLED && r.sensors.armSensor.booleanInClaw()
+        );
     }
     return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
         .withName("scoreCommand-noSuperstructure");
-  }
+}
 
   public static Command algaeCommand23() {
     if (r.superStructure != null) {
