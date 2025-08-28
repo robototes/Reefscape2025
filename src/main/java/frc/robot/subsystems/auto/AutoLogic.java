@@ -36,12 +36,6 @@ public class AutoLogic {
   public static final Subsystems s = r.subsystems;
   public static final Controls controls = r.controls;
 
-  public static final double FEEDER_DELAY = 0.4;
-
-  // rpm to rev up launcher before launching
-  public static final double REV_RPM = 2500;
-  public static final double STAGE_ANGLE = 262;
-
   public static enum StartPosition {
     FAR_LEFT_CAGE(
         "Far Left Cage", new Pose2d(7.187, 7.277, new Rotation2d(Units.degreesToRadians(-90)))),
