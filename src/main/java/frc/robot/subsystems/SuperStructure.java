@@ -312,6 +312,19 @@ public class SuperStructure {
         .withName("Coral Stow");
   }
 
+  public Command autoCoralStow() {
+    return Commands.defer(
+            () ->
+                Commands.parallel(
+                    elevator.setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS),
+                    Commands.sequence(
+                        Commands.waitUntil(elevator.above(ElevatorSubsystem.CORAL_PRE_INTAKE)),
+                        armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP)),
+                    spinnyClaw.stop()),
+            Set.of(elevator, armPivot, spinnyClaw))
+        .withName("Coral Stow");
+  }
+
   public Command coralPreIntake() {
     return Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.CORAL_PRE_INTAKE),
@@ -338,6 +351,17 @@ public class SuperStructure {
                     armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN)),
                 elevator.setLevel(ElevatorSubsystem.CORAL_INTAKE_POS)),
             coralStow())
+        .withName("Coral Intake");
+  }
+
+  public Command autoCoralIntake() { // yummy coral
+    return Commands.sequence(
+            Commands.sequence(
+                Commands.parallel(
+                    spinnyClaw.coralIntakePower(),
+                    armPivot.moveToPosition(ArmPivot.CORAL_PRESET_DOWN)),
+                elevator.setLevel(ElevatorSubsystem.CORAL_INTAKE_POS)),
+            autoCoralStow())
         .withName("Coral Intake");
   }
 

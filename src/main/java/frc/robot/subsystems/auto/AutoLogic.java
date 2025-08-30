@@ -1,6 +1,7 @@
 package frc.robot.subsystems.auto;
 
 import static frc.robot.Sensors.SensorConstants.ARMSENSOR_ENABLED;
+import static frc.robot.Sensors.SensorConstants.INTAKE_SENSOR_ENABLED;
 import static frc.robot.Subsystems.SubsystemConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -17,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -285,10 +287,16 @@ public class AutoLogic {
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
-      return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
-          .repeatedly()
-          .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
-          .withName("scoreCommand");
+      return new ConditionalCommand(
+          // If true:
+          AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
+              .repeatedly()
+              .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
+              .withName("scoreCommand"),
+          // If false:
+          Commands.none().withName("scoreCommand-empty"),
+          // Condition:
+          () -> ARMSENSOR_ENABLED && r.sensors.armSensor.booleanInClaw());
     }
     return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
         .withName("scoreCommand-noSuperstructure");
@@ -325,8 +333,11 @@ public class AutoLogic {
 
   public static Command intakeCommand() {
     if (r.superStructure != null) {
-      if (ARMSENSOR_ENABLED) {
-        return r.superStructure.coralIntake().withName("intake");
+      if (ARMSENSOR_ENABLED && INTAKE_SENSOR_ENABLED) {
+        return Commands.waitUntil(r.sensors.intakeSensor.inIntake())
+            .withTimeout(0.5)
+            .andThen(r.superStructure.autoCoralIntake())
+            .withName("intake");
       }
     }
     return Commands.none().withName("intake");
@@ -335,7 +346,7 @@ public class AutoLogic {
   public static Command isCollected() {
     if (ARMSENSOR_ENABLED && r.sensors.armSensor != null) {
       return Commands.waitUntil(r.sensors.armSensor.inTrough())
-          .withTimeout(0.5)
+          .withTimeout(1.5)
           .withName("isCollected");
     }
     return Commands.none().withName("isCollected");
