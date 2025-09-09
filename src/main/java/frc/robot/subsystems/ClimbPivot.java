@@ -83,6 +83,8 @@ public class ClimbPivot extends SubsystemBase {
 
   // the target speed
   private double setSpeed = 0;
+  private double speedToSet = 0;
+  private double pError = 0;
 
   // alerts for checking if either motor is or isnt connected
   private final Alert NotConnectedErrorOne =
@@ -390,12 +392,15 @@ public class ClimbPivot extends SubsystemBase {
             setSpeed = 0;
           } else {
             if (!moveComplete) {
-              if (minTargetPos > getClimbPosition()) {
-                motorLeft.set(CLIMB_OUT_SPEED);
-                setSpeed = CLIMB_OUT_SPEED;
+              pError = minTargetPos-getClimbPosition();
+              if (pError > 0) {
+                speedToSet = CLIMB_OUT_SPEED*pError;
+                motorLeft.set(speedToSet);
+                setSpeed = speedToSet;
               } else {
-                motorLeft.set(CLIMB_IN_SPEED);
-                setSpeed = CLIMB_IN_SPEED;
+                speedToSet = CLIMB_IN_SPEED*pError;
+                motorLeft.set(speedToSet);
+                setSpeed = speedToSet;
               }
             }
           }
