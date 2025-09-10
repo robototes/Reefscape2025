@@ -272,6 +272,8 @@ public class Controls {
         .onTrue(
             selectScoringHeight(BranchHeight.CORAL_LEVEL_ONE, AlgaeIntakeHeight.ALGAE_LEVEL_GROUND)
                 .withName("coral level 1, algae ground level"));
+
+    // Processor score and coral pre-score
     driverController
         .leftTrigger()
         .onTrue(
@@ -288,6 +290,7 @@ public class Controls {
                         })
                 .withName("Schedule processor score"));
 
+    // Algae Mode
     operatorController
         .leftBumper()
         .onTrue(
@@ -296,7 +299,10 @@ public class Controls {
                 .withName("Algae Scoring Mode"))
         .onTrue(
             Commands.runOnce(() -> CommandScheduler.getInstance().schedule(getAlgaeIntakeCommand()))
-                .withName("run algae intake"));
+                .withName("run algae intake"))
+        .onTrue(Commands.runOnce(() -> s.groundArm.setDefaultCommand(s.groundArm.stop())));
+
+    // Coral Mode
     operatorController // should work???
         .leftTrigger()
         .onTrue(
@@ -304,7 +310,14 @@ public class Controls {
                 .alongWith(scoringModeSelectRumble())
                 .withName("Coral Scoring Mode"))
         .onTrue(superStructure.coralPreIntake())
-        .onTrue(s.climbPivotSubsystem.toStow());
+        .onTrue(s.climbPivotSubsystem.toStow())
+        .onTrue(
+            s.groundArm
+                .moveToPosition(GroundArm.STOWED_POSITION)
+                .andThen(Commands.idle())
+                .withName("Ground stowed position wait"));
+
+    // Stow Mode
     operatorController
         .povLeft()
         .onTrue(
@@ -315,6 +328,8 @@ public class Controls {
                           case ALGAE -> superStructure.algaeStow();
                         })
                 .withName("Stow"));
+
+    // Stow algae, pre-intake coral
     operatorController
         .povDown()
         .onTrue(
@@ -755,6 +770,7 @@ public class Controls {
         .and(() -> scoringMode == ScoringMode.CORAL)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
         .whileTrue(AutoAlign.autoAlignRight(s.drivebaseSubsystem, this));
+
     driverController
         .leftTrigger()
         .and(() -> scoringMode == ScoringMode.CORAL)
@@ -766,7 +782,8 @@ public class Controls {
     if (s.groundSpinny == null) {
       return;
     }
-    s.groundSpinny.setDefaultCommand(s.groundSpinny.holdFunnelIntakePower());
+    s.groundSpinny.setDefaultCommand(
+        s.groundSpinny.holdFunnelIntakePower().unless(s.groundSpinny.stalling()));
   }
 
   private void configureGroundArmBindings() {

@@ -374,8 +374,8 @@ public class SuperStructure {
             Commands.parallel(
                 spinnyClaw.algaeIntakePower(),
                 armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR),
-                groundArm.moveToPosition(GroundArm.UP_POSITION)))
+                groundArm.moveToPosition(GroundArm.UP_POSITION)),
+            elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR))
         .withName("Algae L3-L4 Intake");
   }
 
@@ -384,8 +384,8 @@ public class SuperStructure {
             Commands.parallel(
                 spinnyClaw.algaeIntakePower(),
                 armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE),
-                groundArm.moveToPosition(GroundArm.STOWED_POSITION)))
+                elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
+            groundArm.moveToPosition(GroundArm.STOWED_POSITION))
         .withName("Algae L2-L3 Intake");
   }
 
