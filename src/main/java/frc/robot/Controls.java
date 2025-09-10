@@ -161,42 +161,6 @@ public class Controls {
                         .withRotationalRate(getDriveRotate()))
             .withName("Drive"));
 
-    // various former controls that were previously used and could be referenced in the future
-
-    // operatorController
-    //     .povUp()
-    //     .whileTrue(
-    //         s.drivebaseSubsystem
-    //             .applyRequest(
-    //                 () ->
-    //                     drive
-    //                         .withVelocityX(MetersPerSecond.of(1.0))
-    //                         .withVelocityY(0)
-    //                         .withRotationalRate(0))
-    //             .withName("1 m/s forward"));
-    // operatorController
-    //     .povRight()
-    //     .whileTrue(
-    //         s.drivebaseSubsystem
-    //             .applyRequest(
-    //                 () ->
-    //                     drive
-    //                         .withVelocityX(MetersPerSecond.of(2.0))
-    //                         .withVelocityY(0)
-    //                         .withRotationalRate(0))
-    //             .withName("2 m/s forward"));
-    // driverController.a().whileTrue(s.drivebaseSubsystem.sysIdDynamic(Direction.kForward));
-    // driverController.b().whileTrue(s.drivebaseSubsystem.sysIdDynamic(Direction.kReverse));
-    // driverController.y().whileTrue(s.drivebaseSubsystem.sysIdQuasistatic(Direction.kForward));
-    // driverController.x().whileTrue(s.drivebaseSubsystem.sysIdQuasistatic(Direction.kReverse));
-
-    // driveController.a().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
-    // brake));
-    // driveController.b().whileTrue(s.drivebaseSubsystem.applyRequest(() ->
-    // point.withModuleDirection(new Rotation2d(-driveController.getLeftY(),
-    // -driveController.getLeftX()))
-    // ));
-
     // reset the field-centric heading on back button press
     driverController
         .back()
@@ -225,48 +189,64 @@ public class Controls {
       return;
     }
     superStructure.setBranchHeightSupplier(() -> branchHeight);
+
     // operator start button used for climb - bound in climb bindings
+    // L4
     operatorController
         .y()
         .onTrue(
             selectScoringHeight(
                     BranchHeight.CORAL_LEVEL_FOUR, AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
                 .withName("coral level 4, algae level 3-4"));
+
+    // L3
     operatorController
         .x()
         .onTrue(
             selectScoringHeight(
                     BranchHeight.CORAL_LEVEL_THREE, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("coral level 3, algae level 2-3"));
+
+    // L2
     operatorController
         .b()
         .onTrue(
             selectScoringHeight(
                     BranchHeight.CORAL_LEVEL_TWO, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("coral level 2, algae level 2-3"));
+
+    // L1
     operatorController
         .a()
         .onTrue(
             selectScoringHeight(BranchHeight.CORAL_LEVEL_ONE, AlgaeIntakeHeight.ALGAE_LEVEL_GROUND)
                 .withName("coral level 1, algae ground level"));
+
+    // L4
     driverController
         .povUp()
         .onTrue(
             selectScoringHeight(
                     BranchHeight.CORAL_LEVEL_FOUR, AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
                 .withName("coral level 4, algae level 3-4"));
+
+    // L3
     driverController
         .povLeft()
         .onTrue(
             selectScoringHeight(
                     BranchHeight.CORAL_LEVEL_THREE, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("coral level 3, algae level 2-3"));
+
+    // L2
     driverController
         .povRight()
         .onTrue(
             selectScoringHeight(
                     BranchHeight.CORAL_LEVEL_TWO, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
                 .withName("coral level 2, algae level 2-3"));
+
+    // L1
     driverController
         .povDown()
         .onTrue(
@@ -315,7 +295,12 @@ public class Controls {
             s.groundArm
                 .moveToPosition(GroundArm.STOWED_POSITION)
                 .andThen(Commands.idle())
-                .withName("Ground stowed position wait"));
+                .withName("Ground stowed position wait"))
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    s.groundArm.setDefaultCommand(
+                        s.groundArm.moveToPosition(GroundArm.STOWED_POSITION))));
 
     // Stow Mode
     operatorController
@@ -341,6 +326,7 @@ public class Controls {
                         })
                 .withName("pre-intake, algae stow"));
 
+    // Driver manual coral intake
     driverController
         .a()
         .onTrue(s.elevatorSubsystem.runOnce(() -> {}).withName("elevator interruptor"))
@@ -364,6 +350,7 @@ public class Controls {
                     })
                 .withName("Driver Intake"));
 
+    // Coral ground intake
     driverController
         .b()
         .onTrue(
@@ -374,7 +361,9 @@ public class Controls {
                         case CORAL -> superStructure
                             .quickGroundIntake(driverController.x())
                             .withName("Quick Gound intake");
-                        case ALGAE -> superStructure.supercycleGroundIntake();
+                          // Algae supercycling coral ground pickup, does not work with algae ground
+                          // pickup lmao
+                        case ALGAE -> superStructure.supercycleGroundIntake(driverController.x());
                       };
                   CommandScheduler.getInstance().schedule(groundCommand);
                 }));
@@ -782,8 +771,7 @@ public class Controls {
     if (s.groundSpinny == null) {
       return;
     }
-    s.groundSpinny.setDefaultCommand(
-        s.groundSpinny.holdFunnelIntakePower().unless(s.groundSpinny.stalling()));
+    s.groundSpinny.setDefaultCommand(s.groundSpinny.holdFunnelIntakePower());
   }
 
   private void configureGroundArmBindings() {

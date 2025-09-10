@@ -203,8 +203,23 @@ public class SuperStructure {
     }
   }
 
-  public Command supercycleGroundIntake() {
-    return null;
+  public Command supercycleGroundIntake(BooleanSupplier retract) {
+    return // Core intake sequence
+    Commands.sequence(
+            // Deploy the ground arm (and wait until it reaches the position).
+            groundArm.moveToPosition(GroundArm.GROUND_POSITION),
+            // After it's deployed, apply a constant voltage to press it into the bumper
+            // and continue.
+            groundArm.setVoltage(GroundArm.GROUND_HOLD_VOLTAGE),
+            // Once it's out, set the ground spinny speed
+            groundSpinny.setGroundIntakePower())
+
+        // Move on from the intake being down when stuff is triggered
+        .withDeadline(Commands.waitUntil(intakeSensor.inIntake().or(retract)))
+        // And bring it back inside the robot
+        .andThen(
+            Commands.sequence(
+                groundArm.moveToPosition(GroundArm.UP_POSITION), groundSpinny.stop()));
   }
 
   // This is the actual version in use. It moves the coral directly into the claw.
@@ -224,7 +239,9 @@ public class SuperStructure {
               Commands.parallel(
                       elevator.setLevel(ElevatorSubsystem.MIN_EMPTY_GROUND_INTAKE),
                       armPivot.moveToPosition(ArmPivot.CORAL_QUICK_INTAKE),
-                      spinnyClaw.stop(), // just as a backup in case things are silly
+                      spinnyClaw.coralIntakePower(), // This used to stop the spinny, but now runs
+                      // it so that coral stored in the ground intake can be re-picked up
+                      // immediately
                       groundSpinny.setGroundIntakePower())
                   // Move on even if arm isn't in position yet as long as elevator is high enough
                   .until(elevator.above(ElevatorSubsystem.MIN_EMPTY_GROUND_INTAKE)),
@@ -239,7 +256,8 @@ public class SuperStructure {
                       Commands.parallel(
                           // These three are the initial setup: Move elevator down to the handoff
                           // height, make sure armPivot finishes moving to the right height, and
-                          // spin claw
+                          // spin claw (which is left over from an older code, but is here as a
+                          // backup)
                           elevator.setLevel(ElevatorSubsystem.CORAL_QUICK_INTAKE),
                           armPivot.moveToPosition(ArmPivot.CORAL_QUICK_INTAKE),
                           spinnyClaw.coralIntakePower(),
