@@ -56,6 +56,9 @@ public class ClimbPivot extends SubsystemBase {
   private final double CLIMB_HOLD_CLIMBED = -0.0705;
   private final double CLIMB_IN_SPEED = -0.75;
 
+  private final double climbInKp = 30;
+  private final double climbOutKp = 50;
+
   // positions for relation between motor encoder and WCP encoder
   // relative to eachother, likely not accurately zero'ed when obtained.
   private static final double MIN_ROTOR_POSITION = -50.45;
@@ -392,13 +395,13 @@ public class ClimbPivot extends SubsystemBase {
             setSpeed = 0;
           } else {
             if (!moveComplete) {
-              pError = minTargetPos-getClimbPosition();
+              pError = minTargetPos - getClimbPosition();
               if (pError > 0) {
-                speedToSet = CLIMB_OUT_SPEED*pError;
+                speedToSet = CLIMB_OUT_SPEED * pError * climbOutKp;
                 motorLeft.set(speedToSet);
                 setSpeed = speedToSet;
               } else {
-                speedToSet = CLIMB_IN_SPEED*pError;
+                speedToSet = CLIMB_IN_SPEED * -pError * climbInKp;
                 motorLeft.set(speedToSet);
                 setSpeed = speedToSet;
               }
