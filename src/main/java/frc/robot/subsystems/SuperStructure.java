@@ -203,9 +203,9 @@ public class SuperStructure {
     }
   }
 
-public Command supercycleGroundIntake() {
+  public Command supercycleGroundIntake() {
     return null;
-}
+  }
 
   // This is the actual version in use. It moves the coral directly into the claw.
   public Command quickGroundIntake(BooleanSupplier retract) { // thanks joseph
@@ -396,8 +396,7 @@ public Command supercycleGroundIntake() {
             Commands.sequence(
                 Commands.parallel(
                     armPivot.moveToPosition(ArmPivot.ALGAE_GROUND_INTAKE),
-                    groundArm.moveToPosition(GroundArm.STOWED_POSITION)
-                ),
+                    groundArm.moveToPosition(GroundArm.STOWED_POSITION)),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_GROUND_INTAKE)))
         .withName("Algae Ground Intake");
   }
@@ -418,8 +417,7 @@ public Command supercycleGroundIntake() {
                 Commands.sequence(
                     Commands.parallel(
                         armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
-                        groundArm.moveToPosition(GroundArm.STOWED_POSITION)
-                    ),
+                        groundArm.moveToPosition(GroundArm.STOWED_POSITION)),
                     elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE))),
             Commands.waitUntil(score),
             spinnyClaw.algaeExtakeProcessorPower())
@@ -431,8 +429,7 @@ public Command supercycleGroundIntake() {
             Commands.parallel(
                 groundArm.moveToPosition(GroundArm.UP_POSITION),
                 armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE),
-                spinnyClaw.algaeIntakePower()
-            ),
+                spinnyClaw.algaeIntakePower()),
             elevator.setLevel(ElevatorSubsystem.ALGAE_NET_SCORE),
             Commands.waitUntil(score),
             spinnyClaw.algaeHoldExtakePower().withTimeout(0.7),
