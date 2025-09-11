@@ -27,7 +27,7 @@ public class GroundArm extends SubsystemBase {
   private final double ARMPIVOT_KA = 0;
   public static final double STOWED_POSITION = 0.45;
   public static final double UP_POSITION =
-      0.27; // untested - should be somewhere in between stowed and ground
+      0.34; // untested - should be somewhere in between stowed and ground
   public static final double GROUND_POSITION = -0.050;
   public static final double QUICK_INTAKE_POSITION = 0.31;
   public static final double POS_TOLERANCE = Units.degreesToRotations(5);
@@ -100,8 +100,8 @@ public class GroundArm extends SubsystemBase {
   private Command setTargetPosition(double pos) {
     return runOnce(
         () -> {
-          motor.setControl(m_request.withPosition(pos));
           targetPos = pos;
+          motor.setControl(m_request.withPosition(pos));
         });
   }
 
@@ -118,6 +118,7 @@ public class GroundArm extends SubsystemBase {
 
   // preset command placeholder
   public Command moveToPosition(double position) {
+    targetPos = position;
     return setTargetPosition(position).andThen(Commands.waitUntil(atPosition(position)));
   }
 
