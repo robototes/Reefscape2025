@@ -49,4 +49,6 @@ public class Hardware {
   public static final String PHOTON_IP = "10.24.12.11";
   public static final String LEFT_CAM = "Arducam_OV9782L";
   public static final String RIGHT_CAM = "Arducam_OV9281R";
+  public static final String LEFT_LIMELIGHT = "left_limelight";
+  public static final String RIGHT_LIMELIGHT = "right_limelight";
 }

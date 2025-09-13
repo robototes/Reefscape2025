@@ -4,9 +4,8 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.commands.FollowPathCommand;
-
 import au.grapplerobotics.CanBridge;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
