@@ -1,0 +1,34 @@
+package frc.robot;
+
+public class LimeLight {
+  double tx = LimelightHelpers.getTX("");  // Horizontal offset from crosshair to target in degrees
+  double ty = LimelightHelpers.getTY("");  // Vertical offset from crosshair to target in degrees
+  double ta = LimelightHelpers.getTA("");  // Target area (0% to 100% of image)
+  boolean hasTarget = LimelightHelpers.getTV(""); // Do you have a valid target?
+  private double lastTimestampSeconds = 0;
+  private double lastRawTimestampSeconds = 0;
+  private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
+  private double Distance = 0;
+
+  double txnc = LimelightHelpers.getTXNC("");  // Horizontal offset from principal pixel/point to target in degrees
+  double tync = LimelightHelpers.getTYNC("");  // Vertical  offset from principal pixel/point to target in degrees
+  private void process(){
+    LimelightHelpers.setPipelineIndex("", 0);
+    LimelightHelpers.setLEDMode_PipelineControl("");
+    // Force LEDs on/off/blink
+    LimelightHelpers.setLEDMode_ForceOn("");
+    LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+    if (disableVision.getBoolean(false)) {
+        return;
+      }
+    if (limelightMeasurement.tagCount >= 2) {  // Only trust measurement if we see multiple tags
+      m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.7, 0.7, 9999999));
+      m_poseEstimator.addVisionMeasurement(
+          limelightMeasurement.pose,
+          limelightMeasurement.timestampSeconds
+      );
+  }
+  }
+  // Basic targeting data
+  
+}

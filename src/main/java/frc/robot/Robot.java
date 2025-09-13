@@ -4,8 +4,9 @@
 
 package frc.robot;
 
-import au.grapplerobotics.CanBridge;
 import com.pathplanner.lib.commands.FollowPathCommand;
+
+import au.grapplerobotics.CanBridge;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -17,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Subsystems.SubsystemConstants;
+import frc.robot.libs.LimelightHelpers;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoBuilderConfig;
 import frc.robot.subsystems.auto.AutoLogic;
@@ -115,6 +117,10 @@ public class Robot extends TimedRobot {
     if (subsystems.visionSubsystem != null) {
       subsystems.visionSubsystem.update();
     }
+    LimelightHelpers.setPipelineIndex("", 0);
+    LimelightHelpers.setLEDMode_PipelineControl("");
+    // Force LEDs on/off/blink
+    LimelightHelpers.setLEDMode_ForceOn("");
   }
 
   @Override
