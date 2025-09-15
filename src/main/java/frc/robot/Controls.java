@@ -279,8 +279,7 @@ public class Controls {
                 .withName("Algae Scoring Mode"))
         .onTrue(
             Commands.runOnce(() -> CommandScheduler.getInstance().schedule(getAlgaeIntakeCommand()))
-                .withName("run algae intake"))
-        .onTrue(Commands.runOnce(() -> s.groundArm.setDefaultCommand(s.groundArm.stop())));
+                .withName("run algae intake"));
 
     // Coral Mode
     operatorController // should work???
@@ -295,12 +294,7 @@ public class Controls {
             s.groundArm
                 .moveToPosition(GroundArm.STOWED_POSITION)
                 .andThen(Commands.idle())
-                .withName("Ground stowed position wait"))
-        .onTrue(
-            Commands.runOnce(
-                () ->
-                    s.groundArm.setDefaultCommand(
-                        s.groundArm.moveToPosition(GroundArm.STOWED_POSITION))));
+                .withName("Ground stowed position wait"));
 
     // Stow Mode
     operatorController
