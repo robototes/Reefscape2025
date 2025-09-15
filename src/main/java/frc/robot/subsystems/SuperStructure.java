@@ -242,9 +242,7 @@ public class SuperStructure {
               Commands.parallel(
                       elevator.setLevel(ElevatorSubsystem.MIN_EMPTY_GROUND_INTAKE),
                       armPivot.moveToPosition(ArmPivot.CORAL_QUICK_INTAKE),
-                      spinnyClaw.coralIntakePower(), // This used to stop the spinny, but now runs
-                      // it so that coral stored in the ground intake can be re-picked up
-                      // immediately
+                      spinnyClaw.stop(), // just as a backup in case things are silly
                       groundSpinny.setGroundIntakePower())
                   // Move on even if arm isn't in position yet as long as elevator is high enough
                   .until(elevator.above(ElevatorSubsystem.MIN_EMPTY_GROUND_INTAKE)),
@@ -259,8 +257,7 @@ public class SuperStructure {
                       Commands.parallel(
                           // These three are the initial setup: Move elevator down to the handoff
                           // height, make sure armPivot finishes moving to the right height, and
-                          // spin claw (which is left over from an older code, but is here as a
-                          // backup)
+                          // spin claw
                           elevator.setLevel(ElevatorSubsystem.CORAL_QUICK_INTAKE),
                           armPivot.moveToPosition(ArmPivot.CORAL_QUICK_INTAKE),
                           spinnyClaw.coralIntakePower(),
@@ -436,9 +433,7 @@ public class SuperStructure {
             Commands.parallel(
                 spinnyClaw.algaeGripIntakePower(),
                 Commands.sequence(
-                    Commands.parallel(
-                        armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
-                        groundArm.moveToPosition(GroundArm.STOWED_POSITION)),
+                    armPivot.moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE),
                     elevator.setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE))),
             Commands.waitUntil(score),
             spinnyClaw.algaeExtakeProcessorPower())
@@ -451,7 +446,6 @@ public class SuperStructure {
                 groundArm.moveToPosition(GroundArm.UP_POSITION).andThen(Commands.idle()),
                 armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE),
                 spinnyClaw.algaeIntakePower()),
-            elevator.setLevel(ElevatorSubsystem.ALGAE_NET_SCORE),
             Commands.waitUntil(score),
             spinnyClaw.algaeHoldExtakePower().withTimeout(0.7),
             Commands.waitSeconds(0.7),
