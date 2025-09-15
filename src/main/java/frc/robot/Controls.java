@@ -272,6 +272,8 @@ public class Controls {
         .onTrue(
             selectScoringHeight(BranchHeight.CORAL_LEVEL_ONE, AlgaeIntakeHeight.ALGAE_LEVEL_GROUND)
                 .withName("coral level 1, algae ground level"));
+
+    // Processor scoring and left coral pre-score
     driverController
         .leftTrigger()
         .onTrue(
@@ -283,11 +285,24 @@ public class Controls {
                                   superStructure.algaeProcessorScore(
                                       driverController.rightBumper()),
                                   Commands.waitSeconds(0.7),
-                                  getAlgaeIntakeCommand())
+                                  Commands.deferredProxy(
+                                      () ->
+                                          switch (sensors.intakeSensor.inIntakeSwitchable()) {
+                                            case 1 -> Commands.sequence(
+                                                Commands.runOnce(
+                                                        () -> scoringMode = ScoringMode.CORAL)
+                                                    .alongWith(scoringModeSelectRumble())
+                                                    .withName("Coral Scoring Mode"),
+                                                superStructure
+                                                    .superCycleCoralHandoff()
+                                                    .withName("supercycle handoff"));
+                                            default -> getAlgaeIntakeCommand();
+                                          }))
                               .withName("Processor score");
                         })
                 .withName("Schedule processor score"));
 
+    // Algae mode
     operatorController
         .leftBumper()
         .onTrue(
@@ -297,6 +312,8 @@ public class Controls {
         .onTrue(
             Commands.runOnce(() -> CommandScheduler.getInstance().schedule(getAlgaeIntakeCommand()))
                 .withName("run algae intake"));
+
+    // Coral Mode
     operatorController // should work???
         .leftTrigger()
         .onTrue(
@@ -304,7 +321,13 @@ public class Controls {
                 .alongWith(scoringModeSelectRumble())
                 .withName("Coral Scoring Mode"))
         .onTrue(superStructure.coralPreIntake())
-        .onTrue(s.climbPivotSubsystem.toStow());
+        .onTrue(s.climbPivotSubsystem.toStow())
+        .onTrue(
+            s.groundArm
+                .moveToPosition(GroundArm.STOWED_POSITION)
+                .withName("Ground stowed position"));
+
+    // Stow Mode
     operatorController
         .povLeft()
         .onTrue(
@@ -371,6 +394,8 @@ public class Controls {
                           : Commands.none())
                   .withName("Automatic Intake"));
     }
+
+    // Net scoring and right coral pre-score
     driverController
         .rightTrigger()
         .onTrue(
@@ -387,7 +412,21 @@ public class Controls {
                                         () -> getDriveY(),
                                         () -> getDriveRotate(),
                                         driverController.rightBumper()),
-                                    getAlgaeIntakeCommand())
+                                    // If we are supercycling (have a coral), hand it off and switch
+                                    // to coral mode
+                                    Commands.deferredProxy(
+                                        () ->
+                                            switch (sensors.intakeSensor.inIntakeSwitchable()) {
+                                              case 1 -> Commands.sequence(
+                                                  Commands.runOnce(
+                                                          () -> scoringMode = ScoringMode.CORAL)
+                                                      .alongWith(scoringModeSelectRumble())
+                                                      .withName("Coral Scoring Mode"),
+                                                  superStructure
+                                                      .superCycleCoralHandoff()
+                                                      .withName("supercycle handoff"));
+                                              default -> getAlgaeIntakeCommand();
+                                            }))
                                 .withName("Algae score then intake");
                           };
                       CommandScheduler.getInstance().schedule(scoreCommand);

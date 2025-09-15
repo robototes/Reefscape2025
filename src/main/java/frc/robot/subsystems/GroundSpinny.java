@@ -17,6 +17,7 @@ public class GroundSpinny extends SubsystemBase {
   public static final double FUNNEL_INTAKE_SPEED = -2;
   public static final double QUICK_HANDOFF_EXTAKE_SPEED = 1;
   private static final double STATOR_CURRENT_STALL_THRESHOLD = 20;
+  public static final double GROUND_INTAKE_HOLD_SPEED = -1;
 
   // TalonFX
   private final TalonFX motor;
@@ -78,6 +79,10 @@ public class GroundSpinny extends SubsystemBase {
 
   public Command holdFunnelIntakePower() {
     return holdPower(FUNNEL_INTAKE_SPEED).withName("hold funnel intake power");
+  }
+
+  public Command holdCoralPower() {
+    return holdPower(GROUND_INTAKE_HOLD_SPEED).withName("hold coral holding power");
   }
 
   public void imperativeSetGroundIntakePower() {
