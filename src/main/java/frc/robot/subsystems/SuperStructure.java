@@ -208,18 +208,21 @@ public class SuperStructure {
     Commands.sequence(
             // Deploy the ground arm (and wait until it reaches the position).
             groundArm.moveToPosition(GroundArm.GROUND_POSITION),
+            // Once it's out, set the ground spinny speed
+            groundSpinny.setGroundIntakePower(),
             // After it's deployed, apply a constant voltage to press it into the bumper
             // and continue.
-            groundArm.setVoltage(GroundArm.GROUND_HOLD_VOLTAGE),
-            // Once it's out, set the ground spinny speed
-            groundSpinny.setGroundIntakePower())
+            groundArm.setVoltage(GroundArm.GROUND_HOLD_VOLTAGE))
 
         // Move on from the intake being down when stuff is triggered
         .withDeadline(Commands.waitUntil(intakeSensor.inIntake().or(retract)))
         // And bring it back inside the robot
         .andThen(
             Commands.sequence(
-                groundArm.moveToPosition(GroundArm.UP_POSITION), groundSpinny.stop()));
+                // Move ground intake to in positiong and hold it there
+                groundArm.moveToPosition(GroundArm.UP_POSITION).andThen(Commands.idle()),
+                // Set ground intake power to just hold the coral tightly
+                groundSpinny.holdCoralPower()));
   }
 
   // This is the actual version in use. It moves the coral directly into the claw.
@@ -392,7 +395,7 @@ public class SuperStructure {
             Commands.parallel(
                 spinnyClaw.algaeIntakePower(),
                 armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
-                groundArm.moveToPosition(GroundArm.UP_POSITION)),
+                groundArm.moveToPosition(GroundArm.UP_POSITION).andThen(Commands.idle())),
             elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR))
         .withName("Algae L3-L4 Intake");
   }
@@ -403,7 +406,7 @@ public class SuperStructure {
                 spinnyClaw.algaeIntakePower(),
                 armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)),
-            groundArm.moveToPosition(GroundArm.STOWED_POSITION))
+            groundArm.moveToPosition(GroundArm.STOWED_POSITION).andThen(Commands.idle()))
         .withName("Algae L2-L3 Intake");
   }
 
@@ -414,7 +417,7 @@ public class SuperStructure {
             Commands.sequence(
                 Commands.parallel(
                     armPivot.moveToPosition(ArmPivot.ALGAE_GROUND_INTAKE),
-                    groundArm.moveToPosition(GroundArm.STOWED_POSITION)),
+                    groundArm.moveToPosition(GroundArm.STOWED_POSITION).andThen(Commands.idle())),
                 elevator.setLevel(ElevatorSubsystem.ALGAE_GROUND_INTAKE)))
         .withName("Algae Ground Intake");
   }
@@ -445,7 +448,7 @@ public class SuperStructure {
   public Command algaeNetScore(BooleanSupplier score) {
     return Commands.sequence(
             Commands.parallel(
-                groundArm.moveToPosition(GroundArm.UP_POSITION),
+                groundArm.moveToPosition(GroundArm.UP_POSITION).andThen(Commands.idle()),
                 armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE),
                 spinnyClaw.algaeIntakePower()),
             elevator.setLevel(ElevatorSubsystem.ALGAE_NET_SCORE),

@@ -293,8 +293,7 @@ public class Controls {
         .onTrue(
             s.groundArm
                 .moveToPosition(GroundArm.STOWED_POSITION)
-                .andThen(Commands.idle())
-                .withName("Ground stowed position wait"));
+                .withName("Ground stowed position"));
 
     // Stow Mode
     operatorController

@@ -118,7 +118,6 @@ public class GroundArm extends SubsystemBase {
 
   // preset command placeholder
   public Command moveToPosition(double position) {
-    targetPos = position;
     return setTargetPosition(position).andThen(Commands.waitUntil(atPosition(position)));
   }
 
