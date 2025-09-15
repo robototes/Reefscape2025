@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
+import frc.robot.sensors.IntakeSensor;
 import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.GroundArm;
@@ -272,6 +273,8 @@ public class Controls {
         .onTrue(
             selectScoringHeight(BranchHeight.CORAL_LEVEL_ONE, AlgaeIntakeHeight.ALGAE_LEVEL_GROUND)
                 .withName("coral level 1, algae ground level"));
+
+    //Processor scoring and left coral pre-score
     driverController
         .leftTrigger()
         .onTrue(
@@ -283,11 +286,22 @@ public class Controls {
                                   superStructure.algaeProcessorScore(
                                       driverController.rightBumper()),
                                   Commands.waitSeconds(0.7),
-                                  getAlgaeIntakeCommand())
+                                  Commands.deferredProxy(
+                                        () -> switch (sensors.intakeSensor.inIntakeSwitchable()) {
+                                            case 1 -> 
+                                                Commands.sequence(
+                                                    Commands.runOnce(() -> scoringMode = ScoringMode.CORAL)
+                                                    .alongWith(scoringModeSelectRumble())
+                                                    .withName("Coral Scoring Mode"),
+                                                    superStructure.superCycleCoralHandoff()
+                                                    .withName("supercycle handoff"));
+                                            default -> getAlgaeIntakeCommand();
+                                        }))
                               .withName("Processor score");
                         })
                 .withName("Schedule processor score"));
 
+    //Algae mode
     operatorController
         .leftBumper()
         .onTrue(
@@ -379,6 +393,8 @@ public class Controls {
                           : Commands.none())
                   .withName("Automatic Intake"));
     }
+
+    //Net scoring and right coral pre-score
     driverController
         .rightTrigger()
         .onTrue(
@@ -395,7 +411,18 @@ public class Controls {
                                         () -> getDriveY(),
                                         () -> getDriveRotate(),
                                         driverController.rightBumper()),
-                                    getAlgaeIntakeCommand())
+                                        //If we are supercycling (have a coral), hand it off and switch to coral mode
+                                        Commands.deferredProxy(
+                                            () -> switch (sensors.intakeSensor.inIntakeSwitchable()) {
+                                                case 1 -> 
+                                                    Commands.sequence(
+                                                        Commands.runOnce(() -> scoringMode = ScoringMode.CORAL)
+                                                        .alongWith(scoringModeSelectRumble())
+                                                        .withName("Coral Scoring Mode"),
+                                                        superStructure.superCycleCoralHandoff()
+                                                        .withName("supercycle handoff"));
+                                                default -> getAlgaeIntakeCommand();
+                                            }))
                                 .withName("Algae score then intake");
                           };
                       CommandScheduler.getInstance().schedule(scoreCommand);

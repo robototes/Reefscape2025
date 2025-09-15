@@ -59,4 +59,9 @@ public class IntakeSensor {
             })
         .debounce(0.1);
   }
+
+  public int inIntakeSwitchable() {
+    double distance = getSensorDistance().in(Meters);
+    return (distance > INTAKE_LOWER_LIMIT && distance < INTAKE_UPPER_LIMIT) ? 1 : 0; 
+  }
 }

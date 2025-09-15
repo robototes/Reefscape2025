@@ -225,6 +225,39 @@ public class SuperStructure {
                 groundSpinny.holdCoralPower()));
   }
 
+  //This is called when a coral is in the ground intake and the robot has just scored an algae
+  public Command superCycleCoralHandoff() {
+    return Commands.sequence(
+        // Initial setup- Move elevator high enough for ground arm to be clear, start moving
+            // arm pivot, stop the spinny claw, and start spinning the ground intake
+            Commands.parallel(
+                elevator.setLevel(ElevatorSubsystem.MIN_FULL_GROUND_INTAKE),
+                armPivot.moveToPosition(ArmPivot.CORAL_QUICK_INTAKE),
+                spinnyClaw.stop(), // just as a backup in case things are silly
+                groundSpinny.setGroundIntakePower())
+            // Move on even if arm isn't in position yet as long as elevator is high enough
+            .until(elevator.above(ElevatorSubsystem.MIN_FULL_GROUND_INTAKE)),
+            //Move the ground intake out
+            groundArm.moveToPosition(GroundArm.MIN_OUT_QUICK_HANDOFF),
+            //Prep is done, now do the handoff
+            Commands.parallel(
+                // These three are the initial setup: Move elevator down to the handoff
+                // height, make sure armPivot finishes moving to the right height, and
+                // spin claw
+                elevator.setLevel(ElevatorSubsystem.CORAL_QUICK_INTAKE),
+                armPivot.moveToPosition(ArmPivot.CORAL_QUICK_INTAKE),
+                spinnyClaw.coralIntakePower()),
+            //Start the sequence of handing off the coral
+            groundArm
+                .moveToPosition(GroundArm.STOWED_POSITION)
+                .until(groundArm.atPosition(GroundArm.QUICK_INTAKE_POSITION)),
+              // Spin groundSpinny out, but skip if we lost the coral.
+              groundSpinny.setQuickHandoffExtakeSpeed().onlyIf(armSensor.inClaw()),
+              // Go back to stow, but skip if we lost the coral.
+              coralStow().onlyIf(armSensor.inClaw())
+    );
+  }
+
   // This is the actual version in use. It moves the coral directly into the claw.
   public Command quickGroundIntake(BooleanSupplier retract) { // thanks joseph
     if (groundSpinny == null || groundArm == null || intakeSensor == null) {
