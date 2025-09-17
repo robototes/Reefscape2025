@@ -203,6 +203,33 @@ public class SuperStructure {
     }
   }
 
+  // Manual version of ground intake that waits until a button is pressed to retract.
+  public Command groundIntakeManual(BooleanSupplier retractButton) {
+    if (groundSpinny == null || groundArm == null) {
+      return Commands.none().withName("ground intake manual disabled");
+    } else {
+      BooleanSupplier clawFull = armSensor != null ? armSensor.inClaw() : () -> false;
+      return Commands.sequence(
+              Commands.parallel(
+                      elevator.setLevel(ElevatorSubsystem.CORAL_GROUND_INTAKE_POS),
+                      armPivot.moveToPosition(ArmPivot.CORAL_PRESET_GROUND_INTAKE),
+                      spinnyClaw.stop(),
+                      groundSpinny.setGroundIntakePower())
+                  .until(elevator.above(ElevatorSubsystem.MIN_EMPTY_GROUND_INTAKE)),
+              // deploy and hold the ground arm, then wait until the manual retract button is
+              // pressed
+              groundArm
+                  .moveToPosition(GroundArm.GROUND_POSITION)
+                  .andThen(groundArm.setVoltage(GroundArm.GROUND_HOLD_VOLTAGE))
+                  .withDeadline(Commands.waitUntil(retractButton)),
+              groundArm.moveToPosition(GroundArm.STOWED_POSITION),
+              groundSpinny.setFunnelIntakePower(),
+              coralPreIntake())
+          .unless(clawFull)
+          .withName("Ground Intake (Manual Retract)");
+    }
+  }
+
   // This is the actual version in use. It moves the coral directly into the claw.
   public Command quickGroundIntake(BooleanSupplier retract) { // thanks joseph
     if (groundSpinny == null || groundArm == null || intakeSensor == null) {

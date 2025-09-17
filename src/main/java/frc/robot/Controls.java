@@ -375,7 +375,16 @@ public class Controls {
     driverController
         .b()
         .onTrue(
-            superStructure.quickGroundIntake(driverController.x()).withName("Quick Gound intake"));
+            Commands.deferredProxy(
+                () ->
+                    switch (scoringMode) {
+                      case CORAL -> superStructure
+                          .quickGroundIntake(driverController.x())
+                          .withName("Quick Ground intake");
+                      case ALGAE -> superStructure
+                          .groundIntakeManual(driverController.x())
+                          .withName("Manual Ground intake");
+                    }));
 
     if (sensors.armSensor != null) {
       sensors
