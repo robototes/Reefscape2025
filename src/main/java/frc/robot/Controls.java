@@ -809,10 +809,16 @@ public class Controls {
       return;
     }
     s.groundArm.setDefaultCommand(
-        s.groundArm
-            .moveToPosition(GroundArm.STOWED_POSITION)
-            .andThen(Commands.idle())
-            .withName("Ground stowed position wait"));
+        Commands.deferredProxy(
+                () ->
+                    switch (scoringMode) {
+                      case CORAL -> s.groundArm
+                          .moveToPosition(GroundArm.STOWED_POSITION)
+                          .andThen(Commands.idle())
+                          .withName("Ground stowed position wait");
+                      case ALGAE -> Commands.none();
+                    })
+            .withName("GroundArm Default Command"));
     operatorController
         .rightBumper()
         .whileTrue(
