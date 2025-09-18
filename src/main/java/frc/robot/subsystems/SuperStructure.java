@@ -213,7 +213,6 @@ public class SuperStructure {
               Commands.parallel(
                       elevator.setLevel(ElevatorSubsystem.CORAL_GROUND_INTAKE_POS),
                       armPivot.moveToPosition(ArmPivot.CORAL_PRESET_GROUND_INTAKE),
-                      spinnyClaw.stop(),
                       groundSpinny.setGroundIntakePower())
                   .until(elevator.above(ElevatorSubsystem.MIN_EMPTY_GROUND_INTAKE)),
               // deploy and hold the ground arm, then wait until the manual retract button is
