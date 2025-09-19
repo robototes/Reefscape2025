@@ -36,7 +36,7 @@ public class ClimbPivot extends SubsystemBase {
   }
 
   // digitalInput for the sensor (never worked lol)
-  private final DigitalInput sensor;
+  public final DigitalInput sensor;
 
   // variable for the shuffleboard tab for consistency
   private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Climb");
@@ -64,7 +64,7 @@ public class ClimbPivot extends SubsystemBase {
   private static final double MAX_ENCODER_POSITION = 0.915;
 
   // two status variables
-  private boolean isClimbOut = false;
+  public boolean isClimbOut = false;
   private boolean isStowed = true;
 
   // setting the starting target position
@@ -223,7 +223,7 @@ public class ClimbPivot extends SubsystemBase {
 
   // check the digital input climb sensor
   public boolean checkClimbSensor() {
-    return sensor.get();
+    return !sensor.get();
   }
 
   // get the velocity from the motor
@@ -431,5 +431,11 @@ public class ClimbPivot extends SubsystemBase {
   // sets the target position to go to climbed position
   public Command toClimbed() {
     return runOnce(() -> setTargetPos(TargetPositions.CLIMBED)).withName("to climbed");
+  }
+
+  public Trigger cageDetected() {
+    return new Trigger(() -> checkClimbSensor())
+        .debounce(0.1, DebounceType.kRising)
+        .debounce(0.05, DebounceType.kFalling);
   }
 }
