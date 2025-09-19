@@ -1,15 +1,17 @@
 package frc.robot;
 
+import java.util.function.BooleanSupplier;
+
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -36,7 +38,6 @@ import frc.robot.util.AlgaeIntakeHeight;
 import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
 import frc.robot.util.ScoringMode;
-import java.util.function.BooleanSupplier;
 
 public class Controls {
   private static final int DRIVER_CONTROLLER_PORT = 0;
@@ -44,12 +45,14 @@ public class Controls {
   private static final int ARM_PIVOT_SPINNY_CLAW_CONTROLLER_PORT = 2;
   private static final int ELEVATOR_CONTROLLER_PORT = 3;
   private static final int CLIMB_TEST_CONTROLLER_PORT = 4;
+  private static final int SOLO_CONTROLLER_PORT = 5;
 
   private final CommandXboxController driverController;
   private final CommandXboxController operatorController;
   private final CommandXboxController armPivotSpinnyClawController;
   private final CommandXboxController elevatorTestController;
   private final CommandXboxController climbTestController;
+  private final CommandXboxController soloController;
 
   private final Subsystems s;
   private final Sensors sensors;
@@ -90,6 +93,7 @@ public class Controls {
     armPivotSpinnyClawController = new CommandXboxController(ARM_PIVOT_SPINNY_CLAW_CONTROLLER_PORT);
     elevatorTestController = new CommandXboxController(ELEVATOR_CONTROLLER_PORT);
     climbTestController = new CommandXboxController(CLIMB_TEST_CONTROLLER_PORT);
+    soloController = new CommandXboxController(SOLO_CONTROLLER_PORT);
     this.s = s;
     this.sensors = sensors;
     this.superStructure = superStructure;
@@ -104,6 +108,7 @@ public class Controls {
     configureAutoAlignBindings();
     configureGroundSpinnyBindings();
     configureGroundArmBindings();
+    configureSoloControllerBindings();
   }
 
   private Trigger connected(CommandXboxController controller) {
@@ -820,5 +825,8 @@ public class Controls {
     if (!DriverStation.isAutonomous()) {
       operatorController.getHID().setRumble(RumbleType.kBothRumble, vibration);
     }
+  }
+  private void configureSoloControllerBindings() {
+    //TODO: Add bindings for solo controller
   }
 }
