@@ -354,7 +354,6 @@ public class AutoLogic {
 
   public static Command readyIntakeCommand() {
     if (r.superStructure != null) {
-
       return r.superStructure.coralPreIntake().withName("readyIntake");
     }
     return Commands.none().withName("readyIntake");

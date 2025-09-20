@@ -283,7 +283,22 @@ public class Controls {
                                   superStructure.algaeProcessorScore(
                                       driverController.rightBumper()),
                                   Commands.waitSeconds(0.7),
-                                  getAlgaeIntakeCommand())
+                                  getAlgaeIntakeCommand(),
+                                  Commands.deferredProxy(
+                                      () -> {
+                                        if (sensors.intakeSensor != null
+                                            && sensors.intakeSensor.booleanInGroundIntake()) {
+                                          return superStructure
+                                              .quickGroundIntake(driverController.x())
+                                              .withName(
+                                                  "Quick ground intake after processor score");
+                                        } else {
+                                          return superStructure
+                                              .algaeStow()
+                                              .withName(
+                                                  "Algae pre-intake (stow) after processor score");
+                                        }
+                                      }))
                               .withName("Processor score");
                         })
                 .withName("Schedule processor score"));
@@ -297,13 +312,21 @@ public class Controls {
         .onTrue(
             Commands.runOnce(() -> CommandScheduler.getInstance().schedule(getAlgaeIntakeCommand()))
                 .withName("run algae intake"));
-    operatorController // should work???
+    operatorController
         .leftTrigger()
         .onTrue(
             Commands.runOnce(() -> scoringMode = ScoringMode.CORAL)
                 .alongWith(scoringModeSelectRumble())
                 .withName("Coral Scoring Mode"))
-        .onTrue(superStructure.coralPreIntake())
+        .onTrue(
+            Commands.deferredProxy(
+                () -> {
+                  if (sensors.armSensor != null && sensors.armSensor.booleanInClaw()) {
+                    return getCoralBranchHeightCommand().withName("Ready to Score");
+                  } else {
+                    return superStructure.coralPreIntake();
+                  }
+                }))
         .onTrue(s.climbPivotSubsystem.toStow());
     operatorController
         .povLeft()
@@ -352,7 +375,16 @@ public class Controls {
     driverController
         .b()
         .onTrue(
-            superStructure.quickGroundIntake(driverController.x()).withName("Quick Gound intake"));
+            Commands.deferredProxy(
+                () ->
+                    switch (scoringMode) {
+                      case CORAL -> superStructure
+                          .quickGroundIntake(driverController.x())
+                          .withName("Quick Ground intake");
+                      case ALGAE -> superStructure
+                          .groundIntakeManual(driverController.x())
+                          .withName("Manual Ground intake");
+                    }));
 
     if (sensors.armSensor != null) {
       sensors
@@ -396,8 +428,21 @@ public class Controls {
                                         () -> getDriveY(),
                                         () -> getDriveRotate(),
                                         driverController.rightBumper()),
-                                    getAlgaeIntakeCommand())
-                                .withName("Algae score then intake");
+                                    Commands.deferredProxy(
+                                        () -> {
+                                          if (sensors.intakeSensor != null
+                                              && sensors.intakeSensor.booleanInGroundIntake()) {
+                                            return superStructure
+                                                .quickGroundIntake(driverController.x())
+                                                .withName("Quick ground intake after barge score");
+                                          } else {
+                                            return superStructure
+                                                .algaeStow()
+                                                .withName(
+                                                    "Algae pre-intake (stow) after barge score");
+                                          }
+                                        }))
+                                .withName("Barge Score");
                           };
                       CommandScheduler.getInstance().schedule(scoreCommand);
                     })
@@ -772,11 +817,6 @@ public class Controls {
     if (s.groundArm == null) {
       return;
     }
-    s.groundArm.setDefaultCommand(
-        s.groundArm
-            .moveToPosition(GroundArm.STOWED_POSITION)
-            .andThen(Commands.idle())
-            .withName("Ground stowed position wait"));
     operatorController
         .rightBumper()
         .whileTrue(
