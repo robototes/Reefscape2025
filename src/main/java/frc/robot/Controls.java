@@ -286,8 +286,8 @@ public class Controls {
                                   getAlgaeIntakeCommand(),
                                   Commands.deferredProxy(
                                       () -> {
-                                        if (sensors.armSensor != null
-                                            && sensors.armSensor.booleanInClaw()) {
+                                        if (sensors.intakeSensor != null
+                                            && sensors.intakeSensor.booleanInGroundIntake()) {
                                           return superStructure
                                               .quickGroundIntake(driverController.x())
                                               .withName(
@@ -430,8 +430,8 @@ public class Controls {
                                         driverController.rightBumper()),
                                     Commands.deferredProxy(
                                         () -> {
-                                          if (sensors.armSensor != null
-                                              && sensors.armSensor.booleanInClaw()) {
+                                          if (sensors.intakeSensor != null
+                                              && sensors.intakeSensor.booleanInGroundIntake()) {
                                             return superStructure
                                                 .quickGroundIntake(driverController.x())
                                                 .withName("Quick ground intake after barge score");

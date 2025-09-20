@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Millimeter;
 
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -58,5 +59,10 @@ public class IntakeSensor {
               return distance > INTAKE_LOWER_LIMIT && distance < INTAKE_UPPER_LIMIT;
             })
         .debounce(0.1);
+  }
+
+  public boolean booleanInGroundIntake() {
+    double distance = getSensorDistance().in(Meters);
+    return distance > INTAKE_LOWER_LIMIT && distance < INTAKE_UPPER_LIMIT;
   }
 }
