@@ -817,17 +817,6 @@ public class Controls {
     if (s.groundArm == null) {
       return;
     }
-    s.groundArm.setDefaultCommand(
-        Commands.deferredProxy(
-                () ->
-                    switch (scoringMode) {
-                      case CORAL -> s.groundArm
-                          .moveToPosition(GroundArm.STOWED_POSITION)
-                          .andThen(Commands.idle())
-                          .withName("Ground stowed position wait");
-                      case ALGAE -> Commands.none();
-                    })
-            .withName("GroundArm Default Command"));
     operatorController
         .rightBumper()
         .whileTrue(
