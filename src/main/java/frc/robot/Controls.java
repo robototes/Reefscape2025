@@ -403,6 +403,15 @@ public class Controls {
                           : Commands.none())
                   .withName("Automatic Intake"));
     }
+
+    if (s.climbPivotSubsystem.sensor != null) {
+      s.climbPivotSubsystem
+          .cageDetected()
+          .and(new Trigger(() -> s.climbPivotSubsystem.isClimbOut))
+          .and(RobotModeTriggers.teleop())
+          .onTrue(s.climbPivotSubsystem.toClimbed().withName("Automatic sensor Climbing"));
+    }
+
     driverController
         .rightTrigger()
         .onTrue(
