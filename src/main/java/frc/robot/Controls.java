@@ -426,6 +426,15 @@ public class Controls {
     };
   }
 
+  private Command getSoloCoralBranchHeightCommand() {
+    return switch (branchHeight) {
+      case CORAL_LEVEL_FOUR -> superStructure.coralLevelFour(soloController.rightBumper());
+      case CORAL_LEVEL_THREE -> superStructure.coralLevelThree(soloController.rightBumper());
+      case CORAL_LEVEL_TWO -> superStructure.coralLevelTwo(soloController.rightBumper());
+      case CORAL_LEVEL_ONE -> superStructure.coralLevelOne(soloController.rightBumper());
+    };
+  }
+
   private void configureElevatorBindings() {
     if (s.elevatorSubsystem == null) {
       return;
@@ -869,7 +878,7 @@ public class Controls {
             Commands.deferredProxy(
                     () ->
                         switch (scoringMode) {
-                          case CORAL -> getCoralBranchHeightCommand();
+                          case CORAL -> getSoloCoralBranchHeightCommand();
                           case ALGAE -> Commands.sequence(
                                   BargeAlign.bargeScore(
                                       s.drivebaseSubsystem,
@@ -895,7 +904,7 @@ public class Controls {
                     () -> {
                       Command scoreCommand =
                           switch (scoringMode) {
-                            case CORAL -> getCoralBranchHeightCommand();
+                            case CORAL -> getSoloCoralBranchHeightCommand();
                             case ALGAE -> Commands.sequence(
                                     superStructure.algaeProcessorScore(
                                         soloController.rightBumper()),
@@ -963,28 +972,25 @@ public class Controls {
     soloController
         .povDown()
         .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      switch (scoringMode) {
-                        case ALGAE:
-                          scoringMode = ScoringMode.CORAL;
-                          CommandScheduler.getInstance().schedule(superStructure.coralPreIntake());
-                          CommandScheduler.getInstance().schedule(s.climbPivotSubsystem.toStow());
-                          break;
-                        case CORAL:
-                          scoringMode = ScoringMode.ALGAE;
-                          CommandScheduler.getInstance().schedule(getAlgaeIntakeCommand());
-                          break;
-                      }
-                    })
+            Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE)
                 .alongWith(scoringModeSelectRumble())
-                .withName("Toggle Scoring Mode"));
+                .withName("Algae Scoring Mode"))
+        .onTrue(
+            Commands.runOnce(() -> CommandScheduler.getInstance().schedule(getAlgaeIntakeCommand()))
+                .withName("run algae intake"));
     // Funnel Out
-    soloController.povRight().onTrue(s.climbPivotSubsystem.toClimbed());
+    soloController.povLeft().onTrue(s.climbPivotSubsystem.toClimbed());
     // Funnel Climbed
-    soloController.povLeft().onTrue(s.climbPivotSubsystem.toClimbOut());
+    soloController.povRight().onTrue(s.climbPivotSubsystem.toClimbOut());
     // Funnel Stow
-    soloController.povUp().onTrue(superStructure.coralStow());
+    soloController
+        .povUp()
+        .onTrue(
+            Commands.runOnce(() -> scoringMode = ScoringMode.CORAL)
+                .alongWith(scoringModeSelectRumble())
+                .withName("Coral Scoring Mode"))
+        .onTrue(superStructure.coralPreIntake())
+        .onTrue(s.climbPivotSubsystem.toStow());
     // Arm manual
     soloController
         .rightStick()
