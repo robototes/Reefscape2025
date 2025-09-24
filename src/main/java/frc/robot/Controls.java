@@ -58,7 +58,7 @@ public class Controls {
   private final SuperStructure superStructure;
 
   private BranchHeight branchHeight = BranchHeight.CORAL_LEVEL_FOUR;
-  private ScoringMode scoringMode = ScoringMode.CORAL;
+  private ScoringMode scoringMode = ScoringMode.NOTHING;
   private AlgaeIntakeHeight algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
 
   // Swerve stuff
@@ -294,15 +294,16 @@ public class Controls {
                         })
                 .withName("Schedule processor score"));
 
-    operatorController
-        .leftBumper()
-        .onTrue(
-            Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE)
-                .alongWith(scoringModeSelectRumble())
-                .withName("Algae Scoring Mode"))
-        .onTrue(
-            Commands.runOnce(() -> CommandScheduler.getInstance().schedule(getAlgaeIntakeCommand()))
-                .withName("run algae intake"));
+    // operatorController
+    //     .leftBumper()
+    //     .onTrue(
+    //         Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE)
+    //             .alongWith(scoringModeSelectRumble())
+    //             .withName("Algae Scoring Mode"))
+    //     .onTrue(
+    //         Commands.runOnce(() ->
+    // CommandScheduler.getInstance().schedule(getAlgaeIntakeCommand()))
+    //             .withName("run algae intake"));
     operatorController // should work???
         .leftTrigger()
         .onTrue(
@@ -887,13 +888,13 @@ public class Controls {
                         switch (scoringMode) {
                             // Algae reef intake
                           case NOTHING -> getAlgaeIntakeCommand()
-                              .until(sensors.armSensor.inClaw())
+                              .andThen(Commands.waitUntil(sensors.armSensor.inClaw()))
                               .andThen(Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE))
-                              .alongWith(getAlgaeIntakeCommand());
+                              .andThen(getAlgaeIntakeCommand());
                             // Coral score, and then go to nothing mode and stow
                           case CORAL -> getSoloCoralBranchHeightCommand()
                               .andThen(Commands.runOnce(() -> scoringMode = ScoringMode.NOTHING))
-                              .alongWith(superStructure.coralStow());
+                              .alongWith(superStructure.algaeStow());
                             // Algae mode scores in the barge, and then goes to nothing and stows
                           case ALGAE -> Commands.sequence(
                                   BargeAlign.bargeScore(
@@ -904,7 +905,7 @@ public class Controls {
                                       () -> getSoloDriveRotate(),
                                       soloController.rightBumper()),
                                   Commands.runOnce(() -> scoringMode = ScoringMode.NOTHING),
-                                  superStructure.coralStow())
+                                  superStructure.algaeStow())
                               .withName("Algae score then intake");
                         })
                 .withName("Schedule processor score"));
@@ -932,14 +933,14 @@ public class Controls {
                               // Run scoring command, and then go to nothing mode and stow
                             case CORAL -> getSoloCoralBranchHeightCommand()
                                 .andThen(Commands.runOnce(() -> scoringMode = ScoringMode.NOTHING))
-                                .alongWith(superStructure.coralStow());
+                                .andThen(superStructure.algaeStow());
 
                               // Score algae, and then stow and nothing mode
                             case ALGAE -> Commands.sequence(
                                     superStructure.algaeProcessorScore(
                                         soloController.rightBumper()),
                                     Commands.waitSeconds(0.7),
-                                    superStructure.coralStow(),
+                                    superStructure.algaeStow(),
                                     Commands.runOnce(() -> scoringMode = ScoringMode.NOTHING))
                                 .withName("Processor score");
                           };
@@ -962,12 +963,11 @@ public class Controls {
                         // Algae ground intake, then stow and go to algae mode
                       case NOTHING -> superStructure
                           .algaeGroundIntake()
-                          .until(sensors.armSensor.inClaw())
+                          .andThen(Commands.waitUntil(sensors.armSensor.inClaw()))
                           .andThen(superStructure.algaeStow())
-                          .alongWith(Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE))
+                          .andThen(Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE))
                           .withName("Algae ground intake");
-                      case CORAL -> null;
-                      case ALGAE -> null;
+                      default -> Commands.waitSeconds(0);
                     }));
 
     // Coral Ground Intake
@@ -982,9 +982,9 @@ public class Controls {
                           .quickGroundIntake(soloController.x())
                           .until(sensors.armSensor.inClaw())
                           .andThen(Commands.runOnce(() -> scoringMode = ScoringMode.CORAL))
-                          .alongWith(superStructure.coralStow())
+                          .andThen(superStructure.algaeStow())
                           .withName("Quick Gound intake");
-                      default -> null;
+                      default -> Commands.waitSeconds(0);
                     }));
 
     // Scoring levels coral and algae intake heights
@@ -1011,7 +1011,7 @@ public class Controls {
                         // case ALGAE -> null;
                       default -> selectScoringHeight(
                               BranchHeight.CORAL_LEVEL_THREE,
-                              AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
+                              AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
                           .withName("coral level 3, algae level 2-3");
                     }));
     soloController
@@ -1059,11 +1059,17 @@ public class Controls {
                 .withName("Reset gyro"));
 
     // Funnel Out
-    soloController.povLeft().onTrue(s.climbPivotSubsystem.toClimbed());
+    soloController.povLeft().onTrue(s.climbPivotSubsystem.toClimbOut());
     // Funnel Climbed
-    soloController.povRight().onTrue(s.climbPivotSubsystem.toClimbOut());
+    soloController.povRight().onTrue(s.climbPivotSubsystem.toClimbed());
     // Funnel Stow
     soloController.povUp().onTrue(s.climbPivotSubsystem.toStow());
+    // Force nothing mode
+    soloController
+        .povDown()
+        .onTrue(
+            Commands.runOnce(() -> scoringMode = ScoringMode.NOTHING)
+                .andThen(superStructure.algaeStow()));
 
     // Arm manual
     soloController

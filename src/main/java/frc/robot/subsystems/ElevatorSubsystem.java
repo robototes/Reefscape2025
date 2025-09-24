@@ -41,7 +41,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double ALGAE_LEVEL_TWO_THREE_FLING = 16;
   public static final double ALGAE_LEVEL_THREE_FOUR = 21;
   public static final double ALGAE_LEVEL_THREE_FOUR_FLING = 25;
-  public static final double ALGAE_STOWED = 2;
+  public static final double ALGAE_STOWED = 4;
   public static final double ALGAE_PROCESSOR_SCORE = 2;
   public static final double ALGAE_NET_SCORE = 38; // untested
   public static final double ALGAE_GROUND_INTAKE = 0.05;

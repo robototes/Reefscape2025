@@ -87,8 +87,10 @@ public class ElevatorLight extends SubsystemBase {
           ScoringMode currentMode = scoringMode.get();
           if (currentMode == ScoringMode.ALGAE) {
             updateLEDs(LEDPattern.solid(Color.kTeal));
-          } else {
+          } else if (currentMode == ScoringMode.CORAL) {
             updateLEDs(LEDPattern.solid(Color.kWhite));
+          } else if (currentMode == ScoringMode.NOTHING) {
+            updateLEDs(LEDPattern.solid(Color.kDarkMagenta));
           }
         })
         .withName("Animate Scoring Mode");
