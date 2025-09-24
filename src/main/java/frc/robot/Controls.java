@@ -36,6 +36,7 @@ import frc.robot.util.AlgaeIntakeHeight;
 import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
 import frc.robot.util.ScoringMode;
+import frc.robot.util.SoloScoringMode;
 import java.util.function.BooleanSupplier;
 
 public class Controls {
@@ -59,6 +60,8 @@ public class Controls {
 
   private BranchHeight branchHeight = BranchHeight.CORAL_LEVEL_FOUR;
   private ScoringMode scoringMode = ScoringMode.CORAL;
+  private ScoringMode intakeMode = ScoringMode.CORAL;
+  private SoloScoringMode soloScoringMode = SoloScoringMode.NO_GAME_PIECE;
   private AlgaeIntakeHeight algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
 
   // Swerve stuff
@@ -377,6 +380,23 @@ public class Controls {
                   .withName("Automatic Intake"));
     }
 
+    if (sensors.armSensor != null) {
+      sensors
+          .armSensor
+          .inClaw()
+          .and(RobotModeTriggers.teleop())
+          .onTrue(
+              Commands.runOnce(
+                      () -> {
+                        if (intakeMode == ScoringMode.CORAL) {
+                          soloScoringMode = SoloScoringMode.CORAL_IN_CLAW;
+                        } else {
+                          soloScoringMode = SoloScoringMode.ALGAE_IN_CLAW;
+                        }
+                      })
+                  .withName("Set solo scoring mode"));
+    }
+
     if (s.climbPivotSubsystem.sensor != null) {
       s.climbPivotSubsystem
           .cageDetected()
@@ -428,10 +448,18 @@ public class Controls {
 
   private Command getSoloCoralBranchHeightCommand() {
     return switch (branchHeight) {
-      case CORAL_LEVEL_FOUR -> superStructure.coralLevelFour(soloController.rightBumper());
-      case CORAL_LEVEL_THREE -> superStructure.coralLevelThree(soloController.rightBumper());
-      case CORAL_LEVEL_TWO -> superStructure.coralLevelTwo(soloController.rightBumper());
-      case CORAL_LEVEL_ONE -> superStructure.coralLevelOne(soloController.rightBumper());
+      case CORAL_LEVEL_FOUR -> superStructure
+          .coralLevelFour(soloController.rightBumper())
+          .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
+      case CORAL_LEVEL_THREE -> superStructure
+          .coralLevelThree(soloController.rightBumper())
+          .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
+      case CORAL_LEVEL_TWO -> superStructure
+          .coralLevelTwo(soloController.rightBumper())
+          .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
+      case CORAL_LEVEL_ONE -> superStructure
+          .coralLevelOne(soloController.rightBumper())
+          .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
     };
   }
 
@@ -805,7 +833,7 @@ public class Controls {
             () -> {
               branchHeight = b;
               algaeIntakeHeight = a;
-              if (scoringMode == ScoringMode.ALGAE
+              if (intakeMode == ScoringMode.ALGAE
                   && (sensors.armSensor == null || !sensors.armSensor.booleanInClaw())) {
                 CommandScheduler.getInstance().schedule(getAlgaeIntakeCommand());
               }
@@ -871,53 +899,70 @@ public class Controls {
   }
 
   private void configureSoloControllerBindings() {
-    // Barge + Auto align left
+    // Barge + Auto align left + Select scoring mode Algae
     soloController
         .leftTrigger()
         .onTrue(
             Commands.deferredProxy(
-                    () ->
-                        switch (scoringMode) {
-                          case CORAL -> getSoloCoralBranchHeightCommand();
-                          case ALGAE -> Commands.sequence(
-                                  BargeAlign.bargeScore(
-                                      s.drivebaseSubsystem,
-                                      superStructure,
-                                      () -> getSoloDriveX(),
-                                      () -> getSoloDriveY(),
-                                      () -> getSoloDriveRotate(),
-                                      soloController.rightBumper()),
-                                  getAlgaeIntakeCommand())
-                              .withName("Algae score then intake");
-                        })
-                .withName("Schedule processor score"));
+                () ->
+                    switch (soloScoringMode) {
+                      case CORAL_IN_CLAW -> getSoloCoralBranchHeightCommand();
+                      case ALGAE_IN_CLAW -> Commands.sequence(
+                              BargeAlign.bargeScore(
+                                  s.drivebaseSubsystem,
+                                  superStructure,
+                                  () -> getSoloDriveX(),
+                                  () -> getSoloDriveY(),
+                                  () -> getSoloDriveRotate(),
+                                  soloController.rightBumper()),
+                              getAlgaeIntakeCommand()
+                                  .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE))
+                          .withName("Algae score then intake");
+                      case NO_GAME_PIECE -> Commands.parallel(
+                          Commands.runOnce(() -> intakeMode = ScoringMode.ALGAE)
+                              .alongWith(scoringModeSelectRumble())
+                              .withName("Algae Scoring Mode"),
+                          Commands.runOnce(
+                                  () ->
+                                      CommandScheduler.getInstance()
+                                          .schedule(getAlgaeIntakeCommand()))
+                              .withName("Run Algae Intake"));
+                    }));
     soloController
         .leftTrigger()
-        .and(() -> scoringMode == ScoringMode.CORAL)
+        .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
         .whileTrue(AutoAlign.autoAlignLeft(s.drivebaseSubsystem, this));
-    // Processor + Auto align right
+    // Processor + Auto align right + Select scoring mode Coral
     soloController
         .rightTrigger()
         .onTrue(
             Commands.runOnce(
                     () -> {
                       Command scoreCommand =
-                          switch (scoringMode) {
-                            case CORAL -> getSoloCoralBranchHeightCommand();
-                            case ALGAE -> Commands.sequence(
+                          switch (soloScoringMode) {
+                            case CORAL_IN_CLAW -> getSoloCoralBranchHeightCommand();
+                            case ALGAE_IN_CLAW -> Commands.sequence(
                                     superStructure.algaeProcessorScore(
                                         soloController.rightBumper()),
                                     Commands.waitSeconds(0.7),
-                                    getAlgaeIntakeCommand())
+                                    getAlgaeIntakeCommand()
+                                        .andThen(
+                                            () -> soloScoringMode = soloScoringMode.NO_GAME_PIECE))
                                 .withName("Processor score");
+                            case NO_GAME_PIECE -> Commands.parallel(
+                                Commands.runOnce(() -> intakeMode = ScoringMode.CORAL)
+                                    .alongWith(scoringModeSelectRumble())
+                                    .withName("Coral Scoring Mode"),
+                                superStructure.coralPreIntake(),
+                                s.climbPivotSubsystem.toStow());
                           };
                       CommandScheduler.getInstance().schedule(scoreCommand);
                     })
                 .withName("score"));
     soloController
         .rightTrigger()
-        .and(() -> scoringMode == ScoringMode.CORAL)
+        .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
         .whileTrue(AutoAlign.autoAlignRight(s.drivebaseSubsystem, this));
     // Ground Intake
@@ -968,29 +1013,10 @@ public class Controls {
                 .runOnce(() -> s.drivebaseSubsystem.seedFieldCentric())
                 .alongWith(rumble(soloController, 0.5, Seconds.of(0.3)))
                 .withName("Reset gyro"));
-    // Scoring mode toggle
-    soloController
-        .povDown()
-        .onTrue(
-            Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE)
-                .alongWith(scoringModeSelectRumble())
-                .withName("Algae Scoring Mode"))
-        .onTrue(
-            Commands.runOnce(() -> CommandScheduler.getInstance().schedule(getAlgaeIntakeCommand()))
-                .withName("run algae intake"));
     // Funnel Out
-    soloController.povLeft().onTrue(s.climbPivotSubsystem.toClimbed());
+    soloController.povLeft().onTrue(s.climbPivotSubsystem.toClimbOut());
     // Funnel Climbed
-    soloController.povRight().onTrue(s.climbPivotSubsystem.toClimbOut());
-    // Funnel Stow
-    soloController
-        .povUp()
-        .onTrue(
-            Commands.runOnce(() -> scoringMode = ScoringMode.CORAL)
-                .alongWith(scoringModeSelectRumble())
-                .withName("Coral Scoring Mode"))
-        .onTrue(superStructure.coralPreIntake())
-        .onTrue(s.climbPivotSubsystem.toStow());
+    soloController.povRight().onTrue(s.climbPivotSubsystem.toClimbed());
     // Arm manual
     soloController
         .rightStick()
