@@ -32,6 +32,7 @@ import frc.robot.subsystems.GroundArm;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoAlign;
 import frc.robot.subsystems.auto.BargeAlign;
+import frc.robot.subsystems.auto.AutoAlgaeElevatorCommand;
 import frc.robot.util.AlgaeIntakeHeight;
 import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
@@ -396,6 +397,17 @@ public class Controls {
                       })
                   .withName("Set solo scoring mode"));
     }
+
+    if (s.elevatorSubsystem != null) {
+        Commands.runOnce(
+            () -> {
+                if (intakeMode == ScoringMode.ALGAE) {
+                    new AutoAlgaeElevatorCommand(s.drivebaseSubsystem, s.elevatorSubsystem).schedule();
+                }
+            }
+        ).withName("Run algae elevator if enabled").schedule();
+    }
+    
 
     if (s.climbPivotSubsystem.sensor != null) {
       s.climbPivotSubsystem
