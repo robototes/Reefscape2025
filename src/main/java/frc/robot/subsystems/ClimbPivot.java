@@ -54,9 +54,9 @@ public class ClimbPivot extends SubsystemBase {
   private final double CLIMB_HOLD_STOWED = -0.001;
   private final double CLIMB_HOLD_CLIMBOUT = -0.0;
   private final double CLIMB_HOLD_CLIMBED = -0.0705;
-  private final double CLIMB_IN_SPEED = -0.75;
+  private final double CLIMB_IN_SPEED = -1.0;
 
-  private final double climbInKp = 30;
+  private final double climbInKp = 50;
   private final double climbOutKp = 50;
 
   // positions for relation between motor encoder and WCP encoder

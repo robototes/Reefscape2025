@@ -39,17 +39,19 @@ import frc.robot.util.ScoringMode;
 import java.util.function.BooleanSupplier;
 
 public class Controls {
-  private static final int DRIVER_CONTROLLER_PORT = 0;
-  private static final int OPERATOR_CONTROLLER_PORT = 1;
-  private static final int ARM_PIVOT_SPINNY_CLAW_CONTROLLER_PORT = 2;
-  private static final int ELEVATOR_CONTROLLER_PORT = 3;
-  private static final int CLIMB_TEST_CONTROLLER_PORT = 4;
+  private static final int DRIVER_CONTROLLER_PORT = 1;
+  private static final int OPERATOR_CONTROLLER_PORT = 2;
+  private static final int ARM_PIVOT_SPINNY_CLAW_CONTROLLER_PORT = 3;
+  private static final int ELEVATOR_CONTROLLER_PORT = 4;
+  private static final int CLIMB_TEST_CONTROLLER_PORT = 5;
+  private static final int SOLO_CONTROLLER_PORT = 0;
 
   private final CommandXboxController driverController;
   private final CommandXboxController operatorController;
   private final CommandXboxController armPivotSpinnyClawController;
   private final CommandXboxController elevatorTestController;
   private final CommandXboxController climbTestController;
+  private final CommandXboxController soloController;
 
   private final Subsystems s;
   private final Sensors sensors;
@@ -90,6 +92,7 @@ public class Controls {
     armPivotSpinnyClawController = new CommandXboxController(ARM_PIVOT_SPINNY_CLAW_CONTROLLER_PORT);
     elevatorTestController = new CommandXboxController(ELEVATOR_CONTROLLER_PORT);
     climbTestController = new CommandXboxController(CLIMB_TEST_CONTROLLER_PORT);
+    soloController = new CommandXboxController(SOLO_CONTROLLER_PORT);
     this.s = s;
     this.sensors = sensors;
     this.superStructure = superStructure;
@@ -104,6 +107,7 @@ public class Controls {
     configureAutoAlignBindings();
     configureGroundSpinnyBindings();
     configureGroundArmBindings();
+    configureSoloControllerBindings();
   }
 
   private Trigger connected(CommandXboxController controller) {
@@ -156,9 +160,10 @@ public class Controls {
             .applyRequest(
                 () ->
                     drive
-                        .withVelocityX(getDriveX())
-                        .withVelocityY(getDriveY())
-                        .withRotationalRate(getDriveRotate()))
+                        .withVelocityX(soloController.isConnected() ? getSoloDriveX() : getDriveX())
+                        .withVelocityY(soloController.isConnected() ? getSoloDriveY() : getDriveY())
+                        .withRotationalRate(
+                            soloController.isConnected() ? getSoloDriveRotate() : getDriveRotate()))
             .withName("Drive"));
 
     // various former controls that were previously used and could be referenced in the future
@@ -279,6 +284,7 @@ public class Controls {
                     () ->
                         switch (scoringMode) {
                           case CORAL -> getCoralBranchHeightCommand();
+                          case NOTHING -> getCoralBranchHeightCommand();
                           case ALGAE -> Commands.sequence(
                                   superStructure.algaeProcessorScore(
                                       driverController.rightBumper()),
@@ -312,6 +318,7 @@ public class Controls {
                     () ->
                         switch (scoringMode) {
                           case CORAL -> superStructure.coralStow();
+                          case NOTHING -> superStructure.coralStow();
                           case ALGAE -> superStructure.algaeStow();
                         })
                 .withName("Stow"));
@@ -322,6 +329,7 @@ public class Controls {
                     () ->
                         switch (scoringMode) {
                           case CORAL -> superStructure.coralPreIntake();
+                          case NOTHING -> superStructure.coralPreIntake();
                           case ALGAE -> superStructure.algaeStow();
                         })
                 .withName("pre-intake, algae stow"));
@@ -344,6 +352,7 @@ public class Controls {
                                         : Commands.none())
                                 .withName("Manual Coral Intake");
                             case ALGAE -> getAlgaeIntakeCommand();
+                            case NOTHING -> getAlgaeIntakeCommand();
                           };
                       CommandScheduler.getInstance().schedule(intakeCommand);
                     })
@@ -363,6 +372,7 @@ public class Controls {
           .onTrue(
               superStructure
                   .coralIntake()
+                  .alongWith(Commands.runOnce(() -> scoringMode = ScoringMode.CORAL))
                   .alongWith(
                       s.elevatorLEDSubsystem != null
                           ? s.elevatorLEDSubsystem
@@ -388,6 +398,7 @@ public class Controls {
                       Command scoreCommand =
                           switch (scoringMode) {
                             case CORAL -> getCoralBranchHeightCommand();
+                            case NOTHING -> getCoralBranchHeightCommand();
                             case ALGAE -> Commands.sequence(
                                     BargeAlign.bargeScore(
                                         s.drivebaseSubsystem,
@@ -418,6 +429,15 @@ public class Controls {
       case CORAL_LEVEL_THREE -> superStructure.coralLevelThree(driverController.rightBumper());
       case CORAL_LEVEL_TWO -> superStructure.coralLevelTwo(driverController.rightBumper());
       case CORAL_LEVEL_ONE -> superStructure.coralLevelOne(driverController.rightBumper());
+    };
+  }
+
+  private Command getSoloCoralBranchHeightCommand() {
+    return switch (branchHeight) {
+      case CORAL_LEVEL_FOUR -> superStructure.coralLevelFour(soloController.rightBumper());
+      case CORAL_LEVEL_THREE -> superStructure.coralLevelThree(soloController.rightBumper());
+      case CORAL_LEVEL_TWO -> superStructure.coralLevelTwo(soloController.rightBumper());
+      case CORAL_LEVEL_ONE -> superStructure.coralLevelOne(soloController.rightBumper());
     };
   }
 
@@ -666,6 +686,7 @@ public class Controls {
                     return switch (scoringMode) {
                       case CORAL -> Commands.none().withName("No manual spit - Coral mode");
                       case ALGAE -> s.spinnyClawSubsytem.algaeExtakePower();
+                      case NOTHING -> s.spinnyClawSubsytem.algaeExtakePower();
                     };
                   }
                 }));
@@ -829,5 +850,236 @@ public class Controls {
     if (!DriverStation.isAutonomous()) {
       operatorController.getHID().setRumble(RumbleType.kBothRumble, vibration);
     }
+  }
+
+  // Drive for Solo controller
+  // takes the X value from the joystic, and applies a deadband and input scaling
+  private double getSoloDriveX() {
+    // Joystick +Y is back
+    // Robot +X is forward
+    double input = MathUtil.applyDeadband(-soloController.getLeftY(), 0.1);
+    return input * MaxSpeed;
+  }
+
+  // takes the Y value from the joystic, and applies a deadband and input scaling
+  private double getSoloDriveY() {
+    // Joystick +X is right
+    // Robot +Y is left
+    double input = MathUtil.applyDeadband(-soloController.getLeftX(), 0.1);
+    return input * MaxSpeed;
+  }
+
+  // takes the rotation value from the joystic, and applies a deadband and input scaling
+  private double getSoloDriveRotate() {
+    // Joystick +X is right
+    // Robot +angle is CCW (left)
+    double input = MathUtil.applyDeadband(-soloController.getRightX(), 0.1);
+    return input * MaxSpeed;
+  }
+
+  private void configureSoloControllerBindings() {
+    // Barge + Auto align left + Algae reef intake
+    soloController
+        .leftTrigger()
+        .onTrue(
+            Commands.deferredProxy(
+                    () ->
+                        switch (scoringMode) {
+                            // Algae reef intake
+                          case NOTHING -> getAlgaeIntakeCommand()
+                              .until(sensors.armSensor.inClaw())
+                              .andThen(Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE))
+                              .alongWith(getAlgaeIntakeCommand());
+                            // Coral score, and then go to nothing mode and stow
+                          case CORAL -> getSoloCoralBranchHeightCommand()
+                              .andThen(Commands.runOnce(() -> scoringMode = ScoringMode.NOTHING))
+                              .alongWith(superStructure.coralStow());
+                            // Algae mode scores in the barge, and then goes to nothing and stows
+                          case ALGAE -> Commands.sequence(
+                                  BargeAlign.bargeScore(
+                                      s.drivebaseSubsystem,
+                                      superStructure,
+                                      () -> getSoloDriveX(),
+                                      () -> getSoloDriveY(),
+                                      () -> getSoloDriveRotate(),
+                                      soloController.rightBumper()),
+                                  Commands.runOnce(() -> scoringMode = ScoringMode.NOTHING),
+                                  superStructure.coralStow())
+                              .withName("Algae score then intake");
+                        })
+                .withName("Schedule processor score"));
+    soloController
+        .leftTrigger()
+        .and(() -> scoringMode == ScoringMode.CORAL)
+        .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
+        .whileTrue(AutoAlign.autoAlignLeft(s.drivebaseSubsystem, this));
+
+    // Processor + Auto align right + Coral funnel intake
+    soloController
+        .rightTrigger()
+        .onTrue(
+            Commands.runOnce(
+                    () -> {
+                      Command scoreCommand =
+                          switch (scoringMode) {
+                              // Go to pre-intake position. Coral mode is activated from the
+                              // automatic intake sequence
+                            case NOTHING -> superStructure
+                                .coralPreIntake()
+                                .alongWith(s.climbPivotSubsystem.toStow())
+                                .withName("Coral Funnel Intake");
+
+                              // Run scoring command, and then go to nothing mode and stow
+                            case CORAL -> getSoloCoralBranchHeightCommand()
+                                .andThen(Commands.runOnce(() -> scoringMode = ScoringMode.NOTHING))
+                                .alongWith(superStructure.coralStow());
+
+                              // Score algae, and then stow and nothing mode
+                            case ALGAE -> Commands.sequence(
+                                    superStructure.algaeProcessorScore(
+                                        soloController.rightBumper()),
+                                    Commands.waitSeconds(0.7),
+                                    superStructure.coralStow(),
+                                    Commands.runOnce(() -> scoringMode = ScoringMode.NOTHING))
+                                .withName("Processor score");
+                          };
+                      CommandScheduler.getInstance().schedule(scoreCommand);
+                    })
+                .withName("score"));
+    soloController
+        .rightTrigger()
+        .and(() -> scoringMode == ScoringMode.CORAL)
+        .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
+        .whileTrue(AutoAlign.autoAlignRight(s.drivebaseSubsystem, this));
+
+    // Algae Ground Intake
+    soloController
+        .leftBumper()
+        .onTrue(
+            Commands.deferredProxy(
+                () ->
+                    switch (scoringMode) {
+                        // Algae ground intake, then stow and go to algae mode
+                      case NOTHING -> superStructure
+                          .algaeGroundIntake()
+                          .until(sensors.armSensor.inClaw())
+                          .andThen(superStructure.algaeStow())
+                          .alongWith(Commands.runOnce(() -> scoringMode = ScoringMode.ALGAE))
+                          .withName("Algae ground intake");
+                      case CORAL -> null;
+                      case ALGAE -> null;
+                    }));
+
+    // Coral Ground Intake
+    soloController
+        .rightBumper()
+        .onTrue(
+            Commands.deferredProxy(
+                () ->
+                    switch (scoringMode) {
+                        // Ground intake coral, and then stow and go to coral mode
+                      case NOTHING -> superStructure
+                          .quickGroundIntake(soloController.x())
+                          .until(sensors.armSensor.inClaw())
+                          .andThen(Commands.runOnce(() -> scoringMode = ScoringMode.CORAL))
+                          .alongWith(superStructure.coralStow())
+                          .withName("Quick Gound intake");
+                      default -> null;
+                    }));
+
+    // Scoring levels coral and algae intake heights
+    soloController
+        .y()
+        .onTrue(
+            Commands.deferredProxy(
+                () ->
+                    switch (scoringMode) {
+                        // Algae mode may want special behaviour in the future
+                        // case ALGAE -> null;
+                      default -> selectScoringHeight(
+                              BranchHeight.CORAL_LEVEL_FOUR,
+                              AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR)
+                          .withName("coral level 4, algae level 3-4");
+                    }));
+    soloController
+        .x()
+        .onTrue(
+            Commands.deferredProxy(
+                () ->
+                    switch (scoringMode) {
+                        // TODO implement supercycling ground intake
+                        // case ALGAE -> null;
+                      default -> selectScoringHeight(
+                              BranchHeight.CORAL_LEVEL_THREE,
+                              AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
+                          .withName("coral level 3, algae level 2-3");
+                    }));
+    soloController
+        .b()
+        .onTrue(
+            Commands.deferredProxy(
+                () ->
+                    switch (scoringMode) {
+                        // TODO implement supercycling ground intake
+                        // case ALGAE -> null;
+                      default -> selectScoringHeight(
+                              BranchHeight.CORAL_LEVEL_TWO, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
+                          .withName("coral level 2, algae level 2-3");
+                    }));
+    soloController
+        .a()
+        .onTrue(
+            Commands.deferredProxy(
+                () ->
+                    switch (scoringMode) {
+                        // Algae mode may want special behaviour in the future
+                        // case ALGAE -> null;
+                      default -> selectScoringHeight(
+                              BranchHeight.CORAL_LEVEL_ONE, AlgaeIntakeHeight.ALGAE_LEVEL_TWO_THREE)
+                          .withName("coral level 1, algae level 2-3");
+                    }));
+
+    // Zero Elevator
+    soloController
+        .back()
+        .onTrue(
+            Commands.parallel(
+                    s.elevatorSubsystem.resetPosZero(),
+                    rumble(soloController, 0.5, Seconds.of(0.3)))
+                .ignoringDisable(true)
+                .withName("Reset elevator zero"));
+
+    // Reset gyro
+    soloController
+        .start()
+        .onTrue(
+            s.drivebaseSubsystem
+                .runOnce(() -> s.drivebaseSubsystem.seedFieldCentric())
+                .alongWith(rumble(soloController, 0.5, Seconds.of(0.3)))
+                .withName("Reset gyro"));
+
+    // Funnel Out
+    soloController.povLeft().onTrue(s.climbPivotSubsystem.toClimbed());
+    // Funnel Climbed
+    soloController.povRight().onTrue(s.climbPivotSubsystem.toClimbOut());
+    // Funnel Stow
+    soloController.povUp().onTrue(s.climbPivotSubsystem.toStow());
+
+    // Arm manual
+    soloController
+        .rightStick()
+        .whileTrue(
+            s.armPivotSubsystem
+                .startMovingVoltage(() -> Volts.of(3 * soloController.getRightY()))
+                .withName("Arm Manual Control"));
+
+    // Elevator manual
+    soloController
+        .leftStick()
+        .whileTrue(
+            s.elevatorSubsystem
+                .startMovingVoltage(
+                    () -> Volts.of(ElevatorSubsystem.UP_VOLTAGE * -soloController.getLeftY()))
+                .withName("Elevator Manual Control"));
   }
 }
