@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.Optional;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
@@ -25,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 import frc.robot.libs.LimelightHelpers;
 import frc.robot.libs.LimelightHelpers.PoseEstimate;
-
+import java.util.Optional;
 
 public class VisionSubsystem extends SubsystemBase {
   // Limelight names must match your NT names
@@ -109,31 +107,27 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     double rawTimestampSeconds = Timer.getFPGATimestamp();
-    double captureTimestampSeconds =
-        rawTimestampSeconds - (estimate.latency) / 1000.0;
+    double captureTimestampSeconds = rawTimestampSeconds - (estimate.latency) / 1000.0;
 
     Pose2d fieldPose2d = estimate.pose;
     rawFieldPoseEntry.set(fieldPose2d);
 
     if (disableVision.getBoolean(false)) return;
 
-    
-
     // distance to closest fiducial
     double distanceMeters = Distance;
     if (estimate.tagCount > 0) {
-      for (LimelightHelpers.RawFiducial rf : estimate.rawFiducials){
+      for (LimelightHelpers.RawFiducial rf : estimate.rawFiducials) {
         double ambiguity = rf.ambiguity;
         Optional<Pose3d> tagPose = fieldLayout.getTagPose(rf.id);
         if (tagPose.isPresent()) {
-          distanceMeters =
-              fieldPose2d.getTranslation().getDistance(tagPose.get().toPose2d().getTranslation());
+          distanceMeters = rf.distToCamera;
         }
-        if (ambiguity == 0){
+
+        if (ambiguity == 0) {
           return;
         }
       }
-      
     }
 
     // // filter invalid tags by alliance reef
