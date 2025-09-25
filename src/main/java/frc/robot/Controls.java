@@ -411,14 +411,6 @@ public class Controls {
                   .withName("Clear solo scoring mode"));
     }
 
-    if (s.elevatorSubsystem != null) {
-      if (intakeMode == ScoringMode.ALGAE && soloScoringMode == SoloScoringMode.NO_GAME_PIECE) {
-        new AutoAlgaeElevatorCommand(s.drivebaseSubsystem, s.elevatorSubsystem)
-            .withName("Auto Algae Elevator")
-            .schedule();
-      }
-    }
-
     if (s.climbPivotSubsystem.sensor != null) {
       s.climbPivotSubsystem
           .cageDetected()
@@ -459,6 +451,14 @@ public class Controls {
     };
   }
 
+  private Command getAlgaeIntakeCommandWithOutElevator() {
+    return switch (algaeIntakeHeight) {
+      case ALGAE_LEVEL_THREE_FOUR -> superStructure.algaeLevelThreeFourIntakeWithoutElevator();
+      case ALGAE_LEVEL_TWO_THREE -> superStructure.algaeLevelTwoThreeIntakeWithoutElevator();
+      case ALGAE_LEVEL_GROUND -> superStructure.algaeGroundIntake();
+    };
+  }
+
   private Command getCoralBranchHeightCommand() {
     return switch (branchHeight) {
       case CORAL_LEVEL_FOUR -> superStructure.coralLevelFour(driverController.rightBumper());
@@ -488,6 +488,11 @@ public class Controls {
   private void configureElevatorBindings() {
     if (s.elevatorSubsystem == null) {
       return;
+    }
+    if (intakeMode == ScoringMode.ALGAE && soloScoringMode == SoloScoringMode.NO_GAME_PIECE) {
+      s.elevatorSubsystem.setDefaultCommand(
+          new AutoAlgaeElevatorCommand(s.drivebaseSubsystem, s.elevatorSubsystem)
+              .withName("Auto Algae Elevator"));
     }
     RobotModeTriggers.disabled().onTrue(s.elevatorSubsystem.stop());
     // Controls binding goes here
@@ -956,7 +961,7 @@ public class Controls {
                           Commands.runOnce(
                                   () ->
                                       CommandScheduler.getInstance()
-                                          .schedule(getAlgaeIntakeCommand()))
+                                          .schedule(getAlgaeIntakeCommandWithOutElevator()))
                               .withName("Run Algae Intake"));
                     }));
     soloController

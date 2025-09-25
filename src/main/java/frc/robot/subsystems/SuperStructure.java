@@ -393,6 +393,20 @@ public class SuperStructure {
         .withName("Algae Ground Intake");
   }
 
+  public Command algaeLevelThreeFourIntakeWithoutElevator() { // removes algae from upper reef
+    return Commands.sequence(
+            Commands.parallel(
+                spinnyClaw.algaeIntakePower(), armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE)))
+        .withName("Algae L3-L4 Intake");
+  }
+
+  public Command algaeLevelTwoThreeIntakeWithoutElevator() { // removes algae from lower reef
+    return Commands.sequence(
+            Commands.parallel(
+                spinnyClaw.algaeIntakePower(), armPivot.moveToPosition(ArmPivot.ALGAE_REMOVE)))
+        .withName("Algae L2-L3 Intake");
+  }
+
   public Command algaeStow() { // holds algae
     return Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.ALGAE_STOWED),
