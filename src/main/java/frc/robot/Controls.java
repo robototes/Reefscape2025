@@ -926,8 +926,8 @@ public class Controls {
                                   () -> getSoloDriveY(),
                                   () -> getSoloDriveRotate(),
                                   soloController.rightBumper()),
-                              getAlgaeIntakeCommand()
-                                  .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE))
+                              Commands.runOnce(
+                                  () -> soloScoringMode = soloScoringMode.NO_GAME_PIECE))
                           .withName("Algae score then intake");
                       case NO_GAME_PIECE -> Commands.parallel(
                           Commands.runOnce(() -> intakeMode = ScoringMode.ALGAE)
@@ -957,9 +957,8 @@ public class Controls {
                                     superStructure.algaeProcessorScore(
                                         soloController.rightBumper()),
                                     Commands.waitSeconds(0.7),
-                                    getAlgaeIntakeCommand()
-                                        .andThen(
-                                            () -> soloScoringMode = soloScoringMode.NO_GAME_PIECE))
+                                    Commands.runOnce(
+                                        () -> soloScoringMode = soloScoringMode.NO_GAME_PIECE))
                                 .withName("Processor score");
                             case NO_GAME_PIECE -> Commands.parallel(
                                 Commands.runOnce(() -> intakeMode = ScoringMode.CORAL)
@@ -981,7 +980,7 @@ public class Controls {
         .leftBumper()
         .onTrue(
             superStructure
-                .quickGroundIntake(soloController.leftBumper())
+                .quickGroundIntake(soloController.povUp())
                 .withName("Quick Gound intake"));
     // Scoring levels coral and algae intake heights
     soloController
@@ -1028,6 +1027,19 @@ public class Controls {
     soloController.povLeft().onTrue(s.climbPivotSubsystem.toClimbOut());
     // Funnel Climbed
     soloController.povRight().onTrue(s.climbPivotSubsystem.toClimbed());
+    // Intake button
+    soloController
+        .povDown()
+        .onTrue(
+            superStructure
+                .coralIntake()
+                .alongWith(
+                    s.elevatorLEDSubsystem != null
+                        ? s.elevatorLEDSubsystem
+                            .tripleBlink(255, 92, 0, "Orange - Manual Coral Intake")
+                            .asProxy()
+                        : Commands.none())
+                .withName("Manual Coral Intake"));
     // Arm manual
     soloController
         .rightStick()
