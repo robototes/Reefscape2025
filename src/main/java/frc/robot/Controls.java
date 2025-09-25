@@ -978,8 +978,17 @@ public class Controls {
                                   () -> getSoloDriveRotate(),
                                   soloController.rightBumper()),
                               Commands.runOnce(
-                                  () -> soloScoringMode = soloScoringMode.NO_GAME_PIECE))
-                          .withName("Algae score then intake");
+                                  () -> {
+                                    if (sensors.intakeSensor.booleanInGroundIntake()) {
+                                      superStructure
+                                          .quickGroundIntake(soloController.povUp())
+                                          .schedule(); // perform handoff
+                                      soloScoringMode = SoloScoringMode.CORAL_IN_CLAW;
+                                    } else {
+                                      soloScoringMode = SoloScoringMode.NO_GAME_PIECE;
+                                    }
+                                  }))
+                          .withName("Barge then super cycle ground intake");
                       case NO_GAME_PIECE -> Commands.parallel(
                           Commands.runOnce(() -> intakeMode = ScoringMode.ALGAE)
                               .alongWith(scoringModeSelectRumble())
@@ -1030,9 +1039,19 @@ public class Controls {
     soloController
         .leftBumper()
         .onTrue(
-            superStructure
-                .quickGroundIntake(soloController.povUp())
-                .withName("Quick Gound intake"));
+            Commands.deferredProxy(
+                () ->
+                    switch (soloScoringMode) {
+                      case CORAL_IN_CLAW -> superStructure
+                          .quickGroundIntake(soloController.povUp())
+                          .withName("Quick Ground intake");
+                      case ALGAE_IN_CLAW -> superStructure
+                          .groundIntakeManual(soloController.povUp())
+                          .withName("Manual Ground intake");
+                      case NO_GAME_PIECE -> superStructure
+                          .quickGroundIntake(soloController.povUp())
+                          .withName("Quick Ground intake");
+                    }));
     // Scoring levels coral and algae intake heights
     soloController
         .y()
