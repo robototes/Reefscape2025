@@ -30,9 +30,9 @@ import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.GroundArm;
 import frc.robot.subsystems.SuperStructure;
+import frc.robot.subsystems.auto.AutoAlgaeElevatorCommand;
 import frc.robot.subsystems.auto.AutoAlign;
 import frc.robot.subsystems.auto.BargeAlign;
-import frc.robot.subsystems.auto.AutoAlgaeElevatorCommand;
 import frc.robot.util.AlgaeIntakeHeight;
 import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
@@ -412,15 +412,12 @@ public class Controls {
     }
 
     if (s.elevatorSubsystem != null) {
-        Commands.runOnce(
-            () -> {
-                if (intakeMode == ScoringMode.ALGAE) {
-                    new AutoAlgaeElevatorCommand(s.drivebaseSubsystem, s.elevatorSubsystem).schedule();
-                }
-            }
-        ).withName("Run algae elevator if enabled").schedule();
+      if (intakeMode == ScoringMode.ALGAE && soloScoringMode == SoloScoringMode.NO_GAME_PIECE) {
+        new AutoAlgaeElevatorCommand(s.drivebaseSubsystem, s.elevatorSubsystem)
+            .withName("Auto Algae Elevator")
+            .schedule();
+      }
     }
-    
 
     if (s.climbPivotSubsystem.sensor != null) {
       s.climbPivotSubsystem
