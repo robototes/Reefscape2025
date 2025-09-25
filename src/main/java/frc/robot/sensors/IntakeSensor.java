@@ -15,7 +15,7 @@ public class IntakeSensor {
 
   private final LaserCan intakeSensor;
   // VALUES ARE IN METERS
-  private static final double INTAKE_LOWER_LIMIT = 0.010;
+  private static final double INTAKE_LOWER_LIMIT = 0.01;
   private static final double INTAKE_UPPER_LIMIT = 0.1;
 
   public IntakeSensor() {
@@ -29,7 +29,7 @@ public class IntakeSensor {
   private void ConfigureSensor(LaserCan Sensor) {
     try {
       Sensor.setRangingMode(LaserCan.RangingMode.SHORT);
-      Sensor.setRegionOfInterest(new LaserCan.RegionOfInterest(4, 4, 16, 16));
+      Sensor.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
       Sensor.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
     } catch (ConfigurationFailedException e) {
       System.out.println("Configuration Failed! " + e);

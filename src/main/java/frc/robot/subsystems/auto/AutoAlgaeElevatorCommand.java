@@ -1,22 +1,23 @@
-package frc.robot.commands; // adjust if needed
+package frc.robot.subsystems.auto;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import java.util.List;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
-import frc.robot.subsystems.DrivebaseSubsystem;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ElevatorSubsystem;
-import java.util.List;
+import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 
 /**
  * Command that automatically moves the elevator to the proper height for the nearest algae
  * based on alliance and current robot pose.
  */
-public class AutoAlgaeElevatorCommand extends CommandBase {
+public class AutoAlgaeElevatorCommand extends Command {
 
-    private final DrivebaseSubsystem drivebase;
+    private final CommandSwerveDrivetrain drivebase;
     private final ElevatorSubsystem elevator;
 
     private static final AprilTagFieldLayout aprilTagFieldLayout =
@@ -40,7 +41,7 @@ public class AutoAlgaeElevatorCommand extends CommandBase {
         aprilTagFieldLayout.getTagPose(6).get().toPose2d()
     );
 
-    public AutoAlgaeElevatorCommand(DrivebaseSubsystem drivebase, ElevatorSubsystem elevator) {
+    public AutoAlgaeElevatorCommand(CommandSwerveDrivetrain drivebase, ElevatorSubsystem elevator) {
         this.drivebase = drivebase;
         this.elevator = elevator;
         addRequirements(elevator); 
@@ -62,9 +63,9 @@ public class AutoAlgaeElevatorCommand extends CommandBase {
         List<Pose2d> poses = isBlue() ? blueAlgaePoses : redAlgaePoses;
         int index = poses.indexOf(algaePose);
 
-        if (index >= 0 && index <= 2) {
+        if (index == 0 || index == 1 || index == 2) {
           return ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE; // lower reef
-      } else if (index >= 3 && index <= 5) {
+      } else if (index == 3 || index == 4 || index == 5) {
           return ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR; // upper reef
       } else {
           return ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE; // fallback
@@ -73,7 +74,7 @@ public class AutoAlgaeElevatorCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        Pose2d robotPose = drivebase.getPose(); // current robot pose
+        Pose2d robotPose = drivebase.getState().Pose; // current robot pose
         Pose2d nearestAlgae = getNearestAlgae(robotPose);
         double targetHeight = mapAlgaePoseToElevatorHeight(nearestAlgae);
 
