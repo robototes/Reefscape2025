@@ -24,21 +24,21 @@ public class AutoAlgaeElevatorCommand extends Command {
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
     private static final List<Pose2d> blueAlgaePoses = List.of(
-        aprilTagFieldLayout.getTagPose(18).get().toPose2d(),
         aprilTagFieldLayout.getTagPose(17).get().toPose2d(),
-        aprilTagFieldLayout.getTagPose(22).get().toPose2d(),
+        aprilTagFieldLayout.getTagPose(19).get().toPose2d(),
         aprilTagFieldLayout.getTagPose(21).get().toPose2d(),
+        aprilTagFieldLayout.getTagPose(18).get().toPose2d(),
         aprilTagFieldLayout.getTagPose(20).get().toPose2d(),
-        aprilTagFieldLayout.getTagPose(19).get().toPose2d()
+        aprilTagFieldLayout.getTagPose(22).get().toPose2d()
     );
 
     private static final List<Pose2d> redAlgaePoses = List.of(
-        aprilTagFieldLayout.getTagPose(7).get().toPose2d(),
+        aprilTagFieldLayout.getTagPose(6).get().toPose2d(),
         aprilTagFieldLayout.getTagPose(8).get().toPose2d(),
-        aprilTagFieldLayout.getTagPose(9).get().toPose2d(),
         aprilTagFieldLayout.getTagPose(10).get().toPose2d(),
-        aprilTagFieldLayout.getTagPose(11).get().toPose2d(),
-        aprilTagFieldLayout.getTagPose(6).get().toPose2d()
+        aprilTagFieldLayout.getTagPose(7).get().toPose2d(),
+        aprilTagFieldLayout.getTagPose(9).get().toPose2d(),
+        aprilTagFieldLayout.getTagPose(11).get().toPose2d()
     );
 
     public AutoAlgaeElevatorCommand(CommandSwerveDrivetrain drivebase, ElevatorSubsystem elevator) {
