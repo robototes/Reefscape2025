@@ -195,9 +195,9 @@ public class ArmPivot extends SubsystemBase {
     talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     // enabling current limits
-    talonFXConfiguration.CurrentLimits.StatorCurrentLimit = 40; // Low b/c belt broke
+    talonFXConfiguration.CurrentLimits.StatorCurrentLimit = 80; 
     talonFXConfiguration.CurrentLimits.StatorCurrentLimitEnable = true;
-    talonFXConfiguration.CurrentLimits.SupplyCurrentLimit = 20; // Tuned
+    talonFXConfiguration.CurrentLimits.SupplyCurrentLimit = 20; 
     talonFXConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     // PID
