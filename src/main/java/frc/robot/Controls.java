@@ -397,6 +397,17 @@ public class Controls {
                         }
                       })
                   .withName("Set solo scoring mode"));
+
+      sensors
+          .armSensor
+          .inClaw()
+          .and(RobotModeTriggers.teleop())
+          .onFalse(
+              Commands.runOnce(
+                      () -> {
+                        soloScoringMode = SoloScoringMode.NO_GAME_PIECE;
+                      })
+                  .withName("Clear solo scoring mode"));
     }
 
     if (s.climbPivotSubsystem.sensor != null) {
