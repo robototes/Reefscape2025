@@ -1,7 +1,5 @@
 package frc.robot.subsystems.auto;
 
-import java.util.List;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -10,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
+import java.util.List;
 
 /**
  * Command that automatically moves the elevator to the proper height for the nearest algae based on
