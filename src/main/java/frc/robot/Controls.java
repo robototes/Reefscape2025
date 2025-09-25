@@ -390,8 +390,10 @@ public class Controls {
                       () -> {
                         if (intakeMode == ScoringMode.CORAL) {
                           soloScoringMode = SoloScoringMode.CORAL_IN_CLAW;
-                        } else {
+                        } else if (intakeMode == ScoringMode.ALGAE) {
                           soloScoringMode = SoloScoringMode.ALGAE_IN_CLAW;
+                        } else {
+                          soloScoringMode = SoloScoringMode.NO_GAME_PIECE;
                         }
                       })
                   .withName("Set solo scoring mode"));
