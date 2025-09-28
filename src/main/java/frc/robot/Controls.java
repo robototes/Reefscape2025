@@ -40,12 +40,12 @@ import frc.robot.util.SoloScoringMode;
 import java.util.function.BooleanSupplier;
 
 public class Controls {
+  private static final int SOLO_CONTROLLER_PORT = 0;
   private static final int DRIVER_CONTROLLER_PORT = 1;
   private static final int OPERATOR_CONTROLLER_PORT = 2;
   private static final int ARM_PIVOT_SPINNY_CLAW_CONTROLLER_PORT = 3;
   private static final int ELEVATOR_CONTROLLER_PORT = 4;
   private static final int CLIMB_TEST_CONTROLLER_PORT = 5;
-  private static final int SOLO_CONTROLLER_PORT = 0;
 
   private final CommandXboxController driverController;
   private final CommandXboxController operatorController;
@@ -117,7 +117,7 @@ public class Controls {
     return new Trigger(() -> controller.isConnected());
   }
 
-  // takes the X value from the joystic, and applies a deadband and input scaling
+  // takes the X value from the joystick, and applies a deadband and input scaling
   private double getDriveX() {
     // Joystick +Y is back
     // Robot +X is forward
@@ -126,7 +126,7 @@ public class Controls {
     return input * MaxSpeed * inputScale;
   }
 
-  // takes the Y value from the joystic, and applies a deadband and input scaling
+  // takes the Y value from the joystick, and applies a deadband and input scaling
   private double getDriveY() {
     // Joystick +X is right
     // Robot +Y is left
@@ -135,7 +135,7 @@ public class Controls {
     return input * MaxSpeed * inputScale;
   }
 
-  // takes the rotation value from the joystic, and applies a deadband and input scaling
+  // takes the rotation value from the joystick, and applies a deadband and input scaling
   private double getDriveRotate() {
     // Joystick +X is right
     // Robot +angle is CCW (left)
@@ -388,12 +388,9 @@ public class Controls {
           .onTrue(
               Commands.runOnce(
                       () -> {
-                        if (intakeMode == ScoringMode.CORAL) {
-                          soloScoringMode = SoloScoringMode.CORAL_IN_CLAW;
-                        } else if (intakeMode == ScoringMode.ALGAE) {
-                          soloScoringMode = SoloScoringMode.ALGAE_IN_CLAW;
-                        } else {
-                          soloScoringMode = SoloScoringMode.NO_GAME_PIECE;
+                        switch (intakeMode) {
+                          case CORAL -> soloScoringMode = SoloScoringMode.CORAL_IN_CLAW;
+                          case ALGAE -> soloScoringMode = SoloScoringMode.ALGAE_IN_CLAW;
                         }
                       })
                   .withName("Set solo scoring mode"));
@@ -886,38 +883,35 @@ public class Controls {
     }
   }
 
-  // Drive for Solo controller
-  // takes the X value from the joystic, and applies a deadband and input scaling
-  private double getSoloDriveX() {
+  private double getJoystickInput(double input) {
     if (soloController.leftStick().getAsBoolean() || soloController.rightStick().getAsBoolean()) {
       return 0; // stop driving if either stick is pressed
     }
+    // Apply a deadband to the joystick input
+    double deadbandedInput = MathUtil.applyDeadband(input, 0.1);
+    return deadbandedInput;
+  }
+
+  // Drive for Solo controller
+  // takes the X value from the joystick, and applies a deadband and input scaling
+  private double getSoloDriveX() {
     // Joystick +Y is back
     // Robot +X is forward
-    double input = MathUtil.applyDeadband(-soloController.getLeftY(), 0.1);
-    return input * MaxSpeed;
+    return getJoystickInput(-soloController.getLeftY()) * MaxSpeed;
   }
 
-  // takes the Y value from the joystic, and applies a deadband and input scaling
+  // takes the Y value from the joystick, and applies a deadband and input scaling
   private double getSoloDriveY() {
-    if (soloController.leftStick().getAsBoolean() || soloController.rightStick().getAsBoolean()) {
-      return 0; // stop driving if either stick is pressed
-    }
     // Joystick +X is right
     // Robot +Y is left
-    double input = MathUtil.applyDeadband(-soloController.getLeftX(), 0.1);
-    return input * MaxSpeed;
+    return getJoystickInput(-soloController.getLeftX()) * MaxSpeed;
   }
 
-  // takes the rotation value from the joystic, and applies a deadband and input scaling
+  // takes the rotation value from the joystick, and applies a deadband and input scaling
   private double getSoloDriveRotate() {
-    if (soloController.leftStick().getAsBoolean() || soloController.rightStick().getAsBoolean()) {
-      return 0; // stop driving if either stick is pressed
-    }
     // Joystick +X is right
     // Robot +angle is CCW (left)
-    double input = MathUtil.applyDeadband(-soloController.getRightX(), 0.1);
-    return input * MaxSpeed;
+    return getJoystickInput(-soloController.getRightX()) * MaxSpeed;
   }
 
   private void configureSoloControllerBindings() {
