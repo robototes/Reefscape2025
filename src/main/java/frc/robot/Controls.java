@@ -30,6 +30,7 @@ import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.GroundArm;
 import frc.robot.subsystems.SuperStructure;
+import frc.robot.subsystems.auto.AutoAlgaeHeights;
 import frc.robot.subsystems.auto.AutoAlign;
 import frc.robot.subsystems.auto.BargeAlign;
 import frc.robot.util.AlgaeIntakeHeight;
@@ -938,10 +939,8 @@ public class Controls {
                           Commands.runOnce(() -> intakeMode = ScoringMode.ALGAE)
                               .alongWith(scoringModeSelectRumble())
                               .withName("Algae Scoring Mode"),
-                          Commands.runOnce(
-                                  () ->
-                                      CommandScheduler.getInstance()
-                                          .schedule(getAlgaeIntakeCommand()))
+                          AutoAlgaeHeights.autoAlgaeIntakeCommand(
+                                  s.drivebaseSubsystem, superStructure)
                               .withName("Run Algae Intake"));
                     }));
     soloController
