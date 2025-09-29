@@ -24,25 +24,18 @@ public class Subsystems {
 
     public static final boolean DRIVEBASE_ENABLED = true;
     public static final boolean VISION_ENABLED = true;
-    public static final boolean ELEVATOR_ENABLED =
-        RobotType.getCurrent() == RobotType.COMPETITION && true;
-    public static final boolean ARMPIVOT_ENABLED =
-        RobotType.getCurrent() == RobotType.COMPETITION && true;
-    public static final boolean SPINNYCLAW_ENABLED =
-        RobotType.getCurrent() == RobotType.COMPETITION && true;
-    public static final boolean CLIMBPIVOT_ENABLED =
-        RobotType.getCurrent() == RobotType.COMPETITION && true;
-    public static final boolean ELEVATOR_LED_ENABLED =
-        RobotType.getCurrent() == RobotType.COMPETITION && true;
-    public static final boolean GROUND_SPINNY_ENABLED =
-        RobotType.getCurrent() == RobotType.COMPETITION && true;
-    public static final boolean GROUND_ARM_ENABLED =
-        RobotType.getCurrent() == RobotType.COMPETITION && true;
+    public static final boolean ELEVATOR_ENABLED = RobotType.getCurrent() == RobotType.COMPETITION && true;
+    public static final boolean ARMPIVOT_ENABLED = RobotType.getCurrent() == RobotType.COMPETITION && true;
+    public static final boolean SPINNYCLAW_ENABLED = RobotType.getCurrent() == RobotType.COMPETITION && true;
+    public static final boolean CLIMBPIVOT_ENABLED = RobotType.getCurrent() == RobotType.COMPETITION && true;
+    public static final boolean ELEVATOR_LED_ENABLED = RobotType.getCurrent() == RobotType.COMPETITION && true;
+    public static final boolean GROUND_SPINNY_ENABLED = RobotType.getCurrent() == RobotType.COMPETITION && true;
+    public static final boolean GROUND_ARM_ENABLED = RobotType.getCurrent() == RobotType.COMPETITION && true;
   }
 
   // Subsystems go here
   public final DrivebaseWrapper drivebaseWrapper;
-  public final CommandSwerveDrivetrain drivebaseSubsystem;
+  private final CommandSwerveDrivetrain drivebaseSubsystem;
   public final VisionSubsystem visionSubsystem;
   public final ElevatorSubsystem elevatorSubsystem;
   public final ArmPivot armPivotSubsystem;
@@ -123,5 +116,11 @@ public class Subsystems {
     } else {
       elevatorLEDSubsystem = null;
     }
+
   }
+
+  public CommandSwerveDrivetrain getDrivetrain() {
+    return drivebaseSubsystem;
+  }
+
 }

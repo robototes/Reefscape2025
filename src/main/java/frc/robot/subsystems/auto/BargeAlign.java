@@ -29,8 +29,12 @@ public class BargeAlign extends Command {
           .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
   public static boolean atScoringXPosition(DrivebaseWrapper drivebaseWrapper) {
-    double robotX = drivebaseWrapper.getEstimatedPosition().getX();
-    return blueBargeLineX < robotX && robotX < redBargeLineX;
+    if (drivebaseWrapper != null) {
+      double robotX = drivebaseWrapper.getEstimatedPosition().getX();
+      return blueBargeLineX < robotX && robotX < redBargeLineX;
+    } else {
+      return false;
+    }
   }
 
   private static Command driveToBlackLine(

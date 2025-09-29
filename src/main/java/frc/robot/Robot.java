@@ -30,7 +30,8 @@ public class Robot extends TimedRobot {
   private static Robot instance = null;
 
   public static Robot getInstance() {
-    if (instance == null) instance = new Robot();
+    if (instance == null)
+      instance = new Robot();
     return instance;
   }
 
@@ -55,22 +56,21 @@ public class Robot extends TimedRobot {
     sensors = new Sensors();
     subsystems = new Subsystems(sensors);
     if (SubsystemConstants.DRIVEBASE_ENABLED) {
-      AutoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
+      AutoBuilderConfig.buildAuto(subsystems.getDrivetrain());
     }
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
         && SubsystemConstants.SPINNYCLAW_ENABLED) {
-      superStructure =
-          new SuperStructure(
-              subsystems.elevatorSubsystem,
-              subsystems.armPivotSubsystem,
-              subsystems.spinnyClawSubsytem,
-              subsystems.groundArm,
-              subsystems.groundSpinny,
-              subsystems.elevatorLEDSubsystem,
-              sensors.armSensor,
-              sensors.branchSensors,
-              sensors.intakeSensor);
+      superStructure = new SuperStructure(
+          subsystems.elevatorSubsystem,
+          subsystems.armPivotSubsystem,
+          subsystems.spinnyClawSubsytem,
+          subsystems.groundArm,
+          subsystems.groundSpinny,
+          subsystems.elevatorLEDSubsystem,
+          sensors.armSensor,
+          sensors.branchSensors,
+          sensors.intakeSensor);
     } else {
       superStructure = null;
     }
@@ -88,12 +88,11 @@ public class Robot extends TimedRobot {
             command -> System.out.println("Command initialized: " + command.getName()));
     CommandScheduler.getInstance()
         .onCommandInterrupt(
-            (command, interruptor) ->
-                System.out.println(
-                    "Command interrupted: "
-                        + command.getName()
-                        + "; Cause: "
-                        + interruptor.map(cmd -> cmd.getName()).orElse("<none>")));
+            (command, interruptor) -> System.out.println(
+                "Command interrupted: "
+                    + command.getName()
+                    + "; Cause: "
+                    + interruptor.map(cmd -> cmd.getName()).orElse("<none>")));
     CommandScheduler.getInstance()
         .onCommandFinish(command -> System.out.println("Command finished: " + command.getName()));
 
@@ -118,17 +117,20 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+  }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+  }
 
   @Override
   public void disabledExit() {
-    // on the end of diabling, make sure all of the motors are set to break and wont move upon
+    // on the end of diabling, make sure all of the motors are set to break and wont
+    // move upon
     // enabling
-    if (subsystems.drivebaseSubsystem != null) {
-      subsystems.drivebaseSubsystem.brakeMotors();
+    if (subsystems.getDrivetrain() != null) {
+      subsystems.getDrivetrain().brakeMotors();
     }
     if (subsystems.climbPivotSubsystem != null) {
       subsystems.climbPivotSubsystem.brakeMotors();
@@ -162,7 +164,8 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
   @Override
   public void teleopExit() {
@@ -175,10 +178,12 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+  }
 
   @Override
-  public void testExit() {}
+  public void testExit() {
+  }
 
   public RobotType getRobotType() {
     return robotType;

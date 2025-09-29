@@ -69,81 +69,75 @@ public class AutoLogic {
 
   private static AutoPath defaultPath = new AutoPath("do nothing", "do nothing");
 
-  private static List<AutoPath> noPiecePaths =
-      List.of(
-          new AutoPath("YSW0", "YSW0"),
-          new AutoPath("YSM0", "YSM0"),
-          new AutoPath("M0", "M0"),
-          new AutoPath("OSM0", "OSM0"),
-          new AutoPath("OSW0", "OSW0"),
-          new AutoPath("PIDTESTING", "PID TESTING"));
+  private static List<AutoPath> noPiecePaths = List.of(
+      new AutoPath("YSW0", "YSW0"),
+      new AutoPath("YSM0", "YSM0"),
+      new AutoPath("M0", "M0"),
+      new AutoPath("OSM0", "OSM0"),
+      new AutoPath("OSW0", "OSW0"),
+      new AutoPath("PIDTESTING", "PID TESTING"));
 
-  private static List<AutoPath> onePiecePaths =
-      List.of(
-          new AutoPath("YSW_J", "YSW_J"),
-          new AutoPath("YSW_I", "YSW_I"),
-          new AutoPath("YSM_I", "YSM_I"),
-          new AutoPath("M_G", "M_G"),
-          new AutoPath("M_H", "M_H"),
-          new AutoPath("OSM_F", "OSM_F"),
-          new AutoPath("OSW_F", "OSW_F"),
-          new AutoPath("OSW_E", "OSW_E"),
-          new AutoPath("M alliance push to G", "M alliance push to G"),
-          new AutoPath("M alliance push to H", "M alliance push to H"));
+  private static List<AutoPath> onePiecePaths = List.of(
+      new AutoPath("YSW_J", "YSW_J"),
+      new AutoPath("YSW_I", "YSW_I"),
+      new AutoPath("YSM_I", "YSM_I"),
+      new AutoPath("M_G", "M_G"),
+      new AutoPath("M_H", "M_H"),
+      new AutoPath("OSM_F", "OSM_F"),
+      new AutoPath("OSW_F", "OSW_F"),
+      new AutoPath("OSW_E", "OSW_E"),
+      new AutoPath("M alliance push to G", "M alliance push to G"),
+      new AutoPath("M alliance push to H", "M alliance push to H"));
 
-  private static List<AutoPath> twoPiecePaths =
-      List.of(
-          new AutoPath("YSWLSF_I-J", "YSWLSF_I-J"),
-          new AutoPath("YSWLSF_J-K", "YSWLSF_J-K"),
-          new AutoPath("YSWLSF_K-L", "YSWLSF_K-L"),
-          new AutoPath("YSMLSF_I-J", "YSMLSF_I-J"),
-          new AutoPath("YSMLSF_J-K", "YSMLSF_J-K"),
-          new AutoPath("YSMLSF_K-L", "YSMLSF_K-L"),
-          new AutoPath("OSMRSF_F-E", "OSMRSF_F-E"),
-          new AutoPath("OSMRSF_E-D", "OSMRSF_E-D"),
-          new AutoPath("OSMRSF_D-C", "OSMRSF_D-C"),
-          new AutoPath("OSWRSF_F-E", "OSWRSF_F-E"),
-          new AutoPath("OSWRSF_E-D", "OSWRSF_E-D"),
-          new AutoPath("OSWRSF_D-C", "OSWRSF_D-C"),
-          new AutoPath("MLSF_H-I", "MLSF_H-I"),
-          new AutoPath("MLSF_H-I_WithWait", "MLSF_H-I_WithWait"),
-          new AutoPath("MRSF_G-F", "MRSF_G-F"),
-          new AutoPath("MRSF_G-F_WithWait", "MRSF_G-F_WithWait"),
-          new AutoPath("MRSF_G-H", "MRSF_G-H"),
-          new AutoPath("MLSF_H-K_Cooking", "MLSF_H-K_Cooking"),
-          new AutoPath("MLSF_H-G", "MLSF_H-G"));
+  private static List<AutoPath> twoPiecePaths = List.of(
+      new AutoPath("YSWLSF_I-J", "YSWLSF_I-J"),
+      new AutoPath("YSWLSF_J-K", "YSWLSF_J-K"),
+      new AutoPath("YSWLSF_K-L", "YSWLSF_K-L"),
+      new AutoPath("YSMLSF_I-J", "YSMLSF_I-J"),
+      new AutoPath("YSMLSF_J-K", "YSMLSF_J-K"),
+      new AutoPath("YSMLSF_K-L", "YSMLSF_K-L"),
+      new AutoPath("OSMRSF_F-E", "OSMRSF_F-E"),
+      new AutoPath("OSMRSF_E-D", "OSMRSF_E-D"),
+      new AutoPath("OSMRSF_D-C", "OSMRSF_D-C"),
+      new AutoPath("OSWRSF_F-E", "OSWRSF_F-E"),
+      new AutoPath("OSWRSF_E-D", "OSWRSF_E-D"),
+      new AutoPath("OSWRSF_D-C", "OSWRSF_D-C"),
+      new AutoPath("MLSF_H-I", "MLSF_H-I"),
+      new AutoPath("MLSF_H-I_WithWait", "MLSF_H-I_WithWait"),
+      new AutoPath("MRSF_G-F", "MRSF_G-F"),
+      new AutoPath("MRSF_G-F_WithWait", "MRSF_G-F_WithWait"),
+      new AutoPath("MRSF_G-H", "MRSF_G-H"),
+      new AutoPath("MLSF_H-K_Cooking", "MLSF_H-K_Cooking"),
+      new AutoPath("MLSF_H-G", "MLSF_H-G"));
 
-  private static List<AutoPath> threePiecePaths =
-      List.of(
-          new AutoPath("YSWLSF_I-J-K", "YSWLSF_I-J-K"),
-          new AutoPath("YSWLSF_J-K-L", "YSWLSF_J-K-L"),
-          new AutoPath("YSWLSF_K-L-A", "YSWLSF_K-L-A"),
-          new AutoPath("YSMLSF_I-J-K", "YSMLSF_I-J-K"),
-          new AutoPath("YSMLSF_J-K-L", "YSMLSF_J-K-L"),
-          new AutoPath("YSMLSF_K-L-A", "YSMLSF_K-L-A"),
-          new AutoPath("YSWLSC_K-L-A", "YSWLSC_K-L-A"),
-          new AutoPath("OSWRSF_D-C-B", "OSWRSF_D-C-B"),
-          new AutoPath("YSMLSC_K-L-A", "YSMLSC_K-L-A"),
-          new AutoPath("M_H-GHA-IJA", "M_H-GHA-IJA"));
+  private static List<AutoPath> threePiecePaths = List.of(
+      new AutoPath("YSWLSF_I-J-K", "YSWLSF_I-J-K"),
+      new AutoPath("YSWLSF_J-K-L", "YSWLSF_J-K-L"),
+      new AutoPath("YSWLSF_K-L-A", "YSWLSF_K-L-A"),
+      new AutoPath("YSMLSF_I-J-K", "YSMLSF_I-J-K"),
+      new AutoPath("YSMLSF_J-K-L", "YSMLSF_J-K-L"),
+      new AutoPath("YSMLSF_K-L-A", "YSMLSF_K-L-A"),
+      new AutoPath("YSWLSC_K-L-A", "YSWLSC_K-L-A"),
+      new AutoPath("OSWRSF_D-C-B", "OSWRSF_D-C-B"),
+      new AutoPath("YSMLSC_K-L-A", "YSMLSC_K-L-A"),
+      new AutoPath("M_H-GHA-IJA", "M_H-GHA-IJA"));
 
-  private static List<AutoPath> fourPiecePaths =
-      List.of(
-          new AutoPath("YSWLSF_J-K-L-A", "YSWLSF_J-K-L-A"),
-          new AutoPath("YSWLSF_I-J-K-L", "YSWLSF_I-J-K-L"));
+  private static List<AutoPath> fourPiecePaths = List.of(
+      new AutoPath("YSWLSF_J-K-L-A", "YSWLSF_J-K-L-A"),
+      new AutoPath("YSWLSF_I-J-K-L", "YSWLSF_I-J-K-L"));
 
   // map (gulp)
-  private static Map<Integer, List<AutoPath>> commandsMap =
-      Map.of(
-          0,
-          noPiecePaths,
-          1,
-          onePiecePaths,
-          2,
-          twoPiecePaths,
-          3,
-          threePiecePaths,
-          4,
-          fourPiecePaths);
+  private static Map<Integer, List<AutoPath>> commandsMap = Map.of(
+      0,
+      noPiecePaths,
+      1,
+      onePiecePaths,
+      2,
+      twoPiecePaths,
+      3,
+      threePiecePaths,
+      4,
+      fourPiecePaths);
 
   private static final Map<String, AutoPath> namesToAuto = new HashMap<>();
 
@@ -158,19 +152,16 @@ public class AutoLogic {
   // vars
 
   // in place of launching command cause launcher doesnt exist
-  public static SequentialCommandGroup vibrateControllerCommand =
-      new SequentialCommandGroup(
-          new InstantCommand(() -> controls.vibrateDriveController(0.5)),
-          new WaitCommand(1.5),
-          new InstantCommand(() -> controls.vibrateDriveController(0.0)));
+  public static SequentialCommandGroup vibrateControllerCommand = new SequentialCommandGroup(
+      new InstantCommand(() -> controls.vibrateDriveController(0.5)),
+      new WaitCommand(1.5),
+      new InstantCommand(() -> controls.vibrateDriveController(0.0)));
 
   // shuffleboard
   private static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
 
-  private static SendableChooser<StartPosition> startPositionChooser =
-      new SendableChooser<StartPosition>();
-  private static DynamicSendableChooser<String> availableAutos =
-      new DynamicSendableChooser<String>();
+  private static SendableChooser<StartPosition> startPositionChooser = new SendableChooser<StartPosition>();
+  private static DynamicSendableChooser<String> availableAutos = new DynamicSendableChooser<String>();
   private static SendableChooser<Integer> gameObjects = new SendableChooser<Integer>();
   private static SendableChooser<Boolean> isVision = new SendableChooser<Boolean>();
 
@@ -242,7 +233,10 @@ public class AutoLogic {
     filterAutos(gameObjects.getSelected());
   }
 
-  /** Takes the auto filtering entries in shuffleboard to provide a list of suitable autos */
+  /**
+   * Takes the auto filtering entries in shuffleboard to provide a list of
+   * suitable autos
+   */
   public static void filterAutos(int numGameObjects) {
 
     // resets/clears all options
@@ -290,7 +284,7 @@ public class AutoLogic {
     if (r.superStructure != null) {
       return new ConditionalCommand(
           // If true:
-          AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
+          AutoAlign.autoAlign(s.getDrivetrain(), controls)
               .repeatedly()
               .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
               .withName("scoreCommand"),
@@ -299,13 +293,13 @@ public class AutoLogic {
           // Condition:
           () -> ARMSENSOR_ENABLED && r.sensors.armSensor.booleanInClaw());
     }
-    return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
+    return AutoAlign.autoAlign(s.getDrivetrain(), controls)
         .withName("scoreCommand-noSuperstructure");
   }
 
   public static Command algaeCommand23() {
     if (r.superStructure != null) {
-      return AlgaeAlign.algaeAlign(s.drivebaseSubsystem, controls)
+      return AlgaeAlign.algaeAlign(s.getDrivetrain(), controls)
           .repeatedly()
           .withDeadline(r.superStructure.algaeLevelTwoThreeIntake())
           .withName("algaeCommand23");
@@ -315,7 +309,7 @@ public class AutoLogic {
 
   public static Command algaeCommand34() {
     if (r.superStructure != null) {
-      return AlgaeAlign.algaeAlign(s.drivebaseSubsystem, controls)
+      return AlgaeAlign.algaeAlign(s.getDrivetrain(), controls)
           .repeatedly()
           .withDeadline(r.superStructure.algaeLevelThreeFourIntake())
           .withName("algaeCommand34");
@@ -326,13 +320,13 @@ public class AutoLogic {
   public static Command netCommand() {
     if (r.superStructure != null) {
       return BargeAlign.bargeScore(
-              s.drivebaseSubsystem,
-              r.superStructure,
-              () -> 0,
-              () -> 0,
-              () -> 0,
-              () -> false,
-              s.drivebaseWrapper)
+          s.getDrivetrain(),
+          r.superStructure,
+          () -> 0,
+          () -> 0,
+          () -> 0,
+          () -> false,
+          s.drivebaseWrapper)
           .withName("net");
     }
     return Commands.none().withName("net");
