@@ -58,16 +58,12 @@ public class BargeAlign extends Command {
       DoubleSupplier manualRotateSpeed,
       BooleanSupplier manualScore) {
     return Commands.sequence(
-        BargeAlign.driveToBlackLine(
-                drivebaseSubsystem, manualXSpeed, manualYSpeed, manualRotateSpeed)
-            .asProxy(),
-        BargeAlign.driveToBarge(drivebaseSubsystem, manualXSpeed, manualYSpeed, manualRotateSpeed)
-            .asProxy()
-            .withDeadline(
-                superStructure.algaeNetScore(
-                    () ->
-                        manualScore.getAsBoolean()
-                            || BargeAlign.atScoringXPosition(drivebaseSubsystem))));
+        Commands.parallel(
+            superStructure.algaeNetPrescore(),
+            BargeAlign.driveToBlackLine(
+                    drivebaseSubsystem, manualXSpeed, manualYSpeed, manualRotateSpeed)
+                .asProxy()),
+        superStructure.algaeNetScore());
   }
 
   private static Command driveToBarge(

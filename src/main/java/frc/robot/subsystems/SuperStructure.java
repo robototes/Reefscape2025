@@ -414,18 +414,24 @@ public class SuperStructure {
         .withName("Algae Processor Score");
   }
 
-  public Command algaeNetScore(BooleanSupplier score) {
+  public Command algaeNetPrescore() {
+    return Commands.parallel(
+            elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE),
+            armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE))
+        .withName("Algae Net Prescore");
+  }
+
+  public Command algaeNetScore() {
     return Commands.sequence(
             Commands.parallel(
                 elevator.setLevel(ElevatorSubsystem.ALGAE_NET_SCORE),
-                armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE),
-                spinnyClaw.algaeIntakePower()),
-            Commands.waitUntil(score),
-            spinnyClaw.algaeHoldExtakePower().withTimeout(0.7),
-            Commands.waitSeconds(0.7),
+                Commands.sequence(
+                    spinnyClaw.algaeIntakePower(),
+                    Commands.waitSeconds(0.3),
+                    spinnyClaw.algaeHoldExtakePower())),
             armPivot.moveToPosition(
                 ArmPivot.CORAL_PRESET_UP), // added to prevent hitting the barge after scoring net
-            elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR))
+            elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE))
         .withName("Algae Net Score");
   }
 
