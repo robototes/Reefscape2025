@@ -919,31 +919,74 @@ public class Controls {
     soloController
         .leftTrigger()
         .onTrue(
-            Commands.deferredProxy(
-                () ->
-                    switch (soloScoringMode) {
-                      case CORAL_IN_CLAW -> getSoloCoralBranchHeightCommand();
-                      case ALGAE_IN_CLAW -> Commands.sequence(
+            Commands.runOnce(
+                    () -> {
+                      Command scoreCommand;
+                      switch (soloScoringMode) {
+                        case CORAL_IN_CLAW -> {
+                          scoreCommand = getSoloCoralBranchHeightCommand();
+                        }
+
+                        case ALGAE_IN_CLAW -> {
+                          Command bargeScoreCommand =
                               BargeAlign.bargeScore(
                                   s.drivebaseSubsystem,
                                   superStructure,
                                   () -> getSoloDriveX(),
                                   () -> getSoloDriveY(),
                                   () -> getSoloDriveRotate(),
-                                  soloController.rightBumper()),
-                              Commands.runOnce(
-                                  () -> soloScoringMode = soloScoringMode.NO_GAME_PIECE))
-                          .withName("Algae score then intake");
-                      case NO_GAME_PIECE -> Commands.parallel(
-                          Commands.runOnce(() -> intakeMode = ScoringMode.ALGAE)
-                              .alongWith(scoringModeSelectRumble())
-                              .withName("Algae Scoring Mode"),
-                          Commands.runOnce(
-                                  () ->
-                                      CommandScheduler.getInstance()
-                                          .schedule(getAlgaeIntakeCommand()))
-                              .withName("Run Algae Intake"));
-                    }));
+                                  soloController.rightBumper());
+
+                          if (sensors.intakeSensor.booleanInIntake()) {
+                            Command holdGroundIntakeOut =
+                                superStructure.holdGroundIntakeOut(soloController.povUp());
+
+                            Command quickHandoff =
+                                Commands.sequence(
+                                        superStructure
+                                            .quickGroundIntake(soloController.povUp())
+                                            .withName("Quick Gound intake"),
+                                        Commands.runOnce(
+                                            () -> soloScoringMode = soloScoringMode.CORAL_IN_CLAW))
+                                    .withName("Quick Handoff After Algae Score");
+
+                            scoreCommand =
+                                bargeScoreCommand
+                                    .alongWith(holdGroundIntakeOut)
+                                    .andThen(quickHandoff)
+                                    .withName("Algae Score + Ground Handoff");
+                          } else {
+                            scoreCommand =
+                                Commands.sequence(
+                                        bargeScoreCommand,
+                                        Commands.runOnce(
+                                            () -> soloScoringMode = soloScoringMode.NO_GAME_PIECE))
+                                    .withName("Algae Score then Intake");
+                          }
+                        }
+
+                        case NO_GAME_PIECE -> {
+                          scoreCommand =
+                              Commands.parallel(
+                                  Commands.runOnce(() -> intakeMode = ScoringMode.ALGAE)
+                                      .alongWith(scoringModeSelectRumble())
+                                      .withName("Algae Scoring Mode"),
+                                  Commands.runOnce(
+                                          () ->
+                                              CommandScheduler.getInstance()
+                                                  .schedule(getAlgaeIntakeCommand()))
+                                      .withName("Run Algae Intake"));
+                        }
+
+                        default -> {
+                          scoreCommand = Commands.none();
+                        }
+                      }
+
+                      CommandScheduler.getInstance().schedule(scoreCommand);
+                    })
+                .withName("Solo Left Trigger Action"));
+
     soloController
         .leftTrigger()
         .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
@@ -984,9 +1027,22 @@ public class Controls {
     soloController
         .leftBumper()
         .onTrue(
-            superStructure
-                .quickGroundIntake(soloController.povUp())
-                .withName("Quick Gound intake"));
+            Commands.runOnce(
+                () -> {
+                  Command intakeCommand;
+                  switch (soloScoringMode) {
+                    case CORAL_IN_CLAW, NO_GAME_PIECE -> intakeCommand =
+                        superStructure
+                            .quickGroundIntake(soloController.povUp())
+                            .withName("Quick Ground Intake");
+                    case ALGAE_IN_CLAW -> intakeCommand =
+                        superStructure
+                            .holdGroundIntakeOut(soloController.povUp())
+                            .withName("Hold Ground Intake Out");
+                    default -> intakeCommand = Commands.none();
+                  }
+                  CommandScheduler.getInstance().schedule(intakeCommand);
+                }));
     // Scoring levels coral and algae intake heights
     soloController
         .y()
