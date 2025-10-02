@@ -961,7 +961,7 @@ public class Controls {
                                         bargeScoreCommand,
                                         Commands.runOnce(
                                             () -> soloScoringMode = soloScoringMode.NO_GAME_PIECE))
-                                    .withName("Algae Score then Intake");
+                                    .withName("Barge Algae Score");
                           }
                         }
 
