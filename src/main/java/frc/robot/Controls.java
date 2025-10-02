@@ -923,30 +923,41 @@ public class Controls {
         .onTrue(
             Commands.runOnce(
                 () -> {
-                    Command scoreCommand;
-                    switch (soloScoringMode) {
-                      case CORAL_IN_CLAW ->  {scoreCommand = getSoloCoralBranchHeightCommand();}
-                      case ALGAE_IN_CLAW -> {Command bargeScoreCommand =
-                              BargeAlign.bargeScore(
+                  Command scoreCommand;
+                  switch (soloScoringMode) {
+                    case CORAL_IN_CLAW -> {
+                      scoreCommand = getSoloCoralBranchHeightCommand();
+                    }
+                    case ALGAE_IN_CLAW -> {
+                      Command bargeScoreCommand =
+                          BargeAlign.bargeScore(
                                   s.drivebaseSubsystem,
                                   superStructure,
                                   () -> getSoloDriveX(),
                                   () -> getSoloDriveY(),
                                   () -> getSoloDriveRotate(),
                                   soloController.rightBumper())
-                          .withName("Algae score then intake");
-                          scoreCommand = Commands.sequence(bargeScoreCommand, Commands.runOnce(
-                            () -> soloScoringMode = soloScoringMode.NO_GAME_PIECE)); }
-                      case NO_GAME_PIECE -> {scoreCommand = Commands.parallel(
-                          Commands.runOnce(() -> intakeMode = ScoringMode.ALGAE)
-                              .alongWith(scoringModeSelectRumble())
-                              .withName("Algae Scoring Mode"),
-                          AutoAlgaeHeights.autoAlgaeIntakeCommand(
-                                  s.drivebaseSubsystem, superStructure).until(() -> sensors.armSensor.booleanInClaw()));}
-                      default -> scoreCommand = Commands.none();
+                              .withName("Algae score then intake");
+                      scoreCommand =
+                          Commands.sequence(
+                              bargeScoreCommand,
+                              Commands.runOnce(
+                                  () -> soloScoringMode = soloScoringMode.NO_GAME_PIECE));
                     }
-                    CommandScheduler.getInstance().schedule(scoreCommand);
-  }));
+                    case NO_GAME_PIECE -> {
+                      scoreCommand =
+                          Commands.parallel(
+                              Commands.runOnce(() -> intakeMode = ScoringMode.ALGAE)
+                                  .alongWith(scoringModeSelectRumble())
+                                  .withName("Algae Scoring Mode"),
+                              AutoAlgaeHeights.autoAlgaeIntakeCommand(
+                                      s.drivebaseSubsystem, superStructure)
+                                  .until(() -> sensors.armSensor.booleanInClaw()));
+                    }
+                    default -> scoreCommand = Commands.none();
+                  }
+                  CommandScheduler.getInstance().schedule(scoreCommand);
+                }));
     soloController
         .leftTrigger()
         .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
