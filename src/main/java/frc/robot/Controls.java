@@ -1034,7 +1034,8 @@ public class Controls {
                     case CORAL_IN_CLAW, NO_GAME_PIECE -> intakeCommand =
                         superStructure
                             .quickGroundIntake(soloController.povUp())
-                            .withName("Quick Ground Intake");
+                            .withName("Quick Ground Intake")
+                            .alongWith(Commands.runOnce(() -> intakeMode = ScoringMode.CORAL));
                     case ALGAE_IN_CLAW -> intakeCommand =
                         superStructure
                             .holdGroundIntakeOut(soloController.povUp())
