@@ -927,10 +927,11 @@ public class Controls {
                               BargeAlign.bargeScore(
                                   s.drivebaseSubsystem,
                                   superStructure,
-                                  () -> getSoloDriveX(),
-                                  () -> getSoloDriveY(),
-                                  () -> getSoloDriveRotate(),
-                                  soloController.rightBumper()),
+                                  () -> getDriveX(),
+                                  () -> getDriveY(),
+                                  () -> getDriveRotate(),
+                                  driverController.rightBumper()),
+                              getAlgaeIntakeCommand().withName("Algae score then intake"),
                               Commands.runOnce(
                                   () -> soloScoringMode = soloScoringMode.NO_GAME_PIECE))
                           .withName("Algae score then intake");
