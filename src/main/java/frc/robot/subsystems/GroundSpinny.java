@@ -16,7 +16,7 @@ public class GroundSpinny extends SubsystemBase {
   public static final double GROUND_INTAKE_JITTER_SPEED = 1;
   public static final double FUNNEL_INTAKE_SPEED = -2;
   public static final double QUICK_HANDOFF_EXTAKE_SPEED = 1;
-  private static final double STATOR_CURRENT_STALL_THRESHOLD = 20;
+  private static final double STATOR_CURRENT_STALL_THRESHOLD = 50;
 
   // TalonFX
   private final TalonFX motor;
