@@ -212,9 +212,8 @@ public class SuperStructure {
             Commands.parallel(
                 groundArm
                     .moveToPosition(GroundArm.GROUND_POSITION)
-                    .andThen(groundArm.setVoltage(GroundArm.GROUND_HOLD_VOLTAGE)),
+                    .andThen(groundArm.setVoltage(GroundArm.GROUND_HOLD_VOLTAGE)).until(retract),
                 groundSpinny.setGroundIntakePower()))
-        .until(retract)
         .withName("Hold Ground Intake Out");
   }
 
