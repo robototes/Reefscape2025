@@ -1,5 +1,9 @@
 package frc.robot.subsystems;
 
+import java.util.Set;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -9,9 +13,6 @@ import frc.robot.sensors.BranchSensors;
 import frc.robot.sensors.ElevatorLight;
 import frc.robot.sensors.IntakeSensor;
 import frc.robot.util.BranchHeight;
-import java.util.Set;
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
 
 public class SuperStructure {
   private final ElevatorSubsystem elevator;
