@@ -9,6 +9,11 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
@@ -91,7 +96,8 @@ public class ElevatorSubsystem extends SubsystemBase {
       new Alert("Elevator", "Motor 2 not connected", AlertType.kError);
   private final Debouncer notConnectedDebouncerOne = new Debouncer(.1, DebounceType.kBoth);
   private final Debouncer notConnectedDebouncerTwo = new Debouncer(.1, DebounceType.kBoth);
-
+  private final StructPublisher<Pose3d> elevatorPose3d = NetworkTableInstance.getDefault().getStructTopic("elevator/heightPose", Pose3d.struct).publish();
+    
   // Creates a SysIdRoutine
   SysIdRoutine routine =
       new SysIdRoutine(
@@ -108,6 +114,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     motorConfigs();
 
     Shuffleboard.getTab("Elevator").addDouble("Motor Current Position", () -> getCurrentPosition());
+    //Elevator pose test
+  
     Shuffleboard.getTab("Elevator").addDouble("Target Position", () -> getTargetPosition());
     Shuffleboard.getTab("Elevator")
         .addDouble("M1 supply current", () -> m_motor.getSupplyCurrent().getValueAsDouble());
@@ -134,6 +142,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             "M2 at reverse softstop", () -> m_motor2.getFault_ReverseSoftLimit().getValue());
     Shuffleboard.getTab("Elevator")
         .addDouble("Elevator Speed", () -> m_motor.getVelocity().getValueAsDouble());
+      
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
@@ -375,6 +384,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     if (RobotBase.isSimulation()) {
       m_motorOneSimState.setRawRotorPosition(targetPos);
       m_motorTwoSimState.setRawRotorPosition(targetPos);
+
+      elevatorPose3d.set(new Pose3d(new Pose2d(0.0, getHeightMeters(), new Rotation2d(0.0,0.0))));
     }
   }
 }
