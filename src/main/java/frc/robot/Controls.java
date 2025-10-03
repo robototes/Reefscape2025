@@ -61,7 +61,7 @@ public class Controls {
 
   private BranchHeight branchHeight = BranchHeight.CORAL_LEVEL_FOUR;
   private ScoringMode scoringMode = ScoringMode.CORAL;
-  private ScoringMode intakeMode = ScoringMode.CORAL;
+  public ScoringMode intakeMode = ScoringMode.CORAL;
   private SoloScoringMode soloScoringMode = SoloScoringMode.NO_GAME_PIECE;
   private AlgaeIntakeHeight algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
 
@@ -950,7 +950,7 @@ public class Controls {
                                   .alongWith(scoringModeSelectRumble())
                                   .withName("Algae Scoring Mode"),
                               AutoAlgaeHeights.autoAlgaeIntakeCommand(
-                                      s.drivebaseSubsystem, superStructure)
+                                      s.drivebaseSubsystem, superStructure, this)
                                   .until(() -> sensors.armSensor.booleanInClaw()));
                     }
                     default -> scoreCommand = Commands.none();
@@ -997,8 +997,9 @@ public class Controls {
     soloController
         .leftBumper()
         .onTrue(
-            superStructure
-                .quickGroundIntake(soloController.povUp())
+            Commands.parallel(
+                    Commands.runOnce(() -> intakeMode = ScoringMode.CORAL),
+                    superStructure.quickGroundIntake(soloController.povUp()))
                 .withName("Quick Gound intake"));
     // Scoring levels coral and algae intake heights
     soloController
