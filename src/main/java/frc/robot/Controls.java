@@ -150,7 +150,8 @@ public class Controls {
       // Stop running this method
       return;
     }
-
+    // if the solo controller is connected, use it for driving
+    boolean soloCC = soloController.isConnected();
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
 
@@ -165,8 +166,7 @@ public class Controls {
                     drive
                         .withVelocityX(soloController.isConnected() ? getSoloDriveX() : getDriveX())
                         .withVelocityY(soloController.isConnected() ? getSoloDriveY() : getDriveY())
-                        .withRotationalRate(
-                            soloController.isConnected() ? getSoloDriveRotate() : getDriveRotate()))
+                        .withRotationalRate(soloCC ? getSoloDriveRotate() : getDriveRotate()))
             .withName("Drive"));
 
     // various former controls that were previously used and could be referenced in the future
@@ -378,9 +378,6 @@ public class Controls {
                               .asProxy()
                           : Commands.none())
                   .withName("Automatic Intake"));
-    }
-
-    if (sensors.armSensor != null) {
       sensors
           .armSensor
           .inClaw()
@@ -393,12 +390,7 @@ public class Controls {
                           case ALGAE -> soloScoringMode = SoloScoringMode.ALGAE_IN_CLAW;
                         }
                       })
-                  .withName("Set solo scoring mode"));
-
-      sensors
-          .armSensor
-          .inClaw()
-          .and(RobotModeTriggers.teleop())
+                  .withName("Set solo scoring mode"))
           .onFalse(
               Commands.runOnce(
                       () -> {
@@ -1004,7 +996,6 @@ public class Controls {
                             case ALGAE_IN_CLAW -> Commands.sequence(
                                     superStructure.algaeProcessorScore(
                                         soloController.rightBumper()),
-                                    Commands.waitSeconds(0.7),
                                     Commands.runOnce(
                                         () -> soloScoringMode = soloScoringMode.NO_GAME_PIECE))
                                 .withName("Processor score");
