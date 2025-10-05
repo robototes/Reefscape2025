@@ -1,17 +1,15 @@
 package frc.robot;
 
-import java.util.function.BooleanSupplier;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
+
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -40,6 +38,7 @@ import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
 import frc.robot.util.ScoringMode;
 import frc.robot.util.SoloScoringMode;
+import java.util.function.BooleanSupplier;
 
 public class Controls {
   private static final int SOLO_CONTROLLER_PORT = 0;
@@ -960,15 +959,15 @@ public class Controls {
                         }
 
                         case NO_GAME_PIECE -> {
-                      scoreCommand =
-                          Commands.parallel(
-                              Commands.runOnce(() -> intakeMode = ScoringMode.ALGAE)
-                                  .alongWith(scoringModeSelectRumble())
-                                  .withName("Algae Scoring Mode"),
-                              AutoAlgaeHeights.autoAlgaeIntakeCommand(
-                                      s.drivebaseSubsystem, superStructure, this)
-                                  .until(() -> sensors.armSensor.booleanInClaw()));
-                    }
+                          scoreCommand =
+                              Commands.parallel(
+                                  Commands.runOnce(() -> intakeMode = ScoringMode.ALGAE)
+                                      .alongWith(scoringModeSelectRumble())
+                                      .withName("Algae Scoring Mode"),
+                                  AutoAlgaeHeights.autoAlgaeIntakeCommand(
+                                          s.drivebaseSubsystem, superStructure, this)
+                                      .until(() -> sensors.armSensor.booleanInClaw()));
+                        }
 
                         default -> {
                           scoreCommand = Commands.none();
@@ -983,7 +982,10 @@ public class Controls {
         .leftTrigger()
         .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignLeft(s.drivebaseSubsystem, this));
+        .whileTrue(
+            Commands.parallel(
+                AutoAlign.autoAlignLeft(s.drivebaseSubsystem, this),
+                Commands.deferredProxy(() -> getSoloCoralBranchHeightCommand())));
     // Processor + Auto align right + Select scoring mode Coral
     soloController
         .rightTrigger()
@@ -1013,8 +1015,10 @@ public class Controls {
         .rightTrigger()
         .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignRight(s.drivebaseSubsystem, this));
-    // Ground Intake
+        .whileTrue(
+            Commands.parallel(
+                AutoAlign.autoAlignRight(s.drivebaseSubsystem, this),
+                Commands.deferredProxy(() -> getSoloCoralBranchHeightCommand())));
     soloController
         .leftBumper()
         .onTrue(
