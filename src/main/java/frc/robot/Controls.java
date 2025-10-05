@@ -1,15 +1,17 @@
 package frc.robot;
 
+import java.util.function.BooleanSupplier;
+
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -38,7 +40,6 @@ import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
 import frc.robot.util.ScoringMode;
 import frc.robot.util.SoloScoringMode;
-import java.util.function.BooleanSupplier;
 
 public class Controls {
   private static final int SOLO_CONTROLLER_PORT = 0;
@@ -151,7 +152,8 @@ public class Controls {
       // Stop running this method
       return;
     }
-
+    // if the solo controller is connected, use it for driving
+    boolean soloCC = soloController.isConnected();
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
 
@@ -166,8 +168,7 @@ public class Controls {
                     drive
                         .withVelocityX(soloController.isConnected() ? getSoloDriveX() : getDriveX())
                         .withVelocityY(soloController.isConnected() ? getSoloDriveY() : getDriveY())
-                        .withRotationalRate(
-                            soloController.isConnected() ? getSoloDriveRotate() : getDriveRotate()))
+                        .withRotationalRate(soloCC ? getSoloDriveRotate() : getDriveRotate()))
             .withName("Drive"));
 
     // various former controls that were previously used and could be referenced in the future
@@ -379,9 +380,6 @@ public class Controls {
                               .asProxy()
                           : Commands.none())
                   .withName("Automatic Intake"));
-    }
-
-    if (sensors.armSensor != null) {
       sensors
           .armSensor
           .inClaw()
@@ -394,12 +392,7 @@ public class Controls {
                           case ALGAE -> soloScoringMode = SoloScoringMode.ALGAE_IN_CLAW;
                         }
                       })
-                  .withName("Set solo scoring mode"));
-
-      sensors
-          .armSensor
-          .inClaw()
-          .and(RobotModeTriggers.teleop())
+                  .withName("Set solo scoring mode"))
           .onFalse(
               Commands.runOnce(
                       () -> {
@@ -921,29 +914,52 @@ public class Controls {
         .leftTrigger()
         .onTrue(
             Commands.runOnce(
-                () -> {
-                  Command scoreCommand;
-                  switch (soloScoringMode) {
-                    case CORAL_IN_CLAW -> {
-                      scoreCommand = getSoloCoralBranchHeightCommand();
-                    }
-                    case ALGAE_IN_CLAW -> {
-                      Command bargeScoreCommand =
-                          BargeAlign.bargeScore(
+                    () -> {
+                      Command scoreCommand;
+                      switch (soloScoringMode) {
+                        case CORAL_IN_CLAW -> {
+                          scoreCommand = getSoloCoralBranchHeightCommand();
+                        }
+
+                        case ALGAE_IN_CLAW -> {
+                          Command bargeScoreCommand =
+                              BargeAlign.bargeScore(
                                   s.drivebaseSubsystem,
                                   superStructure,
                                   () -> getSoloDriveX(),
                                   () -> getSoloDriveY(),
                                   () -> getSoloDriveRotate(),
-                                  soloController.rightBumper())
-                              .withName("Algae score then intake");
-                      scoreCommand =
-                          Commands.sequence(
-                              bargeScoreCommand,
-                              Commands.runOnce(
-                                  () -> soloScoringMode = soloScoringMode.NO_GAME_PIECE));
-                    }
-                    case NO_GAME_PIECE -> {
+                                  soloController.rightBumper());
+
+                          if (sensors.intakeSensor.booleanInIntake()) {
+                            Command holdGroundIntakeOut =
+                                superStructure.holdGroundIntakeOut(soloController.povUp());
+
+                            Command quickHandoff =
+                                Commands.sequence(
+                                        superStructure
+                                            .quickGroundIntake(soloController.povUp())
+                                            .withName("Quick Gound intake"),
+                                        Commands.runOnce(
+                                            () -> soloScoringMode = soloScoringMode.CORAL_IN_CLAW))
+                                    .withName("Quick Handoff After Algae Score");
+
+                            scoreCommand =
+                                bargeScoreCommand
+                                    .alongWith(holdGroundIntakeOut)
+                                    .andThen(quickHandoff)
+                                    .withName("Algae Score + Ground Handoff");
+                          } else {
+                            scoreCommand =
+                                Commands.sequence(
+                                        bargeScoreCommand,
+                                        Commands.runOnce(
+                                            () -> soloScoringMode = soloScoringMode.NO_GAME_PIECE))
+                                    .withName("Barge Algae Score");
+                          }
+                        }
+
+                        case NO_GAME_PIECE -> {
                       scoreCommand =
                           Commands.parallel(
                               Commands.runOnce(() -> intakeMode = ScoringMode.ALGAE)
@@ -953,10 +969,16 @@ public class Controls {
                                       s.drivebaseSubsystem, superStructure, this)
                                   .until(() -> sensors.armSensor.booleanInClaw()));
                     }
-                    default -> scoreCommand = Commands.none();
-                  }
-                  CommandScheduler.getInstance().schedule(scoreCommand);
-                }));
+
+                        default -> {
+                          scoreCommand = Commands.none();
+                        }
+                      }
+
+                      CommandScheduler.getInstance().schedule(scoreCommand);
+                    })
+                .withName("Solo Left Trigger Action"));
+
     soloController
         .leftTrigger()
         .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
@@ -974,7 +996,6 @@ public class Controls {
                             case ALGAE_IN_CLAW -> Commands.sequence(
                                     superStructure.algaeProcessorScore(
                                         soloController.rightBumper()),
-                                    Commands.waitSeconds(0.7),
                                     Commands.runOnce(
                                         () -> soloScoringMode = soloScoringMode.NO_GAME_PIECE))
                                 .withName("Processor score");
@@ -997,10 +1018,23 @@ public class Controls {
     soloController
         .leftBumper()
         .onTrue(
-            Commands.parallel(
-                    Commands.runOnce(() -> intakeMode = ScoringMode.CORAL),
-                    superStructure.quickGroundIntake(soloController.povUp()))
-                .withName("Quick Gound intake"));
+            Commands.runOnce(
+                () -> {
+                  Command intakeCommand;
+                  switch (soloScoringMode) {
+                    case CORAL_IN_CLAW, NO_GAME_PIECE -> intakeCommand =
+                        superStructure
+                            .quickGroundIntake(soloController.povUp())
+                            .withName("Quick Ground Intake")
+                            .alongWith(Commands.runOnce(() -> intakeMode = ScoringMode.CORAL));
+                    case ALGAE_IN_CLAW -> intakeCommand =
+                        superStructure
+                            .holdGroundIntakeOut(soloController.povUp())
+                            .withName("Hold Ground Intake Out");
+                    default -> intakeCommand = Commands.none();
+                  }
+                  CommandScheduler.getInstance().schedule(intakeCommand);
+                }));
     // Scoring levels coral and algae intake heights
     soloController
         .y()

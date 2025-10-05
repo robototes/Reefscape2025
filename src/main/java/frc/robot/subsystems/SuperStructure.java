@@ -203,6 +203,21 @@ public class SuperStructure {
     }
   }
 
+  public Command holdGroundIntakeOut(BooleanSupplier retract) {
+    if (groundSpinny == null || groundArm == null) {
+      return Commands.none().withName("hold ground intake disabled");
+    }
+
+    return Commands.sequence(
+            Commands.parallel(
+                groundArm
+                    .moveToPosition(GroundArm.GROUND_POSITION)
+                    .andThen(groundArm.setVoltage(GroundArm.GROUND_HOLD_VOLTAGE))
+                    .until(retract),
+                groundSpinny.setGroundIntakePower()))
+        .withName("Hold Ground Intake Out");
+  }
+
   // This is the actual version in use. It moves the coral directly into the claw.
   public Command quickGroundIntake(BooleanSupplier retract) { // thanks joseph
     if (groundSpinny == null || groundArm == null || intakeSensor == null) {
