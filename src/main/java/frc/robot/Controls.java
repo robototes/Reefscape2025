@@ -1,15 +1,17 @@
 package frc.robot;
 
+import java.util.function.BooleanSupplier;
+
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -38,7 +40,6 @@ import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
 import frc.robot.util.ScoringMode;
 import frc.robot.util.SoloScoringMode;
-import java.util.function.BooleanSupplier;
 
 public class Controls {
   private static final int SOLO_CONTROLLER_PORT = 0;
@@ -165,8 +166,8 @@ public class Controls {
             .applyRequest(
                 () ->
                     drive
-                        .withVelocityX(soloController.isConnected() ? getSoloDriveX() : getDriveX())
-                        .withVelocityY(soloController.isConnected() ? getSoloDriveY() : getDriveY())
+                        .withVelocityX(soloCC ? getSoloDriveX() : getDriveX())
+                        .withVelocityY(soloCC ? getSoloDriveY() : getDriveY())
                         .withRotationalRate(soloCC ? getSoloDriveRotate() : getDriveRotate()))
             .withName("Drive"));
 
@@ -392,6 +393,33 @@ public class Controls {
                         }
                       })
                   .withName("Set solo scoring mode"))
+          .onFalse(
+              Commands.runOnce(
+                      () -> {
+                        soloScoringMode = SoloScoringMode.NO_GAME_PIECE;
+                      })
+                  .withName("Clear solo scoring mode"));
+    }
+
+    if (sensors.armSensor != null) {
+      sensors
+          .armSensor
+          .inClaw()
+          .and(RobotModeTriggers.teleop())
+          .onTrue(
+              Commands.runOnce(
+                      () -> {
+                        switch (intakeMode) {
+                          case CORAL -> soloScoringMode = SoloScoringMode.CORAL_IN_CLAW;
+                          case ALGAE -> soloScoringMode = SoloScoringMode.ALGAE_IN_CLAW;
+                        }
+                      })
+                  .withName("Set solo scoring mode"));
+
+      sensors
+          .armSensor
+          .inClaw()
+          .and(RobotModeTriggers.teleop())
           .onFalse(
               Commands.runOnce(
                       () -> {
@@ -876,7 +904,7 @@ public class Controls {
     }
   }
 
-  private double getJoystickInput(double input) {
+  private double getSoloJoystickInput(double input) {
     if (soloController.leftStick().getAsBoolean() || soloController.rightStick().getAsBoolean()) {
       return 0; // stop driving if either stick is pressed
     }
@@ -890,21 +918,21 @@ public class Controls {
   private double getSoloDriveX() {
     // Joystick +Y is back
     // Robot +X is forward
-    return getJoystickInput(-soloController.getLeftY()) * MaxSpeed;
+    return getSoloJoystickInput(-soloController.getLeftY()) * MaxSpeed;
   }
 
   // takes the Y value from the joystick, and applies a deadband and input scaling
   private double getSoloDriveY() {
     // Joystick +X is right
     // Robot +Y is left
-    return getJoystickInput(-soloController.getLeftX()) * MaxSpeed;
+    return getSoloJoystickInput(-soloController.getLeftX()) * MaxSpeed;
   }
 
   // takes the rotation value from the joystick, and applies a deadband and input scaling
   private double getSoloDriveRotate() {
     // Joystick +X is right
     // Robot +angle is CCW (left)
-    return getJoystickInput(-soloController.getRightX()) * MaxSpeed;
+    return getSoloJoystickInput(-soloController.getRightX()) * MaxSpeed;
   }
 
   private void configureSoloControllerBindings() {
@@ -998,6 +1026,7 @@ public class Controls {
                             case ALGAE_IN_CLAW -> Commands.sequence(
                                     superStructure.algaeProcessorScore(
                                         soloController.rightBumper()),
+                                    Commands.waitSeconds(0.7),
                                     Commands.runOnce(
                                         () -> soloScoringMode = soloScoringMode.NO_GAME_PIECE))
                                 .withName("Processor score");
