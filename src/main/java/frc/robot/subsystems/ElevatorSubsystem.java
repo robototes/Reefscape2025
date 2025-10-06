@@ -233,6 +233,13 @@ public class ElevatorSubsystem extends SubsystemBase {
     return hasBeenZeroed;
   }
 
+  public boolean getPositionSubZero() {
+    if (curPos < -0.1 && hasBeenZeroed) {
+      return true;
+    }
+    return false;
+  }
+
   private double getTargetPosition() {
     return targetPos;
   }
