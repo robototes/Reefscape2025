@@ -213,7 +213,7 @@ public class SuperStructure {
                 groundArm
                     .moveToPosition(GroundArm.GROUND_POSITION)
                     .andThen(groundArm.setVoltage(GroundArm.GROUND_HOLD_VOLTAGE))
-                    .until(retract),
+                    .withDeadline(Commands.waitUntil(retract)),
                 groundSpinny.setGroundIntakePower()))
         .withName("Hold Ground Intake Out");
   }
