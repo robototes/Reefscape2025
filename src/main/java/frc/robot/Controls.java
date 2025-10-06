@@ -912,7 +912,7 @@ public class Controls {
     soloController
         .leftTrigger()
         .onTrue(
-            Commands.runOnce(
+            Commands.deferredProxy(
                     () -> {
                       Command scoreCommand;
                       switch (soloScoringMode) {
@@ -974,7 +974,7 @@ public class Controls {
                         }
                       }
 
-                      CommandScheduler.getInstance().schedule(scoreCommand);
+                      return scoreCommand;
                     })
                 .withName("Solo Left Trigger Action"));
 
@@ -982,15 +982,12 @@ public class Controls {
         .leftTrigger()
         .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(
-            Commands.parallel(
-                AutoAlign.autoAlignLeft(s.drivebaseSubsystem, this),
-                Commands.deferredProxy(() -> getSoloCoralBranchHeightCommand())));
+        .whileTrue(AutoAlign.autoAlignLeft(s.drivebaseSubsystem, this));
     // Processor + Auto align right + Select scoring mode Coral
     soloController
         .rightTrigger()
         .onTrue(
-            Commands.runOnce(
+            Commands.deferredProxy(
                     () -> {
                       Command scoreCommand =
                           switch (soloScoringMode) {
@@ -1008,17 +1005,14 @@ public class Controls {
                                 superStructure.coralPreIntake(),
                                 s.climbPivotSubsystem.toStow());
                           };
-                      CommandScheduler.getInstance().schedule(scoreCommand);
+                      return scoreCommand;
                     })
                 .withName("score"));
     soloController
         .rightTrigger()
         .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(
-            Commands.parallel(
-                AutoAlign.autoAlignRight(s.drivebaseSubsystem, this),
-                Commands.deferredProxy(() -> getSoloCoralBranchHeightCommand())));
+        .whileTrue(AutoAlign.autoAlignRight(s.drivebaseSubsystem, this));
     soloController
         .leftBumper()
         .onTrue(
