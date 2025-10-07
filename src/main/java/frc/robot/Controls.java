@@ -710,7 +710,7 @@ public class Controls {
                   } else {
                     return switch (scoringMode) {
                       case CORAL -> Commands.none().withName("No manual spit - Coral mode");
-                      case ALGAE -> s.spinnyClawSubsytem.algaeExtakePower();
+                      case ALGAE -> s.spinnyClawSubsytem.algaeExtakeProcessorPower();
                     };
                   }
                 }));

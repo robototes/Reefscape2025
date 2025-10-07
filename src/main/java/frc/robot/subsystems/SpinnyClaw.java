@@ -160,8 +160,7 @@ public class SpinnyClaw extends SubsystemBase {
     return setPower(ALGAE_INTAKE_SPEED).withName("Algae intake power");
   }
 
-  public Command
-      algaeExtakePower() { // can change to net extake maybe? also bound as general extake though
+  public Command algaeExtakeNetPower() {
     return setPower(ALGAE_EXTAKE_SPEED).withName("Algae extake power");
   }
 

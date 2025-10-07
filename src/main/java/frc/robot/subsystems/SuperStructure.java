@@ -436,7 +436,7 @@ public class SuperStructure {
                 armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE),
                 spinnyClaw.algaeIntakePower()),
             Commands.waitUntil(score),
-            spinnyClaw.algaeHoldExtakePower().withTimeout(0.7),
+            spinnyClaw.algaeExtakeNetPower(),
             Commands.waitSeconds(0.7),
             armPivot.moveToPosition(
                 ArmPivot.CORAL_PRESET_UP), // added to prevent hitting the barge after scoring net
