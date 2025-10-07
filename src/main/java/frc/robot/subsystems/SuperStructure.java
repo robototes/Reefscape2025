@@ -417,7 +417,7 @@ public class SuperStructure {
   public Command algaeNetPrescore() {
     return Commands.parallel(
             elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE),
-            armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE))
+            armPivot.moveToPosition(ArmPivot.CORAL_PRESET_UP))
         .withName("Algae Net Prescore");
   }
 
@@ -428,7 +428,9 @@ public class SuperStructure {
                 Commands.sequence(
                     spinnyClaw.algaeIntakePower(),
                     Commands.waitSeconds(0.3),
-                    spinnyClaw.algaeHoldExtakePower())),
+                    Commands.parallel(
+                        armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE)
+                        spinnyClaw.algaeHoldExtakePower()))),
             armPivot.moveToPosition(
                 ArmPivot.CORAL_PRESET_UP), // added to prevent hitting the barge after scoring net
             elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE))
