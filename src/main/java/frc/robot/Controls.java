@@ -152,6 +152,8 @@ public class Controls {
       return;
     }
     // if the solo controller is connected, use it for driving
+    // gets set when robot code starts running for the first time so usally is false and isnt
+    // currently in use
     boolean soloCC = soloController.isConnected();
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
@@ -165,9 +167,10 @@ public class Controls {
             .applyRequest(
                 () ->
                     drive
-                        .withVelocityX(soloCC ? getSoloDriveX() : getDriveX())
-                        .withVelocityY(soloCC ? getSoloDriveY() : getDriveY())
-                        .withRotationalRate(soloCC ? getSoloDriveRotate() : getDriveRotate()))
+                        .withVelocityX(soloController.isConnected() ? getSoloDriveX() : getDriveX())
+                        .withVelocityY(soloController.isConnected() ? getSoloDriveY() : getDriveY())
+                        .withRotationalRate(
+                            soloController.isConnected() ? getSoloDriveRotate() : getDriveRotate()))
             .withName("Drive"));
 
     // various former controls that were previously used and could be referenced in the future
