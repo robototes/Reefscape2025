@@ -917,7 +917,14 @@ public class Controls {
                       Command scoreCommand;
                       switch (soloScoringMode) {
                         case CORAL_IN_CLAW -> {
-                          scoreCommand = getSoloCoralBranchHeightCommand();
+                          scoreCommand =
+                              getSoloCoralBranchHeightCommand()
+                                  .until(
+                                      () ->
+                                          soloController.a().getAsBoolean()
+                                              || soloController.b().getAsBoolean()
+                                              || soloController.x().getAsBoolean()
+                                              || soloController.y().getAsBoolean());
                         }
 
                         case ALGAE_IN_CLAW -> {
