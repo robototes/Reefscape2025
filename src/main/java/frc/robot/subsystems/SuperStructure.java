@@ -429,8 +429,8 @@ public class SuperStructure {
                     spinnyClaw.algaeIntakePower(),
                     Commands.waitSeconds(0.3),
                     Commands.parallel(
-                        armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE)
-                        spinnyClaw.algaeHoldExtakePower()))),
+                        armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE),
+                        spinnyClaw.algaeExtakePower()))),
             armPivot.moveToPosition(
                 ArmPivot.CORAL_PRESET_UP), // added to prevent hitting the barge after scoring net
             elevator.setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE))
