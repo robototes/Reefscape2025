@@ -947,15 +947,15 @@ public class Controls {
                             Command quickHandoff =
                                 Commands.sequence(
                                         superStructure
-                                            .quickGroundIntake(soloController.povUp())
+                                            .quickGroundIntake(() -> true)
                                             .withName("Quick Gound intake"),
                                         Commands.runOnce(
                                             () -> soloScoringMode = soloScoringMode.CORAL_IN_CLAW))
                                     .withName("Quick Handoff After Algae Score");
 
                             scoreCommand =
-                                bargeScoreCommand
-                                    .alongWith(holdGroundIntakeOut)
+                                holdGroundIntakeOut
+                                    .deadlineFor(bargeScoreCommand)
                                     .andThen(quickHandoff)
                                     .withName("Algae Score + Ground Handoff");
                           } else {
