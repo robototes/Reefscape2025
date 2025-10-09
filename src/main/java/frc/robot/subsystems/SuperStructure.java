@@ -203,6 +203,21 @@ public class SuperStructure {
     }
   }
 
+  public Command holdGroundIntakeOut(BooleanSupplier retract) {
+    if (groundSpinny == null || groundArm == null) {
+      return Commands.none().withName("hold ground intake disabled");
+    }
+
+    return Commands.sequence(
+            Commands.parallel(
+                groundArm
+                    .moveToPosition(GroundArm.GROUND_POSITION)
+                    .andThen(groundArm.setVoltage(GroundArm.GROUND_HOLD_VOLTAGE))
+                    .withDeadline(Commands.waitUntil(retract)),
+                groundSpinny.setGroundIntakePower()))
+        .withName("Hold Ground Intake Out");
+  }
+
   // This is the actual version in use. It moves the coral directly into the claw.
   public Command quickGroundIntake(BooleanSupplier retract) { // thanks joseph
     if (groundSpinny == null || groundArm == null || intakeSensor == null) {
@@ -421,7 +436,7 @@ public class SuperStructure {
                 armPivot.moveToPosition(ArmPivot.ALGAE_NET_SCORE),
                 spinnyClaw.algaeIntakePower()),
             Commands.waitUntil(score),
-            spinnyClaw.algaeHoldExtakePower().withTimeout(0.7),
+            spinnyClaw.algaeExtakeNetPower(),
             Commands.waitSeconds(0.7),
             armPivot.moveToPosition(
                 ArmPivot.CORAL_PRESET_UP), // added to prevent hitting the barge after scoring net
