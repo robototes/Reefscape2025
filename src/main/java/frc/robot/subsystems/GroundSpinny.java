@@ -48,7 +48,7 @@ public class GroundSpinny extends SubsystemBase {
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     cfg.apply(configuration);
     // enabling stator current limits
-    currentLimits.StatorCurrentLimit = 40; // subject to change
+    currentLimits.StatorCurrentLimit = 100; // subject to change
     currentLimits.StatorCurrentLimitEnable = true;
     currentLimits.SupplyCurrentLimit = 20; // subject to change
     currentLimits.SupplyCurrentLimitEnable = true;
