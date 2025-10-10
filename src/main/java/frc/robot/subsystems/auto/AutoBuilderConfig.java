@@ -39,7 +39,8 @@ public class AutoBuilderConfig {
               ),
           RobotConfig.fromGUISettings(), // The robot configuration
           () -> {
-            // Boolean supplier that controls when the path will be mirrored for the red alliance
+            // Boolean supplier that controls when the path will be mirrored for the red
+            // alliance
             // This will flip the path being followed to the red side of the field.
             // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
@@ -49,7 +50,7 @@ public class AutoBuilderConfig {
             }
             return false;
           },
-          s.drivebaseSubsystem // Reference to this subsystem to set requirements
+          s.getDrivetrain() // Reference to this subsystem to set requirements
           );
 
     } catch (IOException | ParseException e) {

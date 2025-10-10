@@ -25,7 +25,7 @@ public class GroundArm extends SubsystemBase {
   private final double ARMPIVOT_KV = 4;
   private final double ARMPIVOT_KG = 0.048;
   private final double ARMPIVOT_KA = 0;
-  public static final double STOWED_POSITION = 0.45;
+  public static final double STOWED_POSITION = 0.46;
   public static final double UP_POSITION =
       0.27; // untested - should be somewhere in between stowed and ground
   public static final double GROUND_POSITION = -0.050;

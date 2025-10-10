@@ -6,8 +6,10 @@ package frc.robot;
 
 import au.grapplerobotics.CanBridge;
 import com.pathplanner.lib.commands.FollowPathCommand;
+import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -37,7 +39,6 @@ public class Robot extends TimedRobot {
   private final RobotType robotType;
   public final Controls controls;
   public final Subsystems subsystems;
-
   public final Sensors sensors;
   public final SuperStructure superStructure;
   private final PowerDistribution PDH;
@@ -55,7 +56,7 @@ public class Robot extends TimedRobot {
     sensors = new Sensors();
     subsystems = new Subsystems(sensors);
     if (SubsystemConstants.DRIVEBASE_ENABLED) {
-      AutoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
+      AutoBuilderConfig.buildAuto(subsystems.getDrivetrain());
     }
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
@@ -107,6 +108,7 @@ public class Robot extends TimedRobot {
       FollowPathCommand.warmupCommand().schedule();
     }
     MatchTab.create(sensors, subsystems);
+    WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
   }
 
   @Override
@@ -125,10 +127,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledExit() {
-    // on the end of diabling, make sure all of the motors are set to break and wont move upon
+    // on the end of diabling, make sure all of the motors are set to break and wont
+    // move upon
     // enabling
-    if (subsystems.drivebaseSubsystem != null) {
-      subsystems.drivebaseSubsystem.brakeMotors();
+    if (subsystems.getDrivetrain() != null) {
+      subsystems.getDrivetrain().brakeMotors();
     }
     if (subsystems.climbPivotSubsystem != null) {
       subsystems.climbPivotSubsystem.brakeMotors();

@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.DrivebaseWrapper;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import java.util.function.BooleanSupplier;
@@ -27,17 +28,23 @@ public class BargeAlign extends Command {
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
           .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
-  public static boolean atScoringXPosition(CommandSwerveDrivetrain drivebasesubsystem) {
-    double robotX = drivebasesubsystem.getState().Pose.getX();
-    return blueBargeLineX < robotX && robotX < redBargeLineX;
+  public static boolean atScoringXPosition(DrivebaseWrapper drivebaseWrapper) {
+    if (drivebaseWrapper != null) {
+      double robotX = drivebaseWrapper.getEstimatedPosition().getX();
+      return blueBargeLineX < robotX && robotX < redBargeLineX;
+    } else {
+      return false;
+    }
   }
 
   private static Command driveToBlackLine(
       CommandSwerveDrivetrain drivebaseSubsystem,
       DoubleSupplier manualXSpeed,
       DoubleSupplier manualYSpeed,
-      DoubleSupplier manualRotateSpeed) {
-    return new BargeAlign(drivebaseSubsystem, manualXSpeed, manualYSpeed, manualRotateSpeed)
+      DoubleSupplier manualRotateSpeed,
+      DrivebaseWrapper drivebaseWrapper) {
+    return new BargeAlign(
+            drivebaseSubsystem, manualXSpeed, manualYSpeed, manualRotateSpeed, drivebaseWrapper)
         .withName("Drive to Black Line");
   }
 
@@ -56,29 +63,27 @@ public class BargeAlign extends Command {
       DoubleSupplier manualXSpeed,
       DoubleSupplier manualYSpeed,
       DoubleSupplier manualRotateSpeed,
-      BooleanSupplier manualScore) {
+      BooleanSupplier manualScore,
+      DrivebaseWrapper drivebaseWrapper) {
     return Commands.sequence(
-        BargeAlign.driveToBlackLine(
-                drivebaseSubsystem, manualXSpeed, manualYSpeed, manualRotateSpeed)
-            .asProxy(),
-        BargeAlign.driveToBarge(drivebaseSubsystem, manualXSpeed, manualYSpeed, manualRotateSpeed)
-            .asProxy()
-            .withDeadline(
-                superStructure.algaeNetScore(
-                    () ->
-                        manualScore.getAsBoolean()
-                            || BargeAlign.atScoringXPosition(drivebaseSubsystem))));
+        Commands.parallel(
+            superStructure.algaeNetPrescore(),
+            BargeAlign.driveToBlackLine(
+                    drivebaseSubsystem, manualXSpeed, manualYSpeed, manualRotateSpeed)
+                .asProxy()),
+        superStructure.algaeNetScore());
   }
 
   private static Command driveToBarge(
       CommandSwerveDrivetrain drivebaseSubsystem,
       DoubleSupplier manualXSpeed,
       DoubleSupplier manualYSpeed,
-      DoubleSupplier manualRotateSpeed) {
+      DoubleSupplier manualRotateSpeed,
+      DrivebaseWrapper drivebaseWrapper) {
     return drivebaseSubsystem
         .applyRequest(
             () -> {
-              boolean onRedSide = drivebaseSubsystem.getState().Pose.getX() > fieldLength / 2;
+              boolean onRedSide = drivebaseWrapper.getEstimatedPosition().getX() > fieldLength / 2;
               double xSpeed = onRedSide ? -xBargeDriveSpeed : xBargeDriveSpeed;
               double manualX = manualXSpeed.getAsDouble();
               if (manualX != 0) {
@@ -89,7 +94,7 @@ public class BargeAlign extends Command {
                   .withVelocityY(manualYSpeed.getAsDouble())
                   .withRotationalRate(manualRotateSpeed.getAsDouble());
             })
-        .until(() -> BargeAlign.atScoringXPosition(drivebaseSubsystem))
+        .until(() -> BargeAlign.atScoringXPosition(drivebaseWrapper))
         .finallyDo(
             () ->
                 drivebaseSubsystem.setControl(
@@ -104,13 +109,16 @@ public class BargeAlign extends Command {
   private DoubleSupplier manualXSpeed;
   private DoubleSupplier manualYSpeed;
   private DoubleSupplier manualRotateSpeed;
+  private DrivebaseWrapper drivebaseWrapper;
 
   private BargeAlign(
       CommandSwerveDrivetrain drive,
       DoubleSupplier manualXSpeed,
       DoubleSupplier manualYSpeed,
-      DoubleSupplier manualRotateSpeed) {
+      DoubleSupplier manualRotateSpeed,
+      DrivebaseWrapper drivebaseWrapper) {
     this.drive = drive;
+    this.drivebaseWrapper = drivebaseWrapper;
     this.manualXSpeed = manualXSpeed;
     this.manualYSpeed = manualYSpeed;
     this.manualRotateSpeed = manualRotateSpeed;
@@ -121,7 +129,7 @@ public class BargeAlign extends Command {
 
   @Override
   public void initialize() {
-    boolean onRedSide = drive.getState().Pose.getX() > fieldLength / 2;
+    boolean onRedSide = drivebaseWrapper.getEstimatedPosition().getX() > fieldLength / 2;
     double targetX = onRedSide ? redBlacklineX : blueBlacklineX;
     Rotation2d targetAngle = onRedSide ? Rotation2d.k180deg : Rotation2d.kZero;
     pidX.setSetpoint(targetX);
@@ -130,7 +138,7 @@ public class BargeAlign extends Command {
 
   @Override
   public void execute() {
-    Pose2d currentPose = drive.getState().Pose;
+    Pose2d currentPose = drivebaseWrapper.getEstimatedPosition();
     // Calculate the power for X direction and clamp it between -2 and 2
     double powerX = pidX.calculate(currentPose.getX());
     powerX = MathUtil.clamp(powerX, -2, 2);

@@ -66,7 +66,8 @@ public class Controls {
   private AlgaeIntakeHeight algaeIntakeHeight = AlgaeIntakeHeight.ALGAE_LEVEL_THREE_FOUR;
 
   // Swerve stuff
-  // setting the max speed nad other similar variables depending on which drivebase it is
+  // setting the max speed and other similar variables depending on which
+  // drivebase it is
   public static final double MaxSpeed =
       RobotType.getCurrent() == RobotType.BONK
           ? BonkTunerConstants.kSpeedAt12Volts.in(MetersPerSecond)
@@ -136,7 +137,7 @@ public class Controls {
     return input * MaxSpeed * inputScale;
   }
 
-  // takes the rotation value from the joystick, and applies a deadband and input scaling
+  // takes the rotation value from the joystickk, and applies a deadband and input scaling
   private double getDriveRotate() {
     // Joystick +X is right
     // Robot +angle is CCW (left)
@@ -147,7 +148,7 @@ public class Controls {
 
   // all the current control bidings
   private void configureDrivebaseBindings() {
-    if (s.drivebaseSubsystem == null) {
+    if (s.getDrivetrain() == null) {
       // Stop running this method
       return;
     }
@@ -156,8 +157,9 @@ public class Controls {
     // and Y is defined as to the left according to WPILib convention.
 
     // the driving command for just driving around
-    s.drivebaseSubsystem.setDefaultCommand(
-        // s.drivebaseSubsystem will execute this command periodically
+    s.getDrivetrain()
+        .setDefaultCommand(
+            // s.drivebaseSubsystem will execute this command periodically
 
         // applying the request to drive with the inputs
         s.drivebaseSubsystem
@@ -170,30 +172,31 @@ public class Controls {
                             soloController.isConnected() ? getSoloDriveRotate() : getDriveRotate()))
             .withName("Drive"));
 
-    // various former controls that were previously used and could be referenced in the future
+    // various former controls that were previously used and could be referenced in
+    // the future
 
     // operatorController
-    //     .povUp()
-    //     .whileTrue(
-    //         s.drivebaseSubsystem
-    //             .applyRequest(
-    //                 () ->
-    //                     drive
-    //                         .withVelocityX(MetersPerSecond.of(1.0))
-    //                         .withVelocityY(0)
-    //                         .withRotationalRate(0))
-    //             .withName("1 m/s forward"));
+    // .povUp()
+    // .whileTrue(
+    // s.drivebaseSubsystem
+    // .applyRequest(
+    // () ->
+    // drive
+    // .withVelocityX(MetersPerSecond.of(1.0))
+    // .withVelocityY(0)
+    // .withRotationalRate(0))
+    // .withName("1 m/s forward"));
     // operatorController
-    //     .povRight()
-    //     .whileTrue(
-    //         s.drivebaseSubsystem
-    //             .applyRequest(
-    //                 () ->
-    //                     drive
-    //                         .withVelocityX(MetersPerSecond.of(2.0))
-    //                         .withVelocityY(0)
-    //                         .withRotationalRate(0))
-    //             .withName("2 m/s forward"));
+    // .povRight()
+    // .whileTrue(
+    // s.drivebaseSubsystem
+    // .applyRequest(
+    // () ->
+    // drive
+    // .withVelocityX(MetersPerSecond.of(2.0))
+    // .withVelocityY(0)
+    // .withRotationalRate(0))
+    // .withName("2 m/s forward"));
     // driverController.a().whileTrue(s.drivebaseSubsystem.sysIdDynamic(Direction.kForward));
     // driverController.b().whileTrue(s.drivebaseSubsystem.sysIdDynamic(Direction.kReverse));
     // driverController.y().whileTrue(s.drivebaseSubsystem.sysIdQuasistatic(Direction.kForward));
@@ -210,13 +213,13 @@ public class Controls {
     driverController
         .back()
         .onTrue(
-            s.drivebaseSubsystem
-                .runOnce(() -> s.drivebaseSubsystem.seedFieldCentric())
+            s.getDrivetrain()
+                .runOnce(() -> s.getDrivetrain().seedFieldCentric())
                 .alongWith(rumble(driverController, 0.5, Seconds.of(0.3)))
                 .withName("Reset gyro"));
 
     // logging the telemetry
-    s.drivebaseSubsystem.registerTelemetry(logger::telemeterize);
+    s.getDrivetrain().registerTelemetry(logger::telemeterize);
 
     // creats a swerve button that coasts the wheels
     var swerveCoastButton =
@@ -226,7 +229,7 @@ public class Controls {
             .getEntry();
     // coast the wheels
     new Trigger(() -> swerveCoastButton.getBoolean(false))
-        .whileTrue(s.drivebaseSubsystem.coastMotors());
+        .whileTrue(s.getDrivetrain().coastMotors());
   }
 
   private void configureSuperStructureBindings() {
@@ -426,12 +429,13 @@ public class Controls {
                             case CORAL -> getCoralBranchHeightCommand();
                             case ALGAE -> Commands.sequence(
                                     BargeAlign.bargeScore(
-                                        s.drivebaseSubsystem,
+                                        s.getDrivetrain(),
                                         superStructure,
                                         () -> getDriveX(),
                                         () -> getDriveY(),
                                         () -> getDriveRotate(),
-                                        driverController.rightBumper()),
+                                        driverController.rightBumper(),
+                                        s.drivebaseWrapper),
                                     getAlgaeIntakeCommand())
                                 .withName("Algae score then intake");
                           };
@@ -575,9 +579,9 @@ public class Controls {
         .whileTrue(s.elevatorSubsystem.holdCoastMode());
     // var elevatorZeroButton = new DigitalInput(Hardware.ELEVATOR_ZERO_BUTTON);
     // new Trigger(() -> elevatorZeroButton.get())
-    //     .debounce(1, DebounceType.kRising)
-    //     .and(RobotModeTriggers.disabled())
-    //     .onTrue(s.elevatorSubsystem.resetPosZero());
+    // .debounce(1, DebounceType.kRising)
+    // .and(RobotModeTriggers.disabled())
+    // .onTrue(s.elevatorSubsystem.resetPosZero());
   }
 
   private void configureArmPivotBindings() {
@@ -650,12 +654,14 @@ public class Controls {
     s.climbPivotSubsystem.setDefaultCommand(
         s.climbPivotSubsystem.advanceClimbCheck().withName("Advance Climb Check"));
 
-    // check if the climb controller is connected, and whne start is pressed move to the next climb
+    // check if the climb controller is connected, and when start is pressed move to
+    // the next climb
     // position
     connected(climbTestController)
         .and(climbTestController.start())
         .onTrue(s.climbPivotSubsystem.advanceClimbTarget());
-    // on start or right trigger, move to climb out or climbed respectively on operator
+    // on start or right trigger, move to climb out or climbed respectively on
+    // operator
     operatorController.start().onTrue(s.climbPivotSubsystem.toClimbOut());
     operatorController.rightTrigger().onTrue(s.climbPivotSubsystem.toClimbed());
     // manual control for climb test controller for negative direction
@@ -730,7 +736,7 @@ public class Controls {
     }
 
     s.elevatorLEDSubsystem.setDefaultCommand(
-        s.elevatorLEDSubsystem.showScoringMode(() -> soloScoringMode));
+        s.elevatorLEDSubsystem.showScoringMode(() -> soloScoringMode, intakeMode));
 
     if (s.elevatorSubsystem != null) {
       Trigger hasBeenZeroed = new Trigger(s.elevatorSubsystem::getHasBeenZeroed);
@@ -765,7 +771,8 @@ public class Controls {
     RobotModeTriggers.autonomous()
         .whileTrue(s.elevatorLEDSubsystem.animate(LEDPattern.rainbow(255, 255), "Auto Rainbow"));
     Timer teleopTimer = new Timer();
-    // when in teleop for less than 5 seconds after autononomous ends, restart the timer
+    // when in teleop for less than 5 seconds after autononomous ends, restart the
+    // timer
     RobotModeTriggers.autonomous()
         .debounce(5, DebounceType.kFalling)
         .and(RobotModeTriggers.teleop())
@@ -794,7 +801,7 @@ public class Controls {
   }
 
   private void configureAutoAlignBindings() {
-    if (s.drivebaseSubsystem == null) {
+    if (s.getDrivetrain() == null) {
       return;
     }
     if (s.visionSubsystem != null) {
@@ -806,12 +813,12 @@ public class Controls {
         .rightTrigger()
         .and(() -> scoringMode == ScoringMode.CORAL)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignRight(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlign.autoAlignRight(s.getDrivetrain(), this));
     driverController
         .leftTrigger()
         .and(() -> scoringMode == ScoringMode.CORAL)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignLeft(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlign.autoAlignLeft(s.getDrivetrain(), this));
   }
 
   private void configureGroundSpinnyBindings() {
@@ -925,7 +932,15 @@ public class Controls {
                   Command scoreCommand;
                   switch (soloScoringMode) {
                     case CORAL_IN_CLAW -> {
-                      scoreCommand = getSoloCoralBranchHeightCommand();
+                      scoreCommand =
+                          getSoloCoralBranchHeightCommand()
+                              .until(
+                                  () ->
+                                      soloController.a().getAsBoolean()
+                                          || soloController.b().getAsBoolean()
+                                          || soloController.x().getAsBoolean()
+                                          || soloController.y().getAsBoolean());
+                      ;
                     }
                     case ALGAE_IN_CLAW -> {
                       Command bargeScoreCommand =
@@ -970,7 +985,13 @@ public class Controls {
                     () -> {
                       Command scoreCommand =
                           switch (soloScoringMode) {
-                            case CORAL_IN_CLAW -> getSoloCoralBranchHeightCommand();
+                            case CORAL_IN_CLAW -> getSoloCoralBranchHeightCommand()
+                                .until(
+                                    () ->
+                                        soloController.a().getAsBoolean()
+                                            || soloController.b().getAsBoolean()
+                                            || soloController.x().getAsBoolean()
+                                            || soloController.y().getAsBoolean());
                             case ALGAE_IN_CLAW -> Commands.sequence(
                                     superStructure.algaeProcessorScore(
                                         soloController.rightBumper()),

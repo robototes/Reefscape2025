@@ -111,7 +111,9 @@ public class AutoLogic {
           new AutoPath("MRSF_G-F_WithWait", "MRSF_G-F_WithWait"),
           new AutoPath("MRSF_G-H", "MRSF_G-H"),
           new AutoPath("MLSF_H-K_Cooking", "MLSF_H-K_Cooking"),
-          new AutoPath("MLSF_H-G", "MLSF_H-G"));
+          new AutoPath("MLSF_H-G", "MLSF_H-G"),
+          new AutoPath("OSWCounterAlgaeEF", "OSWCounterAlgaeEF"),
+          new AutoPath("OSMCounterAlgaeEF", "OSMCounterAlgaeEF"));
 
   private static List<AutoPath> threePiecePaths =
       List.of(
@@ -206,7 +208,8 @@ public class AutoLogic {
     // Load the path you want to follow using its name in the GUI
     PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
 
-    // Create a path following command using AutoBuilder. This will also trigger event markers.
+    // Create a path following command using AutoBuilder. This will also trigger
+    // event markers.
     return AutoBuilder.followPath(path);
   }
 
@@ -289,7 +292,7 @@ public class AutoLogic {
     if (r.superStructure != null) {
       return new ConditionalCommand(
           // If true:
-          AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
+          AutoAlign.autoAlign(s.getDrivetrain(), controls)
               .repeatedly()
               .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
               .withName("scoreCommand"),
@@ -298,13 +301,13 @@ public class AutoLogic {
           // Condition:
           () -> ARMSENSOR_ENABLED && r.sensors.armSensor.booleanInClaw());
     }
-    return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
+    return AutoAlign.autoAlign(s.getDrivetrain(), controls)
         .withName("scoreCommand-noSuperstructure");
   }
 
   public static Command algaeCommand23() {
     if (r.superStructure != null) {
-      return AlgaeAlign.algaeAlign(s.drivebaseSubsystem, controls)
+      return AlgaeAlign.algaeAlign(s.getDrivetrain(), controls)
           .repeatedly()
           .withDeadline(r.superStructure.algaeLevelTwoThreeIntake())
           .withName("algaeCommand23");
@@ -314,7 +317,7 @@ public class AutoLogic {
 
   public static Command algaeCommand34() {
     if (r.superStructure != null) {
-      return AlgaeAlign.algaeAlign(s.drivebaseSubsystem, controls)
+      return AlgaeAlign.algaeAlign(s.getDrivetrain(), controls)
           .repeatedly()
           .withDeadline(r.superStructure.algaeLevelThreeFourIntake())
           .withName("algaeCommand34");
@@ -325,7 +328,13 @@ public class AutoLogic {
   public static Command netCommand() {
     if (r.superStructure != null) {
       return BargeAlign.bargeScore(
-              s.drivebaseSubsystem, r.superStructure, () -> 0, () -> 0, () -> 0, () -> false)
+              s.getDrivetrain(),
+              r.superStructure,
+              () -> 0,
+              () -> 0,
+              () -> 0,
+              () -> false,
+              s.drivebaseWrapper)
           .withName("net");
     }
     return Commands.none().withName("net");

@@ -49,20 +49,20 @@ public class AutoAlign {
   }
 
   public static boolean isStationary() {
-    var speeds = AutoLogic.s.drivebaseSubsystem.getState().Speeds;
+    var speeds = AutoLogic.s.getDrivetrain().getState().Speeds;
     return MathUtil.isNear(0, speeds.vxMetersPerSecond, 0.01)
         && MathUtil.isNear(0, speeds.vyMetersPerSecond, 0.01)
         && MathUtil.isNear(0, speeds.omegaRadiansPerSecond, Units.degreesToRadians(2));
   }
 
   public static boolean isLevel() {
-    var rotation = AutoLogic.s.drivebaseSubsystem.getRotation3d();
+    var rotation = AutoLogic.s.getDrivetrain().getRotation3d();
     return MathUtil.isNear(0, rotation.getX(), Units.degreesToRadians(2))
         && MathUtil.isNear(0, rotation.getY(), Units.degreesToRadians(2));
   }
 
   public static boolean isCloseEnough() {
-    var currentPose = AutoLogic.s.drivebaseSubsystem.getState().Pose;
+    var currentPose = AutoLogic.s.getDrivetrain().getState().Pose;
     var branchPose = AutoAlignCommand.getNearestBranch(currentPose);
     return currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
   }
@@ -231,7 +231,8 @@ public class AutoAlign {
 
     @Override
     public void end(boolean interrupted) {
-      // Create a swerve request to stop all motion by setting velocities and rotational rate to 0
+      // Create a swerve request to stop all motion by setting velocities and
+      // rotational rate to 0
       SwerveRequest stop = driveRequest.withVelocityX(0).withVelocityY(0).withRotationalRate(0);
       // Set the drive control with the stop request to halt all movement
       drive.setControl(stop);
