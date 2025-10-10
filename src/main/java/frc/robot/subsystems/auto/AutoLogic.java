@@ -290,7 +290,7 @@ public class AutoLogic {
     if (r.superStructure != null) {
       return new ConditionalCommand(
           // If true:
-          AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
+          AutoAlign.autoAlign(s.getDrivetrain(), controls)
               .repeatedly()
               .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
               .withName("scoreCommand"),
@@ -299,13 +299,13 @@ public class AutoLogic {
           // Condition:
           () -> ARMSENSOR_ENABLED && r.sensors.armSensor.booleanInClaw());
     }
-    return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
+    return AutoAlign.autoAlign(s.getDrivetrain(), controls)
         .withName("scoreCommand-noSuperstructure");
   }
 
   public static Command algaeCommand23() {
     if (r.superStructure != null) {
-      return AlgaeAlign.algaeAlign(s.drivebaseSubsystem, controls)
+      return AlgaeAlign.algaeAlign(s.getDrivetrain(), controls)
           .repeatedly()
           .withDeadline(r.superStructure.algaeLevelTwoThreeIntake())
           .withName("algaeCommand23");
@@ -315,7 +315,7 @@ public class AutoLogic {
 
   public static Command algaeCommand34() {
     if (r.superStructure != null) {
-      return AlgaeAlign.algaeAlign(s.drivebaseSubsystem, controls)
+      return AlgaeAlign.algaeAlign(s.getDrivetrain(), controls)
           .repeatedly()
           .withDeadline(r.superStructure.algaeLevelThreeFourIntake())
           .withName("algaeCommand34");
@@ -326,7 +326,7 @@ public class AutoLogic {
   public static Command netCommand() {
     if (r.superStructure != null) {
       return BargeAlign.bargeScore(
-              s.drivebaseSubsystem,
+              s.getDrivetrain(),
               r.superStructure,
               () -> 0,
               () -> 0,

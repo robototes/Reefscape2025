@@ -42,7 +42,7 @@ public class Subsystems {
 
   // Subsystems go here
   public final DrivebaseWrapper drivebaseWrapper;
-  public final CommandSwerveDrivetrain drivebaseSubsystem;
+  private final CommandSwerveDrivetrain drivebaseSubsystem;
   public final VisionSubsystem visionSubsystem;
   public final ElevatorSubsystem elevatorSubsystem;
   public final ArmPivot armPivotSubsystem;
@@ -123,5 +123,9 @@ public class Subsystems {
     } else {
       elevatorLEDSubsystem = null;
     }
+  }
+
+  public CommandSwerveDrivetrain getDrivetrain() {
+    return drivebaseSubsystem;
   }
 }

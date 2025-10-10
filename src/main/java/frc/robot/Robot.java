@@ -55,7 +55,7 @@ public class Robot extends TimedRobot {
     sensors = new Sensors();
     subsystems = new Subsystems(sensors);
     if (SubsystemConstants.DRIVEBASE_ENABLED) {
-      AutoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
+      AutoBuilderConfig.buildAuto(subsystems.getDrivetrain());
     }
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
@@ -125,10 +125,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledExit() {
-    // on the end of diabling, make sure all of the motors are set to break and wont move upon
+    // on the end of diabling, make sure all of the motors are set to break and wont
+    // move upon
     // enabling
-    if (subsystems.drivebaseSubsystem != null) {
-      subsystems.drivebaseSubsystem.brakeMotors();
+    if (subsystems.getDrivetrain() != null) {
+      subsystems.getDrivetrain().brakeMotors();
     }
     if (subsystems.climbPivotSubsystem != null) {
       subsystems.climbPivotSubsystem.brakeMotors();
