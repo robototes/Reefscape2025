@@ -730,7 +730,7 @@ public class Controls {
     }
 
     s.elevatorLEDSubsystem.setDefaultCommand(
-        s.elevatorLEDSubsystem.showScoringMode(() -> soloScoringMode, intakeMode));
+        s.elevatorLEDSubsystem.showScoringMode(() -> soloScoringMode));
 
     if (s.elevatorSubsystem != null) {
       Trigger hasBeenZeroed = new Trigger(s.elevatorSubsystem::getHasBeenZeroed);

@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
-import frc.robot.util.ScoringMode;
 import frc.robot.util.SoloScoringMode;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -83,7 +82,7 @@ public class ElevatorLight extends SubsystemBase {
         .withName("Animate" + name);
   }
 
-  public Command showScoringMode(Supplier<SoloScoringMode> scoringMode, ScoringMode intakingMode) {
+  public Command showScoringMode(Supplier<SoloScoringMode> scoringMode) {
     return run(() -> {
           SoloScoringMode currentMode = scoringMode.get();
           if (currentMode == SoloScoringMode.ALGAE_IN_CLAW) {
@@ -91,11 +90,7 @@ public class ElevatorLight extends SubsystemBase {
           } else if (currentMode == SoloScoringMode.CORAL_IN_CLAW) {
             updateLEDs(LEDPattern.solid(Color.kWhite));
           } else if (currentMode == SoloScoringMode.NO_GAME_PIECE) {
-            if (intakingMode == ScoringMode.ALGAE) {
-              updateLEDs(LEDPattern.solid(Color.kMediumOrchid));
-            } else if (intakingMode == ScoringMode.CORAL) {
-              updateLEDs(LEDPattern.solid(Color.kDeepPink));
-            }
+            updateLEDs(LEDPattern.solid(Color.kMediumOrchid));
           }
         })
         .withName("Animate Scoring Mode");
