@@ -90,7 +90,7 @@ public class ElevatorLight extends SubsystemBase {
           } else if (currentMode == SoloScoringMode.CORAL_IN_CLAW) {
             updateLEDs(LEDPattern.solid(Color.kWhite));
           } else if (currentMode == SoloScoringMode.NO_GAME_PIECE) {
-            updateLEDs(LEDPattern.solid(Color.kMediumOrchid));
+            updateLEDs(LEDPattern.solid(Color.kDeepPink));
           }
         })
         .withName("Animate Scoring Mode");
