@@ -1072,6 +1072,14 @@ public class Controls {
                             .asProxy()
                         : Commands.none())
                 .withName("Manual Coral Intake"));
+    // Ground Intake Hold out
+    soloController
+        .povUp()
+        .whileTrue(
+            s.groundArm
+                .moveToPosition(GroundArm.GROUND_POSITION)
+                .andThen(Commands.idle())
+                .withName("ground up position"));
     // Arm manual
     soloController
         .rightStick()
