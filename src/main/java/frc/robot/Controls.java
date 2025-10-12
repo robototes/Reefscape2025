@@ -1094,6 +1094,6 @@ public class Controls {
             s.elevatorSubsystem
                 .startMovingVoltage(
                     () -> Volts.of(ElevatorSubsystem.UP_VOLTAGE * -soloController.getLeftY()))
-                .withName("Elevator Manual Control"));
+                .withName("Elevator Manual Control"));  
   }
 }
