@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 
 public class ArmPivot extends SubsystemBase {
   // Presets
-  private final double ARMPIVOT_KP = 50; // previously 38.5
+  private final double ARMPIVOT_KP = 38.5; // previously 50
   private final double ARMPIVOT_KI = 0;
   private final double ARMPIVOT_KD = 0;
   private final double ARMPIVOT_KS = 0.1;
@@ -195,9 +195,9 @@ public class ArmPivot extends SubsystemBase {
     talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     // enabling current limits
-    talonFXConfiguration.CurrentLimits.StatorCurrentLimit = 40;
+    talonFXConfiguration.CurrentLimits.StatorCurrentLimit = 20; // previously 40
     talonFXConfiguration.CurrentLimits.StatorCurrentLimitEnable = true;
-    talonFXConfiguration.CurrentLimits.SupplyCurrentLimit = 20;
+    talonFXConfiguration.CurrentLimits.SupplyCurrentLimit = 10; // previously 20
     talonFXConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     // PID
