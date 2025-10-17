@@ -48,6 +48,10 @@ public class AutoAlign {
     return isStationary() && isLevel() && isCloseEnough();
   }
 
+  public static boolean poseInPlace() {
+    return isStationary() && isCloseEnough();
+  }
+
   public static boolean isStationary() {
     var speeds = AutoLogic.s.drivebaseSubsystem.getState().Speeds;
     return MathUtil.isNear(0, speeds.vxMetersPerSecond, 0.01)

@@ -1072,6 +1072,14 @@ public class Controls {
                             .asProxy()
                         : Commands.none())
                 .withName("Manual Coral Intake"));
+    // Ground Intake Hold out
+    soloController
+        .povUp()
+        .whileTrue(
+            s.groundArm
+                .moveToPosition(GroundArm.GROUND_POSITION)
+                .andThen(Commands.idle())
+                .withName("ground up position"));
     // Arm manual
     soloController
         .rightStick()
@@ -1087,5 +1095,11 @@ public class Controls {
                 .startMovingVoltage(
                     () -> Volts.of(ElevatorSubsystem.UP_VOLTAGE * -soloController.getLeftY()))
                 .withName("Elevator Manual Control"));
+    // Ready to score rumble
+    Trigger readyToScore = new Trigger(() -> AutoAlign.poseInPlace());
+    readyToScore.onTrue(
+        Commands.runOnce(() -> soloController.setRumble(RumbleType.kBothRumble, 1.0)));
+    readyToScore.onFalse(
+        Commands.runOnce(() -> soloController.setRumble(RumbleType.kBothRumble, 0.0)));
   }
 }

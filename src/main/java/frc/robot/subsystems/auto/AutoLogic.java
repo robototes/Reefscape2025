@@ -123,6 +123,7 @@ public class AutoLogic {
           new AutoPath("YSMLSF_K-L-A", "YSMLSF_K-L-A"),
           new AutoPath("YSWLSC_K-L-A", "YSWLSC_K-L-A"),
           new AutoPath("OSWRSF_D-C-B", "OSWRSF_D-C-B"),
+          new AutoPath("OSWRSF_E-D-C", "OSWRSF_E-D-C"),
           new AutoPath("YSMLSC_K-L-A", "YSMLSC_K-L-A"),
           new AutoPath("M_H-GHA-IJA", "M_H-GHA-IJA"));
 
