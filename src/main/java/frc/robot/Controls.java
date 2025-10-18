@@ -463,13 +463,13 @@ public class Controls {
           .coralLevelFour(soloController.rightBumper())
           .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
       case CORAL_LEVEL_THREE -> superStructure
-          .coralLevelThree(soloController.rightBumper())
+          .coralLevelThree(soloController.rightBumper(), ()-> AutoAlign.poseInPlace())
           .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
       case CORAL_LEVEL_TWO -> superStructure
-          .coralLevelTwo(soloController.rightBumper())
+          .coralLevelTwo(soloController.rightBumper(), ()-> AutoAlign.poseInPlace())
           .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
       case CORAL_LEVEL_ONE -> superStructure
-          .coralLevelOne(soloController.rightBumper())
+          .coralLevelOne(soloController.rightBumper(), ()-> AutoAlign.poseInPlace())
           .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
     };
   }
