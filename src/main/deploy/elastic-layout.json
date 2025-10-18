@@ -100,7 +100,7 @@
             "height": 512.0,
             "type": "Camera Stream",
             "properties": {
-              "topic": "/CameraPublisher/left",
+              "topic": "/CameraPublisher/photonvision_Port_1182_Output_MJPEG_Server",
               "period": 0.06,
               "rotation_turns": 0
             }
@@ -113,7 +113,7 @@
             "height": 512.0,
             "type": "Camera Stream",
             "properties": {
-              "topic": "/CameraPublisher/right",
+              "topic": "/CameraPublisher/photonvision_Port_1186_Output_MJPEG_Server",
               "period": 0.06,
               "rotation_turns": 0
             }
