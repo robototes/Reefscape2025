@@ -969,6 +969,11 @@ public class Controls {
         .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
         .whileTrue(AutoAlign.autoAlignLeft(s.drivebaseSubsystem, this));
+    soloController
+        .rightTrigger()
+        .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
+        .and(() -> branchHeight == BranchHeight.CORAL_LEVEL_ONE)
+        .whileTrue(AutoAlign.autoAlignL1(s.drivebaseSubsystem, this));
     // Processor + Auto align right + Select scoring mode Coral
     soloController
         .rightTrigger()
@@ -1006,6 +1011,11 @@ public class Controls {
         .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
         .whileTrue(AutoAlign.autoAlignRight(s.drivebaseSubsystem, this));
+    soloController
+        .rightTrigger()
+        .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
+        .and(() -> branchHeight == BranchHeight.CORAL_LEVEL_ONE)
+        .whileTrue(AutoAlign.autoAlignL1(s.drivebaseSubsystem, this));
     // Ground Intake
     soloController
         .leftBumper()
