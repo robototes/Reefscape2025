@@ -463,13 +463,13 @@ public class Controls {
           .coralLevelFour(soloController.rightBumper())
           .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
       case CORAL_LEVEL_THREE -> superStructure
-          .coralLevelThree(soloController.rightBumper(), ()-> AutoAlign.poseInPlace())
+          .coralLevelThree(soloController.rightBumper(), () -> AutoAlign.poseInPlace())
           .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
       case CORAL_LEVEL_TWO -> superStructure
-          .coralLevelTwo(soloController.rightBumper(), ()-> AutoAlign.poseInPlace())
+          .coralLevelTwo(soloController.rightBumper(), () -> AutoAlign.poseInPlace())
           .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
       case CORAL_LEVEL_ONE -> superStructure
-          .coralLevelOne(soloController.rightBumper(), ()-> AutoAlign.poseInPlace())
+          .coralLevelOne(soloController.rightBumper(), () -> AutoAlign.poseInPlace())
           .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
     };
   }
@@ -1095,11 +1095,11 @@ public class Controls {
                 .startMovingVoltage(
                     () -> Volts.of(ElevatorSubsystem.UP_VOLTAGE * -soloController.getLeftY()))
                 .withName("Elevator Manual Control"));
-    // Ready to score rumble
-    Trigger readyToScore = new Trigger(() -> AutoAlign.poseInPlace());
+    // Ready to score rumble (Removal for autoscoring)
+    /* Trigger readyToScore = new Trigger(() -> AutoAlign.poseInPlace());
     readyToScore.onTrue(
         Commands.runOnce(() -> soloController.setRumble(RumbleType.kBothRumble, 1.0)));
     readyToScore.onFalse(
-        Commands.runOnce(() -> soloController.setRumble(RumbleType.kBothRumble, 0.0)));
+        Commands.runOnce(() -> soloController.setRumble(RumbleType.kBothRumble, 0.0))); */
   }
 }

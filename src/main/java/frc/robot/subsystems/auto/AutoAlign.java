@@ -83,10 +83,10 @@ public class AutoAlign {
   // left and right offsets from the april tags ()
   private static final Transform2d leftOfTag =
       new Transform2d(
-          Units.inchesToMeters(36.5 / 2), Units.inchesToMeters(-12.97 / 2), Rotation2d.k180deg);
+          Units.inchesToMeters(36 / 2), Units.inchesToMeters(-12.97 / 2), Rotation2d.k180deg);
   private static final Transform2d rightOfTag =
       new Transform2d(
-          Units.inchesToMeters(36.5 / 2), Units.inchesToMeters(12.97 / 2), Rotation2d.k180deg);
+          Units.inchesToMeters(36 / 2), Units.inchesToMeters(12.97 / 2), Rotation2d.k180deg);
 
   private static final Pose2d blueBranchA =
       aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(leftOfTag);
