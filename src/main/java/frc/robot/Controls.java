@@ -371,7 +371,7 @@ public class Controls {
           .and(RobotModeTriggers.teleop())
           .onTrue(
               superStructure
-                  .coralIntake()
+                  .coralIntake().alongWith(Commands.runOnce(() -> soloScoringMode = SoloScoringMode.CORAL_IN_CLAW))
                   .alongWith(
                       s.elevatorLEDSubsystem != null
                           ? s.elevatorLEDSubsystem
@@ -394,12 +394,7 @@ public class Controls {
                           case ALGAE -> soloScoringMode = SoloScoringMode.ALGAE_IN_CLAW;
                         }
                       })
-                  .withName("Set solo scoring mode"));
-
-      sensors
-          .armSensor
-          .inClaw()
-          .and(RobotModeTriggers.teleop())
+                  .withName("Set solo scoring mode"))
           .onFalse(
               Commands.runOnce(
                       () -> {
