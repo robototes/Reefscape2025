@@ -23,6 +23,10 @@ public class AutoAlign {
     return new AutoAlignCommand(drivebaseSubsystem, controls).withName("Auto Align");
   }
 
+  public static Command autoAlignL1(CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
+    return new AutoAlignCommandL1(drivebaseSubsystem, controls).withName("Auto Align");
+  }
+
   public static Command autoAlignLeft(
       CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
     return new AutoAlignCommandLeft(drivebaseSubsystem, controls).withName("Auto Align");
@@ -138,6 +142,31 @@ public class AutoAlign {
   private static final Pose2d redBranchL =
       aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(rightOfTag);
 
+  private static final Pose2d blueReefFaceAB =
+      aprilTagFieldLayout.getTagPose(18).get().toPose2d();
+  private static final Pose2d blueReefFaceCD =
+      aprilTagFieldLayout.getTagPose(17).get().toPose2d();
+  private static final Pose2d blueReefFaceEF =
+      aprilTagFieldLayout.getTagPose(22).get().toPose2d();
+  private static final Pose2d blueReefFaceGH =
+      aprilTagFieldLayout.getTagPose(21).get().toPose2d();
+  private static final Pose2d blueReefFaceIJ =
+      aprilTagFieldLayout.getTagPose(20).get().toPose2d();
+  private static final Pose2d blueReefFaceKL =
+      aprilTagFieldLayout.getTagPose(19).get().toPose2d();
+
+  private static final Pose2d redReefFaceAB =
+      aprilTagFieldLayout.getTagPose(7).get().toPose2d();
+  private static final Pose2d redReefFaceCD =
+      aprilTagFieldLayout.getTagPose(8).get().toPose2d();
+  private static final Pose2d redReefFaceEF =
+      aprilTagFieldLayout.getTagPose(9).get().toPose2d();
+  private static final Pose2d redReefFaceGH =
+      aprilTagFieldLayout.getTagPose(10).get().toPose2d();
+  private static final Pose2d redReefFaceIJ =
+      aprilTagFieldLayout.getTagPose(11).get().toPose2d();
+  private static final Pose2d redReefFaceKL =
+      aprilTagFieldLayout.getTagPose(6).get().toPose2d();
   private static final List<Pose2d> blueBranchPoses =
       List.of(
           blueBranchA,
@@ -289,6 +318,32 @@ public class AutoAlign {
     public void initialize() {
       Pose2d robotPose = drive.getState().Pose;
       branchPose = getNearestRightBranch(robotPose);
+      pidX.setSetpoint(branchPose.getX());
+      pidY.setSetpoint(branchPose.getY());
+      pidRotate.setSetpoint(branchPose.getRotation().getRadians());
+    }
+  }
+
+  private static class AutoAlignCommandL1 extends AutoAlignCommand {
+    private static final List<Pose2d> blueReefFaces =
+        List.of(blueReefFaceAB, blueReefFaceCD, blueReefFaceEF, blueReefFaceGH, blueReefFaceIJ, blueReefFaceKL);
+
+    private static final List<Pose2d> redReefFaces =
+        List.of(redReefFaceAB, redReefFaceCD, redReefFaceEF, redReefFaceGH, redReefFaceIJ, redReefFaceKL);
+
+    public static Pose2d getNearestReefFace(Pose2d p) {
+      List<Pose2d> branchPose2ds = isBlue() ? blueReefFaces : redReefFaces;
+      return p.nearest(branchPose2ds);
+    }
+
+    public AutoAlignCommandL1(CommandSwerveDrivetrain drive, Controls controls) {
+      super(drive, controls);
+    }
+
+    @Override
+    public void initialize() {
+      Pose2d robotPose = drive.getState().Pose;
+      branchPose = getNearestReefFace(robotPose);
       pidX.setSetpoint(branchPose.getX());
       pidY.setSetpoint(branchPose.getY());
       pidRotate.setSetpoint(branchPose.getRotation().getRadians());
