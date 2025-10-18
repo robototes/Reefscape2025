@@ -970,7 +970,7 @@ public class Controls {
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
         .whileTrue(AutoAlign.autoAlignLeft(s.drivebaseSubsystem, this));
     soloController
-        .rightTrigger()
+        .leftTrigger()
         .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
         .and(() -> branchHeight == BranchHeight.CORAL_LEVEL_ONE)
         .whileTrue(AutoAlign.autoAlignL1(s.drivebaseSubsystem, this));

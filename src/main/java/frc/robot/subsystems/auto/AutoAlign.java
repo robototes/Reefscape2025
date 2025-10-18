@@ -87,10 +87,12 @@ public class AutoAlign {
   // left and right offsets from the april tags ()
   private static final Transform2d leftOfTag =
       new Transform2d(
-          Units.inchesToMeters(36 / 2), Units.inchesToMeters(-12.97 / 2), Rotation2d.k180deg);
+          Units.inchesToMeters(34 / 2), Units.inchesToMeters(-12.97 / 2), Rotation2d.k180deg);
   private static final Transform2d rightOfTag =
       new Transform2d(
-          Units.inchesToMeters(36 / 2), Units.inchesToMeters(12.97 / 2), Rotation2d.k180deg);
+          Units.inchesToMeters(34 / 2), Units.inchesToMeters(12.97 / 2), Rotation2d.k180deg);
+  private static final Transform2d middleOfReef =
+      new Transform2d(Units.inchesToMeters(34 / 2), Units.inchesToMeters(0), Rotation2d.k180deg);
 
   private static final Pose2d blueBranchA =
       aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(leftOfTag);
@@ -143,30 +145,30 @@ public class AutoAlign {
       aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(rightOfTag);
 
   private static final Pose2d blueReefFaceAB =
-      aprilTagFieldLayout.getTagPose(18).get().toPose2d();
+      aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(middleOfReef);
   private static final Pose2d blueReefFaceCD =
-      aprilTagFieldLayout.getTagPose(17).get().toPose2d();
+      aprilTagFieldLayout.getTagPose(17).get().toPose2d().plus(middleOfReef);
   private static final Pose2d blueReefFaceEF =
-      aprilTagFieldLayout.getTagPose(22).get().toPose2d();
+      aprilTagFieldLayout.getTagPose(22).get().toPose2d().plus(middleOfReef);
   private static final Pose2d blueReefFaceGH =
-      aprilTagFieldLayout.getTagPose(21).get().toPose2d();
+      aprilTagFieldLayout.getTagPose(21).get().toPose2d().plus(middleOfReef);
   private static final Pose2d blueReefFaceIJ =
-      aprilTagFieldLayout.getTagPose(20).get().toPose2d();
+      aprilTagFieldLayout.getTagPose(20).get().toPose2d().plus(middleOfReef);
   private static final Pose2d blueReefFaceKL =
-      aprilTagFieldLayout.getTagPose(19).get().toPose2d();
+      aprilTagFieldLayout.getTagPose(19).get().toPose2d().plus(middleOfReef);
 
   private static final Pose2d redReefFaceAB =
-      aprilTagFieldLayout.getTagPose(7).get().toPose2d();
+      aprilTagFieldLayout.getTagPose(7).get().toPose2d().plus(middleOfReef);
   private static final Pose2d redReefFaceCD =
-      aprilTagFieldLayout.getTagPose(8).get().toPose2d();
+      aprilTagFieldLayout.getTagPose(8).get().toPose2d().plus(middleOfReef);
   private static final Pose2d redReefFaceEF =
-      aprilTagFieldLayout.getTagPose(9).get().toPose2d();
+      aprilTagFieldLayout.getTagPose(9).get().toPose2d().plus(middleOfReef);
   private static final Pose2d redReefFaceGH =
-      aprilTagFieldLayout.getTagPose(10).get().toPose2d();
+      aprilTagFieldLayout.getTagPose(10).get().toPose2d().plus(middleOfReef);
   private static final Pose2d redReefFaceIJ =
-      aprilTagFieldLayout.getTagPose(11).get().toPose2d();
+      aprilTagFieldLayout.getTagPose(11).get().toPose2d().plus(middleOfReef);
   private static final Pose2d redReefFaceKL =
-      aprilTagFieldLayout.getTagPose(6).get().toPose2d();
+      aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(middleOfReef);
   private static final List<Pose2d> blueBranchPoses =
       List.of(
           blueBranchA,
@@ -326,14 +328,26 @@ public class AutoAlign {
 
   private static class AutoAlignCommandL1 extends AutoAlignCommand {
     private static final List<Pose2d> blueReefFaces =
-        List.of(blueReefFaceAB, blueReefFaceCD, blueReefFaceEF, blueReefFaceGH, blueReefFaceIJ, blueReefFaceKL);
+        List.of(
+            blueReefFaceAB,
+            blueReefFaceCD,
+            blueReefFaceEF,
+            blueReefFaceGH,
+            blueReefFaceIJ,
+            blueReefFaceKL);
 
     private static final List<Pose2d> redReefFaces =
-        List.of(redReefFaceAB, redReefFaceCD, redReefFaceEF, redReefFaceGH, redReefFaceIJ, redReefFaceKL);
+        List.of(
+            redReefFaceAB,
+            redReefFaceCD,
+            redReefFaceEF,
+            redReefFaceGH,
+            redReefFaceIJ,
+            redReefFaceKL);
 
     public static Pose2d getNearestReefFace(Pose2d p) {
-      List<Pose2d> branchPose2ds = isBlue() ? blueReefFaces : redReefFaces;
-      return p.nearest(branchPose2ds);
+      List<Pose2d> reefFacesPose2ds = isBlue() ? blueReefFaces : redReefFaces;
+      return p.nearest(reefFacesPose2ds);
     }
 
     public AutoAlignCommandL1(CommandSwerveDrivetrain drive, Controls controls) {
