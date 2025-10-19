@@ -402,12 +402,7 @@ public class Controls {
                           case ALGAE -> soloScoringMode = SoloScoringMode.ALGAE_IN_CLAW;
                         }
                       })
-                  .withName("Set solo scoring mode"));
-
-      sensors
-          .armSensor
-          .inClaw()
-          .and(RobotModeTriggers.teleop())
+                  .withName("Set solo scoring mode"))
           .onFalse(
               Commands.runOnce(
                       () -> {
