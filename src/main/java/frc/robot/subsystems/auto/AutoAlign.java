@@ -23,11 +23,13 @@ public class AutoAlign {
     return new AutoAlignCommand(drivebaseSubsystem, controls).withName("Auto Align");
   }
 
-  public static Command autoAlignL1L(CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
+  public static Command autoAlignL1L(
+      CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
     return new AutoAlignCommandL1L(drivebaseSubsystem, controls).withName("Auto Align");
   }
 
-  public static Command autoAlignL1R(CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
+  public static Command autoAlignL1R(
+      CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
     return new AutoAlignCommandL1R(drivebaseSubsystem, controls).withName("Auto Align");
   }
 
@@ -117,7 +119,9 @@ public class AutoAlign {
           Units.inchesToMeters(34 / 2), Units.inchesToMeters(12.97 / 2), Rotation2d.k180deg);
   private static final Transform2d middleOfReef =
       new Transform2d(Units.inchesToMeters(34 / 2), Units.inchesToMeters(0), Rotation2d.k180deg);
-  private static final Transform2d l1RightOfReef = new Transform2d(Units.inchesToMeters(34/2), Units.inchesToMeters(13.5/2), Rotation2d.k180deg);
+  private static final Transform2d l1RightOfReef =
+      new Transform2d(
+          Units.inchesToMeters(34 / 2), Units.inchesToMeters(26 / 2), Rotation2d.k180deg);
 
   private static final Pose2d blueBranchA =
       aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(leftOfTag);
@@ -220,7 +224,7 @@ public class AutoAlign {
       aprilTagFieldLayout.getTagPose(11).get().toPose2d().plus(l1RightOfReef);
   private static final Pose2d rRedReefFaceKL =
       aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(l1RightOfReef);
-  
+
   private static final List<Pose2d> blueBranchPoses =
       List.of(
           blueBranchA,

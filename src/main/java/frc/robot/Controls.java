@@ -112,6 +112,14 @@ public class Controls {
     configureGroundSpinnyBindings();
     configureGroundArmBindings();
     configureSoloControllerBindings();
+    Shuffleboard.getTab("Elevator")
+        .addBoolean("Intaking mode Algae", () -> intakeMode == ScoringMode.ALGAE);
+    // Shuffleboard.getTab("Elevator")
+    // .addString("Scoring Mode", () -> getSoloScoringMode().toString());
+  }
+
+  public SoloScoringMode getSoloScoringMode() {
+    return soloScoringMode;
   }
 
   private Trigger connected(CommandXboxController controller) {
