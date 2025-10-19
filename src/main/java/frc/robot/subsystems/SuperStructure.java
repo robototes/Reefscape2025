@@ -301,11 +301,11 @@ public class SuperStructure {
       // Make the big sequence.
       return Commands.sequence(
               // Initial setup- Move elevator high enough for ground arm to be clear, start moving
-              // arm pivot, stop the spinny claw, and start spinning the ground intake
+              // arm pivot, and start spinning the ground intake
               Commands.parallel(
                       elevator.setLevel(ElevatorSubsystem.MIN_EMPTY_GROUND_INTAKE),
                       armPivot.moveToPosition(ArmPivot.CORAL_QUICK_INTAKE),
-                      spinnyClaw.stop(), // just as a backup in case things are silly
+                      spinnyClaw.coralIntakePower(), 
                       groundSpinny.setGroundIntakePower())
                   // Move on even if arm isn't in position yet as long as elevator is high enough
                   .until(elevator.above(ElevatorSubsystem.MIN_EMPTY_GROUND_INTAKE)),

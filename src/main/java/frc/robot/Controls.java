@@ -371,7 +371,7 @@ public class Controls {
           .and(RobotModeTriggers.teleop())
           .onTrue(
               superStructure
-                  .coralIntake().alongWith(Commands.runOnce(() -> soloScoringMode = SoloScoringMode.CORAL_IN_CLAW))
+                  .coralIntake()
                   .alongWith(
                       s.elevatorLEDSubsystem != null
                           ? s.elevatorLEDSubsystem
