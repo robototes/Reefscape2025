@@ -84,7 +84,7 @@ public class Controls {
           .withDeadband(0.0001)
           .withRotationalDeadband(0.0001)
           .withDriveRequestType(
-              DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+              DriveRequestType.Velocity);
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
