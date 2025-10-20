@@ -23,6 +23,16 @@ public class AutoAlign {
     return new AutoAlignCommand(drivebaseSubsystem, controls).withName("Auto Align");
   }
 
+  public static Command autoAlignL1L(
+      CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
+    return new AutoAlignCommandL1L(drivebaseSubsystem, controls).withName("Auto Align");
+  }
+
+  public static Command autoAlignL1R(
+      CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
+    return new AutoAlignCommandL1R(drivebaseSubsystem, controls).withName("Auto Align");
+  }
+
   public static Command autoAlignLeft(
       CommandSwerveDrivetrain drivebaseSubsystem, Controls controls) {
     return new AutoAlignCommandLeft(drivebaseSubsystem, controls).withName("Auto Align");
@@ -48,6 +58,18 @@ public class AutoAlign {
     return isStationary() && isLevel() && isCloseEnough();
   }
 
+  public static boolean poseInPlace() {
+    return isStationary() && isCloseEnough();
+  }
+
+  public static boolean poseInPlaceL1L() {
+    return isStationary() && isCloseEnoughL1L();
+  }
+
+  public static boolean poseInPlaceL1R() {
+    return isStationary() && isCloseEnoughL1R();
+  }
+
   public static boolean isStationary() {
     var speeds = AutoLogic.s.drivebaseSubsystem.getState().Speeds;
     return MathUtil.isNear(0, speeds.vxMetersPerSecond, 0.01)
@@ -67,6 +89,18 @@ public class AutoAlign {
     return currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
   }
 
+  public static boolean isCloseEnoughL1L() {
+    var currentPose = AutoLogic.s.drivebaseSubsystem.getState().Pose;
+    var branchPose = AutoAlignCommandL1L.getNearestReefFace(currentPose);
+    return currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
+  }
+
+  public static boolean isCloseEnoughL1R() {
+    var currentPose = AutoLogic.s.drivebaseSubsystem.getState().Pose;
+    var branchPose = AutoAlignCommandL1R.getNearestReefFace(currentPose);
+    return currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
+  }
+
   public static boolean
       oneSecondLeft() { // THIS WILL ONLY WORK ON THE REAL FIELD AND IN PRACTICE MODE!
 
@@ -79,10 +113,15 @@ public class AutoAlign {
   // left and right offsets from the april tags ()
   private static final Transform2d leftOfTag =
       new Transform2d(
-          Units.inchesToMeters(36.5 / 2), Units.inchesToMeters(-12.97 / 2), Rotation2d.k180deg);
+          Units.inchesToMeters(34 / 2), Units.inchesToMeters(-12.97 / 2), Rotation2d.k180deg);
   private static final Transform2d rightOfTag =
       new Transform2d(
-          Units.inchesToMeters(36.5 / 2), Units.inchesToMeters(12.97 / 2), Rotation2d.k180deg);
+          Units.inchesToMeters(34 / 2), Units.inchesToMeters(12.97 / 2), Rotation2d.k180deg);
+  private static final Transform2d middleOfReef =
+      new Transform2d(Units.inchesToMeters(34 / 2), Units.inchesToMeters(0), Rotation2d.k180deg);
+  private static final Transform2d l1RightOfReef =
+      new Transform2d(
+          Units.inchesToMeters(34 / 2), Units.inchesToMeters(26 / 2), Rotation2d.k180deg);
 
   private static final Pose2d blueBranchA =
       aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(leftOfTag);
@@ -133,6 +172,58 @@ public class AutoAlign {
       aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(leftOfTag);
   private static final Pose2d redBranchL =
       aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(rightOfTag);
+
+  private static final Pose2d lBlueReefFaceAB =
+      aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(middleOfReef);
+  private static final Pose2d lBlueReefFaceCD =
+      aprilTagFieldLayout.getTagPose(17).get().toPose2d().plus(middleOfReef);
+  private static final Pose2d lBlueReefFaceEF =
+      aprilTagFieldLayout.getTagPose(22).get().toPose2d().plus(middleOfReef);
+  private static final Pose2d lBlueReefFaceGH =
+      aprilTagFieldLayout.getTagPose(21).get().toPose2d().plus(middleOfReef);
+  private static final Pose2d lBlueReefFaceIJ =
+      aprilTagFieldLayout.getTagPose(20).get().toPose2d().plus(middleOfReef);
+  private static final Pose2d lBlueReefFaceKL =
+      aprilTagFieldLayout.getTagPose(19).get().toPose2d().plus(middleOfReef);
+
+  private static final Pose2d rBlueReefFaceAB =
+      aprilTagFieldLayout.getTagPose(18).get().toPose2d().plus(l1RightOfReef);
+  private static final Pose2d rBlueReefFaceCD =
+      aprilTagFieldLayout.getTagPose(17).get().toPose2d().plus(l1RightOfReef);
+  private static final Pose2d rBlueReefFaceEF =
+      aprilTagFieldLayout.getTagPose(22).get().toPose2d().plus(l1RightOfReef);
+  private static final Pose2d rBlueReefFaceGH =
+      aprilTagFieldLayout.getTagPose(21).get().toPose2d().plus(l1RightOfReef);
+  private static final Pose2d rBlueReefFaceIJ =
+      aprilTagFieldLayout.getTagPose(20).get().toPose2d().plus(l1RightOfReef);
+  private static final Pose2d rBlueReefFaceKL =
+      aprilTagFieldLayout.getTagPose(19).get().toPose2d().plus(l1RightOfReef);
+
+  private static final Pose2d lRedReefFaceAB =
+      aprilTagFieldLayout.getTagPose(7).get().toPose2d().plus(middleOfReef);
+  private static final Pose2d lRedReefFaceCD =
+      aprilTagFieldLayout.getTagPose(8).get().toPose2d().plus(middleOfReef);
+  private static final Pose2d lRedReefFaceEF =
+      aprilTagFieldLayout.getTagPose(9).get().toPose2d().plus(middleOfReef);
+  private static final Pose2d lRedReefFaceGH =
+      aprilTagFieldLayout.getTagPose(10).get().toPose2d().plus(middleOfReef);
+  private static final Pose2d lRedReefFaceIJ =
+      aprilTagFieldLayout.getTagPose(11).get().toPose2d().plus(middleOfReef);
+  private static final Pose2d lRedReefFaceKL =
+      aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(middleOfReef);
+
+  private static final Pose2d rRedReefFaceAB =
+      aprilTagFieldLayout.getTagPose(7).get().toPose2d().plus(l1RightOfReef);
+  private static final Pose2d rRedReefFaceCD =
+      aprilTagFieldLayout.getTagPose(8).get().toPose2d().plus(l1RightOfReef);
+  private static final Pose2d rRedReefFaceEF =
+      aprilTagFieldLayout.getTagPose(9).get().toPose2d().plus(l1RightOfReef);
+  private static final Pose2d rRedReefFaceGH =
+      aprilTagFieldLayout.getTagPose(10).get().toPose2d().plus(l1RightOfReef);
+  private static final Pose2d rRedReefFaceIJ =
+      aprilTagFieldLayout.getTagPose(11).get().toPose2d().plus(l1RightOfReef);
+  private static final Pose2d rRedReefFaceKL =
+      aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(l1RightOfReef);
 
   private static final List<Pose2d> blueBranchPoses =
       List.of(
@@ -285,6 +376,82 @@ public class AutoAlign {
     public void initialize() {
       Pose2d robotPose = drive.getState().Pose;
       branchPose = getNearestRightBranch(robotPose);
+      pidX.setSetpoint(branchPose.getX());
+      pidY.setSetpoint(branchPose.getY());
+      pidRotate.setSetpoint(branchPose.getRotation().getRadians());
+    }
+  }
+
+  private static class AutoAlignCommandL1L extends AutoAlignCommand {
+    private static final List<Pose2d> blueReefFaces =
+        List.of(
+            lBlueReefFaceAB,
+            lBlueReefFaceCD,
+            lBlueReefFaceEF,
+            lBlueReefFaceGH,
+            lBlueReefFaceIJ,
+            lBlueReefFaceKL);
+
+    private static final List<Pose2d> redReefFaces =
+        List.of(
+            lRedReefFaceAB,
+            lRedReefFaceCD,
+            lRedReefFaceEF,
+            lRedReefFaceGH,
+            lRedReefFaceIJ,
+            lRedReefFaceKL);
+
+    public static Pose2d getNearestReefFace(Pose2d p) {
+      List<Pose2d> reefFacesPose2ds = isBlue() ? blueReefFaces : redReefFaces;
+      return p.nearest(reefFacesPose2ds);
+    }
+
+    public AutoAlignCommandL1L(CommandSwerveDrivetrain drive, Controls controls) {
+      super(drive, controls);
+    }
+
+    @Override
+    public void initialize() {
+      Pose2d robotPose = drive.getState().Pose;
+      branchPose = getNearestReefFace(robotPose);
+      pidX.setSetpoint(branchPose.getX());
+      pidY.setSetpoint(branchPose.getY());
+      pidRotate.setSetpoint(branchPose.getRotation().getRadians());
+    }
+  }
+
+  private static class AutoAlignCommandL1R extends AutoAlignCommand {
+    private static final List<Pose2d> blueReefFaces =
+        List.of(
+            rBlueReefFaceAB,
+            rBlueReefFaceCD,
+            rBlueReefFaceEF,
+            rBlueReefFaceGH,
+            rBlueReefFaceIJ,
+            rBlueReefFaceKL);
+
+    private static final List<Pose2d> redReefFaces =
+        List.of(
+            rRedReefFaceAB,
+            rRedReefFaceCD,
+            rRedReefFaceEF,
+            rRedReefFaceGH,
+            rRedReefFaceIJ,
+            rRedReefFaceKL);
+
+    public static Pose2d getNearestReefFace(Pose2d p) {
+      List<Pose2d> reefFacesPose2ds = isBlue() ? blueReefFaces : redReefFaces;
+      return p.nearest(reefFacesPose2ds);
+    }
+
+    public AutoAlignCommandL1R(CommandSwerveDrivetrain drive, Controls controls) {
+      super(drive, controls);
+    }
+
+    @Override
+    public void initialize() {
+      Pose2d robotPose = drive.getState().Pose;
+      branchPose = getNearestReefFace(robotPose);
       pidX.setSetpoint(branchPose.getX());
       pidY.setSetpoint(branchPose.getY());
       pidRotate.setSetpoint(branchPose.getRotation().getRadians());

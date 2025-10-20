@@ -43,7 +43,7 @@ public class Hardware {
   public static final int ELEVATOR_ZERO_BUTTON = 0;
 
   // climb DIO
-  public static final int CLIMB_SENSOR = 1;
+  public static final int CLIMB_SENSOR = 8;
 
   // vision
   public static final String PHOTON_IP = "10.24.12.11";
