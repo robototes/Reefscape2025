@@ -114,8 +114,8 @@ public class Controls {
     configureSoloControllerBindings();
     Shuffleboard.getTab("Elevator")
         .addBoolean("Intaking mode Algae", () -> intakeMode == ScoringMode.ALGAE);
-    // Shuffleboard.getTab("Elevator")
-    // .addString("Scoring Mode", () -> getSoloScoringMode().toString());
+    Shuffleboard.getTab("Elevator")
+        .addString("Scoring Mode", () -> getSoloScoringMode().toString());
   }
 
   public SoloScoringMode getSoloScoringMode() {

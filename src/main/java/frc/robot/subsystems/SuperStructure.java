@@ -305,7 +305,7 @@ public class SuperStructure {
               Commands.parallel(
                       elevator.setLevel(ElevatorSubsystem.MIN_EMPTY_GROUND_INTAKE),
                       armPivot.moveToPosition(ArmPivot.CORAL_QUICK_INTAKE),
-                      spinnyClaw.coralIntakePower(), 
+                      spinnyClaw.coralIntakePower(),
                       groundSpinny.setGroundIntakePower())
                   // Move on even if arm isn't in position yet as long as elevator is high enough
                   .until(elevator.above(ElevatorSubsystem.MIN_EMPTY_GROUND_INTAKE)),
