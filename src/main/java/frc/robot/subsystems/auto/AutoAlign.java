@@ -12,10 +12,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Controls;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
+import frc.robot.util.AllianceUtils;
 import java.util.List;
 
 public class AutoAlign {
@@ -30,17 +30,6 @@ public class AutoAlign {
   public static Command autoAlign(
       CommandSwerveDrivetrain drivebaseSubsystem, Controls controls, AlignType type) {
     return new AutoAlignCommand(drivebaseSubsystem, controls, type).withName("Auto Align");
-  }
-
-  public static Boolean isBlue() {
-    boolean isBlue;
-
-    if (!DriverStation.getAlliance().isEmpty()) {
-      isBlue = DriverStation.getAlliance().get().equals(Alliance.Blue);
-    } else {
-      isBlue = false;
-    }
-    return isBlue;
   }
 
   public static boolean readyToScore() {
@@ -277,7 +266,7 @@ public class AutoAlign {
 
     private static Pose2d getNearestBranch(Pose2d p) {
       List<Pose2d> branchPose2ds =
-          isBlue()
+          AllianceUtils.isBlue()
               ? List.of(
                   blueBranchA,
                   blueBranchB,
@@ -309,7 +298,7 @@ public class AutoAlign {
 
     private static Pose2d getNearestLeftBranch(Pose2d p) {
       List<Pose2d> branchPose2ds =
-          isBlue()
+          AllianceUtils.isBlue()
               ? List.of(
                   blueBranchA, blueBranchC, blueBranchE, blueBranchG, blueBranchI, blueBranchK)
               : List.of(redBranchA, redBranchC, redBranchE, redBranchG, redBranchI, redBranchK);
@@ -318,7 +307,7 @@ public class AutoAlign {
 
     private static Pose2d getNearestRightBranch(Pose2d p) {
       List<Pose2d> branchPose2ds =
-          isBlue()
+          AllianceUtils.isBlue()
               ? List.of(
                   blueBranchB, blueBranchD, blueBranchF, blueBranchH, blueBranchJ, blueBranchL)
               : List.of(redBranchB, redBranchD, redBranchF, redBranchH, redBranchJ, redBranchL);
@@ -327,7 +316,7 @@ public class AutoAlign {
 
     private static Pose2d getNearestL1L(Pose2d p) {
       List<Pose2d> reefFacesPose2ds =
-          isBlue()
+          AllianceUtils.isBlue()
               ? List.of(
                   lBlueReefFaceAB,
                   lBlueReefFaceCD,
@@ -347,7 +336,7 @@ public class AutoAlign {
 
     private static Pose2d getNearestL1R(Pose2d p) {
       List<Pose2d> reefFacesPose2ds =
-          isBlue()
+          AllianceUtils.isBlue()
               ? List.of(
                   rBlueReefFaceAB,
                   rBlueReefFaceCD,
