@@ -1,17 +1,15 @@
 package frc.robot;
 
-import java.util.function.BooleanSupplier;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
+
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -40,6 +38,7 @@ import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
 import frc.robot.util.ScoringMode;
 import frc.robot.util.SoloScoringMode;
+import java.util.function.BooleanSupplier;
 
 public class Controls {
   private static final int SOLO_CONTROLLER_PORT = 0;
@@ -459,13 +458,18 @@ public class Controls {
             .coralLevelFour(soloController.rightBumper())
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_THREE -> superStructure
-            .coralLevelThree(soloController.rightBumper(), () -> AutoAlign.poseInPlace())
+            .coralLevelThree(
+                soloController.rightBumper(),
+                () -> AutoAlign.poseInPlace(AutoAlign.AlignType.LEFTB))
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_TWO -> superStructure
-            .coralLevelTwo(soloController.rightBumper(), () -> AutoAlign.poseInPlace())
+            .coralLevelTwo(
+                soloController.rightBumper(),
+                () -> AutoAlign.poseInPlace(AutoAlign.AlignType.LEFTB))
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_ONE -> superStructure
-            .coralLevelOne(soloController.rightBumper(), () -> AutoAlign.poseInPlaceL1L())
+            .coralLevelOne(
+                soloController.rightBumper(), () -> AutoAlign.poseInPlace(AutoAlign.AlignType.L1LB))
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
       };
     } else if (version.equals("SR")) {
@@ -474,13 +478,18 @@ public class Controls {
             .coralLevelFour(soloController.rightBumper())
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_THREE -> superStructure
-            .coralLevelThree(soloController.rightBumper(), () -> AutoAlign.poseInPlace())
+            .coralLevelThree(
+                soloController.rightBumper(),
+                () -> AutoAlign.poseInPlace(AutoAlign.AlignType.RIGHTB))
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_TWO -> superStructure
-            .coralLevelTwo(soloController.rightBumper(), () -> AutoAlign.poseInPlace())
+            .coralLevelTwo(
+                soloController.rightBumper(),
+                () -> AutoAlign.poseInPlace(AutoAlign.AlignType.RIGHTB))
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_ONE -> superStructure
-            .coralLevelOne(soloController.rightBumper(), () -> AutoAlign.poseInPlaceL1R())
+            .coralLevelOne(
+                soloController.rightBumper(), () -> AutoAlign.poseInPlace(AutoAlign.AlignType.L1RB))
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
       };
     } else {
@@ -825,12 +834,12 @@ public class Controls {
         .rightTrigger()
         .and(() -> scoringMode == ScoringMode.CORAL)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignRight(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem, this, AutoAlign.AlignType.RIGHTB));
     driverController
         .leftTrigger()
         .and(() -> scoringMode == ScoringMode.CORAL)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignLeft(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem, this, AutoAlign.AlignType.LEFTB));
   }
 
   private void configureGroundSpinnyBindings() {
@@ -987,12 +996,12 @@ public class Controls {
         .leftTrigger()
         .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignLeft(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem, this, AutoAlign.AlignType.LEFTB));
     soloController
         .leftTrigger()
         .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
         .and(() -> branchHeight == BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignL1L(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem, this, AutoAlign.AlignType.L1LB));
     // Processor + Auto align right + Select scoring mode Coral
     soloController
         .rightTrigger()
@@ -1029,12 +1038,12 @@ public class Controls {
         .rightTrigger()
         .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignRight(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem, this, AutoAlign.AlignType.RIGHTB));
     soloController
         .rightTrigger()
         .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
         .and(() -> branchHeight == BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignL1R(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem, this, AutoAlign.AlignType.L1RB));
     // Ground Intake
     soloController
         .leftBumper()
