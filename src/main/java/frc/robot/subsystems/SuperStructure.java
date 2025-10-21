@@ -180,6 +180,10 @@ public class SuperStructure {
         .withName("Coral Level 1");
   }
 
+  // New versions with ipScore
+  // if robot is in position for intermediate scoring, it can score early but if vision is dead manual control still works
+  // only used on solo controls
+
   public Command coralLevelThree(BooleanSupplier score, BooleanSupplier ipScore) { // same as L4
     return Commands.sequence(
             Commands.parallel(
