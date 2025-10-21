@@ -83,8 +83,7 @@ public class Controls {
       new SwerveRequest.FieldCentric()
           .withDeadband(0.0001)
           .withRotationalDeadband(0.0001)
-          .withDriveRequestType(
-              DriveRequestType.Velocity);
+          .withDriveRequestType(DriveRequestType.Velocity);
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
