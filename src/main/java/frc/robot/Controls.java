@@ -294,7 +294,7 @@ public class Controls {
             Commands.deferredProxy(
                     () ->
                         switch (scoringMode) {
-                          case CORAL -> getCoralBranchHeightCommand();
+                          case CORAL -> getCoralBranchHeightCommand("2C");
                           case ALGAE -> Commands.sequence(
                                   superStructure.algaeProcessorScore(
                                       driverController.rightBumper()),
@@ -425,7 +425,7 @@ public class Controls {
                     () -> {
                       Command scoreCommand =
                           switch (scoringMode) {
-                            case CORAL -> getCoralBranchHeightCommand();
+                            case CORAL -> getCoralBranchHeightCommand("2C");
                             case ALGAE -> Commands.sequence(
                                     BargeAlign.bargeScore(
                                         s.drivebaseSubsystem,
@@ -450,47 +450,55 @@ public class Controls {
     };
   }
 
-  private Command getCoralBranchHeightCommand() {
-    return switch (branchHeight) {
-      case CORAL_LEVEL_FOUR -> superStructure.coralLevelFour(driverController.rightBumper());
-      case CORAL_LEVEL_THREE -> superStructure.coralLevelThree(driverController.rightBumper());
-      case CORAL_LEVEL_TWO -> superStructure.coralLevelTwo(driverController.rightBumper());
-      case CORAL_LEVEL_ONE -> superStructure.coralLevelOne(driverController.rightBumper());
-    };
-  }
-
-  private Command getSoloCoralBranchHeightCommandL() {
-    return switch (branchHeight) {
-      case CORAL_LEVEL_FOUR -> superStructure
-          .coralLevelFour(soloController.rightBumper())
-          .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
-      case CORAL_LEVEL_THREE -> superStructure
-          .coralLevelThree(soloController.rightBumper(), () -> AutoAlign.poseInPlace())
-          .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
-      case CORAL_LEVEL_TWO -> superStructure
-          .coralLevelTwo(soloController.rightBumper(), () -> AutoAlign.poseInPlace())
-          .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
-      case CORAL_LEVEL_ONE -> superStructure
-          .coralLevelOne(soloController.rightBumper(), () -> AutoAlign.poseInPlaceL1L())
-          .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
-    };
-  }
-
-  private Command getSoloCoralBranchHeightCommandR() {
-    return switch (branchHeight) {
-      case CORAL_LEVEL_FOUR -> superStructure
-          .coralLevelFour(soloController.rightBumper())
-          .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
-      case CORAL_LEVEL_THREE -> superStructure
-          .coralLevelThree(soloController.rightBumper(), () -> AutoAlign.poseInPlace())
-          .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
-      case CORAL_LEVEL_TWO -> superStructure
-          .coralLevelTwo(soloController.rightBumper(), () -> AutoAlign.poseInPlace())
-          .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
-      case CORAL_LEVEL_ONE -> superStructure
-          .coralLevelOne(soloController.rightBumper(), () -> AutoAlign.poseInPlaceL1R())
-          .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
-    };
+  private Command getCoralBranchHeightCommand(String version) {
+    if (version.equals("SL")) {
+      return switch (branchHeight) {
+        case CORAL_LEVEL_FOUR -> superStructure
+            .coralLevelFour(soloController.rightBumper())
+            .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
+        case CORAL_LEVEL_THREE -> superStructure
+            .coralLevelThree(
+                soloController.rightBumper(),
+                () -> AutoAlign.poseInPlace(AutoAlign.AlignType.LEFTB))
+            .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
+        case CORAL_LEVEL_TWO -> superStructure
+            .coralLevelTwo(
+                soloController.rightBumper(),
+                () -> AutoAlign.poseInPlace(AutoAlign.AlignType.LEFTB))
+            .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
+        case CORAL_LEVEL_ONE -> superStructure
+            .coralLevelOne(
+                soloController.rightBumper(), () -> AutoAlign.poseInPlace(AutoAlign.AlignType.L1LB))
+            .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
+      };
+    } else if (version.equals("SR")) {
+      return switch (branchHeight) {
+        case CORAL_LEVEL_FOUR -> superStructure
+            .coralLevelFour(soloController.rightBumper())
+            .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
+        case CORAL_LEVEL_THREE -> superStructure
+            .coralLevelThree(
+                soloController.rightBumper(),
+                () -> AutoAlign.poseInPlace(AutoAlign.AlignType.RIGHTB))
+            .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
+        case CORAL_LEVEL_TWO -> superStructure
+            .coralLevelTwo(
+                soloController.rightBumper(),
+                () -> AutoAlign.poseInPlace(AutoAlign.AlignType.RIGHTB))
+            .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
+        case CORAL_LEVEL_ONE -> superStructure
+            .coralLevelOne(
+                soloController.rightBumper(), () -> AutoAlign.poseInPlace(AutoAlign.AlignType.L1RB))
+            .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
+      };
+    } else {
+      return switch (branchHeight) {
+        case CORAL_LEVEL_FOUR -> superStructure.coralLevelFour(driverController.rightBumper());
+        case CORAL_LEVEL_THREE -> superStructure.coralLevelThree(driverController.rightBumper());
+        case CORAL_LEVEL_TWO -> superStructure.coralLevelTwo(driverController.rightBumper());
+        case CORAL_LEVEL_ONE -> superStructure.coralLevelOne(driverController.rightBumper());
+      };
+    }
   }
 
   private void configureElevatorBindings() {
@@ -825,12 +833,12 @@ public class Controls {
         .rightTrigger()
         .and(() -> scoringMode == ScoringMode.CORAL)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignRight(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem, this, AutoAlign.AlignType.RIGHTB));
     driverController
         .leftTrigger()
         .and(() -> scoringMode == ScoringMode.CORAL)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignLeft(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem, this, AutoAlign.AlignType.LEFTB));
   }
 
   private void configureGroundSpinnyBindings() {
@@ -945,7 +953,7 @@ public class Controls {
                   switch (soloScoringMode) {
                     case CORAL_IN_CLAW -> {
                       scoreCommand =
-                          getSoloCoralBranchHeightCommandL()
+                          getCoralBranchHeightCommand("SL")
                               .until(
                                   () ->
                                       soloController.a().getAsBoolean()
@@ -987,12 +995,12 @@ public class Controls {
         .leftTrigger()
         .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignLeft(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem, this, AutoAlign.AlignType.LEFTB));
     soloController
         .leftTrigger()
         .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
         .and(() -> branchHeight == BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignL1L(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem, this, AutoAlign.AlignType.L1LB));
     // Processor + Auto align right + Select scoring mode Coral
     soloController
         .rightTrigger()
@@ -1001,7 +1009,7 @@ public class Controls {
                     () -> {
                       Command scoreCommand =
                           switch (soloScoringMode) {
-                            case CORAL_IN_CLAW -> getSoloCoralBranchHeightCommandR()
+                            case CORAL_IN_CLAW -> getCoralBranchHeightCommand("SR")
                                 .until(
                                     () ->
                                         soloController.a().getAsBoolean()
@@ -1029,12 +1037,12 @@ public class Controls {
         .rightTrigger()
         .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
         .and(() -> branchHeight != BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignRight(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem, this, AutoAlign.AlignType.RIGHTB));
     soloController
         .rightTrigger()
         .and(() -> soloScoringMode == soloScoringMode.CORAL_IN_CLAW)
         .and(() -> branchHeight == BranchHeight.CORAL_LEVEL_ONE)
-        .whileTrue(AutoAlign.autoAlignL1R(s.drivebaseSubsystem, this));
+        .whileTrue(AutoAlign.autoAlign(s.drivebaseSubsystem, this, AutoAlign.AlignType.L1RB));
     // Ground Intake
     soloController
         .leftBumper()
@@ -1124,11 +1132,5 @@ public class Controls {
                 .startMovingVoltage(
                     () -> Volts.of(ElevatorSubsystem.UP_VOLTAGE * -soloController.getLeftY()))
                 .withName("Elevator Manual Control"));
-    // Ready to score rumble (Removal for autoscoring)
-    /* Trigger readyToScore = new Trigger(() -> AutoAlign.poseInPlace());
-    readyToScore.onTrue(
-        Commands.runOnce(() -> soloController.setRumble(RumbleType.kBothRumble, 1.0)));
-    readyToScore.onFalse(
-        Commands.runOnce(() -> soloController.setRumble(RumbleType.kBothRumble, 0.0))); */
   }
 }

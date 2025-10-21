@@ -229,7 +229,7 @@ public class AutoLogic {
     tab.add("Available Auto Variants", availableAutos).withPosition(4, 2).withSize(2, 1);
     tab.addBoolean("readyToScore?", () -> AutoAlign.readyToScore());
     tab.addBoolean("Level?", () -> AutoAlign.isLevel());
-    tab.addBoolean("Close Enough?", () -> AutoAlign.isCloseEnough());
+    tab.addBoolean("Close Enough?", () -> AutoAlign.isCloseEnough(AutoAlign.AlignType.ALLB));
     tab.addBoolean("Stationary?", () -> AutoAlign.isStationary());
     tab.addBoolean("Low on time?", () -> AutoAlign.oneSecondLeft());
     tab.addDouble("MATCH TIME(TIMER FOR AUTO)", () -> DriverStation.getMatchTime());
@@ -290,7 +290,7 @@ public class AutoLogic {
     if (r.superStructure != null) {
       return new ConditionalCommand(
           // If true:
-          AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
+          AutoAlign.autoAlign(s.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB)
               .repeatedly()
               .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
               .withName("scoreCommand"),
@@ -299,7 +299,7 @@ public class AutoLogic {
           // Condition:
           () -> ARMSENSOR_ENABLED && r.sensors.armSensor.booleanInClaw());
     }
-    return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
+    return AutoAlign.autoAlign(s.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB)
         .withName("scoreCommand-noSuperstructure");
   }
 
