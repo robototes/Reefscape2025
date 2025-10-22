@@ -36,7 +36,7 @@ public class ClimbPivot extends SubsystemBase {
   }
 
   // digitalInput for the sensor (never worked lol)
-  private final DigitalInput sensor;
+  public final DigitalInput sensor;
 
   // variable for the shuffleboard tab for consistency
   private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Climb");
@@ -47,7 +47,7 @@ public class ClimbPivot extends SubsystemBase {
   private final double CLIMB_OUT_MAX_PRESET = -0.150;
   private final double CLIMB_OUT_MIN_PRESET = -0.177;
   private final double CLIMBED_MAX_PRESET = -0.325;
-  private final double CLIMBED_MIN_PRESET = -0.333;
+  private final double CLIMBED_MIN_PRESET = -0.34;
   private final double FORWARD_SOFT_STOP = -0.07;
   private final double REVERSE_SOFT_STOP = -78;
   private final double CLIMB_OUT_SPEED = 1.0;
@@ -55,6 +55,9 @@ public class ClimbPivot extends SubsystemBase {
   private final double CLIMB_HOLD_CLIMBOUT = -0.0;
   private final double CLIMB_HOLD_CLIMBED = -0.0705;
   private final double CLIMB_IN_SPEED = -0.75;
+
+  private final double climbInKp = 50;
+  private final double climbOutKp = 50;
 
   // positions for relation between motor encoder and WCP encoder
   // relative to eachother, likely not accurately zero'ed when obtained.
@@ -64,7 +67,7 @@ public class ClimbPivot extends SubsystemBase {
   private static final double MAX_ENCODER_POSITION = 0.915;
 
   // two status variables
-  private boolean isClimbOut = false;
+  public boolean isClimbOut = false;
   private boolean isStowed = true;
 
   // setting the starting target position
@@ -83,6 +86,8 @@ public class ClimbPivot extends SubsystemBase {
 
   // the target speed
   private double setSpeed = 0;
+  private double speedToSet = 0;
+  private double pError = 0;
 
   // alerts for checking if either motor is or isnt connected
   private final Alert NotConnectedErrorOne =
@@ -223,7 +228,7 @@ public class ClimbPivot extends SubsystemBase {
 
   // check the digital input climb sensor
   public boolean checkClimbSensor() {
-    return sensor.get();
+    return !sensor.get();
   }
 
   // get the velocity from the motor
@@ -390,12 +395,15 @@ public class ClimbPivot extends SubsystemBase {
             setSpeed = 0;
           } else {
             if (!moveComplete) {
-              if (minTargetPos > getClimbPosition()) {
-                motorLeft.set(CLIMB_OUT_SPEED);
-                setSpeed = CLIMB_OUT_SPEED;
+              pError = minTargetPos - getClimbPosition();
+              if (pError > 0) {
+                speedToSet = CLIMB_OUT_SPEED * pError * climbOutKp;
+                motorLeft.set(speedToSet);
+                setSpeed = speedToSet;
               } else {
-                motorLeft.set(CLIMB_IN_SPEED);
-                setSpeed = CLIMB_IN_SPEED;
+                speedToSet = CLIMB_IN_SPEED * -pError * climbInKp;
+                motorLeft.set(speedToSet);
+                setSpeed = speedToSet;
               }
             }
           }
@@ -431,5 +439,11 @@ public class ClimbPivot extends SubsystemBase {
   // sets the target position to go to climbed position
   public Command toClimbed() {
     return runOnce(() -> setTargetPos(TargetPositions.CLIMBED)).withName("to climbed");
+  }
+
+  public Trigger cageDetected() {
+    return new Trigger(() -> checkClimbSensor())
+        .debounce(0.1, DebounceType.kRising)
+        .debounce(0.05, DebounceType.kFalling);
   }
 }

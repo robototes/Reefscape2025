@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "OSM to E"
+            "pathName": "OSW to E"
           }
         },
         {
@@ -49,6 +49,56 @@
                 "type": "path",
                 "data": {
                   "pathName": "RSF to D"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "scoreCommand"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "D to RSF"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "readyIntake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "isCollected"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RSF to C"
                 }
               },
               {

@@ -33,7 +33,7 @@ import java.util.function.Supplier;
 
 public class ArmPivot extends SubsystemBase {
   // Presets
-  private final double ARMPIVOT_KP = 38.5;
+  private final double ARMPIVOT_KP = 38.5; // previously 50
   private final double ARMPIVOT_KI = 0;
   private final double ARMPIVOT_KD = 0;
   private final double ARMPIVOT_KS = 0.1;
@@ -200,9 +200,9 @@ public class ArmPivot extends SubsystemBase {
     talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     // enabling current limits
-    talonFXConfiguration.CurrentLimits.StatorCurrentLimit = 20; // starting low for testing
+    talonFXConfiguration.CurrentLimits.StatorCurrentLimit = 20; // previously 40
     talonFXConfiguration.CurrentLimits.StatorCurrentLimitEnable = true;
-    talonFXConfiguration.CurrentLimits.SupplyCurrentLimit = 10; // starting low for testing
+    talonFXConfiguration.CurrentLimits.SupplyCurrentLimit = 10; // previously 20
     talonFXConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     // PID
@@ -218,11 +218,11 @@ public class ArmPivot extends SubsystemBase {
 
     // set Motion Magic settings in rps not mechanism units
     talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity =
-        160; // Target cruise velocity of 2560 rps
+        320; // 160 // Target cruise velocity of 2560 rps
     talonFXConfiguration.MotionMagic.MotionMagicAcceleration =
         320; // Target acceleration of 4960 rps/s (0.5 seconds)
     talonFXConfiguration.MotionMagic.MotionMagicJerk =
-        1600; // Target jerk of 6400 rps/s/s (0.1 seconds)
+        3200; // 1600 // Target jerk of 6400 rps/s/s (0.1 seconds)
 
     cfg.apply(talonFXConfiguration);
   }
