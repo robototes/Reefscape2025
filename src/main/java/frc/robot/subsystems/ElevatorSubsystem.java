@@ -12,15 +12,18 @@ import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.MutVoltage;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,6 +32,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Hardware;
+import jdk.jfr.Timestamp;
+
+import java.util.concurrent.TimeUnit;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -97,6 +103,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   private final Debouncer notConnectedDebouncerOne = new Debouncer(.1, DebounceType.kBoth);
   private final Debouncer notConnectedDebouncerTwo = new Debouncer(.1, DebounceType.kBoth);
   private final StructPublisher<Pose3d> elevatorPose3d = NetworkTableInstance.getDefault().getStructTopic("elevator/heightPose", Pose3d.struct).publish();
+  private final StructPublisher<Pose3d> TESTpose = NetworkTableInstance.getDefault().getStructTopic("debug/TEST", Pose3d.struct).publish();
+  private final StructPublisher<Pose3d> TESTpose2 = NetworkTableInstance.getDefault().getStructTopic("debug/TEST2", Pose3d.struct).publish();
     
   // Creates a SysIdRoutine
   SysIdRoutine routine =
@@ -385,7 +393,17 @@ public class ElevatorSubsystem extends SubsystemBase {
       m_motorOneSimState.setRawRotorPosition(targetPos);
       m_motorTwoSimState.setRawRotorPosition(targetPos);
 
-      elevatorPose3d.set(new Pose3d(new Pose2d(0.0, getHeightMeters(), new Rotation2d(0.0,0.0))));
+    elevatorPose3d.set(new Pose3d(0.0, 0.0, getHeightMeters(), new Rotation3d()));
+   
+           
+ 
+    double smoothing = 0.01;
+    TESTpose.set(new Pose3d(
+        0.0, 0.0, getHeightMeters() + (getTargetPosition() - getCurrentPosition()) * smoothing,
+        new Rotation3d(Math.PI / 2, Math.PI / 2, -Math.PI / 2)));
+    TESTpose2.set(new Pose3d(0.0,0.0,0.0,new  Rotation3d(0.0,Math.sin((Timer.getFPGATimestamp())),0.0)));
+    
+    
     }
   }
 }
