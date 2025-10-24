@@ -65,7 +65,7 @@ public class SuperStructure {
     } else {
       return Commands.parallel(
           Commands.sequence(
-              spinnyClaw.coralGripIntakePower(), Commands.waitSeconds(0.15), spinnyClaw.stop()),
+              spinnyClaw.coralGripIntakePower(), Commands.waitSeconds(0.05), spinnyClaw.stop()),
           command.repeatedly().onlyWhile(armSensor.inClaw()));
     }
   }
