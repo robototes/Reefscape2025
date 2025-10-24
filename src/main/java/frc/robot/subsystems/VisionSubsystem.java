@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
+import frc.robot.libs.LLCamera;
 import frc.robot.libs.LimelightHelpers;
 import frc.robot.libs.LimelightHelpers.PoseEstimate;
 
@@ -46,6 +47,8 @@ public class VisionSubsystem extends SubsystemBase {
   private final FieldObject2d rawVisionFieldObject;
 
   private final GenericSubscriber disableVision;
+  private final LLCamera leftCamera = new LLCamera(LIMELIGHT_LEFT);
+  private final LLCamera rightCamera = new LLCamera(LIMELIGHT_RIGHT);
 
   private final StructPublisher<Pose3d> fieldPose3dEntry = NetworkTableInstance.getDefault()
       .getStructTopic("vision/fieldPose3d", Pose3d.struct)
@@ -73,7 +76,7 @@ public class VisionSubsystem extends SubsystemBase {
     ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("AprilTags");
     shuffleboardTab.addDouble("Last raw timestamp", this::getLastRawTimestampSeconds).withPosition(0, 0)
         .withSize(1, 1);
-    shuffleboardTab.addInteger("Num targets", this::getNumTargets).withPosition(0, 1)
+    shuffleboardTab.addInteger("Num targets L", this::getNumTargets).withPosition(0, 1)
         .withSize(1, 1);
     shuffleboardTab.addDouble("Last timestamp", this::getLastTimestampSeconds).withPosition(1, 0)
         .withSize(1, 1);
@@ -91,17 +94,17 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public void update() {
-    processLimelight(LIMELIGHT_LEFT, rawFieldPose3dEntryLeft);
-    processLimelight(LIMELIGHT_RIGHT, rawFieldPose3dEntryRight);
+    processLimelight(leftCamera, rawFieldPose3dEntryLeft);
+    processLimelight(rightCamera, rawFieldPose3dEntryRight);
   }
 
-  private void processLimelight(String name, StructPublisher<Pose3d> rawFieldPoseEntry) {
-    PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(name);
+  private void processLimelight(LLCamera camera, StructPublisher<Pose3d> rawFieldPoseEntry) {
+    PoseEstimate estimate = camera.getPoseEstimate();
 
     if (estimate != null) {
 
       double rawTimestampSeconds = estimate.timestampSeconds;
-      Pose3d fieldPose3d = LimelightHelpers.getBotPose3d_wpiBlue(name);
+      Pose3d fieldPose3d = camera.getPose3d();
       rawFieldPoseEntry.set(fieldPose3d);
       if (disableVision.getBoolean(false))
         return;
@@ -146,10 +149,9 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public int getNumTargets() {
-    int left = LimelightHelpers.getTargetCount(LIMELIGHT_LEFT);
-    int right = LimelightHelpers.getTargetCount(LIMELIGHT_RIGHT);
-    int total = left + right;
-    return total == 0 && lastRawTimestampSeconds == 0 ? -1 : total;
+    int L = leftCamera.getNumTargets();
+    int R = rightCamera.getNumTargets();
+    return L + R;
   }
 
   public double getLastTimestampSeconds() {
