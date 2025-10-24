@@ -5,10 +5,10 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
+import frc.robot.util.AllianceUtils;
 import java.io.IOException;
 import org.json.simple.parser.ParseException;
 
@@ -42,12 +42,7 @@ public class AutoBuilderConfig {
             // Boolean supplier that controls when the path will be mirrored for the red alliance
             // This will flip the path being followed to the red side of the field.
             // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-            var alliance = DriverStation.getAlliance();
-            if (alliance.isPresent()) {
-              return !AutoAlign.isBlue(); // Checking alliance is red
-            }
-            return false;
+            return AllianceUtils.isRed(); // Checking alliance is red
           },
           s.drivebaseSubsystem // Reference to this subsystem to set requirements
           );

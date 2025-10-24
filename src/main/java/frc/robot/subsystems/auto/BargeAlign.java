@@ -48,7 +48,7 @@ public class BargeAlign extends Command {
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
           .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
-  private static final double xBargeDriveSpeed = 0.5;
+  private static final double xBargeDriveSpeed = 1.5;
 
   public static Command bargeScore(
       CommandSwerveDrivetrain drivebaseSubsystem,
@@ -58,16 +58,16 @@ public class BargeAlign extends Command {
       DoubleSupplier manualRotateSpeed,
       BooleanSupplier manualScore) {
     return Commands.sequence(
-        BargeAlign.driveToBlackLine(
-                drivebaseSubsystem, manualXSpeed, manualYSpeed, manualRotateSpeed)
-            .asProxy(),
+        // BargeAlign.driveToBlackLine(
+        //         drivebaseSubsystem, manualXSpeed, manualYSpeed, manualRotateSpeed)
+        //     .asProxy(),
         BargeAlign.driveToBarge(drivebaseSubsystem, manualXSpeed, manualYSpeed, manualRotateSpeed)
             .asProxy()
             .withDeadline(
                 superStructure.algaeNetScore(
-                    () ->
-                        manualScore.getAsBoolean()
-                            || BargeAlign.atScoringXPosition(drivebaseSubsystem))));
+                    () -> manualScore.getAsBoolean()
+                    //                    || BargeAlign.atScoringXPosition(drivebaseSubsystem)
+                    )));
   }
 
   private static Command driveToBarge(

@@ -3,12 +3,11 @@ package frc.robot.subsystems.auto;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Controls;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
+import frc.robot.util.AllianceUtils;
 import frc.robot.util.ScoringMode;
 import java.util.List;
 
@@ -54,20 +53,14 @@ public class AutoAlgaeHeights extends Command {
     return new AutoAlgaeHeights(drivebase, s, c);
   }
 
-  private static boolean isBlue() {
-    return DriverStation.getAlliance()
-        .map(alliance -> alliance.equals(Alliance.Blue))
-        .orElse(false);
-  }
-
   private static Pose2d getNearestAlgae(Pose2d robotPose) {
-    List<Pose2d> poses = isBlue() ? blueAlgaePoses : redAlgaePoses;
+    List<Pose2d> poses = AllianceUtils.isBlue() ? blueAlgaePoses : redAlgaePoses;
     return robotPose.nearest(poses);
   }
 
   private String aprilTagToAlgaeHeight(Pose2d algaePose) {
     // Map poses to two heights only
-    List<Pose2d> poses = isBlue() ? blueAlgaePoses : redAlgaePoses;
+    List<Pose2d> poses = AllianceUtils.isBlue() ? blueAlgaePoses : redAlgaePoses;
     int index = poses.indexOf(algaePose);
 
     if (index >= 3) {

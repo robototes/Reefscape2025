@@ -30,6 +30,7 @@ public class SpinnyClaw extends SubsystemBase {
   public static final double ALGAE_EXTAKE_SPEED = 14;
   public static final double ALGAE_PROCESSOR_EXTAKE_SPEED = 8;
   public static final double ALGAE_FLING_SPEED = 10;
+  public static final double CORAL_GRIP_INTAKE_SPEED = -0.5;
   // Remove once we implement PID speed
   public static int placeholderPIDSpeed;
 
@@ -183,6 +184,10 @@ public class SpinnyClaw extends SubsystemBase {
 
   public Command stop() {
     return runOnce(() -> motor.stopMotor()).withName("Spinny claw stop");
+  }
+
+  public Command coralGripIntakePower() {
+    return setPower(CORAL_GRIP_INTAKE_SPEED).withName("Coral grip intake power");
   }
 
   @Override
