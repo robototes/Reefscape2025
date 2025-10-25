@@ -37,9 +37,9 @@ import frc.robot.util.AlgaeIntakeHeight;
 import frc.robot.util.BranchHeight;
 import frc.robot.util.RobotType;
 import frc.robot.util.ScoringMode;
+import frc.robot.util.ScoringType;
 import frc.robot.util.SoloScoringMode;
 import java.util.function.BooleanSupplier;
-import frc.robot.util.ScoringType;
 
 public class Controls {
   private static final int SOLO_CONTROLLER_PORT = 0;
@@ -1010,7 +1010,8 @@ public class Controls {
                     () -> {
                       Command scoreCommand =
                           switch (soloScoringMode) {
-                            case CORAL_IN_CLAW -> getCoralBranchHeightCommand(ScoringType.SOLOC_RIGHT)
+                            case CORAL_IN_CLAW -> getCoralBranchHeightCommand(
+                                    ScoringType.SOLOC_RIGHT)
                                 .until(
                                     () ->
                                         soloController.a().getAsBoolean()
