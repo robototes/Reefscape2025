@@ -422,32 +422,6 @@
               "data_type": "double",
               "show_submit_button": false
             }
-          },
-          {
-            "title": "photonvision_Port_1182_Output_MJPEG_Server",
-            "x": 256.0,
-            "y": 512.0,
-            "width": 384.0,
-            "height": 384.0,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "/CameraPublisher/photonvision_Port_1182_Output_MJPEG_Server",
-              "period": 0.06,
-              "rotation_turns": 0
-            }
-          },
-          {
-            "title": "photonvision_Port_1186_Output_MJPEG_Server",
-            "x": 640.0,
-            "y": 512.0,
-            "width": 384.0,
-            "height": 384.0,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "/CameraPublisher/photonvision_Port_1186_Output_MJPEG_Server",
-              "period": 0.06,
-              "rotation_turns": 0
-            }
           }
         ]
       }
@@ -602,29 +576,17 @@
             }
           },
           {
-            "title": "left cam",
-            "x": 256.0,
+            "title": "streams",
+            "x": 128.0,
             "y": 256.0,
-            "width": 512.0,
-            "height": 512.0,
-            "type": "Camera Stream",
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
             "properties": {
-              "topic": "/CameraPublisher/left",
+              "topic": "/CameraPublisher/Arducam_OV9281R/streams",
               "period": 0.06,
-              "rotation_turns": 0
-            }
-          },
-          {
-            "title": "right cam",
-            "x": 768.0,
-            "y": 256.0,
-            "width": 512.0,
-            "height": 512.0,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "/CameraPublisher/right",
-              "period": 0.06,
-              "rotation_turns": 0
+              "data_type": "string[]",
+              "show_submit_button": false
             }
           }
         ]
