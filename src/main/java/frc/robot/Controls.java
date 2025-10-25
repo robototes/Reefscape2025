@@ -39,6 +39,7 @@ import frc.robot.util.RobotType;
 import frc.robot.util.ScoringMode;
 import frc.robot.util.SoloScoringMode;
 import java.util.function.BooleanSupplier;
+import frc.robot.util.ScoringType;
 
 public class Controls {
   private static final int SOLO_CONTROLLER_PORT = 0;
@@ -295,7 +296,7 @@ public class Controls {
             Commands.deferredProxy(
                     () ->
                         switch (scoringMode) {
-                          case CORAL -> getCoralBranchHeightCommand("2C");
+                          case CORAL -> getCoralBranchHeightCommand(ScoringType.DRIVER);
                           case ALGAE -> Commands.sequence(
                                   superStructure.algaeProcessorScore(
                                       driverController.rightBumper()),
@@ -426,7 +427,7 @@ public class Controls {
                     () -> {
                       Command scoreCommand =
                           switch (scoringMode) {
-                            case CORAL -> getCoralBranchHeightCommand("2C");
+                            case CORAL -> getCoralBranchHeightCommand(ScoringType.DRIVER);
                             case ALGAE -> Commands.sequence(
                                     BargeAlign.bargeScore(
                                         s.drivebaseSubsystem,
@@ -451,8 +452,8 @@ public class Controls {
     };
   }
 
-  private Command getCoralBranchHeightCommand(String version) {
-    if (version.equals("SL")) {
+  private Command getCoralBranchHeightCommand(ScoringType version) {
+    if (version == ScoringType.SOLOC_LEFT) {
       return switch (branchHeight) {
         case CORAL_LEVEL_FOUR -> superStructure
             .coralLevelFour(soloController.rightBumper())
@@ -472,7 +473,7 @@ public class Controls {
                 soloController.rightBumper(), () -> AutoAlign.poseInPlace(AutoAlign.AlignType.L1LB))
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
       };
-    } else if (version.equals("SR")) {
+    } else if (version == ScoringType.SOLOC_RIGHT) {
       return switch (branchHeight) {
         case CORAL_LEVEL_FOUR -> superStructure
             .coralLevelFour(soloController.rightBumper())
@@ -954,7 +955,7 @@ public class Controls {
                   switch (soloScoringMode) {
                     case CORAL_IN_CLAW -> {
                       scoreCommand =
-                          getCoralBranchHeightCommand("SL")
+                          getCoralBranchHeightCommand(ScoringType.SOLOC_LEFT)
                               .until(
                                   () ->
                                       soloController.a().getAsBoolean()
@@ -1010,7 +1011,7 @@ public class Controls {
                     () -> {
                       Command scoreCommand =
                           switch (soloScoringMode) {
-                            case CORAL_IN_CLAW -> getCoralBranchHeightCommand("SR")
+                            case CORAL_IN_CLAW -> getCoralBranchHeightCommand(ScoringType.SOLOC_RIGHT)
                                 .until(
                                     () ->
                                         soloController.a().getAsBoolean()
