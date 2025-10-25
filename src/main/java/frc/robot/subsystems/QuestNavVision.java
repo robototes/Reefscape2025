@@ -11,6 +11,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -38,6 +39,7 @@ public class QuestNavVision {
   private static final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout
       .loadField(AprilTagFields.k2025ReefscapeWelded);
   public double timestamp;
+  public Transform2d ROBOT_TO_QUEST = new Transform2d( /* TODO: Put your x, y, z, yaw, pitch, and roll offsets here! */ );
 
   private QuestNav questNav = new QuestNav();
   // full field pose for logging
@@ -77,8 +79,8 @@ public class QuestNavVision {
       for (PoseFrame questFrame : questFrames) {
         timestamp = getTimestampSeconds(questFrame);
         // Get the pose of the Quest
-        Pose2d questPose = questFrames[questFrames.length - 1].questPose();
-
+        Pose2d questPose = questFrame.questPose();
+        Pose2d robotPose = questPose.transformBy(ROBOT_TO_QUEST.inverse());
         if (questNav.isTracking()) {
           qWrapper.addVisionMeasurement(
               questFrame.questPose(), // Use the pose measurement
