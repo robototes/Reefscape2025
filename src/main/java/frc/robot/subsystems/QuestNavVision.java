@@ -1,21 +1,14 @@
 package frc.robot.subsystems;
 
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
@@ -27,6 +20,11 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import gg.questnav.questnav.PoseFrame;
 import gg.questnav.questnav.QuestNav;
+import java.util.OptionalInt;
+
+import frc.robot.Robot;
+import frc.robot.Subsystems;
+import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 
 public class QuestNavVision {
 
@@ -35,11 +33,13 @@ public class QuestNavVision {
   private final FieldObject2d rawVisionFieldObject;
   private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
   private final GenericSubscriber disableVision;
+
+  private CommandSwerveDrivetrain drivetrain = Subsystems.drivebaseSubsystem;
   private double lastTimestampSeconds = 0;
   private static final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout
       .loadField(AprilTagFields.k2025ReefscapeWelded);
   public double timestamp;
-  public Transform2d ROBOT_TO_QUEST = new Transform2d( /* TODO: Put your x, y, z, yaw, pitch, and roll offsets here! */ );
+  public Transform2d ROBOT_TO_QUEST = new Transform2d(/* TODO: Put your x, y, z, yaw, pitch, and roll offsets here! */ );
 
   private QuestNav questNav = new QuestNav();
   // full field pose for logging
@@ -65,7 +65,6 @@ public class QuestNavVision {
         .withSize(3, 2)
         .withWidget(BuiltInWidgets.kToggleButton)
         .getEntry();
-
   }
 
   public void process() {
@@ -83,10 +82,9 @@ public class QuestNavVision {
         Pose2d robotPose = questPose.transformBy(ROBOT_TO_QUEST.inverse());
         if (questNav.isTracking()) {
           qWrapper.addVisionMeasurement(
-              questFrame.questPose(), // Use the pose measurement
+              robotPose, // Use the pose measurement
               questFrame.dataTimestamp(), // Use the NetworkTables timestamp
               QUESTNAV_STD_DEVS); // Your measurement uncertainty
-
         }
         if (timestamp > lastTimestampSeconds) {
           fieldPose3dEntry.set(questFrame.questPose());
@@ -95,7 +93,6 @@ public class QuestNavVision {
           rawVisionFieldObject.setPose(lastFieldPose);
         }
       }
-
     }
   }
 
