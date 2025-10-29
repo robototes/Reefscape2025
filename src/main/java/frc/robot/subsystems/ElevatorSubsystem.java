@@ -399,8 +399,8 @@ public class ElevatorSubsystem extends SubsystemBase {
  
     double smoothing = 0.01;
     TESTpose.set(new Pose3d(
-        0.0, 0.0, getHeightMeters() + (getTargetPosition() - getCurrentPosition()) * smoothing,
-        new Rotation3d(Math.PI / 2, Math.PI / 2, -Math.PI / 2)));
+        0.2, 0.0, (getCurrentPosition() / 6)+ 0.4 ,
+        new Rotation3d(0.0,0.0,-135)));
     TESTpose2.set(new Pose3d(0.0,0.0,0.0,new  Rotation3d(0.0,Math.sin((Timer.getFPGATimestamp())),0.0)));
     
     
