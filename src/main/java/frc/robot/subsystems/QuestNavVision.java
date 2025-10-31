@@ -34,7 +34,7 @@ public class QuestNavVision {
   private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
   private final GenericSubscriber disableVision;
 
-  private CommandSwerveDrivetrain drivetrain = Subsystems.drivebaseSubsystem;
+  private CommandSwerveDrivetrain drivetrain = Subsystems.getDrivebase();
   private double lastTimestampSeconds = 0;
   private static final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout
       .loadField(AprilTagFields.k2025ReefscapeWelded);
