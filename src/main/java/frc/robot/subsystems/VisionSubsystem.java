@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.Optional;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
@@ -27,6 +25,9 @@ import frc.robot.Hardware;
 import frc.robot.libs.LLCamera;
 import frc.robot.libs.LimelightHelpers;
 import frc.robot.libs.LimelightHelpers.PoseEstimate;
+import frc.robot.libs.LimelightHelpers.RawFiducial;
+
+import java.util.Optional;
 
 public class VisionSubsystem extends SubsystemBase {
   // Limelight names must match your NT names
@@ -65,6 +66,7 @@ public class VisionSubsystem extends SubsystemBase {
   private double lastRawTimestampSeconds = 0;
   private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
   private double Distance = 0;
+  private double ambiguity = 0;
 
   public VisionSubsystem(DrivebaseWrapper aprilTagsHelper) {
     this.aprilTagsHelper = aprilTagsHelper;
@@ -74,15 +76,29 @@ public class VisionSubsystem extends SubsystemBase {
     rawVisionFieldObject = robotField.getObject("RawVision");
 
     ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("AprilTags");
-    shuffleboardTab.addDouble("Last raw timestamp", this::getLastRawTimestampSeconds).withPosition(0, 0)
+    shuffleboardTab
+        .addDouble("Last raw timestamp", this::getLastRawTimestampSeconds)
+        .withPosition(0, 0)
         .withSize(1, 1);
-    shuffleboardTab.addInteger("Num targets L", this::getNumTargets).withPosition(0, 1)
+    shuffleboardTab
+        .addInteger("Num targets", this::getNumTargets)
+        .withPosition(0, 1)
         .withSize(1, 1);
-    shuffleboardTab.addDouble("Last timestamp", this::getLastTimestampSeconds).withPosition(1, 0)
+    shuffleboardTab
+        .addDouble("Last timestamp", this::getLastTimestampSeconds)
+        .withPosition(1, 0)
         .withSize(1, 1);
-    shuffleboardTab.addDouble("april tag distance meters", this::getDistanceToTarget).withPosition(1, 1)
+    shuffleboardTab
+        .addDouble("april tag distance meters", this::getDistanceToTarget)
+        .withPosition(1, 1)
         .withSize(1, 1);
-    shuffleboardTab.addDouble("time since last reading", this::getTimeSinceLastReading).withPosition(2, 0)
+    shuffleboardTab
+        .addDouble("time since last reading", this::getTimeSinceLastReading)
+        .withPosition(2, 0)
+        .withSize(1, 1);
+    shuffleboardTab
+        .addDouble("tag ambiguity", this::getAmbiguity)
+        .withPosition(2, 0)
         .withSize(1, 1);
 
     disableVision = shuffleboardTab
@@ -94,11 +110,24 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public void update() {
-    processLimelight(leftCamera, rawFieldPose3dEntryLeft);
-    processLimelight(rightCamera, rawFieldPose3dEntryRight);
+
+    RawFiducial[] rawFiducialsL = leftCamera.getRawFiducials();
+    if (rawFiducialsL != null) {
+      for (RawFiducial rf : rawFiducialsL) {
+
+        processLimelight(leftCamera, rawFieldPose3dEntryLeft, rf);
+      }
+    }
+    RawFiducial[] rawFiducialsR = rightCamera.getRawFiducials();
+    if (rawFiducialsR != null) {
+
+      for (RawFiducial rf : rawFiducialsR) {
+        processLimelight(rightCamera, rawFieldPose3dEntryRight, rf);
+      }
+    }
   }
 
-  private void processLimelight(LLCamera camera, StructPublisher<Pose3d> rawFieldPoseEntry) {
+  private void processLimelight(LLCamera camera, StructPublisher<Pose3d> rawFieldPoseEntry, RawFiducial rf) {
     PoseEstimate estimate = camera.getPoseEstimate();
 
     if (estimate != null) {
@@ -117,15 +146,13 @@ public class VisionSubsystem extends SubsystemBase {
       // distance to closest fiducial
       double distanceMeters = Distance;
       if (estimate.tagCount > 1) {
-        for (LimelightHelpers.RawFiducial rf : estimate.rawFiducials) {
-          double ambiguity = rf.ambiguity;
-          Optional<Pose3d> tagPose = fieldLayout.getTagPose(rf.id);
-          if (tagPose.isPresent()) {
-            distanceMeters = rf.distToCamera;
-          }
-          if (ambiguity == 0) {
-            return;
-          }
+        double ambiguity = rf.ambiguity;
+        Optional<Pose3d> tagPose = fieldLayout.getTagPose(rf.id);
+        if (tagPose.isPresent()) {
+          distanceMeters = rf.distToCamera;
+        }
+        if (ambiguity == 0) {
+          return;
         }
       }
       // // filter invalid tags by alliance reef
@@ -145,7 +172,6 @@ public class VisionSubsystem extends SubsystemBase {
         Distance = distanceMeters;
       }
     }
-
   }
 
   public int getNumTargets() {
@@ -168,6 +194,10 @@ public class VisionSubsystem extends SubsystemBase {
 
   public double getDistanceToTarget() {
     return (double) Math.round(Distance * 1000) / 1000;
+  }
+
+  public double getAmbiguity() {
+    return ambiguity;
   }
 
   // private static boolean isBadAprilTagForAlliance(int tagId) {
