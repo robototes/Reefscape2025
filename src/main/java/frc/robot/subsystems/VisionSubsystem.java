@@ -23,10 +23,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 import frc.robot.libs.LLCamera;
-import frc.robot.libs.LimelightHelpers;
 import frc.robot.libs.LimelightHelpers.PoseEstimate;
 import frc.robot.libs.LimelightHelpers.RawFiducial;
-
 import java.util.Optional;
 
 public class VisionSubsystem extends SubsystemBase {
@@ -35,12 +33,14 @@ public class VisionSubsystem extends SubsystemBase {
   private static final String LIMELIGHT_RIGHT = Hardware.RIGHT_LIMELIGHT;
 
   // Deviations
-  private static final Vector<N3> STANDARD_DEVS = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(20));
-  private static final Vector<N3> DISTANCE_SC_STANDARD_DEVS = VecBuilder.fill(1, 1, Units.degreesToRadians(50));
+  private static final Vector<N3> STANDARD_DEVS =
+      VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(20));
+  private static final Vector<N3> DISTANCE_SC_STANDARD_DEVS =
+      VecBuilder.fill(1, 1, Units.degreesToRadians(50));
 
   // AprilTag field layout for 2025
-  private static final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout
-      .loadField(AprilTagFields.k2025ReefscapeWelded);
+  private static final AprilTagFieldLayout fieldLayout =
+      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
   private final DrivebaseWrapper aprilTagsHelper;
 
@@ -51,15 +51,18 @@ public class VisionSubsystem extends SubsystemBase {
   private final LLCamera leftCamera = new LLCamera(LIMELIGHT_LEFT);
   private final LLCamera rightCamera = new LLCamera(LIMELIGHT_RIGHT);
 
-  private final StructPublisher<Pose3d> fieldPose3dEntry = NetworkTableInstance.getDefault()
-      .getStructTopic("vision/fieldPose3d", Pose3d.struct)
-      .publish();
-  private final StructPublisher<Pose3d> rawFieldPose3dEntryLeft = NetworkTableInstance.getDefault()
-      .getStructTopic("vision/rawFieldPose2dLeft", Pose3d.struct)
-      .publish();
-  private final StructPublisher<Pose3d> rawFieldPose3dEntryRight = NetworkTableInstance.getDefault()
-      .getStructTopic("vision/rawFieldPose3dRight", Pose3d.struct)
-      .publish();
+  private final StructPublisher<Pose3d> fieldPose3dEntry =
+      NetworkTableInstance.getDefault()
+          .getStructTopic("vision/fieldPose3d", Pose3d.struct)
+          .publish();
+  private final StructPublisher<Pose3d> rawFieldPose3dEntryLeft =
+      NetworkTableInstance.getDefault()
+          .getStructTopic("vision/rawFieldPose2dLeft", Pose3d.struct)
+          .publish();
+  private final StructPublisher<Pose3d> rawFieldPose3dEntryRight =
+      NetworkTableInstance.getDefault()
+          .getStructTopic("vision/rawFieldPose3dRight", Pose3d.struct)
+          .publish();
 
   // state
   private double lastTimestampSeconds = 0;
@@ -101,12 +104,13 @@ public class VisionSubsystem extends SubsystemBase {
         .withPosition(2, 0)
         .withSize(1, 1);
 
-    disableVision = shuffleboardTab
-        .add("Disable vision", false)
-        .withPosition(4, 0)
-        .withSize(3, 2)
-        .withWidget(BuiltInWidgets.kToggleButton)
-        .getEntry();
+    disableVision =
+        shuffleboardTab
+            .add("Disable vision", false)
+            .withPosition(4, 0)
+            .withSize(3, 2)
+            .withWidget(BuiltInWidgets.kToggleButton)
+            .getEntry();
   }
 
   public void update() {
@@ -114,7 +118,6 @@ public class VisionSubsystem extends SubsystemBase {
     RawFiducial[] rawFiducialsL = leftCamera.getRawFiducials();
     if (rawFiducialsL != null) {
       for (RawFiducial rf : rawFiducialsL) {
-
         processLimelight(leftCamera, rawFieldPose3dEntryLeft, rf);
       }
     }
@@ -127,7 +130,8 @@ public class VisionSubsystem extends SubsystemBase {
     }
   }
 
-  private void processLimelight(LLCamera camera, StructPublisher<Pose3d> rawFieldPoseEntry, RawFiducial rf) {
+  private void processLimelight(
+      LLCamera camera, StructPublisher<Pose3d> rawFieldPoseEntry, RawFiducial rf) {
     PoseEstimate estimate = camera.getPoseEstimate();
 
     if (estimate != null) {
@@ -135,8 +139,7 @@ public class VisionSubsystem extends SubsystemBase {
       double rawTimestampSeconds = estimate.timestampSeconds;
       Pose3d fieldPose3d = camera.getPose3d();
       rawFieldPoseEntry.set(fieldPose3d);
-      if (disableVision.getBoolean(false))
-        return;
+      if (disableVision.getBoolean(false)) return;
       if (!MathUtil.isNear(0, fieldPose3d.getZ(), 0.10)
           || !MathUtil.isNear(0, fieldPose3d.getRotation().getX(), Units.degreesToRadians(8))
           || !MathUtil.isNear(0, fieldPose3d.getRotation().getY(), Units.degreesToRadians(8))) {
