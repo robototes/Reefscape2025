@@ -68,7 +68,7 @@ public class AutoLogic {
   // paths lists
 
   private static AutoPath defaultPath = new AutoPath("do nothing", "do nothing");
-
+ 
   private static List<AutoPath> noPiecePaths =
       List.of(
           new AutoPath("YSW0", "YSW0"),
@@ -174,7 +174,7 @@ public class AutoLogic {
       new DynamicSendableChooser<String>();
   private static SendableChooser<Integer> gameObjects = new SendableChooser<Integer>();
   private static SendableChooser<Boolean> isVision = new SendableChooser<Boolean>();
-
+  public static Command auton;
   private static GenericEntry autoDelayEntry;
 
   /** Registers commands in PathPlanner */
@@ -216,6 +216,7 @@ public class AutoLogic {
     for (StartPosition startPosition : StartPosition.values()) {
       startPositionChooser.addOption(startPosition.title, startPosition);
     }
+    
     isVision.setDefaultOption("Presets", false);
     isVision.addOption("Vision", true);
     gameObjects.setDefaultOption("0", 0);
@@ -234,11 +235,11 @@ public class AutoLogic {
     tab.addBoolean("Low on time?", () -> AutoAlign.oneSecondLeft());
     tab.addDouble("MATCH TIME(TIMER FOR AUTO)", () -> DriverStation.getMatchTime());
     autoDelayEntry = tab.add("Auto Delay", 0).withPosition(4, 3).withSize(1, 1).getEntry();
-
     isVision.onChange((dummyVar) -> AutoLogic.filterAutos(gameObjects.getSelected()));
     startPositionChooser.onChange((dummyVar) -> AutoLogic.filterAutos(gameObjects.getSelected()));
     gameObjects.onChange((dummyVar) -> AutoLogic.filterAutos(gameObjects.getSelected()));
-
+    availableAutos.onChange((dummyVar) -> auton = AutoBuilder.buildAuto(namesToAuto.get(availableAutos.getSelected()).getAutoName()));
+  
     filterAutos(gameObjects.getSelected());
   }
 
