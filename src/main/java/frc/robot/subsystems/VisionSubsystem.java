@@ -154,9 +154,6 @@ public class VisionSubsystem extends SubsystemBase {
         if (tagPose.isPresent()) {
           distanceMeters = rf.distToCamera;
         }
-        if (ambiguity == 0) {
-          return;
-        }
       }
       // // filter invalid tags by alliance reef
       // if (estimate.avgTagID >= 0 && isBadAprilTagForAlliance(estimate.avgTagID)) {
