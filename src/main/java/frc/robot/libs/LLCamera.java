@@ -9,7 +9,7 @@ public class LLCamera {
   private static String name;
 
   public LLCamera(String name) {
-    this.name = name;
+    LLCamera.name = name;
   }
 
   public LLCamera() {
