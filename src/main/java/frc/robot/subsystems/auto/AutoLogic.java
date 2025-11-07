@@ -9,7 +9,9 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -25,6 +27,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
+import frc.robot.subsystems.ElevatorSubsystem;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -299,6 +303,7 @@ public class AutoLogic {
           // Condition:
           () -> ARMSENSOR_ENABLED && r.sensors.armSensor.booleanInClaw());
     }
+    
     return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
         .withName("scoreCommand-noSuperstructure");
   }

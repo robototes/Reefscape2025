@@ -32,6 +32,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Hardware;
+import frc.robot.Robot;
+import frc.robot.sensors.ArmSensor;
+import frc.robot.subsystems.auto.AutoLogic;
 import jdk.jfr.Timestamp;
 
 import java.util.concurrent.TimeUnit;
@@ -63,7 +66,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double CORAL_QUICK_INTAKE = 1.6;
   public static final double MIN_EMPTY_GROUND_INTAKE = 4.5;
   public static final double MIN_FULL_GROUND_INTAKE = 8.0;
-  private static final double MOTOR_ROTATIONS_PER_METER = 40; // Inaccurate
+  private static final double MOTOR_ROTATIONS_PER_METER = 3; // Inaccurate
   public static final double MANUAL = 0.1;
   private static final double POS_TOLERANCE = 0.1;
   private final double ELEVATOR_KP = 7.804;
@@ -102,9 +105,9 @@ public class ElevatorSubsystem extends SubsystemBase {
       new Alert("Elevator", "Motor 2 not connected", AlertType.kError);
   private final Debouncer notConnectedDebouncerOne = new Debouncer(.1, DebounceType.kBoth);
   private final Debouncer notConnectedDebouncerTwo = new Debouncer(.1, DebounceType.kBoth);
-  private final StructPublisher<Pose3d> elevatorPose3d = NetworkTableInstance.getDefault().getStructTopic("elevator/heightPose", Pose3d.struct).publish();
-  private final StructPublisher<Pose3d> TESTpose = NetworkTableInstance.getDefault().getStructTopic("debug/TEST", Pose3d.struct).publish();
-  private final StructPublisher<Pose3d> TESTpose2 = NetworkTableInstance.getDefault().getStructTopic("debug/TEST2", Pose3d.struct).publish();
+  private  StructPublisher<Pose3d> elevatorPose3d = NetworkTableInstance.getDefault().getStructTopic("elevator/heightPose", Pose3d.struct).publish();
+  public  StructPublisher<Pose3d> TESTpose = NetworkTableInstance.getDefault().getStructTopic("debug/TEST", Pose3d.struct).publish();
+  public  StructPublisher<Pose3d> TESTpose2 = NetworkTableInstance.getDefault().getStructTopic("debug/TEST2", Pose3d.struct).publish();
     
   // Creates a SysIdRoutine
   SysIdRoutine routine =
@@ -382,7 +385,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         .ignoringDisable(true)
         .withName("ElevatorStop");
   }
-
+  double smoothedAngleZ = 0.4;
+  double smoothingFactor = 0.1;
   @Override
   public void periodic() {
     NotConnectedError.set(
@@ -390,20 +394,28 @@ public class ElevatorSubsystem extends SubsystemBase {
     NotConnectedError2.set(
         notConnectedDebouncerTwo.calculate(!m_motor2.getMotorVoltage().hasUpdated()));
     if (RobotBase.isSimulation()) {
+      if (!Robot.getInstance().sensors.armSensor.booleanInClaw()) {    
+        double targetZ = (CORAL_STOWED/ MOTOR_ROTATIONS_PER_METER);}
       m_motorOneSimState.setRawRotorPosition(targetPos);
       m_motorTwoSimState.setRawRotorPosition(targetPos);
-
     elevatorPose3d.set(new Pose3d(0.0, 0.0, getHeightMeters(), new Rotation3d()));
-   
-           
- 
-    double smoothing = 0.01;
+  
+    double targetZ = (getCurrentPosition()/ MOTOR_ROTATIONS_PER_METER);
+    smoothedAngleZ += (targetZ - smoothedAngleZ) * smoothingFactor;
+  
     TESTpose.set(new Pose3d(
-        0.2, 0.0, (getCurrentPosition() / 6)+ 0.4 ,
-        new Rotation3d(0.0,0.0,-135)));
+      0.2, 0.0, smoothedAngleZ,
+      new Rotation3d(0.0, 0.0, -135)));
+      //TESTpose.set(new Pose3d(
+        //0.2, 0.0, (getHeightMeters() + getTargetPosition() - getCurrentPosition()),
+       // new Rotation3d(0.0, 0.0, -135)));
+  
+
+  
     TESTpose2.set(new Pose3d(0.0,0.0,0.0,new  Rotation3d(0.0,Math.sin((Timer.getFPGATimestamp())),0.0)));
     
     
     }
+    
   }
 }
