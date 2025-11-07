@@ -148,7 +148,7 @@ public class VisionSubsystem extends SubsystemBase {
 
       // distance to closest fiducial
       double distanceMeters = Distance;
-      if (estimate.tagCount > 1) {
+      if (estimate.tagCount > 0) {
         double ambiguity = rf.ambiguity;
         Optional<Pose3d> tagPose = fieldLayout.getTagPose(rf.id);
         if (tagPose.isPresent()) {
