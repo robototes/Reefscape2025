@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
@@ -25,7 +27,6 @@ import frc.robot.Hardware;
 import frc.robot.libs.LLCamera;
 import frc.robot.libs.LimelightHelpers.PoseEstimate;
 import frc.robot.libs.LimelightHelpers.RawFiducial;
-import java.util.Optional;
 
 public class VisionSubsystem extends SubsystemBase {
   // Limelight names must match your NT names
@@ -132,18 +133,20 @@ public class VisionSubsystem extends SubsystemBase {
 
   private void processLimelight(
       LLCamera camera, StructPublisher<Pose3d> rawFieldPoseEntry, RawFiducial rf) {
+        if (disableVision.getBoolean(false)) return;
     PoseEstimate estimate = camera.getPoseEstimate();
 
     if (estimate != null) {
 
       double rawTimestampSeconds = estimate.timestampSeconds;
       Pose3d fieldPose3d = camera.getPose3d();
+      boolean pose_bad = false;
       rawFieldPoseEntry.set(fieldPose3d);
-      if (disableVision.getBoolean(false)) return;
+      
       if (!MathUtil.isNear(0, fieldPose3d.getZ(), 0.10)
           || !MathUtil.isNear(0, fieldPose3d.getRotation().getX(), Units.degreesToRadians(8))
           || !MathUtil.isNear(0, fieldPose3d.getRotation().getY(), Units.degreesToRadians(8))) {
-        return;
+        pose_bad = true;
       }
 
       // distance to closest fiducial
@@ -159,11 +162,13 @@ public class VisionSubsystem extends SubsystemBase {
       // if (estimate.avgTagID >= 0 && isBadAprilTagForAlliance(estimate.avgTagID)) {
       // return;
       // }
-      aprilTagsHelper.addVisionMeasurement(
-          fieldPose3d.toPose2d(),
-          rawTimestampSeconds,
-          DISTANCE_SC_STANDARD_DEVS.times(Math.max(0, distanceMeters - 1)).plus(STANDARD_DEVS));
-      robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
+      if(!pose_bad){
+        aprilTagsHelper.addVisionMeasurement(
+            fieldPose3d.toPose2d(),
+            rawTimestampSeconds,
+            DISTANCE_SC_STANDARD_DEVS.times(Math.max(0, distanceMeters - 1)).plus(STANDARD_DEVS));
+        robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
+      }
       if (rawTimestampSeconds > lastRawTimestampSeconds) {
         fieldPose3dEntry.set(fieldPose3d);
         lastRawTimestampSeconds = rawTimestampSeconds;
