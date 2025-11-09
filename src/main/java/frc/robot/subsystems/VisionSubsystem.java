@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.Optional;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
@@ -27,6 +25,7 @@ import frc.robot.Hardware;
 import frc.robot.libs.LLCamera;
 import frc.robot.libs.LimelightHelpers.PoseEstimate;
 import frc.robot.libs.LimelightHelpers.RawFiducial;
+import java.util.Optional;
 
 public class VisionSubsystem extends SubsystemBase {
   // Limelight names must match your NT names
@@ -66,7 +65,7 @@ public class VisionSubsystem extends SubsystemBase {
           .publish();
 
   // state
-  private double lastTimestampSeconds = 0;
+  private final double lastTimestampSeconds = 0;
   private double lastRawTimestampSeconds = 0;
   private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
   private double Distance = 0;
@@ -133,48 +132,61 @@ public class VisionSubsystem extends SubsystemBase {
 
   private void processLimelight(
       LLCamera camera, StructPublisher<Pose3d> rawFieldPoseEntry, RawFiducial rf) {
-        if (disableVision.getBoolean(false)) return;
+    if (disableVision.getBoolean(false)) return;
     PoseEstimate estimate = camera.getPoseEstimate();
 
     if (estimate != null) {
+      if (estimate.tagCount == 0) {
+        return;
+      }
 
       double rawTimestampSeconds = estimate.timestampSeconds;
       Pose3d fieldPose3d = camera.getPose3d();
       boolean pose_bad = false;
       rawFieldPoseEntry.set(fieldPose3d);
-      
-      if (!MathUtil.isNear(0, fieldPose3d.getZ(), 0.10)
-          || !MathUtil.isNear(0, fieldPose3d.getRotation().getX(), Units.degreesToRadians(8))
-          || !MathUtil.isNear(0, fieldPose3d.getRotation().getY(), Units.degreesToRadians(8))) {
-        pose_bad = true;
-      }
-
       // distance to closest fiducial
       double distanceMeters = Distance;
       if (estimate.tagCount > 0) {
-        double ambiguity = rf.ambiguity;
         Optional<Pose3d> tagPose = fieldLayout.getTagPose(rf.id);
         if (tagPose.isPresent()) {
           distanceMeters = rf.distToCamera;
         }
       }
+
+      if (!MathUtil.isNear(0, fieldPose3d.getZ(), 0.10)
+          || !MathUtil.isNear(0, fieldPose3d.getRotation().getX(), Units.degreesToRadians(8))
+          || !MathUtil.isNear(0, fieldPose3d.getRotation().getY(), Units.degreesToRadians(8))
+          || estimate.tagCount == 1 && rf.distToCamera > 0.3) {
+        pose_bad = true;
+      }
+
       // // filter invalid tags by alliance reef
       // if (estimate.avgTagID >= 0 && isBadAprilTagForAlliance(estimate.avgTagID)) {
       // return;
       // }
-      if(!pose_bad){
+      if (!pose_bad) {
+        double stdDevFactor = Math.pow(estimate.avgTagDist, 2.0) / estimate.tagCount;
+        double linearStdDev = 0.02 * stdDevFactor;
+        double angularStdDev = 0.06 * stdDevFactor;
         aprilTagsHelper.addVisionMeasurement(
             fieldPose3d.toPose2d(),
             rawTimestampSeconds,
-            DISTANCE_SC_STANDARD_DEVS.times(Math.max(0, distanceMeters - 1)).plus(STANDARD_DEVS));
+
+            //// Use one of these, first one is current second is what advantage kit example is
+            // DISTANCE_SC_STANDARD_DEVS.times(Math.max(0, distanceMeters -
+            // 1)).plus(STANDARD_DEVS));
+            VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
         robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       }
       if (rawTimestampSeconds > lastRawTimestampSeconds) {
-        fieldPose3dEntry.set(fieldPose3d);
+        if (!pose_bad) {
+          fieldPose3dEntry.set(fieldPose3d);
+          lastFieldPose = fieldPose3d.toPose2d();
+          rawVisionFieldObject.setPose(lastFieldPose);
+        }
         lastRawTimestampSeconds = rawTimestampSeconds;
-        lastFieldPose = fieldPose3d.toPose2d();
-        rawVisionFieldObject.setPose(lastFieldPose);
         Distance = distanceMeters;
+        ambiguity = rf.ambiguity;
       }
     }
   }
