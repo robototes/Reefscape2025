@@ -1,14 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.Optional;
-
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.PhotonUtils;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
@@ -34,6 +25,13 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
+import java.util.Optional;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 /*
  * All poses and transforms use the NWU (North-West-Up) coordinate system, where +X is
@@ -232,26 +230,26 @@ public class VisionSubsystem extends SubsystemBase {
               fieldLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d());
       // makes a pose that vision sees
       double all_of_the_distances = 0;
-      for ( PhotonTrackedTarget target : result.targets) {
-        var dist = PhotonUtils.getDistanceToPose(
-              FieldPose,
-              // gets closed tag and gets distance
-              fieldLayout.getTagPose(target.getFiducialId()).get().toPose2d());
-              all_of_the_distances += dist;
-
+      for (PhotonTrackedTarget target : result.targets) {
+        var dist =
+            PhotonUtils.getDistanceToPose(
+                FieldPose,
+                // gets closed tag and gets distance
+                fieldLayout.getTagPose(target.getFiducialId()).get().toPose2d());
+        all_of_the_distances += dist;
       }
       all_of_the_distances = all_of_the_distances / num_targets;
       double stdDevFactor = Math.pow(all_of_the_distances, 2.0) / num_targets;
-        double linearStdDev = 0.02 * stdDevFactor;
-        double angularStdDev = 0.06 * stdDevFactor;
-        aprilTagsHelper.addVisionMeasurement(
-            FieldPose,
-            RawTimestampSeconds,
+      double linearStdDev = 0.02 * stdDevFactor;
+      double angularStdDev = 0.06 * stdDevFactor;
+      aprilTagsHelper.addVisionMeasurement(
+          FieldPose,
+          RawTimestampSeconds,
 
-            //// Use one of these, first one is current second is what advantage kit example is
-            // DISTANCE_SC_STANDARD_DEVS.times(Math.max(0, distanceMeters -
-            // 1)).plus(STANDARD_DEVS));
-            VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
+          //// Use one of these, first one is current second is what advantage kit example is
+          // DISTANCE_SC_STANDARD_DEVS.times(Math.max(0, distanceMeters -
+          // 1)).plus(STANDARD_DEVS));
+          VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
       // sets estimated current pose to estimated vision pose
       robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       // updates shuffleboard values
