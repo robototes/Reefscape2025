@@ -1,9 +1,9 @@
-package frc.robot.libs;
+package frc.robot.util;
 
 import edu.wpi.first.math.geometry.Pose3d;
-import frc.robot.libs.LimelightHelpers.PoseEstimate;
-import frc.robot.libs.LimelightHelpers.RawDetection;
-import frc.robot.libs.LimelightHelpers.RawFiducial;
+import frc.robot.util.LimelightHelpers.PoseEstimate;
+import frc.robot.util.LimelightHelpers.RawDetection;
+import frc.robot.util.LimelightHelpers.RawFiducial;
 
 public class LLCamera {
   private static String name;
@@ -17,8 +17,7 @@ public class LLCamera {
   }
 
   public int getNumTargets() {
-    int tar = LimelightHelpers.getTargetCount(name);
-    return tar;
+    return LimelightHelpers.getTargetCount(name);
   }
 
   public boolean hasValidTarget() {

@@ -22,9 +22,9 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
-import frc.robot.libs.LLCamera;
-import frc.robot.libs.LimelightHelpers.PoseEstimate;
-import frc.robot.libs.LimelightHelpers.RawFiducial;
+import frc.robot.util.LLCamera;
+import frc.robot.util.LimelightHelpers.PoseEstimate;
+import frc.robot.util.LimelightHelpers.RawFiducial;
 import java.util.Optional;
 
 public class VisionSubsystem extends SubsystemBase {
@@ -57,7 +57,7 @@ public class VisionSubsystem extends SubsystemBase {
           .publish();
   private final StructPublisher<Pose3d> rawFieldPose3dEntryLeft =
       NetworkTableInstance.getDefault()
-          .getStructTopic("vision/rawFieldPose2dLeft", Pose3d.struct)
+          .getStructTopic("vision/rawFieldPose3dLeft", Pose3d.struct)
           .publish();
   private final StructPublisher<Pose3d> rawFieldPose3dEntryRight =
       NetworkTableInstance.getDefault()
@@ -68,8 +68,8 @@ public class VisionSubsystem extends SubsystemBase {
   private final double lastTimestampSeconds = 0;
   private double lastRawTimestampSeconds = 0;
   private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
-  private double Distance = 0;
-  private double ambiguity = 0;
+  private double distance = 0;
+  private double tagAmbiguity = 0;
 
   public VisionSubsystem(DrivebaseWrapper aprilTagsHelper) {
     this.aprilTagsHelper = aprilTagsHelper;
@@ -100,7 +100,7 @@ public class VisionSubsystem extends SubsystemBase {
         .withPosition(2, 0)
         .withSize(1, 1);
     shuffleboardTab
-        .addDouble("tag ambiguity", this::getAmbiguity)
+        .addDouble("tag ambiguity", this::getTagAmbiguity)
         .withPosition(2, 0)
         .withSize(1, 1);
 
@@ -136,7 +136,7 @@ public class VisionSubsystem extends SubsystemBase {
     PoseEstimate estimate = camera.getPoseEstimate();
 
     if (estimate != null) {
-      if (estimate.tagCount == 0) {
+      if (estimate.tagCount <= 0) {
         return;
       }
 
@@ -145,18 +145,18 @@ public class VisionSubsystem extends SubsystemBase {
       boolean pose_bad = false;
       rawFieldPoseEntry.set(fieldPose3d);
       // distance to closest fiducial
-      double distanceMeters = Distance;
-      if (estimate.tagCount > 0) {
-        Optional<Pose3d> tagPose = fieldLayout.getTagPose(rf.id);
-        if (tagPose.isPresent()) {
-          distanceMeters = rf.distToCamera;
-        }
+      double distanceMeters = distance;
+      
+      Optional<Pose3d> tagPose = fieldLayout.getTagPose(rf.id);
+      if (tagPose.isPresent()) {
+        distanceMeters = rf.distToCamera;
       }
+      
 
       if (!MathUtil.isNear(0, fieldPose3d.getZ(), 0.10)
           || !MathUtil.isNear(0, fieldPose3d.getRotation().getX(), Units.degreesToRadians(8))
           || !MathUtil.isNear(0, fieldPose3d.getRotation().getY(), Units.degreesToRadians(8))
-          || estimate.tagCount == 1 && rf.distToCamera > 0.3) {
+          || estimate.tagCount == 1 && rf.distToCamera > 1) {
         pose_bad = true;
       }
 
@@ -185,8 +185,8 @@ public class VisionSubsystem extends SubsystemBase {
           rawVisionFieldObject.setPose(lastFieldPose);
         }
         lastRawTimestampSeconds = rawTimestampSeconds;
-        Distance = distanceMeters;
-        ambiguity = rf.ambiguity;
+        distance = distanceMeters;
+        tagAmbiguity = rf.ambiguity;
       }
     }
   }
@@ -210,11 +210,11 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public double getDistanceToTarget() {
-    return (double) Math.round(Distance * 1000) / 1000;
+    return (double) Math.round(distance * 1000) / 1000;
   }
 
-  public double getAmbiguity() {
-    return ambiguity;
+  public double getTagAmbiguity() {
+    return tagAmbiguity;
   }
 
   // private static boolean isBadAprilTagForAlliance(int tagId) {
