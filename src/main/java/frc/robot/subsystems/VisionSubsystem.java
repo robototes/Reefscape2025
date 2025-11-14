@@ -191,6 +191,9 @@ public class VisionSubsystem extends SubsystemBase {
       PhotonPipelineResult result,
       PhotonPoseEstimator estimator,
       StructPublisher<Pose3d> rawFieldPose3dEntry) {
+    if (result == null) {
+      return;
+    }
     // makes a different timestamp to keep track of time
     var RawTimestampSeconds = result.getTimestampSeconds();
     // for waiting until orange pi 5 syncing and getting rid old results
@@ -229,17 +232,17 @@ public class VisionSubsystem extends SubsystemBase {
               // gets closed tag and gets distance
               fieldLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d());
       // makes a pose that vision sees
-      double all_of_the_distances = 0;
+      double sum_of_the_distances = 0;
       for (PhotonTrackedTarget target : result.targets) {
         var dist =
             PhotonUtils.getDistanceToPose(
                 FieldPose,
-                // gets closed tag and gets distance
+                // gets closest tag and gets distance
                 fieldLayout.getTagPose(target.getFiducialId()).get().toPose2d());
-        all_of_the_distances += dist;
+        sum_of_the_distances += dist;
       }
-      all_of_the_distances = all_of_the_distances / num_targets;
-      double stdDevFactor = Math.pow(all_of_the_distances, 2.0) / num_targets;
+      double avg_distances = sum_of_the_distances / num_targets;
+      double stdDevFactor = Math.pow(avg_distances, 2.0) / num_targets;
       double linearStdDev = 0.02 * stdDevFactor;
       double angularStdDev = 0.06 * stdDevFactor;
       aprilTagsHelper.addVisionMeasurement(
