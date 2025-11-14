@@ -146,12 +146,11 @@ public class VisionSubsystem extends SubsystemBase {
       rawFieldPoseEntry.set(fieldPose3d);
       // distance to closest fiducial
       double distanceMeters = distance;
-      
+
       Optional<Pose3d> tagPose = fieldLayout.getTagPose(rf.id);
       if (tagPose.isPresent()) {
         distanceMeters = rf.distToCamera;
       }
-      
 
       if (!MathUtil.isNear(0, fieldPose3d.getZ(), 0.10)
           || !MathUtil.isNear(0, fieldPose3d.getRotation().getX(), Units.degreesToRadians(8))
