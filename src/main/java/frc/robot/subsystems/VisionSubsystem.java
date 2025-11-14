@@ -13,6 +13,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -23,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 import frc.robot.util.LLCamera;
+import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LimelightHelpers.PoseEstimate;
 import frc.robot.util.LimelightHelpers.RawFiducial;
 import java.util.Optional;
@@ -158,8 +160,8 @@ public class VisionSubsystem extends SubsystemBase {
         pose_bad = true;
       }
 
-      // // filter invalid tags by alliance reef
-      // if (estimate.avgTagID >= 0 && isBadAprilTagForAlliance(estimate.avgTagID)) {
+      // // // filter invalid tags by alliance reef
+      // if (rf.id >= 0 && BadAprilTagDetector(rf)) {
       // return;
       // }
       if (!pose_bad) {
@@ -218,10 +220,16 @@ public class VisionSubsystem extends SubsystemBase {
     return tagAmbiguity;
   }
 
-  // private static boolean isBadAprilTagForAlliance(int tagId) {
-  // // Always using Blue coordinate system, but we still block opposite reef tags
-  // boolean isRedReef = 6 <= tagId && tagId <= 11;
-  // boolean isBlueReef = 17 <= tagId && tagId <= 22;
-  // return !(isBlueReef); // only trust blue reef tags
+  // private static boolean BadAprilTagDetector(LimelightHelpers.RawFiducial r) {
+  //   boolean isRed = DriverStation.getAlliance().equals(Optional.of(DriverStation.Alliance.Red));
+  //   boolean isBlue = DriverStation.getAlliance().equals(Optional.of(DriverStation.Alliance.Blue));
+  //     boolean isRedReef = 6 <= r.id && r.id <= 11;
+  //     boolean isBlueReef = 17 <= r.id && r.id <= 22;
+  //     boolean isValid = isBlueReef && !isRed || isRedReef && !isBlue;
+  //     if (!isValid) {
+  //       return true;
+  //     }
+  
+  //   return false;
   // }
 }
