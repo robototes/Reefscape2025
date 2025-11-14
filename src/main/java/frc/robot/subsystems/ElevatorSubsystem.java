@@ -66,7 +66,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double CORAL_QUICK_INTAKE = 1.6;
   public static final double MIN_EMPTY_GROUND_INTAKE = 4.5;
   public static final double MIN_FULL_GROUND_INTAKE = 8.0;
-  private static final double MOTOR_ROTATIONS_PER_METER = 3; // Inaccurate
+  private static final double MOTOR_ROTATIONS_PER_METER = 19.68; // Inaccurate
   public static final double MANUAL = 0.1;
   private static final double POS_TOLERANCE = 0.1;
   private final double ELEVATOR_KP = 7.804;
@@ -395,7 +395,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         notConnectedDebouncerTwo.calculate(!m_motor2.getMotorVoltage().hasUpdated()));
     if (RobotBase.isSimulation()) {
       if (!Robot.getInstance().sensors.armSensor.booleanInClaw()) {    
-        double targetZ = (CORAL_STOWED/ MOTOR_ROTATIONS_PER_METER);}
+       }
       m_motorOneSimState.setRawRotorPosition(targetPos);
       m_motorTwoSimState.setRawRotorPosition(targetPos);
     elevatorPose3d.set(new Pose3d(0.0, 0.0, getHeightMeters(), new Rotation3d()));
@@ -404,7 +404,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     smoothedAngleZ += (targetZ - smoothedAngleZ) * smoothingFactor;
   
     TESTpose.set(new Pose3d(
-      0.2, 0.0, smoothedAngleZ,
+      0.2, 0.0, smoothedAngleZ * 5.5,
       new Rotation3d(0.0, 0.0, -135)));
       //TESTpose.set(new Pose3d(
         //0.2, 0.0, (getHeightMeters() + getTargetPosition() - getCurrentPosition()),
