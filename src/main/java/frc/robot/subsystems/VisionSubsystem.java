@@ -171,8 +171,10 @@ public class VisionSubsystem extends SubsystemBase {
             fieldPose3d.toPose2d(),
             rawTimestampSeconds,
 
-            //// Use one of these, first one is current(start with STANDARD_DEVS, and for every meter of distance past 1 meter, 
-            /// add another DISTANCE_SC_STANDARD_DEVS to the standard devs) second is what advantage kit example is.
+            //// Use one of these, first one is current(start with STANDARD_DEVS, and for every
+            // meter of distance past 1 meter,
+            /// add another DISTANCE_SC_STANDARD_DEVS to the standard devs) second is what advantage
+            // kit example is.
             // DISTANCE_SC_STANDARD_DEVS.times(Math.max(0, distanceMeters -
             // 1)).plus(STANDARD_DEVS));
             VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
