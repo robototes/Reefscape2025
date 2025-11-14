@@ -116,14 +116,15 @@ public class Robot extends TimedRobot {
     if (subsystems.visionSubsystem != null) {
       subsystems.visionSubsystem.update();
     }
-    LimelightHelpers.setPipelineIndex("", 0);
-    LimelightHelpers.setLEDMode_PipelineControl("");
-    // Force LEDs on/off/blink
-    LimelightHelpers.setLEDMode_ForceOn("");
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    if (subsystems.visionSubsystem != null) {
+      LimelightHelpers.setPipelineIndex(Hardware.LEFT_LIMELIGHT, 0);
+      LimelightHelpers.setPipelineIndex(Hardware.RIGHT_LIMELIGHT, 0);
+    }
+  }
 
   @Override
   public void disabledPeriodic() {}
