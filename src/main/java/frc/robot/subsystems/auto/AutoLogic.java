@@ -36,6 +36,7 @@ public class AutoLogic {
   public static final Subsystems s = r.subsystems;
   public static final Controls controls = r.controls;
   public static final boolean RUN_MEASUREMENT_AUTO = true;
+
   public static enum StartPosition {
     FAR_LEFT_CAGE(
         "Far Left Cage", new Pose2d(7.187, 7.277, new Rotation2d(Units.degreesToRadians(-90)))),

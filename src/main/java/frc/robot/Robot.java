@@ -145,7 +145,9 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     Shuffleboard.startRecording();
-    if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.getSelectedAuto() != null && !AutoLogic.RUN_MEASUREMENT_AUTO) {
+    if (SubsystemConstants.DRIVEBASE_ENABLED
+        && AutoLogic.getSelectedAuto() != null
+        && !AutoLogic.RUN_MEASUREMENT_AUTO) {
       AutoLogic.getSelectedAuto().schedule();
     }
     if (subsystems.climbPivotSubsystem != null) {
