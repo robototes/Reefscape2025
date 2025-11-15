@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.Units;
@@ -107,8 +108,10 @@ public class ElevatorSubsystem extends SubsystemBase {
   private final Debouncer notConnectedDebouncerTwo = new Debouncer(.1, DebounceType.kBoth);
   private  StructPublisher<Pose3d> elevatorPose3d = NetworkTableInstance.getDefault().getStructTopic("elevator/heightPose", Pose3d.struct).publish();
   public  StructPublisher<Pose3d> TESTpose = NetworkTableInstance.getDefault().getStructTopic("debug/TEST", Pose3d.struct).publish();
-  public  StructPublisher<Pose3d> TESTpose2 = NetworkTableInstance.getDefault().getStructTopic("debug/TEST2", Pose3d.struct).publish();
-    
+  //public  StructPublisher<Pose3d> TESTpose2 = NetworkTableInstance.getDefault().getStructTopic("debug/TEST2", Pose3d.struct).publish();
+
+
+
   // Creates a SysIdRoutine
   SysIdRoutine routine =
       new SysIdRoutine(
@@ -126,7 +129,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     Shuffleboard.getTab("Elevator").addDouble("Motor Current Position", () -> getCurrentPosition());
     //Elevator pose test
-  
+
     Shuffleboard.getTab("Elevator").addDouble("Target Position", () -> getTargetPosition());
     Shuffleboard.getTab("Elevator")
         .addDouble("M1 supply current", () -> m_motor.getSupplyCurrent().getValueAsDouble());
@@ -153,7 +156,16 @@ public class ElevatorSubsystem extends SubsystemBase {
             "M2 at reverse softstop", () -> m_motor2.getFault_ReverseSoftLimit().getValue());
     Shuffleboard.getTab("Elevator")
         .addDouble("Elevator Speed", () -> m_motor.getVelocity().getValueAsDouble());
-      
+
+    // Test commands
+    Shuffleboard.getTab("Elevator")
+        .add("Move to Level Four", setLevel(CORAL_LEVEL_FOUR_PRE_POS));
+    Shuffleboard.getTab("Elevator")
+        .add("Move to Level Three", setLevel(CORAL_LEVEL_THREE_PRE_POS));
+    Shuffleboard.getTab("Elevator")
+        .add("Move to Level Two", setLevel(CORAL_LEVEL_TWO_PRE_POS));
+    Shuffleboard.getTab("Elevator")
+        .add("Move to Level One", setLevel(CORAL_LEVEL_ONE_POS));
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
@@ -295,6 +307,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     return runOnce(
             () -> {
               if (hasBeenZeroed) {
+                System.out.println("Setting elevator level to: " + pos);
                 m_motor.setControl(m_request.withPosition(pos));
                 m_motor2.setControl(new Follower(m_motor.getDeviceID(), true));
                 targetPos = pos;
@@ -394,28 +407,24 @@ public class ElevatorSubsystem extends SubsystemBase {
     NotConnectedError2.set(
         notConnectedDebouncerTwo.calculate(!m_motor2.getMotorVoltage().hasUpdated()));
     if (RobotBase.isSimulation()) {
-      if (!Robot.getInstance().sensors.armSensor.booleanInClaw()) {    
-       }
-      m_motorOneSimState.setRawRotorPosition(targetPos);
-      m_motorTwoSimState.setRawRotorPosition(targetPos);
-    elevatorPose3d.set(new Pose3d(0.0, 0.0, getHeightMeters(), new Rotation3d()));
-  
-    double targetZ = (getCurrentPosition()/ MOTOR_ROTATIONS_PER_METER);
-    smoothedAngleZ += (targetZ - smoothedAngleZ) * smoothingFactor;
-  
-    TESTpose.set(new Pose3d(
-      0.2, 0.0, smoothedAngleZ * 5.5,
-      new Rotation3d(0.0, 0.0, -135)));
-      //TESTpose.set(new Pose3d(
-        //0.2, 0.0, (getHeightMeters() + getTargetPosition() - getCurrentPosition()),
-       // new Rotation3d(0.0, 0.0, -135)));
-  
+        if (!Robot.getInstance().sensors.armSensor.booleanInClaw()) {
+        }
+        m_motorOneSimState.setRawRotorPosition(targetPos);
+        m_motorTwoSimState.setRawRotorPosition(targetPos);
+        //elevatorPose3d.set(new Pose3d(0.0, 0.0, getHeightMeters(), new Rotation3d()));
 
-  
-    TESTpose2.set(new Pose3d(0.0,0.0,0.0,new  Rotation3d(0.0,Math.sin((Timer.getFPGATimestamp())),0.0)));
-    
-    
+        double curPos = getCurrentPosition();
+        double smoothingFactor = 0.5;// Percentage Scaler
+        double bottomZ = 0.2;
+        double topZ = 1.55;
+        double minPos = 0.0;
+        double maxPos = 37.5;
+        double targetZ = (bottomZ + ((curPos - minPos) / (maxPos - minPos)) * (topZ - bottomZ));
+
+        TESTpose.set(new Pose3d(
+          0.2, 0.0, targetZ,
+          new Rotation3d(0.0, 0.0, -135)));
     }
-    
+
   }
 }
