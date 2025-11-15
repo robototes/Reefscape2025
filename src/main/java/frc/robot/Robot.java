@@ -42,7 +42,7 @@ public class Robot extends TimedRobot {
   public final Sensors sensors;
   public final SuperStructure superStructure;
   private final PowerDistribution PDH;
-
+  private AutoFactory autoFactory;
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
 
@@ -55,6 +55,12 @@ public class Robot extends TimedRobot {
 
     sensors = new Sensors();
     subsystems = new Subsystems(sensors);
+    autoFactory = new AutoFactory(
+			subsystems.drivebaseSubsystem::getPose,
+      subsystems.drivebaseSubsystem::resetPose,
+      subsystems.drivebaseSubsystem::followChoreoTrajectory,
+				AllianceUtils.isBlue(),
+				subsystems.drivebaseSubsystem);
     if (SubsystemConstants.DRIVEBASE_ENABLED) {
       AutoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
     }

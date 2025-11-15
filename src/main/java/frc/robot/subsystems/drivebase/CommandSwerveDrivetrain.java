@@ -285,6 +285,9 @@ public PIDController headingController;
   public ChassisSpeeds returnSpeeds() {
     return getState().Speeds;
   }
+  public double getPose() {
+    return getState().Pose;  //For AutoFactory constructor
+  }
 
   // method for on-demand coasting control
   public Command coastMotors() {
