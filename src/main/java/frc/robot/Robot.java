@@ -5,6 +5,11 @@
 package frc.robot;
 
 import au.grapplerobotics.CanBridge;
+import choreo.auto.AutoFactory;
+import choreo.auto.AutoRoutine;
+import choreo.auto.AutoTrajectory;
+
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.RobotCentric;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -17,12 +22,15 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Subsystems.SubsystemConstants;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoBuilderConfig;
 import frc.robot.subsystems.auto.AutoLogic;
 import frc.robot.subsystems.auto.AutonomousField;
+import frc.robot.util.AllianceUtils;
 import frc.robot.util.BuildInfo;
 import frc.robot.util.MatchTab;
 import frc.robot.util.RobotType;
@@ -55,12 +63,7 @@ public class Robot extends TimedRobot {
 
     sensors = new Sensors();
     subsystems = new Subsystems(sensors);
-    autoFactory = new AutoFactory(
-			subsystems.drivebaseSubsystem::getPose,
-      subsystems.drivebaseSubsystem::resetPose,
-      subsystems.drivebaseSubsystem::followChoreoTrajectory,
-				AllianceUtils.isBlue(),
-				subsystems.drivebaseSubsystem);
+    autoFactory = subsystems.drivebaseSubsystem.createAutoFactory();
     if (SubsystemConstants.DRIVEBASE_ENABLED) {
       AutoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
     }
@@ -151,11 +154,18 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     Shuffleboard.startRecording();
     if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.getSelectedAuto() != null) {
-      AutoLogic.getSelectedAuto().schedule();
+      //AutoLogic.getSelectedAuto().schedule();
+      runRoutine("Four L4 Coral").schedule();
     }
     if (subsystems.climbPivotSubsystem != null) {
       subsystems.climbPivotSubsystem.moveCompleteFalse();
     }
+  }
+  public Command runRoutine(String name) {
+    AutoRoutine routine = autoFactory.newRoutine(name);
+    AutoTrajectory coralPath =   routine.trajectory(name);
+    routine.active().onTrue(Commands.sequence(coralPath.resetOdometry().andThen(coralPath.cmd())));
+  return routine.cmd();
   }
 
   @Override

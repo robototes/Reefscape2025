@@ -10,6 +10,7 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
 
+import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 import choreo.trajectory.TrajectorySample;
@@ -285,7 +286,17 @@ public PIDController headingController;
   public ChassisSpeeds returnSpeeds() {
     return getState().Speeds;
   }
-  public double getPose() {
+  public AutoFactory createAutoFactory() {
+ return new AutoFactory(
+ () -> getState().Pose,
+ this::resetPose,
+ this::followTrajectory,
+ true,
+ this
+ );
+ }
+
+  public Pose2d getPose() {
     return getState().Pose;  //For AutoFactory constructor
   }
 
