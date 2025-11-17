@@ -50,7 +50,7 @@ public class AutoLogic {
     MISC("Misc", null);
 
     final String title; // for shuffleboard display
-    final Pose2d startPose; // for identifying path's starting positions for filtering
+    public final Pose2d startPose; // for identifying path's starting positions for filtering
 
     StartPosition(String title, Pose2d startPose) {
       this.title = title;
@@ -166,13 +166,13 @@ public class AutoLogic {
           new InstantCommand(() -> controls.vibrateDriveController(0.0)));
 
   // shuffleboard
-  private static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
+  public static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
 
-  private static SendableChooser<StartPosition> startPositionChooser =
+  public static SendableChooser<StartPosition> startPositionChooser =
       new SendableChooser<StartPosition>();
-  private static DynamicSendableChooser<String> availableAutos =
+  public static DynamicSendableChooser<String> availableAutos =
       new DynamicSendableChooser<String>();
-  private static SendableChooser<Integer> gameObjects = new SendableChooser<Integer>();
+  public static SendableChooser<Integer> gameObjects = new SendableChooser<Integer>();
   private static SendableChooser<Boolean> isVision = new SendableChooser<Boolean>();
 
   private static GenericEntry autoDelayEntry;
@@ -206,11 +206,24 @@ public class AutoLogic {
       throws FileVersionException, IOException, ParseException {
     // Load the path you want to follow using its name in the GUI
     PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-
     // Create a path following command using AutoBuilder. This will also trigger event markers.
     return AutoBuilder.followPath(path);
   }
+  
+public static Command testAuto() throws FileVersionException, IOException, ParseException {
 
+  return Commands.sequence( AutoBuilder.resetOdom(getResetPose("OSM to F")).andThen(getAutoCommand("OSM to F")).andThen(scoreCommand()).andThen(Commands.parallel(getAutoCommand("F to RSF")).
+  alongWith(readyIntakeCommand())).andThen(isCollected()).andThen(Commands.sequence(getAutoCommand("RSF to E")).alongWith(intakeCommand())).
+  andThen(scoreCommand()).andThen(readyIntakeCommand()));
+
+  
+
+
+}
+public static Pose2d getResetPose(String path) throws FileVersionException, IOException, ParseException {
+  PathPlannerPath planner = PathPlannerPath.fromPathFile(path);
+  return planner.getStartingDifferentialPose();
+}
   public static void initShuffleBoard() {
     startPositionChooser.setDefaultOption(StartPosition.MISC.title, StartPosition.MISC);
     for (StartPosition startPosition : StartPosition.values()) {
