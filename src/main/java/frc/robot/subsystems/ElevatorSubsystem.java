@@ -5,10 +5,12 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
@@ -52,6 +54,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double CORAL_QUICK_INTAKE = 1.6;
   public static final double MIN_EMPTY_GROUND_INTAKE = 4.5;
   public static final double MIN_FULL_GROUND_INTAKE = 8.0;
+  private static final double MOTOR_ROTATIONS_PER_METER = 19.68; // Inaccurate
   public static final double MANUAL = 0.1;
   private static final double POS_TOLERANCE = 0.1;
   private final double ELEVATOR_KP = 7.804;
@@ -72,8 +75,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private TalonFX m_motor;
   private TalonFX m_motor2;
 
-  private final TalonFXSimState m_motorOneSimState;
-  private final TalonFXSimState m_motorTwoSimState;
+  private final ElevatorSubsystemSim m_elevatorSimLogic;
 
   private double curPos;
   private double targetPos;
@@ -90,6 +92,14 @@ public class ElevatorSubsystem extends SubsystemBase {
       new Alert("Elevator", "Motor 2 not connected", AlertType.kError);
   private final Debouncer notConnectedDebouncerOne = new Debouncer(.1, DebounceType.kBoth);
   private final Debouncer notConnectedDebouncerTwo = new Debouncer(.1, DebounceType.kBoth);
+  private StructPublisher<Pose3d> elevatorPose3d =
+      NetworkTableInstance.getDefault()
+          .getStructTopic("elevator/heightPose", Pose3d.struct)
+          .publish();
+  public StructPublisher<Pose3d> TESTpose =
+      NetworkTableInstance.getDefault().getStructTopic("debug/TEST", Pose3d.struct).publish();
+  // public  StructPublisher<Pose3d> TESTpose2 =
+  // NetworkTableInstance.getDefault().getStructTopic("debug/TEST2", Pose3d.struct).publish();
 
   // Creates a SysIdRoutine
   SysIdRoutine routine =
@@ -102,8 +112,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     // m_encoder.setDistancePerPulse(Constants.kElevatorEncoderDistPerPulse);
     m_motor = new TalonFX(Hardware.ELEVATOR_MOTOR_ONE, "Drivebase");
     m_motor2 = new TalonFX(Hardware.ELEVATOR_MOTOR_TWO, "Drivebase");
-    m_motorOneSimState = m_motor.getSimState();
-    m_motorTwoSimState = m_motor2.getSimState();
+
+    // Create simulation logic - it will handle all sim object creation
+    if (RobotBase.isSimulation()) {
+      m_elevatorSimLogic = new ElevatorSubsystemSim(m_motor, m_motor2, TESTpose);
+    } else {
+      m_elevatorSimLogic = null;
+    }
+
     motorConfigs();
 
     Shuffleboard.getTab("Elevator").addDouble("Motor Current Position", () -> getCurrentPosition());
@@ -133,6 +149,12 @@ public class ElevatorSubsystem extends SubsystemBase {
             "M2 at reverse softstop", () -> m_motor2.getFault_ReverseSoftLimit().getValue());
     Shuffleboard.getTab("Elevator")
         .addDouble("Elevator Speed", () -> m_motor.getVelocity().getValueAsDouble());
+
+    // Test commands
+    Shuffleboard.getTab("Elevator").add("Move to Level Four", setLevel(CORAL_LEVEL_FOUR_PRE_POS));
+    Shuffleboard.getTab("Elevator").add("Move to Level Three", setLevel(CORAL_LEVEL_THREE_PRE_POS));
+    Shuffleboard.getTab("Elevator").add("Move to Level Two", setLevel(CORAL_LEVEL_TWO_PRE_POS));
+    Shuffleboard.getTab("Elevator").add("Move to Level One", setLevel(CORAL_LEVEL_ONE_POS));
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
@@ -249,6 +271,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     return curPos;
   }
 
+  public double getHeightMeters() { // Elevator height converted to Meters
+    return getCurrentPosition() / MOTOR_ROTATIONS_PER_METER;
+  }
+
   private void setCurrentPosition(double pos) {
     m_motor.setPosition(pos);
   }
@@ -273,6 +299,11 @@ public class ElevatorSubsystem extends SubsystemBase {
                 m_motor.setControl(m_request.withPosition(pos));
                 m_motor2.setControl(new Follower(m_motor.getDeviceID(), true));
                 targetPos = pos;
+
+                // Update simulation target
+                if (m_elevatorSimLogic != null) {
+                  m_elevatorSimLogic.setTargetPosition(pos);
+                }
               } else {
                 rumble.accept(0.2);
               }
@@ -367,9 +398,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         notConnectedDebouncerOne.calculate(!m_motor.getMotorVoltage().hasUpdated()));
     NotConnectedError2.set(
         notConnectedDebouncerTwo.calculate(!m_motor2.getMotorVoltage().hasUpdated()));
-    if (RobotBase.isSimulation()) {
-      m_motorOneSimState.setRawRotorPosition(targetPos);
-      m_motorTwoSimState.setRawRotorPosition(targetPos);
+
+    if (m_elevatorSimLogic != null) {
+      m_elevatorSimLogic.updateSimulation(getCurrentPosition());
     }
   }
 }

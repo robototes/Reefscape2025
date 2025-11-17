@@ -15,6 +15,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
@@ -144,6 +145,10 @@ public class ArmPivot extends SubsystemBase {
     }
     var curPos = motor.getPosition();
     return curPos.getValueAsDouble();
+  }
+
+  public Rotation2d getAngle() { // 0 is forward, + is up
+    return Rotation2d.fromRotations(getCurrentPosition());
   }
 
   /*  moves arm to the input position
