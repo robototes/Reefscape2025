@@ -111,7 +111,8 @@ public class AutoLogic {
           new AutoPath("MRSF_G-F_WithWait", "MRSF_G-F_WithWait"),
           new AutoPath("MRSF_G-H", "MRSF_G-H"),
           new AutoPath("MLSF_H-K_Cooking", "MLSF_H-K_Cooking"),
-          new AutoPath("MLSF_H-G", "MLSF_H-G"));
+          new AutoPath("MLSF_H-G", "MLSF_H-G"),
+          new AutoPath("Double-Bump-JK", "Double-Bump-JK"));
 
   private static List<AutoPath> threePiecePaths =
       List.of(

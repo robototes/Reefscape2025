@@ -79,7 +79,10 @@ public class SuperStructure {
           Commands.waitUntil(() -> !score.getAsBoolean()),
           Commands.waitUntil(ipScore).until(score));
     } else {
-      return command.repeatedly().onlyWhile(armSensor.inClaw());
+      return Commands.parallel(
+          Commands.sequence(
+              spinnyClaw.coralGripIntakePower(), Commands.waitSeconds(0.05), spinnyClaw.stop()),
+          command.repeatedly().onlyWhile(armSensor.inClaw()));
     }
   }
 

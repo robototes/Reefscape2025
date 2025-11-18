@@ -24,7 +24,7 @@ public class BargeAlign extends Command {
 
   private final SwerveRequest.FieldCentric blackLineDriveRequest =
       new SwerveRequest.FieldCentric()
-          .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+          .withDriveRequestType(DriveRequestType.Velocity)
           .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
   public static boolean atScoringXPosition(CommandSwerveDrivetrain drivebasesubsystem) {
@@ -45,7 +45,7 @@ public class BargeAlign extends Command {
       new SwerveRequest.FieldCentric()
           .withDeadband(0.0001)
           .withRotationalDeadband(0.0001)
-          .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+          .withDriveRequestType(DriveRequestType.Velocity)
           .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
   private static final double xBargeDriveSpeed = 1.5;

@@ -195,7 +195,7 @@ public class AutoAlign {
 
     private final SwerveRequest.FieldCentric driveRequest =
         new SwerveRequest.FieldCentric() // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+            .withDriveRequestType(DriveRequestType.Velocity)
             .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
     public AutoAlignCommand(CommandSwerveDrivetrain drive, Controls controls, AlignType type) {
