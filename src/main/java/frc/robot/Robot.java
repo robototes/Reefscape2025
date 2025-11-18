@@ -156,6 +156,7 @@ public class Robot extends TimedRobot {
     if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.RUN_MEASUREMENT_AUTO) {
       WheelRadiusCharacterization.wheelRadiusCharacterizationCommand(subsystems.drivebaseSubsystem)
           .schedule();
+      System.out.println("MEASURING ITTTT");
     }
   }
 
