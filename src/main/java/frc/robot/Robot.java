@@ -40,6 +40,8 @@ import frc.robot.subsystems.auto.AutoBuilderConfig;
 import frc.robot.subsystems.auto.AutoLogic;
 import frc.robot.subsystems.auto.AutoLogic.StartPosition;
 import frc.robot.subsystems.auto.AutonomousField;
+import frc.robot.subsystems.auto.AutoAlign.AlignType;
+import frc.robot.subsystems.auto.AutoAlign.AutoAlignCommand;
 import frc.robot.util.AllianceUtils;
 import frc.robot.util.BuildInfo;
 import frc.robot.util.MatchTab;
@@ -171,15 +173,8 @@ public class Robot extends TimedRobot {
       
    
      
-    runRoutine("finish").cmd().schedule();
-    if (runRoutine("finish").cmd().isScheduled()) {
-      System.out.println(
-      " IT IS SHCEDULD"
-      );
-
-    }
-    System.out.println(runRoutine("finish").cmd());
- 
+    runRoutine("TESTAUTO").cmd().schedule();
+    
     if (subsystems.climbPivotSubsystem != null) {
       subsystems.climbPivotSubsystem.moveCompleteFalse();
     }
@@ -189,8 +184,12 @@ public class Robot extends TimedRobot {
     AutoRoutine routine = autoFactory.newRoutine(name);
     ROUTINE = name;
     AutoTrajectory coralPath =   routine.trajectory(name);
+   
     routine.active().onTrue(Commands.sequence(coralPath.resetOdometry().andThen(coralPath.cmd())));
-    coralPath.atTime("AutoAlign").onTrue( AutoAlign.autoAlign(subsystems.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB));
+    coralPath.atTime("AutoAlign").onTrue(AutoAlign.autoAlign(subsystems.drivebaseSubsystem, controls, AlignType.ALLB));
+
+
+
   return routine;
   }
   public String getRoutineName() {
