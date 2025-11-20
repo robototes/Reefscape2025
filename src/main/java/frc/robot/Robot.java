@@ -40,6 +40,7 @@ import frc.robot.subsystems.auto.AutoBuilderConfig;
 import frc.robot.subsystems.auto.AutoLogic;
 import frc.robot.subsystems.auto.AutoLogic.StartPosition;
 import frc.robot.subsystems.auto.AutonomousField;
+import frc.robot.subsystems.auto.Routines;
 import frc.robot.util.AllianceUtils;
 import frc.robot.util.BuildInfo;
 import frc.robot.util.MatchTab;
@@ -60,7 +61,7 @@ public class Robot extends TimedRobot {
   public final Sensors sensors;
   public final SuperStructure superStructure;
   private final PowerDistribution PDH;
-  private AutoFactory autoFactory;
+  public AutoFactory autoFactory;
   private String ROUTINE = "";
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
@@ -170,50 +171,17 @@ public class Robot extends TimedRobot {
       //AutoLogic.getSelectedAuto().schedule();
       
    
-     
-    runRoutine("finish").cmd().schedule();
-    if (runRoutine("finish").cmd().isScheduled()) {
-      System.out.println(
-      " IT IS SHCEDULD"
-      );
+  new Routines().runRoutine().schedule();
 
-    }
-    System.out.println(runRoutine("finish").cmd());
  
     if (subsystems.climbPivotSubsystem != null) {
       subsystems.climbPivotSubsystem.moveCompleteFalse();
     }
   }
 }
-  public AutoRoutine runRoutine(String name) {
-    AutoRoutine routine = autoFactory.newRoutine(name);
-    ROUTINE = name;
-    AutoTrajectory coralPath =   routine.trajectory(name);
-    routine.active().onTrue(Commands.sequence(coralPath.resetOdometry().andThen(coralPath.cmd())));
-    coralPath.atTime("AutoAlign").onTrue( AutoAlign.autoAlign(subsystems.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB));
-  return routine;
-  }
-  public String getRoutineName() {
-    return  ROUTINE;
-  }
-  /*public Command runRoutine() {
-  AutoRoutine routine = autoFactory.newRoutine("test");
-    AutoTrajectory preloadScore =   routine.trajectory("finish");
-    AutoTrajectory coralStation =   routine.trajectory("YSM");
-    AutoTrajectory secondScore =   routine.trajectory("station");
-    routine.active().onTrue(Commands.sequence(preloadScore.resetOdometry(), 
-    preloadScore.cmd()));
-
-    preloadScore.atTime("AutoAlign").onTrue(AutoLogic.scoreCommand());
-    preloadScore.done().onTrue(coralStation.cmd());
-    coralStation.atTime("readyIntake").onTrue(AutoLogic.readyIntakeCommand());
-    coralStation.atTime("collect").onTrue(AutoLogic.isCollected());
-    coralStation.done().onTrue(secondScore.cmd());
-secondScore.atTime("scoreCommand").onTrue(AutoLogic.scoreCommand());
-    return routine.cmd();
-}*/
-
   
+
+
     
    
 
