@@ -182,6 +182,98 @@ public class AutoAlign {
   private static final Pose2d rRedReefFaceKL =
       aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(l1RightOfReef);
 
+      private static List blueAllianceList = List.of(
+            blueBranchA,
+            blueBranchB,
+            blueBranchC,
+            blueBranchD,
+            blueBranchE,
+            blueBranchF,
+            blueBranchG,
+            blueBranchH,
+            blueBranchI,
+            blueBranchJ,
+            blueBranchK,
+            blueBranchL);
+
+    private static List redAllianceList = List.of(
+            redBranchA,
+            redBranchB,
+            redBranchC,
+            redBranchD,
+            redBranchE,
+            redBranchF,
+            redBranchG,
+            redBranchH,
+            redBranchI,
+            redBranchJ,
+            redBranchK,
+            redBranchL);
+
+    private static List blueAllianceLeftList = List.of(
+            blueBranchA, 
+            blueBranchC, 
+            blueBranchE, 
+            blueBranchG, 
+            blueBranchI, 
+            blueBranchK);
+
+    private static List redAllianceLeftList = List.of(
+            redBranchA, 
+            redBranchC, 
+            redBranchE, 
+            redBranchG, 
+            redBranchI, 
+            redBranchK);
+
+    private static List blueAllianceRightList = List.of(
+            blueBranchB, 
+            blueBranchD, 
+            blueBranchF, 
+            blueBranchH, 
+            blueBranchJ, 
+            blueBranchL);
+
+    private static List redAllianceRightList = List.of(
+            redBranchB, 
+            redBranchD, 
+            redBranchF, 
+            redBranchH, 
+            redBranchJ, 
+            redBranchL);
+
+    private static List blueAllianceL1LeftList = List.of(
+            lBlueReefFaceAB,
+            lBlueReefFaceCD,
+            lBlueReefFaceEF,
+            lBlueReefFaceGH,
+            lBlueReefFaceIJ,
+            lBlueReefFaceKL);
+
+    private static List redAllianceL1LeftList = List.of(
+            lRedReefFaceAB,
+            lRedReefFaceCD,
+            lRedReefFaceEF,
+            lRedReefFaceGH,
+            lRedReefFaceIJ,
+            lRedReefFaceKL);
+
+    private static List blueAllianceL1RightList = List.of(
+            rBlueReefFaceAB,
+            rBlueReefFaceCD,
+            rBlueReefFaceEF,
+            rBlueReefFaceGH,
+            rBlueReefFaceIJ,
+            rBlueReefFaceKL);
+
+    private static List redAllianceL1RightList = List.of(
+            rRedReefFaceAB,
+            rRedReefFaceCD,
+            rRedReefFaceEF,
+            rRedReefFaceGH,
+            rRedReefFaceIJ,
+            rRedReefFaceKL);
+
   private static class AutoAlignCommand extends Command {
 
     protected final PIDController pidX = new PIDController(4, 0, 0);
@@ -255,103 +347,20 @@ public class AutoAlign {
     }
 
     public static Pose2d getTargetPose(Pose2d pose, AlignType type) {
-      return switch (type) {
-        case LEFTB -> getNearestLeftBranch(pose);
-        case RIGHTB -> getNearestRightBranch(pose);
-        case L1LB -> getNearestL1L(pose);
-        case L1RB -> getNearestL1R(pose);
-        case ALLB -> getNearestBranch(pose);
-      };
+        return switch (type) {
+            case LEFTB -> getNearestBranch(pose, blueAllianceLeftList, redAllianceLeftList);
+            case RIGHTB -> getNearestBranch(pose, blueAllianceRightList, redAllianceRightList);
+            case L1LB -> getNearestBranch(pose, blueAllianceL1LeftList, redAllianceL1LeftList);
+            case L1RB -> getNearestBranch(pose, blueAllianceL1RightList, redAllianceL1RightList);
+            case ALLB -> getNearestBranch(pose, blueAllianceList, redAllianceList);
+        };
     }
 
-    private static Pose2d getNearestBranch(Pose2d p) {
-      List<Pose2d> branchPose2ds =
-          AllianceUtils.isBlue()
-              ? List.of(
-                  blueBranchA,
-                  blueBranchB,
-                  blueBranchC,
-                  blueBranchD,
-                  blueBranchE,
-                  blueBranchF,
-                  blueBranchG,
-                  blueBranchH,
-                  blueBranchI,
-                  blueBranchJ,
-                  blueBranchK,
-                  blueBranchL)
-              : List.of(
-                  redBranchA,
-                  redBranchB,
-                  redBranchC,
-                  redBranchD,
-                  redBranchE,
-                  redBranchF,
-                  redBranchG,
-                  redBranchH,
-                  redBranchI,
-                  redBranchJ,
-                  redBranchK,
-                  redBranchL);
-      return p.nearest(branchPose2ds);
-    }
-
-    private static Pose2d getNearestLeftBranch(Pose2d p) {
-      List<Pose2d> branchPose2ds =
-          AllianceUtils.isBlue()
-              ? List.of(
-                  blueBranchA, blueBranchC, blueBranchE, blueBranchG, blueBranchI, blueBranchK)
-              : List.of(redBranchA, redBranchC, redBranchE, redBranchG, redBranchI, redBranchK);
-      return p.nearest(branchPose2ds);
-    }
-
-    private static Pose2d getNearestRightBranch(Pose2d p) {
-      List<Pose2d> branchPose2ds =
-          AllianceUtils.isBlue()
-              ? List.of(
-                  blueBranchB, blueBranchD, blueBranchF, blueBranchH, blueBranchJ, blueBranchL)
-              : List.of(redBranchB, redBranchD, redBranchF, redBranchH, redBranchJ, redBranchL);
-      return p.nearest(branchPose2ds);
-    }
-
-    private static Pose2d getNearestL1L(Pose2d p) {
-      List<Pose2d> reefFacesPose2ds =
-          AllianceUtils.isBlue()
-              ? List.of(
-                  lBlueReefFaceAB,
-                  lBlueReefFaceCD,
-                  lBlueReefFaceEF,
-                  lBlueReefFaceGH,
-                  lBlueReefFaceIJ,
-                  lBlueReefFaceKL)
-              : List.of(
-                  lRedReefFaceAB,
-                  lRedReefFaceCD,
-                  lRedReefFaceEF,
-                  lRedReefFaceGH,
-                  lRedReefFaceIJ,
-                  lRedReefFaceKL);
-      return p.nearest(reefFacesPose2ds);
-    }
-
-    private static Pose2d getNearestL1R(Pose2d p) {
-      List<Pose2d> reefFacesPose2ds =
-          AllianceUtils.isBlue()
-              ? List.of(
-                  rBlueReefFaceAB,
-                  rBlueReefFaceCD,
-                  rBlueReefFaceEF,
-                  rBlueReefFaceGH,
-                  rBlueReefFaceIJ,
-                  rBlueReefFaceKL)
-              : List.of(
-                  rRedReefFaceAB,
-                  rRedReefFaceCD,
-                  rRedReefFaceEF,
-                  rRedReefFaceGH,
-                  rRedReefFaceIJ,
-                  rRedReefFaceKL);
-      return p.nearest(reefFacesPose2ds);
+    private static Pose2d getNearestBranch(Pose2d p, List list1, List list2) {
+        List <Pose2d> branchPose2ds = AllianceUtils.isBlue()
+                ? list1
+                : list2;
+        return p.nearest(branchPose2ds);
     }
   }
 }
