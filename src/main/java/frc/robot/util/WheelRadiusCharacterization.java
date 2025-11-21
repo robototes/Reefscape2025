@@ -1,6 +1,5 @@
 package frc.robot.util;
 
-import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,14 +29,9 @@ public class WheelRadiusCharacterization {
               Math.hypot(
                   CompTunerConstants.BackRight.LocationX, CompTunerConstants.BackRight.LocationY)));
 
-  // get the encoder positions of the swerve modules
+  // get the wheel rotation positions of the swerve modules
   public static double[] getWheelRadiusCharacterizationPositions(CommandSwerveDrivetrain drive) {
-    double[] values = new double[4];
-    SwerveDriveState states = drive.getState();
-    for (int i = 0; i < 4; i++) {
-      values[i] = states.ModulePositions[i].angle.getRadians();
-    }
-    return values;
+    return drive.getWheelRotations();
   }
 
   public static Command wheelRadiusCharacterizationCommand(CommandSwerveDrivetrain drive) {
@@ -94,6 +88,7 @@ public class WheelRadiusCharacterization {
                           for (int i = 0; i < 4; i++) {
                             wheelDelta += Math.abs(positions[i] - state.positions[i]) / 4.0;
                           }
+                          wheelDelta *= 2 * Math.PI;
                           double wheelRadius = (state.gyroDelta * DRIVE_BASE_RADIUS) / wheelDelta;
 
                           NumberFormat formatter = new DecimalFormat("#0.000");

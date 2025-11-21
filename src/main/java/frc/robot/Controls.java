@@ -1123,10 +1123,7 @@ public class Controls {
     soloController
         .povUp()
         .onTrue(
-            Commands.runOnce(
-                () ->
-                    WheelRadiusCharacterization.wheelRadiusCharacterizationCommand(
-                        s.drivebaseSubsystem)));
+            WheelRadiusCharacterization.wheelRadiusCharacterizationCommand(s.drivebaseSubsystem));
     // Arm manual
     soloController
         .rightStick()
