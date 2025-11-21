@@ -14,8 +14,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 public class WheelRadiusCharacterization {
-  private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
-  private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
+  private static final double WHEEL_RADIUS_MAX_VELOCITY = 4; // Rad/Sec
+  private static final double WHEEL_RADIUS_RAMP_RATE = 0.5; // Rad/Sec^2
   public static final double DRIVE_BASE_RADIUS =
       Math.max(
           Math.max(
@@ -43,7 +43,6 @@ public class WheelRadiusCharacterization {
   public static Command wheelRadiusCharacterizationCommand(CommandSwerveDrivetrain drive) {
     SlewRateLimiter limiter = new SlewRateLimiter(WHEEL_RADIUS_RAMP_RATE);
     WheelRadiusCharacterizationState state = new WheelRadiusCharacterizationState();
-
     return Commands.parallel(
             // Drive control sequence
             Commands.sequence(
@@ -57,12 +56,12 @@ public class WheelRadiusCharacterization {
                 Commands.run(
                     () -> {
                       double speed = limiter.calculate(WHEEL_RADIUS_MAX_VELOCITY);
+                      System.out.println(speed);
                       // drive.runVelocity(new ChassisSpeeds(0.0, 0.0, speed));
-                      SwerveRequest.ApplyRobotSpeeds driveRequest =
+                      SwerveRequest driveRequest =
                           new SwerveRequest.ApplyRobotSpeeds()
                               .withSpeeds(new ChassisSpeeds(0.0, 0.0, speed));
-
-                      drive.applyRequest(() -> driveRequest);
+                      drive.setControl(driveRequest);
                     },
                     drive)),
 

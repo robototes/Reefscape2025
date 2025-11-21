@@ -1126,8 +1126,7 @@ public class Controls {
             Commands.runOnce(
                 () ->
                     WheelRadiusCharacterization.wheelRadiusCharacterizationCommand(
-                            s.drivebaseSubsystem)
-                        .schedule()));
+                        s.drivebaseSubsystem)));
     // Arm manual
     soloController
         .rightStick()
