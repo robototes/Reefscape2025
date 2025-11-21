@@ -5,8 +5,12 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.DoubleTopic;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import frc.robot.Robot;
 
 /** Simulation logic for the ElevatorSubsystem. */
 public class ElevatorSubsystemSim {
@@ -19,10 +23,10 @@ public class ElevatorSubsystemSim {
   private final TalonFXSimState m_motorOneSimState;
   private final TalonFXSimState m_motorTwoSimState;
   private final StructPublisher<Pose3d> m_posePublisher;
-
+  public DoubleTopic arm_Pivot = NetworkTableInstance.getDefault().getDoubleTopic("Arm Pivot");
   private double simTargetHeightMeters = 0.0;
   private double simPreviousError = 0.0;
-
+  final DoubleSubscriber dblSub;
   /**
    * Constructor for the elevator simulation. Creates all simulation objects internally.
    *
@@ -36,7 +40,7 @@ public class ElevatorSubsystemSim {
     this.m_motorOneSimState = motor1.getSimState();
     this.m_motorTwoSimState = motor2.getSimState();
     this.m_posePublisher = posePublisher;
-
+    dblSub = arm_Pivot.subscribe(0.0);
     // Initialize elevator simulation
     // Elevator specs: ~38 rotations = 1.93 meters (38 / 19.68)
     this.m_elevatorSim =
@@ -104,7 +108,8 @@ public class ElevatorSubsystemSim {
     double maxPos = 37.5;
     double targetZ =
         (bottomZ + ((currentPositionRotations - minPos) / (maxPos - minPos)) * (topZ - bottomZ));
-
-    m_posePublisher.set(new Pose3d(0.2, 0.0, targetZ, new Rotation3d(0.0, 0.0, -135)));
+double wristPos = dblSub.get();
+System.out.println("Wrist pose is:" + wristPos);
+    m_posePublisher.set(new Pose3d(0.2, 0.0, targetZ, new Rotation3d(0.0, 0.0, wristPos)));
   }
 }

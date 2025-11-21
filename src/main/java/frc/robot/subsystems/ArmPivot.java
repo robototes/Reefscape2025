@@ -15,8 +15,14 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.DoubleTopic;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -72,7 +78,7 @@ public class ArmPivot extends SubsystemBase {
 
   // create a Motion Magic request, voltage output
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
-
+  final DoublePublisher dblPub;
   // TalonFX
   private final TalonFX motor;
 
@@ -82,6 +88,8 @@ public class ArmPivot extends SubsystemBase {
   private final Debouncer notConnectedDebouncer = new Debouncer(.1, DebounceType.kBoth);
 
   private final SysIdRoutine routine;
+  public DoubleTopic arm_Pivot =
+      NetworkTableInstance.getDefault().getDoubleTopic("Arm Pivot");
 
   private double targetPos;
 
@@ -99,7 +107,8 @@ public class ArmPivot extends SubsystemBase {
                         .angularPosition(motor.getPosition().getValue())
                         .angularVelocity(motor.getVelocity().getValue()),
                 this));
-    factoryDefaults();
+dblPub = arm_Pivot.publish();
+    factoryDefaults(); 
     logTabs();
   }
 
@@ -232,7 +241,11 @@ public class ArmPivot extends SubsystemBase {
   public void periodic() {
     // Error that ensures the motor is connected
     NotConnectedError.set(notConnectedDebouncer.calculate(!motor.getMotorVoltage().hasUpdated()));
-  }
+    dblPub.set((getAngle().getDegrees()));
+  
+  
+}
+
 }
 //  -Samuel "Big North" Mallick
 //  -Cleaned up and completed by Connor :)
