@@ -28,7 +28,7 @@ public class LLCamera {
     return LimelightHelpers.getTX(name);
   }
 
-  public double getVerticalOffset(String limelightName) {
+  public double getVerticalOffset() {
     return LimelightHelpers.getTY(name);
   }
 
