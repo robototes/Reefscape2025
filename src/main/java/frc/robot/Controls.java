@@ -464,9 +464,8 @@ public class Controls {
                 () -> AutoAlign.poseInPlace(AutoAlign.AlignType.LEFTB))
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_TWO -> superStructure
-            .coralLevelTwo(
-                soloController.rightBumper(),
-                () -> AutoAlign.poseInPlace(AutoAlign.AlignType.LEFTB))
+            .coralLevelTwoAndThree(
+                "2", soloController.rightBumper())
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_ONE -> superStructure
             .coralLevelOne(
