@@ -25,10 +25,10 @@ public class Routines {
     AutoTrajectory coralStation =   routine.trajectory("YSM");
     AutoTrajectory secondScore = routine.trajectory("station");
     routine.active().onTrue(Commands.sequence(preloadScore.resetOdometry(),  
-    preloadScore.cmd(), AutoAlign.autoAlign(subsystems.drivebaseSubsystem, Robot.getInstance().controls, AutoAlign.AlignType.ALLB),
-    coralStation.cmd(),  AutoLogic.isCollected(),
-    secondScore.cmd(),
-    AutoAlign.autoAlign(subsystems.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB)));
+    preloadScore.cmd(), AutoLogic.scoreCommand(),
+    coralStation.cmd().alongWith(AutoLogic.readyIntakeCommand()),  AutoLogic.isCollected(),
+    secondScore.cmd().alongWith(AutoLogic.intakeCommand()),
+AutoLogic.scoreCommand()));
  return routine.cmd();
 }
 
