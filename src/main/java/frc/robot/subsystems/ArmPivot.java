@@ -110,6 +110,9 @@ public class ArmPivot extends SubsystemBase {
 dblPub = arm_Pivot.publish();
     factoryDefaults(); 
     logTabs();
+    Shuffleboard.getTab("Arm Pivot").add("Pivot 90", setTargetPosition(90));
+    Shuffleboard.getTab("Arm Pivot").add("Pivot 0", (setTargetPosition(0)));
+  
   }
 
   // ***ALL COMMANDS*** //

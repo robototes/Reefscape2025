@@ -109,7 +109,7 @@ public class ElevatorSubsystemSim {
     double targetZ =
         (bottomZ + ((currentPositionRotations - minPos) / (maxPos - minPos)) * (topZ - bottomZ));
 double wristPos = dblSub.get();
-System.out.println("Wrist pose is:" + wristPos);
-    m_posePublisher.set(new Pose3d(0.2, 0.0, targetZ, new Rotation3d(0.0, 0.0, wristPos)));
+//System.out.println("Wrist pose is:" + wristPos);
+    m_posePublisher.set(new Pose3d(0.2, 0.0, targetZ, new Rotation3d(-90, wristPos + 90,-135)));
   }
 }
