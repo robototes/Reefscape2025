@@ -6,10 +6,10 @@ import frc.robot.util.LimelightHelpers.RawDetection;
 import frc.robot.util.LimelightHelpers.RawFiducial;
 
 public class LLCamera {
-  private static String name;
+  private final String name;
 
   public LLCamera(String name) {
-    LLCamera.name = name;
+    this.name = name;
   }
 
   public LLCamera() {
