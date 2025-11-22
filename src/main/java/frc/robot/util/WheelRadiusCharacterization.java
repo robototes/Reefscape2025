@@ -28,6 +28,7 @@ public class WheelRadiusCharacterization {
                   CompTunerConstants.BackLeft.LocationX, CompTunerConstants.BackLeft.LocationY),
               Math.hypot(
                   CompTunerConstants.BackRight.LocationX, CompTunerConstants.BackRight.LocationY)));
+  private static final NumberFormat FORMATTER = new DecimalFormat("#0.000");
 
   // get the wheel rotation positions of the swerve modules
   public static double[] getWheelRadiusCharacterizationPositions(CommandSwerveDrivetrain drive) {
@@ -91,18 +92,17 @@ public class WheelRadiusCharacterization {
                           wheelDelta *= 2 * Math.PI;
                           double wheelRadius = (state.gyroDelta * DRIVE_BASE_RADIUS) / wheelDelta;
 
-                          NumberFormat formatter = new DecimalFormat("#0.000");
                           System.out.println(
                               "********** Wheel Radius Characterization Results **********");
                           System.out.println(
-                              "\tWheel Delta: " + formatter.format(wheelDelta) + " radians");
+                              "\tWheel Delta: " + FORMATTER.format(wheelDelta) + " radians");
                           System.out.println(
-                              "\tGyro Delta: " + formatter.format(state.gyroDelta) + " radians");
+                              "\tGyro Delta: " + FORMATTER.format(state.gyroDelta) + " radians");
                           System.out.println(
                               "\tWheel Radius: "
-                                  + formatter.format(wheelRadius)
+                                  + FORMATTER.format(wheelRadius)
                                   + " meters, "
-                                  + formatter.format(Units.metersToInches(wheelRadius))
+                                  + FORMATTER.format(Units.metersToInches(wheelRadius))
                                   + " inches");
                         })))
         .withName("wheel radius characterization");
