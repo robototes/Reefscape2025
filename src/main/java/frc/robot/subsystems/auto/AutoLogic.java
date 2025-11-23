@@ -175,7 +175,7 @@ public class AutoLogic {
   private static SendableChooser<Integer> gameObjects = new SendableChooser<Integer>();
   private static SendableChooser<Boolean> isVision = new SendableChooser<Boolean>();
   public static Command auton;
-  private static GenericEntry autoDelayEntry;
+  public static GenericEntry autoDelayEntry;
 
   /** Registers commands in PathPlanner */
   public static void registerCommands() {
@@ -215,6 +215,7 @@ public class AutoLogic {
     startPositionChooser.setDefaultOption(StartPosition.MISC.title, StartPosition.MISC);
     for (StartPosition startPosition : StartPosition.values()) {
       startPositionChooser.addOption(startPosition.title, startPosition);
+
     }
     
     isVision.setDefaultOption("Presets", false);
@@ -238,7 +239,12 @@ public class AutoLogic {
     isVision.onChange((dummyVar) -> AutoLogic.filterAutos(gameObjects.getSelected()));
     startPositionChooser.onChange((dummyVar) -> AutoLogic.filterAutos(gameObjects.getSelected()));
     gameObjects.onChange((dummyVar) -> AutoLogic.filterAutos(gameObjects.getSelected()));
-    availableAutos.onChange((dummyVar) -> auton = AutoBuilder.buildAuto(namesToAuto.get(availableAutos.getSelected()).getAutoName()));
+    availableAutos.onChange((dummyVar) -> 
+    auton = (availableAutos.getSelected() != defaultPath.getAutoName()) 
+            ? AutoBuilder.buildAuto(namesToAuto.get(availableAutos.getSelected()).getAutoName()) 
+            : defaultPath.getAutoCommand()
+           
+);
   
     filterAutos(gameObjects.getSelected());
   }
@@ -251,7 +257,7 @@ public class AutoLogic {
 
     // filter based off gameobject count
     availableAutos.setDefaultOption(defaultPath.getDisplayName(), defaultPath.getDisplayName());
-
+    
     List<AutoPath> autoCommandsList = commandsMap.get(numGameObjects);
 
     // filter more then add to chooser

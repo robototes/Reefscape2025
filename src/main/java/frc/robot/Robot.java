@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Subsystems.SubsystemConstants;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoBuilderConfig;
@@ -145,7 +146,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     Shuffleboard.startRecording();
     if (SubsystemConstants.DRIVEBASE_ENABLED) {
-      AutoLogic.auton.schedule();
+      Commands.waitSeconds(AutoLogic.autoDelayEntry.get().getDouble()).andThen(AutoLogic.auton).schedule();
+ 
     }
     if (subsystems.climbPivotSubsystem != null) {
       subsystems.climbPivotSubsystem.moveCompleteFalse();
