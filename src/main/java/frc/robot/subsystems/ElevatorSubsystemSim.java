@@ -10,7 +10,6 @@ import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import frc.robot.Robot;
 
 /** Simulation logic for the ElevatorSubsystem. */
 public class ElevatorSubsystemSim {
@@ -27,6 +26,7 @@ public class ElevatorSubsystemSim {
   private double simTargetHeightMeters = 0.0;
   private double simPreviousError = 0.0;
   final DoubleSubscriber dblSub;
+
   /**
    * Constructor for the elevator simulation. Creates all simulation objects internally.
    *
@@ -108,8 +108,8 @@ public class ElevatorSubsystemSim {
     double maxPos = 37.5;
     double targetZ =
         (bottomZ + ((currentPositionRotations - minPos) / (maxPos - minPos)) * (topZ - bottomZ));
-double wristPos = dblSub.get();
-//System.out.println("Wrist pose is:" + wristPos);
-    m_posePublisher.set(new Pose3d(0.2, 0.0, targetZ, new Rotation3d(-90, wristPos,-0)));
+    double wristPos = dblSub.get();
+    // System.out.println("Wrist pose is:" + wristPos);
+    m_posePublisher.set(new Pose3d(0.2, 0.0, targetZ, new Rotation3d(-90, wristPos, -0)));
   }
 }

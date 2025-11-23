@@ -187,7 +187,7 @@ public class AutoAlign {
     public static PIDController pidX = new PIDController(4, 0, 0);
     public static PIDController pidY = new PIDController(4, 0, 0);
     public static PIDController pidRotate = new PIDController(8, 0, 0);
-    
+
     public final CommandSwerveDrivetrain drive;
     protected final Controls controls;
     public Pose2d branchPose;
@@ -263,7 +263,6 @@ public class AutoAlign {
         case ALLB -> getNearestBranch(pose);
       };
     }
-
 
     public static Pose2d getNearestBranch(Pose2d p) {
       List<Pose2d> branchPose2ds =
@@ -354,6 +353,5 @@ public class AutoAlign {
                   rRedReefFaceKL);
       return p.nearest(reefFacesPose2ds);
     }
-    
   }
 }

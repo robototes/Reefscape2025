@@ -2,19 +2,14 @@ package frc.robot.subsystems.drivebase;
 
 import static edu.wpi.first.units.Units.*;
 
+import choreo.auto.AutoFactory;
+import choreo.trajectory.SwerveSample;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.ctre.phoenix6.swerve.SwerveRequest.ApplyFieldSpeeds;
-import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
-
-import choreo.auto.AutoFactory;
-import choreo.trajectory.SwerveSample;
-import choreo.trajectory.Trajectory;
-import choreo.trajectory.TrajectorySample;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -56,13 +51,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization =
       new SwerveRequest.SysIdSwerveRotation();
   /*AutoAlign PID used in constructor for following choreo trajectories */
-private PIDController pidX = AutoAlign.AutoAlignCommand.pidX;
-private PIDController pidY = AutoAlign.AutoAlignCommand.pidY;
-private PIDController pidRotate = AutoAlign.AutoAlignCommand.pidRotate;
-
-
-
-
+  private PIDController pidX = AutoAlign.AutoAlignCommand.pidX;
+  private PIDController pidY = AutoAlign.AutoAlignCommand.pidY;
+  private PIDController pidRotate = AutoAlign.AutoAlignCommand.pidRotate;
 
   /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
   private final SysIdRoutine m_sysIdRoutineTranslation =
@@ -195,30 +186,29 @@ private PIDController pidRotate = AutoAlign.AutoAlignCommand.pidRotate;
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
     return run(() -> this.setControl(requestSupplier.get())).withName("Drivebase applyRequest()");
   }
-    
-     public void followTrajectory(SwerveSample sample) {
-        // Get the current pose of the robot
-        Pose2d pose = this.getState().Pose;
-        //Pose2d branchPose = AutoAlignCommand.getNearestBranch(pose);
-       
-          // Generate the next speeds for the robot
-       
-          ChassisSpeeds speeds = new ChassisSpeeds(
-              sample.vx + pidX.calculate(pose.getX(), sample.x),
-              sample.vy + pidY.calculate(pose.getY(), sample.y),
-              sample.omega + pidRotate.calculate(pose.getRotation().getRadians(), sample.heading)
-          );
- 
-          // Apply the generated speeds
-          this.setControl(new SwerveRequest.ApplyFieldSpeeds().withSpeeds(speeds));
-          
-      
-    }
-public SwerveRequest fieldRelative(ChassisSpeeds speeds) {
-  SwerveRequest req = new SwerveRequest.ApplyFieldSpeeds().withSpeeds(speeds);
-  return req;
-      
-}
+
+  public void followTrajectory(SwerveSample sample) {
+    // Get the current pose of the robot
+    Pose2d pose = this.getState().Pose;
+    // Pose2d branchPose = AutoAlignCommand.getNearestBranch(pose);
+
+    // Generate the next speeds for the robot
+
+    ChassisSpeeds speeds =
+        new ChassisSpeeds(
+            sample.vx + pidX.calculate(pose.getX(), sample.x),
+            sample.vy + pidY.calculate(pose.getY(), sample.y),
+            sample.omega + pidRotate.calculate(pose.getRotation().getRadians(), sample.heading));
+
+    // Apply the generated speeds
+    this.setControl(new SwerveRequest.ApplyFieldSpeeds().withSpeeds(speeds));
+  }
+
+  public SwerveRequest fieldRelative(ChassisSpeeds speeds) {
+    SwerveRequest req = new SwerveRequest.ApplyFieldSpeeds().withSpeeds(speeds);
+    return req;
+  }
+
   /**
    * Runs the SysId Quasistatic test in the given direction for the routine specified by {@link
    * #m_sysIdRoutineToApply}.
@@ -284,18 +274,14 @@ public SwerveRequest fieldRelative(ChassisSpeeds speeds) {
   public ChassisSpeeds returnSpeeds() {
     return getState().Speeds;
   }
+
   public AutoFactory createAutoFactory() {
- return new AutoFactory(
- () -> getState().Pose,
- this::resetPose,
- this::followTrajectory,
- true,
- this
- );
- }
+    return new AutoFactory(
+        () -> getState().Pose, this::resetPose, this::followTrajectory, true, this);
+  }
 
   public Pose2d getPose() {
-    return getState().Pose;  //For AutoFactory constructor
+    return getState().Pose; // For AutoFactory constructor
   }
 
   // method for on-demand coasting control

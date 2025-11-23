@@ -209,21 +209,26 @@ public class AutoLogic {
     // Create a path following command using AutoBuilder. This will also trigger event markers.
     return AutoBuilder.followPath(path);
   }
-  
-public static Command testAuto() throws FileVersionException, IOException, ParseException {
 
-  return Commands.sequence( AutoBuilder.resetOdom(getResetPose("OSM to F")).andThen(getAutoCommand("OSM to F")).andThen(scoreCommand()).andThen(Commands.parallel(getAutoCommand("F to RSF")).
-  alongWith(readyIntakeCommand())).andThen(isCollected()).andThen(Commands.sequence(getAutoCommand("RSF to E")).alongWith(intakeCommand())).
-  andThen(scoreCommand()).andThen(readyIntakeCommand()));
+  public static Command testAuto() throws FileVersionException, IOException, ParseException {
 
-  
+    return Commands.sequence(
+        AutoBuilder.resetOdom(getResetPose("OSM to F"))
+            .andThen(getAutoCommand("OSM to F"))
+            .andThen(scoreCommand())
+            .andThen(Commands.parallel(getAutoCommand("F to RSF")).alongWith(readyIntakeCommand()))
+            .andThen(isCollected())
+            .andThen(Commands.sequence(getAutoCommand("RSF to E")).alongWith(intakeCommand()))
+            .andThen(scoreCommand())
+            .andThen(readyIntakeCommand()));
+  }
 
+  public static Pose2d getResetPose(String path)
+      throws FileVersionException, IOException, ParseException {
+    PathPlannerPath planner = PathPlannerPath.fromPathFile(path);
+    return planner.getStartingDifferentialPose();
+  }
 
-}
-public static Pose2d getResetPose(String path) throws FileVersionException, IOException, ParseException {
-  PathPlannerPath planner = PathPlannerPath.fromPathFile(path);
-  return planner.getStartingDifferentialPose();
-}
   public static void initShuffleBoard() {
     startPositionChooser.setDefaultOption(StartPosition.MISC.title, StartPosition.MISC);
     for (StartPosition startPosition : StartPosition.values()) {

@@ -6,19 +6,7 @@ package frc.robot;
 
 import au.grapplerobotics.CanBridge;
 import choreo.auto.AutoFactory;
-import choreo.auto.AutoRoutine;
-import choreo.auto.AutoTrajectory;
-
-import java.io.IOException;
-
-import org.json.simple.parser.ParseException;
-
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.RobotCentric;
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathCommand;
-import com.pathplanner.lib.util.FileVersionException;
-
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -30,18 +18,13 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Subsystems.SubsystemConstants;
 import frc.robot.subsystems.SuperStructure;
-import frc.robot.subsystems.auto.AutoAlign;
 import frc.robot.subsystems.auto.AutoBuilderConfig;
 import frc.robot.subsystems.auto.AutoLogic;
-import frc.robot.subsystems.auto.AutoLogic.StartPosition;
 import frc.robot.subsystems.auto.AutonomousField;
 import frc.robot.subsystems.auto.Routines;
-import frc.robot.util.AllianceUtils;
 import frc.robot.util.BuildInfo;
 import frc.robot.util.MatchTab;
 import frc.robot.util.RobotType;
@@ -63,6 +46,7 @@ public class Robot extends TimedRobot {
   private final PowerDistribution PDH;
   public AutoFactory autoFactory;
   private String ROUTINE = "";
+
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
 
@@ -78,7 +62,6 @@ public class Robot extends TimedRobot {
     autoFactory = subsystems.drivebaseSubsystem.createAutoFactory();
     if (SubsystemConstants.DRIVEBASE_ENABLED) {
       AutoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
-   
     }
     if (SubsystemConstants.ELEVATOR_ENABLED
         && SubsystemConstants.ARMPIVOT_ENABLED
@@ -162,28 +145,19 @@ public class Robot extends TimedRobot {
       subsystems.elevatorSubsystem.brakeMotors();
     }
   }
-  
 
   @Override
   public void autonomousInit() {
     Shuffleboard.startRecording();
     if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.getSelectedAuto() != null) {
-   
-      
-   
-  new Routines().runRoutine().schedule();
 
- 
-    if (subsystems.climbPivotSubsystem != null) {
-      subsystems.climbPivotSubsystem.moveCompleteFalse();
+      new Routines().runRoutine().schedule();
+
+      if (subsystems.climbPivotSubsystem != null) {
+        subsystems.climbPivotSubsystem.moveCompleteFalse();
+      }
     }
   }
-}
-  
-
-
-    
-   
 
   @Override
   public void autonomousExit() {
