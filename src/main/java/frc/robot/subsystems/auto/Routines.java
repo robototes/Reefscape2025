@@ -14,10 +14,14 @@ public class Routines {
   private AutoFactory autoFactory = Robot.getInstance().autoFactory;
 
   public Command runRoutine() {
-    AutoRoutine routine = autoFactory.newRoutine("test");
+    AutoRoutine routine = autoFactory.newRoutine("I_K_Far_Right_Blue");
     AutoTrajectory preloadScore = routine.trajectory("finish");
     AutoTrajectory coralStation = routine.trajectory("YSM");
     AutoTrajectory secondScore = routine.trajectory("station");
+    AutoTrajectory secondStation = routine.trajectory("K to Station");
+    AutoTrajectory thirdScore = routine.trajectory("Station to L");
+    AutoTrajectory thirdStation = routine.trajectory("L to Station");
+    AutoTrajectory fourthScore = routine.trajectory("Station to A");
     routine
         .active()
         .onTrue(
@@ -35,7 +39,15 @@ public class Routines {
                 Commands.print("secondScore and intaking done"),
                 AutoLogic.scoreCommand(),
                 Commands.print("scoring done!"),
-                Commands.print("routine done!")));
+                 secondStation.cmd().alongWith(AutoLogic.readyIntakeCommand()), Commands.print("secondStation and readied intake done"), AutoLogic.isCollected(),
+                 Commands.print("second collection done"),thirdScore.cmd().alongWith(AutoLogic.intakeCommand()),
+                 Commands.print("third transferred to intake"), AutoLogic.scoreCommand(), Commands.print("thirdscore done"),
+                thirdStation.cmd().alongWith(AutoLogic.readyIntakeCommand()), Commands.print("third statino and readied intake"), AutoLogic.isCollected(),
+                Commands.print("third collection done"),
+                fourthScore.cmd().alongWith(AutoLogic.intakeCommand()), Commands.print("fourth in intake"), AutoLogic.scoreCommand(),  
+                Commands.print("fourthscore done"), Commands.print("ROUTINE DONE!")
+                
+                ));
     return routine.cmd();
   }
 }
