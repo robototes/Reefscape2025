@@ -29,13 +29,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Robot;
-import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.auto.AutoAlign;
-import frc.robot.subsystems.auto.Routines;
-import frc.robot.subsystems.auto.AutoAlign.AutoAlignCommand;
-
-import java.net.Authenticator.RequestorType;
 import java.util.function.Supplier;
 
 /**
@@ -61,14 +55,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       new SwerveRequest.SysIdSwerveSteerGains();
   private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization =
       new SwerveRequest.SysIdSwerveRotation();
-  /*AutoAlign PID used in constructor for folloiwing choreo trajectories */
-public PIDController pidX = AutoAlign.AutoAlignCommand.pidX;
-public PIDController pidY = AutoAlign.AutoAlignCommand.pidX;
-public PIDController pidRotate = AutoAlign.AutoAlignCommand.pidRotate;
-public PIDController headingController;
+  /*AutoAlign PID used in constructor for following choreo trajectories */
+private PIDController pidX = AutoAlign.AutoAlignCommand.pidX;
+private PIDController pidY = AutoAlign.AutoAlignCommand.pidY;
+private PIDController pidRotate = AutoAlign.AutoAlignCommand.pidRotate;
 
-;
-;
+
 
 
 
@@ -218,8 +210,7 @@ public PIDController headingController;
           );
  
           // Apply the generated speeds
-          this.setControl(new SwerveRequest.ApplyFieldSpeeds().withSpeeds(speeds)
-          .withSpeeds(speeds));
+          this.setControl(new SwerveRequest.ApplyFieldSpeeds().withSpeeds(speeds));
           
       
     }

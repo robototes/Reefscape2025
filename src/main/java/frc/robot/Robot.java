@@ -168,7 +168,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     Shuffleboard.startRecording();
     if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.getSelectedAuto() != null) {
-      //AutoLogic.getSelectedAuto().schedule();
+   
       
    
   new Routines().runRoutine().schedule();
