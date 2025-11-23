@@ -68,7 +68,7 @@ public class AutoLogic {
   // paths lists
 
   private static AutoPath defaultPath = new AutoPath("do nothing", "do nothing");
- 
+
   private static List<AutoPath> noPiecePaths =
       List.of(
           new AutoPath("YSW0", "YSW0"),
@@ -215,9 +215,8 @@ public class AutoLogic {
     startPositionChooser.setDefaultOption(StartPosition.MISC.title, StartPosition.MISC);
     for (StartPosition startPosition : StartPosition.values()) {
       startPositionChooser.addOption(startPosition.title, startPosition);
-
     }
-    
+
     isVision.setDefaultOption("Presets", false);
     isVision.addOption("Vision", true);
     gameObjects.setDefaultOption("0", 0);
@@ -239,13 +238,14 @@ public class AutoLogic {
     isVision.onChange((dummyVar) -> AutoLogic.filterAutos(gameObjects.getSelected()));
     startPositionChooser.onChange((dummyVar) -> AutoLogic.filterAutos(gameObjects.getSelected()));
     gameObjects.onChange((dummyVar) -> AutoLogic.filterAutos(gameObjects.getSelected()));
-    availableAutos.onChange((dummyVar) -> 
-    auton = (availableAutos.getSelected() != defaultPath.getAutoName()) 
-            ? AutoBuilder.buildAuto(namesToAuto.get(availableAutos.getSelected()).getAutoName()) 
-            : defaultPath.getAutoCommand()
-           
-);
-  
+    availableAutos.onChange(
+        (dummyVar) ->
+            auton =
+                (availableAutos.getSelected() != defaultPath.getAutoName())
+                    ? AutoBuilder.buildAuto(
+                        namesToAuto.get(availableAutos.getSelected()).getAutoName())
+                    : defaultPath.getAutoCommand());
+
     filterAutos(gameObjects.getSelected());
   }
 
@@ -257,7 +257,7 @@ public class AutoLogic {
 
     // filter based off gameobject count
     availableAutos.setDefaultOption(defaultPath.getDisplayName(), defaultPath.getDisplayName());
-    
+
     List<AutoPath> autoCommandsList = commandsMap.get(numGameObjects);
 
     // filter more then add to chooser
