@@ -182,7 +182,7 @@ public class AutoLogic {
     // param: String commandName, Command command
 
     // Intake
-    NamedCommands.registerCommand("scoreCommand", scoreCommand());
+    NamedCommands.registerCommand("scoreCommand", scoreTestCommand());
     NamedCommands.registerCommand("intake", intakeCommand());
     NamedCommands.registerCommand("isCollected", isCollected());
     NamedCommands.registerCommand("readyIntake", readyIntakeCommand());
@@ -300,6 +300,23 @@ public class AutoLogic {
           AutoAlign.autoAlign(s.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB)
               .repeatedly()
               .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
+              .withName("scoreCommand"),
+          // If false:
+          Commands.none().withName("scoreCommand-empty"),
+          // Condition:
+          () -> ARMSENSOR_ENABLED && r.sensors.armSensor.booleanInClaw());
+    }
+    return AutoAlign.autoAlign(s.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB)
+        .withName("scoreCommand-noSuperstructure");
+  }
+
+  public static Command scoreTestCommand() {
+    if (r.superStructure != null) {
+      return new ConditionalCommand(
+          // If true:
+          AutoAlign.autoAlign(s.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB)
+              .repeatedly()
+              .withDeadline(r.superStructure.coralLevelOne(() -> AutoAlign.readyToScore()))
               .withName("scoreCommand"),
           // If false:
           Commands.none().withName("scoreCommand-empty"),
