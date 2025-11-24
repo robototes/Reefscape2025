@@ -151,7 +151,7 @@ public class Robot extends TimedRobot {
     Shuffleboard.startRecording();
     if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.getSelectedAuto() != null) {
 
-      new Routines().runRoutine().schedule();
+      new Routines().runRoutine2().schedule();
 
       if (subsystems.climbPivotSubsystem != null) {
         subsystems.climbPivotSubsystem.moveCompleteFalse();

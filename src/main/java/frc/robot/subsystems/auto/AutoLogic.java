@@ -320,6 +320,22 @@ public class AutoLogic {
     return AutoAlign.autoAlign(s.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB)
         .withName("scoreCommand-noSuperstructure");
   }
+  public static Command scoreTestCommand() {
+    if (r.superStructure != null) {
+      return new ConditionalCommand(
+          // If true:
+          AutoAlign.autoAlign(s.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB)
+              .repeatedly()
+              .withDeadline(r.superStructure.coralLevelOne(() -> AutoAlign.readyToScore()))
+              .withName("scoreCommand"),
+          // If false:
+          Commands.none().withName("scoreCommand-empty"),
+          // Condition:
+          () -> ARMSENSOR_ENABLED && r.sensors.armSensor.booleanInClaw());
+    }
+    return AutoAlign.autoAlign(s.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB)
+        .withName("scoreCommand-noSuperstructure");
+  }
 
   public static Command algaeCommand23() {
     if (r.superStructure != null) {

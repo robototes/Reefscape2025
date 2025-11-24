@@ -29,7 +29,7 @@ public class Routines {
                 preloadScore.resetOdometry(),
                 preloadScore.cmd(),
                 Commands.print("preloadScore done"),
-                AutoLogic.scoreCommand(),
+                AutoLogic.scoreTestCommand(),
                 Commands.print("Scoring done"),
                 coralStation.cmd().alongWith(AutoLogic.readyIntakeCommand()),
                 Commands.print("coralStation and readying intake done"),
@@ -37,15 +37,43 @@ public class Routines {
                 Commands.print("collection done"),
                 secondScore.cmd().alongWith(AutoLogic.intakeCommand()),
                 Commands.print("secondScore and intaking done"),
-                AutoLogic.scoreCommand(),
+                AutoLogic.scoreTestCommand(),
                 Commands.print("scoring done!"),
                  secondStation.cmd().alongWith(AutoLogic.readyIntakeCommand()), Commands.print("secondStation and readied intake done"), AutoLogic.isCollected(),
                  Commands.print("second collection done"),thirdScore.cmd().alongWith(AutoLogic.intakeCommand()),
-                 Commands.print("third transferred to intake"), AutoLogic.scoreCommand(), Commands.print("thirdscore done"),
+                 Commands.print("third transferred to intake"), AutoLogic.scoreTestCommand(), Commands.print("thirdscore done"),
                 thirdStation.cmd().alongWith(AutoLogic.readyIntakeCommand()), Commands.print("third statino and readied intake"), AutoLogic.isCollected(),
                 Commands.print("third collection done"),
-                fourthScore.cmd().alongWith(AutoLogic.intakeCommand()), Commands.print("fourth in intake"), AutoLogic.scoreCommand(),  
+                fourthScore.cmd().alongWith(AutoLogic.intakeCommand()), Commands.print("fourth in intake"), AutoLogic.scoreTestCommand(),  
                 Commands.print("fourthscore done"), Commands.print("ROUTINE DONE!")
+                
+                ));
+    return routine.cmd();
+  }
+  public Command runRoutine2() {
+    AutoRoutine routine = autoFactory.newRoutine("TRY");
+    AutoTrajectory preloadScore = routine.trajectory("Low to E");
+    AutoTrajectory coralStation = routine.trajectory("E to Station");
+    AutoTrajectory secondScore = routine.trajectory("Station to D");
+    AutoTrajectory secondStation = routine.trajectory("D to Station");
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                preloadScore.resetOdometry(),
+                preloadScore.cmd(),
+                Commands.print("preloadScore done"),
+                AutoLogic.scoreTestCommand(),
+                Commands.print("Scoring done"),
+                coralStation.cmd().alongWith(AutoLogic.readyIntakeCommand()),
+                Commands.print("coralStation and readying intake done"),
+                AutoLogic.isCollected(),
+                Commands.print("collection done"),
+                secondScore.cmd().alongWith(AutoLogic.intakeCommand()),
+                Commands.print("secondScore and intaking done"),
+                AutoLogic.scoreTestCommand(),
+                Commands.print("scoring done!"),
+                 secondStation.cmd().alongWith(AutoLogic.readyIntakeCommand())
                 
                 ));
     return routine.cmd();
