@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
@@ -22,15 +24,17 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
+import frc.robot.util.BetterPoseEstimate;
 import frc.robot.util.LLCamera;
-import frc.robot.util.LimelightHelpers.PoseEstimate;
 import frc.robot.util.LimelightHelpers.RawFiducial;
-import java.util.Optional;
 
 public class VisionSubsystem extends SubsystemBase {
   // Limelight names must match your NT names
   private static final String LIMELIGHT_LEFT = Hardware.LEFT_LIMELIGHT;
   private static final String LIMELIGHT_RIGHT = Hardware.RIGHT_LIMELIGHT;
+  private static final double LINEAR_STD_DEV_FACTOR = 0.02;
+  private static final double STD_DEV_EXPONENT = 1.2;
+  private static final double ANGULAR_STD_DEV_FACTOR = 1.6;
 
   // Deviations
   private static final Vector<N3> STANDARD_DEVS =
@@ -65,8 +69,8 @@ public class VisionSubsystem extends SubsystemBase {
           .publish();
 
   // state
-  private final double lastTimestampSeconds = 0;
-  private double lastRawTimestampSeconds = 0;
+
+  private double lastTimestampSeconds = 0;
   private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
   private double distance = 0;
   private double tagAmbiguity = 0;
@@ -80,16 +84,12 @@ public class VisionSubsystem extends SubsystemBase {
 
     ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("AprilTags");
     shuffleboardTab
-        .addDouble("Last raw timestamp", this::getLastRawTimestampSeconds)
+        .addDouble("Last timestamp", this::getLastTimestampSeconds)
         .withPosition(0, 0)
         .withSize(1, 1);
     shuffleboardTab
         .addInteger("Num targets", this::getNumTargets)
         .withPosition(0, 1)
-        .withSize(1, 1);
-    shuffleboardTab
-        .addDouble("Last timestamp", this::getLastTimestampSeconds)
-        .withPosition(1, 0)
         .withSize(1, 1);
     shuffleboardTab
         .addDouble("april tag distance meters", this::getDistanceToTarget)
@@ -114,43 +114,37 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public void update() {
-
+    processLimelight(leftCamera, rawFieldPose3dEntryLeft);
     RawFiducial[] rawFiducialsL = leftCamera.getRawFiducials();
     if (rawFiducialsL != null) {
       for (RawFiducial rf : rawFiducialsL) {
-        processLimelight(leftCamera, rawFieldPose3dEntryLeft, rf);
+        processFiducials(rf);
       }
     }
+    processLimelight(rightCamera, rawFieldPose3dEntryRight);
     RawFiducial[] rawFiducialsR = rightCamera.getRawFiducials();
     if (rawFiducialsR != null) {
-
       for (RawFiducial rf : rawFiducialsR) {
-        processLimelight(rightCamera, rawFieldPose3dEntryRight, rf);
+        processFiducials(rf);
       }
     }
   }
 
   private void processLimelight(
-      LLCamera camera, StructPublisher<Pose3d> rawFieldPoseEntry, RawFiducial rf) {
+      LLCamera camera, StructPublisher<Pose3d> rawFieldPoseEntry) {
     if (disableVision.getBoolean(false)) return;
-    PoseEstimate estimate = camera.getPoseEstimate();
+    BetterPoseEstimate estimate = camera.getBetterPoseEstimate();
+  
 
     if (estimate != null) {
       if (estimate.tagCount <= 0) {
         return;
       }
 
-      double rawTimestampSeconds = estimate.timestampSeconds;
-      Pose3d fieldPose3d = camera.getPose3d();
+      double timestampSeconds = estimate.timestampSeconds;
+      Pose3d fieldPose3d = estimate.pose3d;
       boolean pose_bad = false;
       rawFieldPoseEntry.set(fieldPose3d);
-      // distance to closest fiducial
-      double distanceMeters = distance;
-
-      Optional<Pose3d> tagPose = fieldLayout.getTagPose(rf.id);
-      if (tagPose.isPresent()) {
-        distanceMeters = rf.distToCamera;
-      }
 
       if (!MathUtil.isNear(0, fieldPose3d.getZ(), 0.10)
           || !MathUtil.isNear(0, fieldPose3d.getRotation().getX(), Units.degreesToRadians(8))
@@ -163,12 +157,12 @@ public class VisionSubsystem extends SubsystemBase {
       // return;
       // }
       if (!pose_bad) {
-        double stdDevFactor = Math.pow(estimate.avgTagDist, 2.0) / estimate.tagCount;
-        double linearStdDev = 0.02 * stdDevFactor;
-        double angularStdDev = 0.06 * stdDevFactor;
+        double stdDevFactor = Math.pow(estimate.avgTagDist, STD_DEV_EXPONENT);
+        double linearStdDev = LINEAR_STD_DEV_FACTOR * stdDevFactor;
+        double angularStdDev = ANGULAR_STD_DEV_FACTOR * stdDevFactor;
         aprilTagsHelper.addVisionMeasurement(
             fieldPose3d.toPose2d(),
-            rawTimestampSeconds,
+            timestampSeconds,
 
             //// Use one of these, first one is current(start with STANDARD_DEVS, and for every
             // meter of distance past 1 meter,
@@ -179,15 +173,13 @@ public class VisionSubsystem extends SubsystemBase {
             VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
         robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       }
-      if (rawTimestampSeconds > lastRawTimestampSeconds) {
+      if (timestampSeconds > lastTimestampSeconds) {
         if (!pose_bad) {
           fieldPose3dEntry.set(fieldPose3d);
           lastFieldPose = fieldPose3d.toPose2d();
           rawVisionFieldObject.setPose(lastFieldPose);
         }
-        lastRawTimestampSeconds = rawTimestampSeconds;
-        distance = distanceMeters;
-        tagAmbiguity = rf.ambiguity;
+        lastTimestampSeconds = timestampSeconds;
       }
     }
   }
@@ -198,12 +190,20 @@ public class VisionSubsystem extends SubsystemBase {
     return L + R;
   }
 
-  public double getLastTimestampSeconds() {
-    return lastTimestampSeconds;
+  private void processFiducials(RawFiducial rf) {
+    // distance to closest fiducial
+    double distanceMeters = distance;
+    Optional<Pose3d> tagPose = fieldLayout.getTagPose(rf.id);
+      if (tagPose.isPresent()) {
+        distanceMeters = rf.distToCamera;
+      }
+    distance = distanceMeters;
+    tagAmbiguity = rf.ambiguity;
   }
 
-  public double getLastRawTimestampSeconds() {
-    return lastRawTimestampSeconds;
+
+  public double getLastTimestampSeconds() {
+    return lastTimestampSeconds;
   }
 
   public double getTimeSinceLastReading() {
