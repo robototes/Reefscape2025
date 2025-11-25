@@ -192,7 +192,7 @@ public class SuperStructure {
         ipScore,
         ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS,
         ArmPivot.CORAL_PRESET_L2,
-        "Green - Aligned With L2",
+        "Coral Level 2",
         "Green - Aligned With L2");
   }
 
