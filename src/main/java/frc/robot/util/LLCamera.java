@@ -8,74 +8,74 @@ import frc.robot.util.LimelightHelpers.RawFiducial;
 
 public class LLCamera {
   private static String name;
-  
-    public LLCamera(String name) {
-      LLCamera.name = name;
-    }
-  
-    public LLCamera() {
-      this("limelight");
-    }
-  
-    public int getNumTargets() {
-      return LimelightHelpers.getTargetCount(name);
-    }
-  
-    public boolean hasValidTarget() {
-      return LimelightHelpers.getTV(name);
-    }
-  
-    public double getHoritontalOffset() {
-      return LimelightHelpers.getTX(name);
-    }
-  
-    public double getVerticalOffset() {
-      return LimelightHelpers.getTY(name);
-    }
-  
-    public double getTargetArea() {
-      return LimelightHelpers.getTA(name);
-    }
-  
-    public RawFiducial[] getRawFiducials() {
-      return LimelightHelpers.getRawFiducials(name);
-    }
-  
-    public RawDetection[] getRawDetections() {
-      return LimelightHelpers.getRawDetections(name);
-    }
-  
-    public void setPipeline(int pipeline) {
-      LimelightHelpers.setPipelineIndex(name, pipeline);
-    }
-  
-    public double getPipelineNumber() {
-      return LimelightHelpers.getCurrentPipelineIndex(name);
-    }
-  
-    public String getPipeline() {
-      return LimelightHelpers.getCurrentPipelineType(name);
-    }
-  
-    public Pose3d getPose3d() {
-      return LimelightHelpers.getBotPose3d_wpiBlue(name);
-    }
-  
-    public BetterPoseEstimate getBetterPoseEstimate() {
-      return getBetterBotPoseEstimate_wpiBlue();
-    }
-  
-    public BetterPoseEstimate getPoseEstimateMegatag2() {
-      return getBetterBotPoseEstimate_wpiBlue_Megatag2();
-    }
-     
-    private static BetterPoseEstimate getBetterBotPoseEstimate_wpiBlue() {
-      return getBetterBotPoseEstimate(name, "botpose_wpiblue", false);
-    }
 
-    private static BetterPoseEstimate getBetterBotPoseEstimate_wpiBlue_Megatag2() {
-      return getBetterBotPoseEstimate(name, "botpose_orb_wpiblue", true);
-    } 
+  public LLCamera(String name) {
+    LLCamera.name = name;
+  }
+
+  public LLCamera() {
+    this("limelight");
+  }
+
+  public int getNumTargets() {
+    return LimelightHelpers.getTargetCount(name);
+  }
+
+  public boolean hasValidTarget() {
+    return LimelightHelpers.getTV(name);
+  }
+
+  public double getHoritontalOffset() {
+    return LimelightHelpers.getTX(name);
+  }
+
+  public double getVerticalOffset() {
+    return LimelightHelpers.getTY(name);
+  }
+
+  public double getTargetArea() {
+    return LimelightHelpers.getTA(name);
+  }
+
+  public RawFiducial[] getRawFiducials() {
+    return LimelightHelpers.getRawFiducials(name);
+  }
+
+  public RawDetection[] getRawDetections() {
+    return LimelightHelpers.getRawDetections(name);
+  }
+
+  public void setPipeline(int pipeline) {
+    LimelightHelpers.setPipelineIndex(name, pipeline);
+  }
+
+  public double getPipelineNumber() {
+    return LimelightHelpers.getCurrentPipelineIndex(name);
+  }
+
+  public String getPipeline() {
+    return LimelightHelpers.getCurrentPipelineType(name);
+  }
+
+  public Pose3d getPose3d() {
+    return LimelightHelpers.getBotPose3d_wpiBlue(name);
+  }
+
+  public BetterPoseEstimate getBetterPoseEstimate() {
+    return getBetterBotPoseEstimate_wpiBlue();
+  }
+
+  public BetterPoseEstimate getPoseEstimateMegatag2() {
+    return getBetterBotPoseEstimate_wpiBlue_Megatag2();
+  }
+
+  private static BetterPoseEstimate getBetterBotPoseEstimate_wpiBlue() {
+    return getBetterBotPoseEstimate(name, "botpose_wpiblue", false);
+  }
+
+  private static BetterPoseEstimate getBetterBotPoseEstimate_wpiBlue_Megatag2() {
+    return getBetterBotPoseEstimate(name, "botpose_orb_wpiblue", true);
+  }
 
   private static BetterPoseEstimate getBetterBotPoseEstimate(
       String limelightName, String entryName, boolean isMegaTag2) {
@@ -119,8 +119,17 @@ public class LLCamera {
         rawFiducials[i] = new RawFiducial(id, txnc, tync, ta, distToCamera, distToRobot, ambiguity);
       }
     }
-    BetterPoseEstimate poseEstimate = new BetterPoseEstimate(pose, adjustedTimestamp, latency, tagCount, tagSpan, tagDist, tagArea, rawFiducials, isMegaTag2);
+    BetterPoseEstimate poseEstimate =
+        new BetterPoseEstimate(
+            pose,
+            adjustedTimestamp,
+            latency,
+            tagCount,
+            tagSpan,
+            tagDist,
+            tagArea,
+            rawFiducials,
+            isMegaTag2);
     return poseEstimate;
   }
 }
-

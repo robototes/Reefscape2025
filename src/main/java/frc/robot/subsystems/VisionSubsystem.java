@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.Optional;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
@@ -27,6 +25,7 @@ import frc.robot.Hardware;
 import frc.robot.util.BetterPoseEstimate;
 import frc.robot.util.LLCamera;
 import frc.robot.util.LimelightHelpers.RawFiducial;
+import java.util.Optional;
 
 public class VisionSubsystem extends SubsystemBase {
   // Limelight names must match your NT names
@@ -130,11 +129,9 @@ public class VisionSubsystem extends SubsystemBase {
     }
   }
 
-  private void processLimelight(
-      LLCamera camera, StructPublisher<Pose3d> rawFieldPoseEntry) {
+  private void processLimelight(LLCamera camera, StructPublisher<Pose3d> rawFieldPoseEntry) {
     if (disableVision.getBoolean(false)) return;
     BetterPoseEstimate estimate = camera.getBetterPoseEstimate();
-  
 
     if (estimate != null) {
       if (estimate.tagCount <= 0) {
@@ -194,13 +191,12 @@ public class VisionSubsystem extends SubsystemBase {
     // distance to closest fiducial
     double distanceMeters = distance;
     Optional<Pose3d> tagPose = fieldLayout.getTagPose(rf.id);
-      if (tagPose.isPresent()) {
-        distanceMeters = rf.distToCamera;
-      }
+    if (tagPose.isPresent()) {
+      distanceMeters = rf.distToCamera;
+    }
     distance = distanceMeters;
     tagAmbiguity = rf.ambiguity;
   }
-
 
   public double getLastTimestampSeconds() {
     return lastTimestampSeconds;
