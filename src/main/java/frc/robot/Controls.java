@@ -459,13 +459,10 @@ public class Controls {
             .coralLevelFour(soloController.rightBumper())
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_THREE -> superStructure
-            .coralLevelThree(
-                soloController.rightBumper(),
-                () -> AutoAlign.poseInPlace(AutoAlign.AlignType.LEFTB))
+            .coralLevelTwoAndThree("3", soloController.rightBumper())
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_TWO -> superStructure
-            .coralLevelTwoAndThree(
-                "2", soloController.rightBumper())
+            .coralLevelTwoAndThree("2", soloController.rightBumper())
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_ONE -> superStructure
             .coralLevelOne(
@@ -478,14 +475,10 @@ public class Controls {
             .coralLevelFour(soloController.rightBumper())
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_THREE -> superStructure
-            .coralLevelThree(
-                soloController.rightBumper(),
-                () -> AutoAlign.poseInPlace(AutoAlign.AlignType.RIGHTB))
+            .coralLevelTwoAndThree("3", soloController.rightBumper())
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_TWO -> superStructure
-            .coralLevelTwo(
-                soloController.rightBumper(),
-                () -> AutoAlign.poseInPlace(AutoAlign.AlignType.RIGHTB))
+            .coralLevelTwoAndThree("2", soloController.rightBumper())
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_ONE -> superStructure
             .coralLevelOne(
@@ -495,8 +488,10 @@ public class Controls {
     } else {
       return switch (branchHeight) {
         case CORAL_LEVEL_FOUR -> superStructure.coralLevelFour(driverController.rightBumper());
-        case CORAL_LEVEL_THREE -> superStructure.coralLevelThree(driverController.rightBumper());
-        case CORAL_LEVEL_TWO -> superStructure.coralLevelTwo(driverController.rightBumper());
+        case CORAL_LEVEL_THREE -> superStructure.coralLevelTwoAndThree(
+            "3", soloController.rightBumper());
+        case CORAL_LEVEL_TWO -> superStructure.coralLevelTwoAndThree(
+            "2", soloController.rightBumper());
         case CORAL_LEVEL_ONE -> superStructure.coralLevelOne(driverController.rightBumper());
       };
     }
