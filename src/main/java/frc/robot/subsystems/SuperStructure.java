@@ -185,12 +185,11 @@ public class SuperStructure {
   // if robot is in position for intermediate scoring, it can score early but if vision is dead
   // manual control still works
   // only used on solo controls
-
-  public Command coralLevelThree(BooleanSupplier score, BooleanSupplier ipScore) { // same as L4
+  public Command coralLevel23(BooleanSupplier score, BooleanSupplier ipScore, double prePosition, double presetScoring, int level) { // same as L4
     return Commands.sequence(
             Commands.parallel(
                     elevator
-                        .setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS)
+                        .setLevel(prePosition)
                         .deadlineFor(
                             armPivot
                                 .moveToPosition(ArmPivot.CORAL_PRESET_UP)
@@ -201,7 +200,7 @@ public class SuperStructure {
             repeatPrescoreScoreSwing(
                 Commands.repeatingSequence(
                     armPivot
-                        .moveToPosition(ArmPivot.CORAL_PRESET_L3)
+                        .moveToPosition(presetScoring)
                         .withDeadline(Commands.waitUntil(ipScore).until(score)),
                     armPivot
                         .moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
@@ -210,37 +209,15 @@ public class SuperStructure {
                 score,
                 ipScore),
             coralPreIntake())
-        .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L3").asProxy())
-        .withName("Coral Level 3");
+        .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L" + level).asProxy())
+        .withName("Coral Level " + level);
   }
 
-  public Command coralLevelTwo(
-      BooleanSupplier score, BooleanSupplier ipScore) { // same as L4 and L3
-    return Commands.sequence(
-            Commands.parallel(
-                    elevator
-                        .setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS)
-                        .deadlineFor(
-                            armPivot
-                                .moveToPosition(ArmPivot.CORAL_PRESET_UP)
-                                .until(ipScore)
-                                .until(score)),
-                    spinnyClaw.stop())
-                .withTimeout(0.5),
-            repeatPrescoreScoreSwing(
-                Commands.sequence(
-                    armPivot
-                        .moveToPosition(ArmPivot.CORAL_PRESET_L2)
-                        .withDeadline(Commands.waitUntil(ipScore).until(score)),
-                    armPivot
-                        .moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
-                        .withTimeout(1.5)
-                        .until(armPivot.atAngle(ArmPivot.CORAL_POST_SCORE))),
-                score,
-                ipScore),
-            coralPreIntake())
-        .deadlineFor(colorSet(0, 255, 0, "Green - Aligned With L2").asProxy())
-        .withName("Coral Level 2");
+  public Command coralLevelThree(BooleanSupplier score, BooleanSupplier ipScore) { // same as L4
+    return coralLevel23(score, ipScore, ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS, ArmPivot.CORAL_PRESET_L3, 3);
+  }
+  public Command coralLevelTwo(BooleanSupplier score, BooleanSupplier ipScore, double prePosition, double presetScoring, int level) { // same as L4 and L3
+    return coralLevel23(score, ipScore, ElevatorSubsystem.CORAL_LEVEL_TWO_PRE_POS, ArmPivot.CORAL_PRESET_L2, 2);
   }
 
   public Command coralLevelOne(BooleanSupplier score, BooleanSupplier ipScore) {
