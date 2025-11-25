@@ -100,7 +100,7 @@ public class VisionSubsystem extends SubsystemBase {
         .withSize(1, 1);
     shuffleboardTab
         .addDouble("tag ambiguity", this::getTagAmbiguity)
-        .withPosition(2, 0)
+        .withPosition(1, 0)
         .withSize(1, 1);
 
     disableVision =
