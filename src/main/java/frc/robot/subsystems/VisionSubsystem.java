@@ -1,5 +1,14 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
@@ -25,13 +34,6 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
-import java.util.Optional;
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.PhotonUtils;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 /*
  * All poses and transforms use the NWU (North-West-Up) coordinate system, where +X is
@@ -52,6 +54,9 @@ public class VisionSubsystem extends SubsystemBase {
   private static final double CAMERA_PITCH_RIGHT = Units.degreesToRadians(-8.3);
   private static final double CAMERA_YAW_LEFT = Units.degreesToRadians(-44.64);
   private static final double CAMERA_YAW_RIGHT = Units.degreesToRadians(46.42);
+  private static final double LINEAR_STD_DEV_FACTOR = 0.02;
+  private static final double STD_DEV_EXPONENT = 1.2;
+  private static final double ANGULAR_STD_DEV_FACTOR = 1.6;
   // left camera diffrences from center robot
   public static final Transform3d ROBOT_TO_CAM_LEFT =
       new Transform3d(
@@ -242,9 +247,9 @@ public class VisionSubsystem extends SubsystemBase {
         sum_of_the_distances += dist;
       }
       double avg_distances = sum_of_the_distances / num_targets;
-      double stdDevFactor = Math.pow(avg_distances, 1.2);
-      double linearStdDev = 0.02 * stdDevFactor;
-      double angularStdDev = 1.6 * stdDevFactor;
+      double stdDevFactor = Math.pow(avg_distances, STD_DEV_EXPONENT);
+      double linearStdDev = LINEAR_STD_DEV_FACTOR * stdDevFactor;
+      double angularStdDev = ANGULAR_STD_DEV_FACTOR * stdDevFactor;
       aprilTagsHelper.addVisionMeasurement(
           FieldPose,
           RawTimestampSeconds,
