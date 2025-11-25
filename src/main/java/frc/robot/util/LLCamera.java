@@ -69,11 +69,11 @@ public class LLCamera {
     return getBetterBotPoseEstimate_wpiBlue_Megatag2();
   }
 
-  private static BetterPoseEstimate getBetterBotPoseEstimate_wpiBlue() {
+  private BetterPoseEstimate getBetterBotPoseEstimate_wpiBlue() {
     return getBetterBotPoseEstimate(name, "botpose_wpiblue", false);
   }
 
-  private static BetterPoseEstimate getBetterBotPoseEstimate_wpiBlue_Megatag2() {
+  private BetterPoseEstimate getBetterBotPoseEstimate_wpiBlue_Megatag2() {
     return getBetterBotPoseEstimate(name, "botpose_orb_wpiblue", true);
   }
 
