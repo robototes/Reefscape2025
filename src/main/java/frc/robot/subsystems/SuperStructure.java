@@ -203,7 +203,7 @@ public class SuperStructure {
         ipScore,
         ElevatorSubsystem.CORAL_LEVEL_THREE_PRE_POS,
         ArmPivot.CORAL_PRESET_L3,
-        "Green - Aligned With L3",
+        "Coral Level 3",
         "Green - Aligned With L3");
   }
 
