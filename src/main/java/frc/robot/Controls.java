@@ -30,6 +30,7 @@ import frc.robot.subsystems.ArmPivot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.GroundArm;
 import frc.robot.subsystems.SuperStructure;
+import frc.robot.subsystems.SuperStructure.coralType;
 import frc.robot.subsystems.auto.AutoAlgaeHeights;
 import frc.robot.subsystems.auto.AutoAlign;
 import frc.robot.subsystems.auto.BargeAlign;
@@ -161,6 +162,14 @@ public class Controls {
       return;
     }
 
+    // get soloController.isConnected once, since controller amount doesn't change during runtime
+    Boolean isSoloControllerConnected = soloController.isConnected();
+
+    // get variables beforehand
+    double getDriveX = (isSoloControllerConnected ? getSoloDriveX() : getDriveX());
+    double getDriveY = (isSoloControllerConnected ? getSoloDriveY() : getDriveY());
+    double getRotate = (isSoloControllerConnected ? getSoloDriveRotate() : getDriveRotate());
+
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
 
@@ -173,10 +182,9 @@ public class Controls {
             .applyRequest(
                 () ->
                     drive
-                        .withVelocityX(soloController.isConnected() ? getSoloDriveX() : getDriveX())
-                        .withVelocityY(soloController.isConnected() ? getSoloDriveY() : getDriveY())
-                        .withRotationalRate(
-                            soloController.isConnected() ? getSoloDriveRotate() : getDriveRotate()))
+                        .withVelocityX(getDriveX)
+                        .withVelocityY(getDriveY)
+                        .withRotationalRate(getRotate))
             .withName("Drive"));
 
     // various former controls that were previously used and could be referenced in the future
@@ -459,10 +467,10 @@ public class Controls {
             .coralLevelFour(soloController.rightBumper())
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_THREE -> superStructure
-            .coralLevelTwoAndThree("3", soloController.rightBumper())
+            .coralLevelTwoAndThree(coralType.THREE, soloController.rightBumper())
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_TWO -> superStructure
-            .coralLevelTwoAndThree("2", soloController.rightBumper())
+            .coralLevelTwoAndThree(coralType.TWO, soloController.rightBumper())
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_ONE -> superStructure
             .coralLevelOne(
@@ -475,10 +483,10 @@ public class Controls {
             .coralLevelFour(soloController.rightBumper())
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_THREE -> superStructure
-            .coralLevelTwoAndThree("3", soloController.rightBumper())
+            .coralLevelTwoAndThree(coralType.THREE, soloController.rightBumper())
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_TWO -> superStructure
-            .coralLevelTwoAndThree("2", soloController.rightBumper())
+            .coralLevelTwoAndThree(coralType.TWO, soloController.rightBumper())
             .andThen(() -> soloScoringMode = soloScoringMode.NO_GAME_PIECE);
         case CORAL_LEVEL_ONE -> superStructure
             .coralLevelOne(
@@ -489,9 +497,9 @@ public class Controls {
       return switch (branchHeight) {
         case CORAL_LEVEL_FOUR -> superStructure.coralLevelFour(driverController.rightBumper());
         case CORAL_LEVEL_THREE -> superStructure.coralLevelTwoAndThree(
-            "3", soloController.rightBumper());
+            coralType.THREE, soloController.rightBumper());
         case CORAL_LEVEL_TWO -> superStructure.coralLevelTwoAndThree(
-            "2", soloController.rightBumper());
+            coralType.TWO, soloController.rightBumper());
         case CORAL_LEVEL_ONE -> superStructure.coralLevelOne(driverController.rightBumper());
       };
     }
