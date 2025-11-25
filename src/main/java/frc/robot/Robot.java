@@ -24,7 +24,6 @@ import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoBuilderConfig;
 import frc.robot.subsystems.auto.AutoLogic;
 import frc.robot.subsystems.auto.AutonomousField;
-import frc.robot.subsystems.auto.Routines;
 import frc.robot.util.BuildInfo;
 import frc.robot.util.MatchTab;
 import frc.robot.util.RobotType;
@@ -150,8 +149,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     Shuffleboard.startRecording();
     if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.getSelectedAuto() != null) {
-
-      new Routines().runRoutine2().schedule();
+      AutoLogic.getSelectedAuto().schedule();
+      // new Routines().runRoutine2().schedule();
 
       if (subsystems.climbPivotSubsystem != null) {
         subsystems.climbPivotSubsystem.moveCompleteFalse();

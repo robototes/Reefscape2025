@@ -111,7 +111,8 @@ public class AutoLogic {
           new AutoPath("MRSF_G-F_WithWait", "MRSF_G-F_WithWait"),
           new AutoPath("MRSF_G-H", "MRSF_G-H"),
           new AutoPath("MLSF_H-K_Cooking", "MLSF_H-K_Cooking"),
-          new AutoPath("MLSF_H-G", "MLSF_H-G"));
+          new AutoPath("MLSF_H-G", "MLSF_H-G"),
+          new AutoPath("CHOREO TEST", "CHOREO TEST"));
 
   private static List<AutoPath> threePiecePaths =
       List.of(
@@ -182,7 +183,7 @@ public class AutoLogic {
     // param: String commandName, Command command
 
     // Intake
-    NamedCommands.registerCommand("scoreCommand", scoreCommand());
+    NamedCommands.registerCommand("scoreCommand", scoreTestCommand());
     NamedCommands.registerCommand("intake", intakeCommand());
     NamedCommands.registerCommand("isCollected", isCollected());
     NamedCommands.registerCommand("readyIntake", readyIntakeCommand());
@@ -320,6 +321,7 @@ public class AutoLogic {
     return AutoAlign.autoAlign(s.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB)
         .withName("scoreCommand-noSuperstructure");
   }
+
   public static Command scoreTestCommand() {
     if (r.superStructure != null) {
       return new ConditionalCommand(

@@ -39,17 +39,27 @@ public class Routines {
                 Commands.print("secondScore and intaking done"),
                 AutoLogic.scoreTestCommand(),
                 Commands.print("scoring done!"),
-                 secondStation.cmd().alongWith(AutoLogic.readyIntakeCommand()), Commands.print("secondStation and readied intake done"), AutoLogic.isCollected(),
-                 Commands.print("second collection done"),thirdScore.cmd().alongWith(AutoLogic.intakeCommand()),
-                 Commands.print("third transferred to intake"), AutoLogic.scoreTestCommand(), Commands.print("thirdscore done"),
-                thirdStation.cmd().alongWith(AutoLogic.readyIntakeCommand()), Commands.print("third statino and readied intake"), AutoLogic.isCollected(),
+                secondStation.cmd().alongWith(AutoLogic.readyIntakeCommand()),
+                Commands.print("secondStation and readied intake done"),
+                AutoLogic.isCollected(),
+                Commands.print("second collection done"),
+                thirdScore.cmd().alongWith(AutoLogic.intakeCommand()),
+                Commands.print("third transferred to intake"),
+                AutoLogic.scoreTestCommand(),
+                Commands.print("thirdscore done"),
+                thirdStation.cmd().alongWith(AutoLogic.readyIntakeCommand()),
+                Commands.print("third statino and readied intake"),
+                AutoLogic.isCollected(),
                 Commands.print("third collection done"),
-                fourthScore.cmd().alongWith(AutoLogic.intakeCommand()), Commands.print("fourth in intake"), AutoLogic.scoreTestCommand(),  
-                Commands.print("fourthscore done"), Commands.print("ROUTINE DONE!")
-                
-                ));
+                fourthScore.cmd().alongWith(AutoLogic.intakeCommand()),
+                Commands.print("fourth in intake"),
+                AutoLogic.scoreTestCommand(),
+                Commands.print("fourthscore done"),
+                Commands.print("ROUTINE DONE!")));
+
     return routine.cmd();
   }
+
   public Command runRoutine2() {
     AutoRoutine routine = autoFactory.newRoutine("TRY");
     AutoTrajectory preloadScore = routine.trajectory("Low to E");
@@ -73,9 +83,8 @@ public class Routines {
                 Commands.print("secondScore and intaking done"),
                 AutoLogic.scoreTestCommand(),
                 Commands.print("scoring done!"),
-                 secondStation.cmd().alongWith(AutoLogic.readyIntakeCommand())
-                
-                ));
+                secondStation.cmd().alongWith(AutoLogic.readyIntakeCommand())));
+
     return routine.cmd();
   }
 }
