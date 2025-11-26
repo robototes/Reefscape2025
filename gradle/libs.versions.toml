@@ -2,8 +2,7 @@
 wpilib = "2025.3.2"
 spotless = "6.20.0"
 errorpronePlugin = "4.0.1"
-errorproneCore = "2.28.0"
-errorproneAnnotations = "2.28.0"
+errorprone = "2.28.0"
 junit = "5.10.1"
 junitPlatform = "1.10.1"
 
