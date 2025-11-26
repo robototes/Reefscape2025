@@ -8,10 +8,6 @@ junit = "5.10.1"
 junitPlatform = "1.10.1"
 
 [libraries]
-wpilib-java = { module = "edu.wpi.first.gradle:edu.wpi.first.gradle.gradle.plugin", version.ref = "wpilib" }
-spotless-plugin = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
-errorprone-plugin = { module = "net.ltgt.gradle:gradle-errorprone-plugin", version.ref = "errorpronePlugin" }
-
 errorprone-annotations = { module = "com.google.errorprone:error_prone_annotations", version.ref = "errorproneAnnotations" }
 errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorproneCore" }
 
