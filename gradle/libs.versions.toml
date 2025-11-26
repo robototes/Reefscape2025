@@ -7,7 +7,7 @@ junit = "5.10.1"
 junitPlatform = "1.10.1"
 
 [libraries]
-errorprone = { module = "com.google.errorprone:error_prone_annotations", version.ref = "errorprone" }
+errorprone = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }
 
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junitPlatform" }
