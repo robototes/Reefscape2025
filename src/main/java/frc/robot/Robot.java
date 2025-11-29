@@ -44,7 +44,7 @@ public class Robot extends TimedRobot {
   public final SuperStructure superStructure;
   private final PowerDistribution PDH;
   public AutoFactory autoFactory;
-  private String ROUTINE = "";
+  
 
   protected Robot() {
     // non public for singleton. Protected so test class can subclass

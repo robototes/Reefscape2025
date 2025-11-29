@@ -50,7 +50,7 @@ public class AutoLogic {
     MISC("Misc", null);
 
     final String title; // for shuffleboard display
-    public final Pose2d startPose; // for identifying path's starting positions for filtering
+     final Pose2d startPose; // for identifying path's starting positions for filtering
 
     StartPosition(String title, Pose2d startPose) {
       this.title = title;

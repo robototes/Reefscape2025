@@ -48,7 +48,7 @@ public class Routines {
                 AutoLogic.scoreTestCommand(),
                 Commands.print("thirdscore done"),
                 thirdStation.cmd().alongWith(AutoLogic.readyIntakeCommand()),
-                Commands.print("third statino and readied intake"),
+                Commands.print("third station and readied intake"),
                 AutoLogic.isCollected(),
                 Commands.print("third collection done"),
                 fourthScore.cmd().alongWith(AutoLogic.intakeCommand()),
