@@ -276,5 +276,4 @@ public class VisionSubsystem extends SubsystemBase {
   public double getDistanceToTarget() {
     return (double) Math.round(Distance * 1000) / 1000;
   }
-
 }
