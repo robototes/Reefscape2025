@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 import frc.robot.sensors.ArmSensor;
-import frc.robot.util.ScoringMode;
 import java.util.function.Supplier;
 
 public class SpinnyClaw extends SubsystemBase {
@@ -37,7 +36,6 @@ public class SpinnyClaw extends SubsystemBase {
   private final TalonFX motor;
   // ArmSensor
   private final ArmSensor armSensor;
-  private Supplier<ScoringMode> scoringMode = () -> ScoringMode.CORAL;
 
   // alerts
   private final Alert NotConnectedError =
@@ -50,10 +48,6 @@ public class SpinnyClaw extends SubsystemBase {
     this.armSensor = armSensor;
     configMotors();
     logTabs();
-  }
-
-  public void setScoringMode(Supplier<ScoringMode> scoringMode) {
-    this.scoringMode = scoringMode;
   }
 
   // (+) is to intake out, and (-) is in
