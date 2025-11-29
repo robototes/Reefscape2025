@@ -17,9 +17,9 @@ public class ArmSensor {
   private final LaserCan mainSensor;
   // VALUES ARE IN METERS
   private static final double TROUGH_LOWER_LIMIT = 0.10;
-  private static final double TROUGH_UPPER_LIMIT = 0.20;
+  private static final double TROUGH_UPPER_LIMIT = 0.25;
   private static final double CLAW_LOWER_LIMIT = 0.01;
-  private static final double CLAW_UPPER_LIMIT = 0.09;
+  private static final double CLAW_UPPER_LIMIT = 0.13;
 
   public ArmSensor() {
     mainSensor = new LaserCan(Hardware.MAIN_ARM_SENSOR);
@@ -42,11 +42,17 @@ public class ArmSensor {
 
   public Distance getSensorDistance() {
     LaserCan.Measurement measurement = mainSensor.getMeasurement();
-    if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
-      return Millimeter.of(measurement.distance_mm);
-    } else {
+    if (measurement == null) {
       return Millimeter.of(-1);
     }
+    if (measurement.status != LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
+      if (measurement.status != LaserCan.LASERCAN_STATUS_OUT_OF_BOUNDS) {
+        return Millimeter.of(-2);
+      } else {
+        return Millimeter.of(-3);
+      }
+    }
+    return Millimeter.of(measurement.distance_mm);
   }
 
   public Trigger inTrough() {

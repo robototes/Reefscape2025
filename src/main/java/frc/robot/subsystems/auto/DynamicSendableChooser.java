@@ -90,6 +90,19 @@ public class DynamicSendableChooser<T> implements Sendable, AutoCloseable {
     addOption(name, object);
   }
 
+  public String getSelectedName() {
+    m_mutex.lock();
+    try {
+      if (m_selected != null) {
+        return m_selected;
+      } else {
+        return m_defaultChoice;
+      }
+    } finally {
+      m_mutex.unlock();
+    }
+  }
+
   /**
    * Returns the selected option. If there is none selected, it will return the default. If there is
    * none selected and no default, then it will return {@code null}.
@@ -99,7 +112,7 @@ public class DynamicSendableChooser<T> implements Sendable, AutoCloseable {
   public T getSelected() {
     m_mutex.lock();
     try {
-      if (m_selected != null) {
+      if (m_selected != null && m_map.containsKey(m_selected)) {
         return m_map.get(m_selected);
       } else {
         return m_map.get(m_defaultChoice);

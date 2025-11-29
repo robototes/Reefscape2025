@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Hardware;
 
 public class GroundArm extends SubsystemBase {
@@ -23,16 +25,19 @@ public class GroundArm extends SubsystemBase {
   private final double ARMPIVOT_KV = 4;
   private final double ARMPIVOT_KG = 0.048;
   private final double ARMPIVOT_KA = 0;
-  public static final double STOWED_POSITION = 0.476;
+  public static final double STOWED_POSITION = 0.46;
   public static final double UP_POSITION =
       0.27; // untested - should be somewhere in between stowed and ground
-  public static final double GROUND_POSITION = -0.040;
+  public static final double GROUND_POSITION = -0.050;
+  public static final double QUICK_INTAKE_POSITION = 0.31;
   public static final double POS_TOLERANCE = Units.degreesToRotations(5);
+  public static final double GROUND_HOLD_VOLTAGE = -0.40;
   // ratio from motor rotations to output rotations
   private static final double ARM_RATIO = 60;
 
   // MotionMagic voltage
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
+  private final VoltageOut m_voltageRequest = new VoltageOut(0);
 
   // TalonFX
   private final TalonFX motor;
@@ -113,9 +118,16 @@ public class GroundArm extends SubsystemBase {
 
   // preset command placeholder
   public Command moveToPosition(double position) {
-    return setTargetPosition(position)
-        .andThen(
-            Commands.waitUntil(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE));
+    return setTargetPosition(position).andThen(Commands.waitUntil(atPosition(position)));
+  }
+
+  public Command setVoltage(double voltage) {
+    return runOnce(() -> motor.setControl(m_voltageRequest.withOutput(voltage)))
+        .withName("Set voltage " + voltage);
+  }
+
+  public Trigger atPosition(double position) {
+    return new Trigger(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE);
   }
 
   public Command stop() {

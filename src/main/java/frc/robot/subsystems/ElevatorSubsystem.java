@@ -36,7 +36,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double CORAL_LEVEL_THREE_POS = 14;
   public static final double CORAL_LEVEL_TWO_PRE_POS = 6.94;
   public static final double CORAL_LEVEL_TWO_POS = 4.4;
-  public static final double CORAL_LEVEL_ONE_POS = 8.3;
+  public static final double CORAL_LEVEL_ONE_POS = 4.2;
   public static final double ALGAE_LEVEL_TWO_THREE = 11;
   public static final double ALGAE_LEVEL_TWO_THREE_FLING = 16;
   public static final double ALGAE_LEVEL_THREE_FOUR = 21;
@@ -45,10 +45,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   public static final double ALGAE_PROCESSOR_SCORE = 2;
   public static final double ALGAE_NET_SCORE = 38; // untested
   public static final double ALGAE_GROUND_INTAKE = 0.05;
-  public static final double CORAL_STOWED = 3.9;
+  public static final double CORAL_STOWED = CORAL_LEVEL_TWO_PRE_POS;
   public static final double CORAL_GROUND_INTAKE_POS = 7.2;
   public static final double CORAL_INTAKE_POS = 1.55;
-  public static final double CORAL_PRE_INTAKE = 4.0;
+  public static final double CORAL_PRE_INTAKE = 4.7;
+  public static final double CORAL_QUICK_INTAKE = 1.6;
   public static final double MIN_EMPTY_GROUND_INTAKE = 4.5;
   public static final double MIN_FULL_GROUND_INTAKE = 8.0;
   public static final double MANUAL = 0.1;
@@ -230,6 +231,13 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public boolean getHasBeenZeroed() {
     return hasBeenZeroed;
+  }
+
+  public boolean getPositionSubZero() {
+    if (curPos < -0.1 && hasBeenZeroed) {
+      return true;
+    }
+    return false;
   }
 
   private double getTargetPosition() {

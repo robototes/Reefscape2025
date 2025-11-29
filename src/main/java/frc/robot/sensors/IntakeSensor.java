@@ -15,8 +15,8 @@ public class IntakeSensor {
 
   private final LaserCan intakeSensor;
   // VALUES ARE IN METERS
-  private static final double INTAKE_LOWER_LIMIT = 0.010;
-  private static final double INTAKE_UPPER_LIMIT = 0.1;
+  private static final double INTAKE_LOWER_LIMIT = 0.005;
+  private static final double INTAKE_UPPER_LIMIT = 0.05;
 
   public IntakeSensor() {
     intakeSensor = new LaserCan(Hardware.GROUND_INTAKE_SENSOR);
@@ -29,7 +29,7 @@ public class IntakeSensor {
   private void ConfigureSensor(LaserCan Sensor) {
     try {
       Sensor.setRangingMode(LaserCan.RangingMode.SHORT);
-      Sensor.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
+      Sensor.setRegionOfInterest(new LaserCan.RegionOfInterest(4, 4, 16, 16));
       Sensor.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
     } catch (ConfigurationFailedException e) {
       System.out.println("Configuration Failed! " + e);
@@ -38,11 +38,17 @@ public class IntakeSensor {
 
   public Distance getSensorDistance() {
     LaserCan.Measurement measurement = intakeSensor.getMeasurement();
-    if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
-      return Millimeter.of(measurement.distance_mm);
-    } else {
+    if (measurement == null) {
       return Millimeter.of(-1);
     }
+    if (measurement.status != LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
+      if (measurement.status != LaserCan.LASERCAN_STATUS_OUT_OF_BOUNDS) {
+        return Millimeter.of(-2);
+      } else {
+        return Millimeter.of(-3);
+      }
+    }
+    return Millimeter.of(measurement.distance_mm);
   }
 
   public Trigger inIntake() {

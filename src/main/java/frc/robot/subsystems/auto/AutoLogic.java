@@ -1,6 +1,7 @@
 package frc.robot.subsystems.auto;
 
 import static frc.robot.Sensors.SensorConstants.ARMSENSOR_ENABLED;
+import static frc.robot.Sensors.SensorConstants.INTAKE_SENSOR_ENABLED;
 import static frc.robot.Subsystems.SubsystemConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -17,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -24,6 +26,7 @@ import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.Subsystems;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.json.simple.parser.ParseException;
@@ -32,12 +35,6 @@ public class AutoLogic {
   public static Robot r = Robot.getInstance();
   public static final Subsystems s = r.subsystems;
   public static final Controls controls = r.controls;
-
-  public static final double FEEDER_DELAY = 0.4;
-
-  // rpm to rev up launcher before launching
-  public static final double REV_RPM = 2500;
-  public static final double STAGE_ANGLE = 262;
 
   public static enum StartPosition {
     FAR_LEFT_CAGE(
@@ -113,6 +110,7 @@ public class AutoLogic {
           new AutoPath("MRSF_G-F", "MRSF_G-F"),
           new AutoPath("MRSF_G-F_WithWait", "MRSF_G-F_WithWait"),
           new AutoPath("MRSF_G-H", "MRSF_G-H"),
+          new AutoPath("MLSF_H-K_Cooking", "MLSF_H-K_Cooking"),
           new AutoPath("MLSF_H-G", "MLSF_H-G"));
 
   private static List<AutoPath> threePiecePaths =
@@ -125,7 +123,9 @@ public class AutoLogic {
           new AutoPath("YSMLSF_K-L-A", "YSMLSF_K-L-A"),
           new AutoPath("YSWLSC_K-L-A", "YSWLSC_K-L-A"),
           new AutoPath("OSWRSF_D-C-B", "OSWRSF_D-C-B"),
-          new AutoPath("YSMLSC_K-L-A", "YSMLSC_K-L-A"));
+          new AutoPath("OSWRSF_E-D-C", "OSWRSF_E-D-C"),
+          new AutoPath("YSMLSC_K-L-A", "YSMLSC_K-L-A"),
+          new AutoPath("M_H-GHA-IJA", "M_H-GHA-IJA"));
 
   private static List<AutoPath> fourPiecePaths =
       List.of(
@@ -146,6 +146,16 @@ public class AutoLogic {
           4,
           fourPiecePaths);
 
+  private static final Map<String, AutoPath> namesToAuto = new HashMap<>();
+
+  static {
+    for (List<AutoPath> autoPaths : commandsMap.values()) {
+      for (AutoPath autoPath : autoPaths) {
+        namesToAuto.put(autoPath.getDisplayName(), autoPath);
+      }
+    }
+  }
+
   // vars
 
   // in place of launching command cause launcher doesnt exist
@@ -160,8 +170,8 @@ public class AutoLogic {
 
   private static SendableChooser<StartPosition> startPositionChooser =
       new SendableChooser<StartPosition>();
-  private static DynamicSendableChooser<AutoPath> availableAutos =
-      new DynamicSendableChooser<AutoPath>();
+  private static DynamicSendableChooser<String> availableAutos =
+      new DynamicSendableChooser<String>();
   private static SendableChooser<Integer> gameObjects = new SendableChooser<Integer>();
   private static SendableChooser<Boolean> isVision = new SendableChooser<Boolean>();
 
@@ -175,6 +185,10 @@ public class AutoLogic {
     NamedCommands.registerCommand("scoreCommand", scoreCommand());
     NamedCommands.registerCommand("intake", intakeCommand());
     NamedCommands.registerCommand("isCollected", isCollected());
+    NamedCommands.registerCommand("readyIntake", readyIntakeCommand());
+    NamedCommands.registerCommand("algaeAlign23", algaeCommand23());
+    NamedCommands.registerCommand("algaeAlign34", algaeCommand34());
+    NamedCommands.registerCommand("net", netCommand());
   }
 
   // public Command getConditionalCommand(){}
@@ -215,7 +229,7 @@ public class AutoLogic {
     tab.add("Available Auto Variants", availableAutos).withPosition(4, 2).withSize(2, 1);
     tab.addBoolean("readyToScore?", () -> AutoAlign.readyToScore());
     tab.addBoolean("Level?", () -> AutoAlign.isLevel());
-    tab.addBoolean("Close Enough?", () -> AutoAlign.isCloseEnough());
+    tab.addBoolean("Close Enough?", () -> AutoAlign.isCloseEnough(AutoAlign.AlignType.ALLB));
     tab.addBoolean("Stationary?", () -> AutoAlign.isStationary());
     tab.addBoolean("Low on time?", () -> AutoAlign.oneSecondLeft());
     tab.addDouble("MATCH TIME(TIMER FOR AUTO)", () -> DriverStation.getMatchTime());
@@ -235,7 +249,7 @@ public class AutoLogic {
     availableAutos.clearOptions();
 
     // filter based off gameobject count
-    availableAutos.setDefaultOption(defaultPath.getDisplayName(), defaultPath);
+    availableAutos.setDefaultOption(defaultPath.getDisplayName(), defaultPath.getDisplayName());
 
     List<AutoPath> autoCommandsList = commandsMap.get(numGameObjects);
 
@@ -243,7 +257,7 @@ public class AutoLogic {
     for (AutoPath auto : autoCommandsList) {
       if (auto.getStartPose().equals(startPositionChooser.getSelected())
           && auto.isVision() == isVision.getSelected()) {
-        availableAutos.addOption(auto.getDisplayName(), auto);
+        availableAutos.addOption(auto.getDisplayName(), auto.getDisplayName());
       }
     }
   }
@@ -251,10 +265,7 @@ public class AutoLogic {
   // get auto
 
   public static String getSelectedAutoName() {
-    if (availableAutos.getSelected() == null) {
-      return "nullAuto";
-    }
-    return availableAutos.getSelected().getAutoName();
+    return availableAutos.getSelectedName();
   }
 
   public static boolean chooserHasAutoSelected() {
@@ -263,7 +274,11 @@ public class AutoLogic {
 
   public static Command getSelectedAuto() {
     double waitTimer = autoDelayEntry.getDouble(0);
-    String autoName = availableAutos.getSelected().getAutoName();
+    AutoPath path = namesToAuto.get(getSelectedAutoName());
+    if (path == null) {
+      path = defaultPath;
+    }
+    String autoName = path.getAutoName();
 
     return Commands.waitSeconds(waitTimer)
         .andThen(AutoBuilder.buildAuto(autoName))
@@ -273,19 +288,56 @@ public class AutoLogic {
   // commands util
   public static Command scoreCommand() {
     if (r.superStructure != null) {
-      return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
-          .repeatedly()
-          .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
-          .withName("scoreCommand");
+      return new ConditionalCommand(
+          // If true:
+          AutoAlign.autoAlign(s.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB)
+              .repeatedly()
+              .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
+              .withName("scoreCommand"),
+          // If false:
+          Commands.none().withName("scoreCommand-empty"),
+          // Condition:
+          () -> ARMSENSOR_ENABLED && r.sensors.armSensor.booleanInClaw());
     }
-    return AutoAlign.autoAlign(s.drivebaseSubsystem, controls)
+    return AutoAlign.autoAlign(s.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB)
         .withName("scoreCommand-noSuperstructure");
+  }
+
+  public static Command algaeCommand23() {
+    if (r.superStructure != null) {
+      return AlgaeAlign.algaeAlign(s.drivebaseSubsystem, controls)
+          .repeatedly()
+          .withDeadline(r.superStructure.algaeLevelTwoThreeIntake())
+          .withName("algaeCommand23");
+    }
+    return Commands.none().withName("algaeCommand23");
+  }
+
+  public static Command algaeCommand34() {
+    if (r.superStructure != null) {
+      return AlgaeAlign.algaeAlign(s.drivebaseSubsystem, controls)
+          .repeatedly()
+          .withDeadline(r.superStructure.algaeLevelThreeFourIntake())
+          .withName("algaeCommand34");
+    }
+    return Commands.none().withName("algaeCommand34");
+  }
+
+  public static Command netCommand() {
+    if (r.superStructure != null) {
+      return BargeAlign.bargeScore(
+              s.drivebaseSubsystem, r.superStructure, () -> 0, () -> 0, () -> 0, () -> false)
+          .withName("net");
+    }
+    return Commands.none().withName("net");
   }
 
   public static Command intakeCommand() {
     if (r.superStructure != null) {
-      if (ARMSENSOR_ENABLED) {
-        return Commands.sequence(r.superStructure.coralPreIntake(), r.superStructure.coralIntake())
+      if (ARMSENSOR_ENABLED && INTAKE_SENSOR_ENABLED) {
+        return Commands.waitUntil(r.sensors.intakeSensor.inIntake())
+            .withTimeout(0.5)
+            .andThen(r.superStructure.autoCoralIntake())
             .withName("intake");
       }
     }
@@ -299,5 +351,13 @@ public class AutoLogic {
           .withName("isCollected");
     }
     return Commands.none().withName("isCollected");
+  }
+
+  public static Command readyIntakeCommand() {
+    if (r.superStructure != null) {
+
+      return r.superStructure.coralPreIntake().withName("readyIntake");
+    }
+    return Commands.none().withName("readyIntake");
   }
 }
