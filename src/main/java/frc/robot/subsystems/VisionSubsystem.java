@@ -31,6 +31,7 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 /*
  * All poses and transforms use the NWU (North-West-Up) coordinate system, where +X is
@@ -51,6 +52,9 @@ public class VisionSubsystem extends SubsystemBase {
   private static final double CAMERA_PITCH_RIGHT = Units.degreesToRadians(-8.3);
   private static final double CAMERA_YAW_LEFT = Units.degreesToRadians(-44.64);
   private static final double CAMERA_YAW_RIGHT = Units.degreesToRadians(46.42);
+  private static final double LINEAR_STD_DEV_FACTOR = 0.02;
+  private static final double STD_DEV_EXPONENT = 1.2;
+  private static final double ANGULAR_STD_DEV_FACTOR = 1.6;
   // left camera diffrences from center robot
   public static final Transform3d ROBOT_TO_CAM_LEFT =
       new Transform3d(
@@ -190,6 +194,9 @@ public class VisionSubsystem extends SubsystemBase {
       PhotonPipelineResult result,
       PhotonPoseEstimator estimator,
       StructPublisher<Pose3d> rawFieldPose3dEntry) {
+    if (result == null) {
+      return;
+    }
     // makes a different timestamp to keep track of time
     var RawTimestampSeconds = result.getTimestampSeconds();
     // for waiting until orange pi 5 syncing and getting rid old results
@@ -220,6 +227,7 @@ public class VisionSubsystem extends SubsystemBase {
       }
       // makes a field pose for logging
       var FieldPose = FieldPose3d.toPose2d();
+      int num_targets = result.targets.size();
       // gets distance
       var Distance =
           PhotonUtils.getDistanceToPose(
@@ -227,14 +235,27 @@ public class VisionSubsystem extends SubsystemBase {
               // gets closed tag and gets distance
               fieldLayout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d());
       // makes a pose that vision sees
+      double sum_of_the_distances = 0;
+      for (PhotonTrackedTarget target : result.targets) {
+        var dist =
+            PhotonUtils.getDistanceToPose(
+                FieldPose,
+                // gets closest tag and gets distance
+                fieldLayout.getTagPose(target.getFiducialId()).get().toPose2d());
+        sum_of_the_distances += dist;
+      }
+      double avg_distances = sum_of_the_distances / num_targets;
+      double stdDevFactor = Math.pow(avg_distances, STD_DEV_EXPONENT);
+      double linearStdDev = LINEAR_STD_DEV_FACTOR * stdDevFactor;
+      double angularStdDev = ANGULAR_STD_DEV_FACTOR * stdDevFactor;
       aprilTagsHelper.addVisionMeasurement(
-          // field pose
           FieldPose,
-          // timestamp
-          TimestampSeconds,
-          // start with STANDARD_DEVS, and for every meter of distance past 1 meter, add another
-          // DISTANCE_SC_STANDARD_DEVS to the standard devs
-          DISTANCE_SC_STANDARD_DEVS.times(Math.max(0, Distance - 1)).plus(STANDARD_DEVS));
+          RawTimestampSeconds,
+
+          //// Use one of these, first one is current second is what advantage kit example is
+          // DISTANCE_SC_STANDARD_DEVS.times(Math.max(0, distanceMeters -
+          // 1)).plus(STANDARD_DEVS));
+          VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
       // sets estimated current pose to estimated vision pose
       robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       // updates shuffleboard values
