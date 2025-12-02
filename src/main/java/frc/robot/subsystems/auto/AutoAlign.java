@@ -182,16 +182,16 @@ public class AutoAlign {
   private static final Pose2d rRedReefFaceKL =
       aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(l1RightOfReef);
 
-  private static class AutoAlignCommand extends Command {
+  public static class AutoAlignCommand extends Command {
 
-    protected final PIDController pidX = new PIDController(4, 0, 0);
-    protected final PIDController pidY = new PIDController(4, 0, 0);
-    protected final PIDController pidRotate = new PIDController(8, 0, 0);
+    public static PIDController pidX = new PIDController(4, 0, 0);
+    public static PIDController pidY = new PIDController(4, 0, 0);
+    public static PIDController pidRotate = new PIDController(8, 0, 0);
 
-    protected final CommandSwerveDrivetrain drive;
+    public final CommandSwerveDrivetrain drive;
     protected final Controls controls;
-    protected Pose2d branchPose;
-    protected AlignType type;
+    public Pose2d branchPose;
+    public AlignType type;
 
     private final SwerveRequest.FieldCentric driveRequest =
         new SwerveRequest.FieldCentric() // Add a 10% deadband
@@ -264,7 +264,7 @@ public class AutoAlign {
       };
     }
 
-    private static Pose2d getNearestBranch(Pose2d p) {
+    public static Pose2d getNearestBranch(Pose2d p) {
       List<Pose2d> branchPose2ds =
           AllianceUtils.isBlue()
               ? List.of(

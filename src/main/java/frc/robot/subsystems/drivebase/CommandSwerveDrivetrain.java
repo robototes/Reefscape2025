@@ -8,7 +8,16 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.ApplyFieldSpeeds;
+import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
+
+import choreo.auto.AutoFactory;
+import choreo.trajectory.SwerveSample;
+import choreo.trajectory.Trajectory;
+import choreo.trajectory.TrajectorySample;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
@@ -20,6 +29,13 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Robot;
+import frc.robot.generated.CompTunerConstants;
+import frc.robot.subsystems.auto.AutoAlign;
+import frc.robot.subsystems.auto.Routines;
+import frc.robot.subsystems.auto.AutoAlign.AutoAlignCommand;
+
+import java.net.Authenticator.RequestorType;
 import java.util.function.Supplier;
 
 /**
@@ -45,6 +61,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       new SwerveRequest.SysIdSwerveSteerGains();
   private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization =
       new SwerveRequest.SysIdSwerveRotation();
+  /*AutoAlign PID used in constructor for folloiwing choreo trajectories */
+private PIDController pidX = AutoAlign.AutoAlignCommand.pidX;
+private  PIDController pidY = AutoAlign.AutoAlignCommand.pidX;
+private PIDController pidRotate = AutoAlign.AutoAlignCommand.pidRotate;
+
+
+
+
+
 
   /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
   private final SysIdRoutine m_sysIdRoutineTranslation =
@@ -177,7 +202,31 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
     return run(() -> this.setControl(requestSupplier.get())).withName("Drivebase applyRequest()");
   }
-
+    
+     public void followTrajectory(SwerveSample sample) {
+        // Get the current pose of the robot
+        Pose2d pose = this.getState().Pose;
+     
+       
+          // Generate the next speeds for the robot
+       
+          ChassisSpeeds speeds = new ChassisSpeeds(
+              sample.vx + pidX.calculate(pose.getX(), sample.x),
+              sample.vy + pidY.calculate(pose.getY(), sample.y),
+              sample.omega + pidRotate.calculate(pose.getRotation().getRadians(), sample.heading)
+          );
+ 
+          // Apply the generated speeds
+          this.setControl(new SwerveRequest.ApplyFieldSpeeds().withSpeeds(speeds)
+          .withSpeeds(speeds));
+          
+      
+    }
+public SwerveRequest fieldRelative(ChassisSpeeds speeds) {
+  SwerveRequest req = new SwerveRequest.ApplyFieldSpeeds().withSpeeds(speeds);
+  return req;
+      
+}
   /**
    * Runs the SysId Quasistatic test in the given direction for the routine specified by {@link
    * #m_sysIdRoutineToApply}.
@@ -242,6 +291,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   // returns the speeds for logging purposes
   public ChassisSpeeds returnSpeeds() {
     return getState().Speeds;
+  }
+  public AutoFactory createAutoFactory() {
+ return new AutoFactory(
+ () -> getState().Pose,
+ this::resetPose,
+ this::followTrajectory,
+ true,
+ this
+ );
+ }
+
+  public Pose2d getPose() {
+    return getState().Pose;  //For AutoFactory constructor
   }
 
   // method for on-demand coasting control

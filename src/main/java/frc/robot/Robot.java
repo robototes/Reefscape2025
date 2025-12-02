@@ -5,6 +5,7 @@
 package frc.robot;
 
 import au.grapplerobotics.CanBridge;
+import choreo.auto.AutoFactory;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -42,6 +43,8 @@ public class Robot extends TimedRobot {
   public final Sensors sensors;
   public final SuperStructure superStructure;
   private final PowerDistribution PDH;
+  public AutoFactory autoFactory;
+  
 
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
@@ -55,6 +58,7 @@ public class Robot extends TimedRobot {
 
     sensors = new Sensors();
     subsystems = new Subsystems(sensors);
+    autoFactory = subsystems.drivebaseSubsystem.createAutoFactory();
     if (SubsystemConstants.DRIVEBASE_ENABLED) {
       AutoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
     }
@@ -146,9 +150,11 @@ public class Robot extends TimedRobot {
     Shuffleboard.startRecording();
     if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.getSelectedAuto() != null) {
       AutoLogic.getSelectedAuto().schedule();
-    }
-    if (subsystems.climbPivotSubsystem != null) {
-      subsystems.climbPivotSubsystem.moveCompleteFalse();
+      // new Routines().runRoutine2().schedule();
+
+      if (subsystems.climbPivotSubsystem != null) {
+        subsystems.climbPivotSubsystem.moveCompleteFalse();
+      }
     }
   }
 

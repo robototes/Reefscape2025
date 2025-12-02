@@ -50,7 +50,7 @@ public class AutoLogic {
     MISC("Misc", null);
 
     final String title; // for shuffleboard display
-    final Pose2d startPose; // for identifying path's starting positions for filtering
+     final Pose2d startPose; // for identifying path's starting positions for filtering
 
     StartPosition(String title, Pose2d startPose) {
       this.title = title;
@@ -111,7 +111,8 @@ public class AutoLogic {
           new AutoPath("MRSF_G-F_WithWait", "MRSF_G-F_WithWait"),
           new AutoPath("MRSF_G-H", "MRSF_G-H"),
           new AutoPath("MLSF_H-K_Cooking", "MLSF_H-K_Cooking"),
-          new AutoPath("MLSF_H-G", "MLSF_H-G"));
+          new AutoPath("MLSF_H-G", "MLSF_H-G"),
+          new AutoPath("CHOREO TEST", "CHOREO TEST"));
 
   private static List<AutoPath> threePiecePaths =
       List.of(
@@ -166,13 +167,13 @@ public class AutoLogic {
           new InstantCommand(() -> controls.vibrateDriveController(0.0)));
 
   // shuffleboard
-  private static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
+  public static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
 
-  private static SendableChooser<StartPosition> startPositionChooser =
+  public static SendableChooser<StartPosition> startPositionChooser =
       new SendableChooser<StartPosition>();
-  private static DynamicSendableChooser<String> availableAutos =
+  public static DynamicSendableChooser<String> availableAutos =
       new DynamicSendableChooser<String>();
-  private static SendableChooser<Integer> gameObjects = new SendableChooser<Integer>();
+  public static SendableChooser<Integer> gameObjects = new SendableChooser<Integer>();
   private static SendableChooser<Boolean> isVision = new SendableChooser<Boolean>();
 
   private static GenericEntry autoDelayEntry;
@@ -182,7 +183,7 @@ public class AutoLogic {
     // param: String commandName, Command command
 
     // Intake
-    NamedCommands.registerCommand("scoreCommand", scoreCommand());
+    NamedCommands.registerCommand("scoreCommand", scoreTestCommand());
     NamedCommands.registerCommand("intake", intakeCommand());
     NamedCommands.registerCommand("isCollected", isCollected());
     NamedCommands.registerCommand("readyIntake", readyIntakeCommand());
@@ -206,9 +207,27 @@ public class AutoLogic {
       throws FileVersionException, IOException, ParseException {
     // Load the path you want to follow using its name in the GUI
     PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-
     // Create a path following command using AutoBuilder. This will also trigger event markers.
     return AutoBuilder.followPath(path);
+  }
+
+  public static Command testAuto() throws FileVersionException, IOException, ParseException {
+
+    return Commands.sequence(
+        AutoBuilder.resetOdom(getResetPose("OSM to F"))
+            .andThen(getAutoCommand("OSM to F"))
+            .andThen(scoreCommand())
+            .andThen(Commands.parallel(getAutoCommand("F to RSF")).alongWith(readyIntakeCommand()))
+            .andThen(isCollected())
+            .andThen(Commands.sequence(getAutoCommand("RSF to E")).alongWith(intakeCommand()))
+            .andThen(scoreCommand())
+            .andThen(readyIntakeCommand()));
+  }
+
+  public static Pose2d getResetPose(String path)
+      throws FileVersionException, IOException, ParseException {
+    PathPlannerPath planner = PathPlannerPath.fromPathFile(path);
+    return planner.getStartingDifferentialPose();
   }
 
   public static void initShuffleBoard() {
@@ -293,6 +312,23 @@ public class AutoLogic {
           AutoAlign.autoAlign(s.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB)
               .repeatedly()
               .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
+              .withName("scoreCommand"),
+          // If false:
+          Commands.none().withName("scoreCommand-empty"),
+          // Condition:
+          () -> ARMSENSOR_ENABLED && r.sensors.armSensor.booleanInClaw());
+    }
+    return AutoAlign.autoAlign(s.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB)
+        .withName("scoreCommand-noSuperstructure");
+  }
+
+  public static Command scoreTestCommand() {
+    if (r.superStructure != null) {
+      return new ConditionalCommand(
+          // If true:
+          AutoAlign.autoAlign(s.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB)
+              .repeatedly()
+              .withDeadline(r.superStructure.coralLevelOne(() -> AutoAlign.readyToScore()))
               .withName("scoreCommand"),
           // If false:
           Commands.none().withName("scoreCommand-empty"),
