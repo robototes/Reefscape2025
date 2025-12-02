@@ -29,6 +29,7 @@ import java.util.Optional;
 
 public class VisionSubsystem extends SubsystemBase {
   // Limelight names must match your NT names
+
   private static final String LIMELIGHT_LEFT = Hardware.LEFT_LIMELIGHT;
   private static final String LIMELIGHT_RIGHT = Hardware.RIGHT_LIMELIGHT;
   private static final double LINEAR_STD_DEV_FACTOR = 0.02;
@@ -68,11 +69,11 @@ public class VisionSubsystem extends SubsystemBase {
           .publish();
 
   // state
-
   private double lastTimestampSeconds = 0;
   private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
   private double distance = 0;
   private double tagAmbiguity = 0;
+  private RawFiducial closestRawFiducial;
 
   public VisionSubsystem(DrivebaseWrapper aprilTagsHelper) {
     this.aprilTagsHelper = aprilTagsHelper;
@@ -130,7 +131,9 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   private void processLimelight(LLCamera camera, StructPublisher<Pose3d> rawFieldPoseEntry) {
-    if (disableVision.getBoolean(false)) return;
+    if (disableVision.getBoolean(false)) {
+      return;
+    }
     BetterPoseEstimate estimate = camera.getBetterPoseEstimate();
 
     if (estimate != null) {
@@ -160,7 +163,6 @@ public class VisionSubsystem extends SubsystemBase {
         aprilTagsHelper.addVisionMeasurement(
             fieldPose3d.toPose2d(),
             timestampSeconds,
-
             //// Use one of these, first one is current(start with STANDARD_DEVS, and for every
             // meter of distance past 1 meter,
             /// add another DISTANCE_SC_STANDARD_DEVS to the standard devs) second is what advantage
@@ -189,13 +191,16 @@ public class VisionSubsystem extends SubsystemBase {
 
   private void processFiducials(RawFiducial rf) {
     // distance to closest fiducial
-    double distanceMeters = distance;
     Optional<Pose3d> tagPose = fieldLayout.getTagPose(rf.id);
+    double lastBestDistance = 0;
     if (tagPose.isPresent()) {
-      distanceMeters = rf.distToCamera;
+      this.distance = rf.distToCamera;
+      this.tagAmbiguity = rf.ambiguity;
+      if (lastBestDistance < rf.distToCamera) {
+        lastBestDistance = rf.distToCamera;
+        this.closestRawFiducial = rf;
+      }
     }
-    distance = distanceMeters;
-    tagAmbiguity = rf.ambiguity;
   }
 
   public double getLastTimestampSeconds() {
@@ -224,7 +229,6 @@ public class VisionSubsystem extends SubsystemBase {
   //     if (!isValid) {
   //       return true;
   //     }
-
   //   return false;
   // }
 }
