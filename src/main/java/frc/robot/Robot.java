@@ -24,6 +24,7 @@ import frc.robot.subsystems.auto.AutoBuilderConfig;
 import frc.robot.subsystems.auto.AutoLogic;
 import frc.robot.subsystems.auto.AutonomousField;
 import frc.robot.util.BuildInfo;
+import frc.robot.util.LimelightHelpers;
 import frc.robot.util.MatchTab;
 import frc.robot.util.RobotType;
 
@@ -120,7 +121,12 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    if (subsystems.visionSubsystem != null) {
+      LimelightHelpers.setPipelineIndex(Hardware.LEFT_LIMELIGHT, 0);
+      LimelightHelpers.setPipelineIndex(Hardware.RIGHT_LIMELIGHT, 0);
+    }
+  }
 
   @Override
   public void disabledPeriodic() {}
