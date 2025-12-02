@@ -1,0 +1,23 @@
+[versions]
+wpilib = "2025.3.2"
+spotless = "6.20.0"
+errorpronePlugin = "4.0.1"
+errorproneCore = "2.28.0"
+errorproneAnnotations = "2.28.0"
+junit = "5.10.1"
+junitPlatform = "1.10.1"
+
+[libraries]
+wpilib-java = { module = "edu.wpi.first.gradle:edu.wpi.first.gradle.gradle.plugin", version.ref = "wpilib" }
+spotless-plugin = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
+errorprone-plugin = { module = "net.ltgt.gradle:gradle-errorprone-plugin", version.ref = "errorpronePlugin" }
+
+errorprone-annotations = { module = "com.google.errorprone:error_prone_annotations", version.ref = "errorproneAnnotations" }
+errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorproneCore" }
+
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junitPlatform" }
+[plugins]
+wpilib = { id = "edu.wpi.first.GradleRIO", version.ref = "wpilib" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+errorprone = { id = "net.ltgt.errorprone", version.ref = "errorpronePlugin" }
