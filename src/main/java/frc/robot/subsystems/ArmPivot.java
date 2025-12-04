@@ -78,6 +78,7 @@ public class ArmPivot extends SubsystemBase {
   private final TalonFX motor;
 
   // Testing tuning entry :P
+  private final boolean TUNING_ENABLED = false;
   private final GainsTuningEntry PIDtuner =
       new GainsTuningEntry(
           "ArmPivot",
@@ -241,16 +242,16 @@ public class ArmPivot extends SubsystemBase {
   public void periodic() {
     // Error that ensures the motor is connected
     NotConnectedError.set(notConnectedDebouncer.calculate(!motor.getMotorVoltage().hasUpdated()));
-
-    Slot0Configs pidTunerConfigs = new Slot0Configs();
-    pidTunerConfigs.kP = PIDtuner.getP();
-    pidTunerConfigs.kI = PIDtuner.getI();
-    pidTunerConfigs.kD = PIDtuner.getD();
-    pidTunerConfigs.kS = PIDtuner.getS();
-    pidTunerConfigs.kV = PIDtuner.getV();
-    pidTunerConfigs.kA = PIDtuner.getA();
-    pidTunerConfigs.kG = ARMPIVOT_KG;
-    motor.getConfigurator().apply(pidTunerConfigs);
+    if (TUNING_ENABLED){
+      Slot0Configs pidTunerConfigs = new Slot0Configs();
+      pidTunerConfigs.kP = PIDtuner.getP();
+      pidTunerConfigs.kI = PIDtuner.getI();
+      pidTunerConfigs.kD = PIDtuner.getD();
+      pidTunerConfigs.kS = PIDtuner.getS();
+      pidTunerConfigs.kV = PIDtuner.getV();
+      pidTunerConfigs.kA = PIDtuner.getA();
+      pidTunerConfigs.kG = ARMPIVOT_KG;
+      motor.getConfigurator().apply(pidTunerConfigs);}
   }
 }
 //  -Samuel "Big North" Mallick

@@ -15,12 +15,14 @@ public class GainsTuningEntry {
   private NetworkTableEntry kVEntry;
   private NetworkTableEntry kSEntry;
   private NetworkTableEntry kGEntry;
+  public boolean updated = true;
 
   /* Base PID Feedback entires. Excludes kA, kV, kS, and kG
    *
    */
-  public GainsTuningEntry(String SubsystemName, double kp, double ki, double kd) {
-    table = NetworkTableInstance.getDefault().getTable("Gains/" + SubsystemName);
+  public GainsTuningEntry(String subsystemName, double kp, double ki, double kd) {
+    table = NetworkTableInstance.getDefault().getTable("Gains/" + subsystemName);
+    this.kSubsystemName = subsystemName;
     kPEntry = table.getEntry("kP");
     kIEntry = table.getEntry("kI");
     kDEntry = table.getEntry("kD");
@@ -37,7 +39,7 @@ public class GainsTuningEntry {
    *
    */
   public GainsTuningEntry(
-      String SubsystemName,
+      String subsystemName,
       double kp,
       double ki,
       double kd,
@@ -45,7 +47,7 @@ public class GainsTuningEntry {
       double kv,
       double ks,
       double kg) {
-    this(SubsystemName, kp, ki, kd);
+    this(subsystemName, kp, ki, kd);
     kAEntry = table.getEntry("kA");
     kVEntry = table.getEntry("kV");
     kSEntry = table.getEntry("kS");
@@ -60,8 +62,8 @@ public class GainsTuningEntry {
    *
    */
   public GainsTuningEntry(
-      String SubsystemName, double kp, double ki, double kd, double kv, double ks, double kg) {
-    this(SubsystemName, kp, ki, kd);
+      String subsystemName, double kp, double ki, double kd, double kv, double ks, double kg) {
+    this(subsystemName, kp, ki, kd);
     kVEntry = table.getEntry("kV");
     kSEntry = table.getEntry("kS");
     kGEntry = table.getEntry("kG");
@@ -88,7 +90,7 @@ public class GainsTuningEntry {
 
   public double getA() {
     if (kAEntry == null) {
-      return -1;
+      return 0;
     } else {
       return kAEntry.getDouble(0);
     }
@@ -96,7 +98,7 @@ public class GainsTuningEntry {
 
   public double getV() {
     if (kVEntry == null) {
-      return -1;
+      return 0;
     } else {
       return kVEntry.getDouble(0);
     }
@@ -104,7 +106,7 @@ public class GainsTuningEntry {
 
   public double getS() {
     if (kSEntry == null) {
-      return -1;
+      return 0;
     } else {
       return kSEntry.getDouble(0);
     }
@@ -112,7 +114,7 @@ public class GainsTuningEntry {
 
   public double getG() {
     if (kGEntry == null) {
-      return -1;
+      return 0;
     } else {
       return kGEntry.getDouble(0);
     }
