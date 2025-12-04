@@ -242,7 +242,7 @@ public class ArmPivot extends SubsystemBase {
   public void periodic() {
     // Error that ensures the motor is connected
     NotConnectedError.set(notConnectedDebouncer.calculate(!motor.getMotorVoltage().hasUpdated()));
-    if (TUNING_ENABLED){
+    if (TUNING_ENABLED) {
       Slot0Configs pidTunerConfigs = new Slot0Configs();
       pidTunerConfigs.kP = PIDtuner.getP();
       pidTunerConfigs.kI = PIDtuner.getI();
@@ -251,7 +251,8 @@ public class ArmPivot extends SubsystemBase {
       pidTunerConfigs.kV = PIDtuner.getV();
       pidTunerConfigs.kA = PIDtuner.getA();
       pidTunerConfigs.kG = PIDtuner.getG();
-      motor.getConfigurator().apply(pidTunerConfigs);}
+      motor.getConfigurator().apply(pidTunerConfigs);
+    }
   }
 }
 //  -Samuel "Big North" Mallick
