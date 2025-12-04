@@ -250,7 +250,7 @@ public class ArmPivot extends SubsystemBase {
       pidTunerConfigs.kS = PIDtuner.getS();
       pidTunerConfigs.kV = PIDtuner.getV();
       pidTunerConfigs.kA = PIDtuner.getA();
-      pidTunerConfigs.kG = ARMPIVOT_KG;
+      pidTunerConfigs.kG = PIDtuner.getG();
       motor.getConfigurator().apply(pidTunerConfigs);}
   }
 }
