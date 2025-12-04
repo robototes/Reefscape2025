@@ -4,6 +4,7 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -28,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Hardware;
+import frc.robot.util.GainsTuningEntry;
 import java.util.function.Supplier;
 
 public class ArmPivot extends SubsystemBase {
@@ -74,6 +76,18 @@ public class ArmPivot extends SubsystemBase {
 
   // TalonFX
   private final TalonFX motor;
+
+  // Testing tuning entry :P
+  private final GainsTuningEntry PIDtuner =
+      new GainsTuningEntry(
+          "ArmPivot",
+          ARMPIVOT_KP,
+          ARMPIVOT_KI,
+          ARMPIVOT_KD,
+          ARMPIVOT_KA,
+          ARMPIVOT_KV,
+          ARMPIVOT_KS,
+          ARMPIVOT_KG);
 
   // alerts if motor is not connected.
   private final Alert NotConnectedError =
@@ -227,6 +241,16 @@ public class ArmPivot extends SubsystemBase {
   public void periodic() {
     // Error that ensures the motor is connected
     NotConnectedError.set(notConnectedDebouncer.calculate(!motor.getMotorVoltage().hasUpdated()));
+
+    Slot0Configs pidTunerConfigs = new Slot0Configs();
+    pidTunerConfigs.kP = PIDtuner.getP();
+    pidTunerConfigs.kI = PIDtuner.getI();
+    pidTunerConfigs.kD = PIDtuner.getD();
+    pidTunerConfigs.kS = PIDtuner.getS();
+    pidTunerConfigs.kV = PIDtuner.getV();
+    pidTunerConfigs.kA = PIDtuner.getA();
+    pidTunerConfigs.kG = ARMPIVOT_KG;
+    motor.getConfigurator().apply(pidTunerConfigs);
   }
 }
 //  -Samuel "Big North" Mallick
