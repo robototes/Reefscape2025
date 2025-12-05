@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Hardware;
+import frc.robot.Constants.visionConstants_Misc;
 import frc.robot.util.SoloScoringMode;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -39,7 +39,7 @@ public class ElevatorLight extends SubsystemBase {
 
   public ElevatorLight() {
 
-    candle = new CANdle(Hardware.ELEVATOR_LED);
+    candle = new CANdle(visionConstants_Misc.ELEVATOR_LED);
     configureCandle();
     candle.clearAnimation(0);
     candle.setLEDs(128, 128, 128);
