@@ -15,9 +15,7 @@ class AllianceUtilsTest {
   @Test
   void testIsBlue() {
     try (MockedStatic<DriverStation> mockedDriverStation = mockStatic(DriverStation.class)) {
-      mockedDriverStation
-          .when(DriverStation::getAlliance)
-          .thenReturn(Optional.of(Alliance.Blue));
+      mockedDriverStation.when(DriverStation::getAlliance).thenReturn(Optional.of(Alliance.Blue));
 
       assertTrue(AllianceUtils.isBlue());
       assertFalse(AllianceUtils.isRed());
@@ -27,9 +25,7 @@ class AllianceUtilsTest {
   @Test
   void testIsRed() {
     try (MockedStatic<DriverStation> mockedDriverStation = mockStatic(DriverStation.class)) {
-      mockedDriverStation
-          .when(DriverStation::getAlliance)
-          .thenReturn(Optional.of(Alliance.Red));
+      mockedDriverStation.when(DriverStation::getAlliance).thenReturn(Optional.of(Alliance.Red));
 
       assertTrue(AllianceUtils.isRed());
       assertFalse(AllianceUtils.isBlue());
@@ -39,9 +35,7 @@ class AllianceUtilsTest {
   @Test
   void testNoAlliance() {
     try (MockedStatic<DriverStation> mockedDriverStation = mockStatic(DriverStation.class)) {
-      mockedDriverStation
-          .when(DriverStation::getAlliance)
-          .thenReturn(Optional.empty());
+      mockedDriverStation.when(DriverStation::getAlliance).thenReturn(Optional.empty());
 
       assertFalse(AllianceUtils.isBlue());
       assertFalse(AllianceUtils.isRed());
