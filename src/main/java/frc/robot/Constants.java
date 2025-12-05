@@ -169,7 +169,7 @@ public class Constants {
     public static final int GROUND_INTAKE_SPINNY_MOTOR = 46;
   }
 
-  public class spinnyClawConstants {
+  public static class SpinnyClawConstants {
     public static final double CORAL_INTAKE_SPEED = -6;
     public static final double CORAL_EXTAKE_SPEED = 5;
     public static final double CORAL_REJECT_SPEED = 1;
