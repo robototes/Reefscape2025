@@ -51,9 +51,6 @@ public class ClimbPivot extends SubsystemBase {
   private final double FORWARD_SOFT_STOP = -0.07;
   private final double REVERSE_SOFT_STOP = -78;
   private final double CLIMB_OUT_SPEED = 1.0;
-  private final double CLIMB_HOLD_STOWED = -0.001;
-  private final double CLIMB_HOLD_CLIMBOUT = -0.0;
-  private final double CLIMB_HOLD_CLIMBED = -0.0705;
   private final double CLIMB_IN_SPEED = -0.75;
 
   private final double climbInKp = 50;
@@ -74,7 +71,6 @@ public class ClimbPivot extends SubsystemBase {
   private TargetPositions selectedPos = TargetPositions.STOWED;
   private double maxTargetPos = STOWED_MAX_PRESET;
   private double minTargetPos = STOWED_MIN_PRESET;
-  private double holdSpeed = CLIMB_HOLD_STOWED;
 
   // if moveComplete is true it wont move regardless of if its in range. This is to ensure that
   // when disabled, when re-enabled it doesnt start moving.
@@ -190,7 +186,6 @@ public class ClimbPivot extends SubsystemBase {
         selectedPos = TargetPositions.CLIMB_OUT;
         maxTargetPos = CLIMB_OUT_MAX_PRESET;
         minTargetPos = CLIMB_OUT_MIN_PRESET;
-        holdSpeed = CLIMB_HOLD_STOWED;
         moveComplete = false;
       }
       case CLIMBED -> {
@@ -199,7 +194,6 @@ public class ClimbPivot extends SubsystemBase {
         selectedPos = TargetPositions.CLIMBED;
         maxTargetPos = CLIMBED_MAX_PRESET;
         minTargetPos = CLIMBED_MIN_PRESET;
-        holdSpeed = CLIMB_HOLD_CLIMBOUT;
         moveComplete = false;
       }
     }

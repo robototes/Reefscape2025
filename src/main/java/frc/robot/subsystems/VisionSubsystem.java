@@ -15,7 +15,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -25,7 +24,6 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
-import java.util.Optional;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
@@ -277,20 +275,5 @@ public class VisionSubsystem extends SubsystemBase {
   // divides to get it in meters with 4 decimal places to meters and then converts it to double
   public double getDistanceToTarget() {
     return (double) Math.round(Distance * 1000) / 1000;
-  }
-
-  // configured for 2025 reefscape to filter out any tag besides the reef tags depending on allaince
-  private static boolean BadAprilTagDetector(PhotonPipelineResult r) {
-    boolean isRed = DriverStation.getAlliance().equals(Optional.of(DriverStation.Alliance.Red));
-    boolean isBlue = DriverStation.getAlliance().equals(Optional.of(DriverStation.Alliance.Blue));
-    for (var t : r.getTargets()) {
-      boolean isRedReef = 6 <= t.getFiducialId() && t.getFiducialId() <= 11;
-      boolean isBlueReef = 17 <= t.getFiducialId() && t.getFiducialId() <= 22;
-      boolean isValid = isBlueReef && !isRed || isRedReef && !isBlue;
-      if (!isValid) {
-        return true;
-      }
-    }
-    return false;
   }
 }
