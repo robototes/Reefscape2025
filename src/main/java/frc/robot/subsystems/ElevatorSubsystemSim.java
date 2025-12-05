@@ -111,6 +111,18 @@ public class ElevatorSubsystemSim {
         (bottomZ + ((currentPositionRotations - minPos) / (maxPos - minPos)) * (topZ - bottomZ));
 double wristPos = dblSub.get();
 //System.out.println("Wrist pose is:" + wristPos)
-    m_posePublisher.set(new Pose3d(0.2, 0.0, targetZ, new Rotation3d(Units.degreesToRadians(-90), wristPos, Units.degreesToRadians(-90) )));
+    //m_posePublisher.set(new Pose3d(0.2, 0.0, targetZ, new Rotation3d(Units.degreesToRadians(180), wristPos + Units.degreesToRadians(180), Units.degreesToRadians(90) )));
+    m_posePublisher.set(new Pose3d(
+      0.2,
+      0.0,
+      targetZ,
+      new Rotation3d(
+          Units.degreesToRadians(180),   // keep vertical flip (roll)
+          wristPos,                      // keep pitch as is
+          Units.degreesToRadians(90)     // add 90° yaw to rotate wheels sideways
+      )
+  ));
+  
+  
   }
 }
