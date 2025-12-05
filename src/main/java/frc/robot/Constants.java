@@ -183,7 +183,7 @@ public class Constants {
     public static final int SPINNY_CLAW_MOTOR_ID = 40;
   }
 
-  public class visionConstants_Misc {
+  public static class VisionMiscConstants {
     // differences from center robot camera poses
     private static final double CAMERA_X_POS_METERS_LEFT = 0.26;
     private static final double CAMERA_X_POS_METERS_RIGHT = 0.27;
