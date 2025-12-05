@@ -90,7 +90,7 @@ public class Constants {
     public static final int CLIMB_PIVOT_CANCODER_ID = 52;
   }
 
-  public class elevatorConstants {
+  public static class ElevatorConstants {
     // Maximum is 38.34
     public static final double CORAL_LEVEL_FOUR_PRE_POS = 37.5;
     public static final double CORAL_LEVEL_FOUR_POS = 36;
