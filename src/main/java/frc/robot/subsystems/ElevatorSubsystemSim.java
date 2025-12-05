@@ -5,6 +5,7 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -51,7 +52,7 @@ public class ElevatorSubsystemSim {
             0.02, // Drum radius in meters (adjust for your spool/pulley)
             0.0, // Min height in meters
             1.93, // Max height in meters (~38 rotations / 19.68)
-            false, // Simulate gravity
+            true, // Simulate gravity
             0.0 // Starting height in meters
             );
   }
@@ -109,7 +110,7 @@ public class ElevatorSubsystemSim {
     double targetZ =
         (bottomZ + ((currentPositionRotations - minPos) / (maxPos - minPos)) * (topZ - bottomZ));
 double wristPos = dblSub.get();
-//System.out.println("Wrist pose is:" + wristPos);
-    m_posePublisher.set(new Pose3d(0.2, 0.0, targetZ, new Rotation3d(-90, wristPos + 90,-135)));
+//System.out.println("Wrist pose is:" + wristPos)
+    m_posePublisher.set(new Pose3d(0.2, 0.0, targetZ, new Rotation3d(Units.degreesToRadians(-90), wristPos, Units.degreesToRadians(-90) )));
   }
 }
