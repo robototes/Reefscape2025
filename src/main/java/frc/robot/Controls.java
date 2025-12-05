@@ -594,7 +594,7 @@ public class Controls {
           .schedule();
     }
 
-    // operatorController.rightBumper().whileTrue(s.elevatorConstants.holdCoastMode());
+    // operatorController.rightBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
     var elevatorCoastButton =
         Shuffleboard.getTab("Controls")
             .add("Elevator Coast Mode", false)
