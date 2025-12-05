@@ -9,14 +9,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Hardware;
+import frc.robot.Constants.groundSpinnyConstants;
 
 public class GroundSpinny extends SubsystemBase {
-  public static final double GROUND_INTAKE_SPEED = -8;
-  public static final double GROUND_INTAKE_JITTER_SPEED = 1;
-  public static final double FUNNEL_INTAKE_SPEED = -2;
-  public static final double QUICK_HANDOFF_EXTAKE_SPEED = 1;
-  private static final double STATOR_CURRENT_STALL_THRESHOLD = 50;
 
   // TalonFX
   private final TalonFX motor;
@@ -35,7 +30,7 @@ public class GroundSpinny extends SubsystemBase {
   }
 
   public GroundSpinny() {
-    motor = new TalonFX(Hardware.GROUND_INTAKE_SPINNY_MOTOR);
+    motor = new TalonFX(groundSpinnyConstants.GROUND_INTAKE_SPINNY_MOTOR);
     configMotors();
     logTabs();
   }
@@ -73,45 +68,53 @@ public class GroundSpinny extends SubsystemBase {
   }
 
   public Command setFunnelIntakePower() {
-    return setPower(FUNNEL_INTAKE_SPEED).withName("set funnel intake power");
+    return setPower(groundSpinnyConstants.FUNNEL_INTAKE_SPEED).withName("set funnel intake power");
   }
 
   public Command holdFunnelIntakePower() {
-    return holdPower(FUNNEL_INTAKE_SPEED).withName("hold funnel intake power");
+    return holdPower(groundSpinnyConstants.FUNNEL_INTAKE_SPEED)
+        .withName("hold funnel intake power");
   }
 
   public void imperativeSetGroundIntakePower() {
-    motor.setVoltage(GROUND_INTAKE_SPEED);
-    lastSetPower = GROUND_INTAKE_SPEED;
+    motor.setVoltage(groundSpinnyConstants.GROUND_INTAKE_SPEED);
+    lastSetPower = groundSpinnyConstants.GROUND_INTAKE_SPEED;
   }
 
   public Command setGroundIntakePower() {
-    return setPower(GROUND_INTAKE_SPEED).withName("set ground intake power");
+    return setPower(groundSpinnyConstants.GROUND_INTAKE_SPEED).withName("set ground intake power");
   }
 
   public Command holdGroundIntakePower() {
-    return holdPower(GROUND_INTAKE_SPEED).withName("hold ground intake power");
+    return holdPower(groundSpinnyConstants.GROUND_INTAKE_SPEED)
+        .withName("hold ground intake power");
   }
 
   public Command setQuickHandoffExtakeSpeed() {
-    return setPower(QUICK_HANDOFF_EXTAKE_SPEED).withName("set quick handoff extake power");
+    return setPower(groundSpinnyConstants.QUICK_HANDOFF_EXTAKE_SPEED)
+        .withName("set quick handoff extake power");
   }
 
   public Command holdQuickHandoffExtakeSpeed() {
-    return holdPower(QUICK_HANDOFF_EXTAKE_SPEED).withName("hold quick handoff extake power");
+    return holdPower(groundSpinnyConstants.QUICK_HANDOFF_EXTAKE_SPEED)
+        .withName("hold quick handoff extake power");
   }
 
   public Command setGroundIntakeJitterSpeed() {
-    return setPower(GROUND_INTAKE_JITTER_SPEED).withName("set ground intake jitter power");
+    return setPower(groundSpinnyConstants.GROUND_INTAKE_JITTER_SPEED)
+        .withName("set ground intake jitter power");
   }
 
   public Command holdGroundIntakeJitterSpeed() {
-    return holdPower(GROUND_INTAKE_JITTER_SPEED).withName("hold ground intake jitter power");
+    return holdPower(groundSpinnyConstants.GROUND_INTAKE_JITTER_SPEED)
+        .withName("hold ground intake jitter power");
   }
 
   public Trigger stalling() {
     return new Trigger(
-        () -> motor.getStatorCurrent().getValueAsDouble() > STATOR_CURRENT_STALL_THRESHOLD);
+        () ->
+            motor.getStatorCurrent().getValueAsDouble()
+                > groundSpinnyConstants.STATOR_CURRENT_STALL_THRESHOLD);
   }
 
   public Command stop() {

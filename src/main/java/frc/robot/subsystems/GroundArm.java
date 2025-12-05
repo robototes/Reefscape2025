@@ -9,31 +9,14 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Hardware;
+import frc.robot.Constants.groundArmConstants;
 
 public class GroundArm extends SubsystemBase {
-  private final double ARMPIVOT_KP = 40;
-  private final double ARMPIVOT_KI = 0;
-  private final double ARMPIVOT_KD = 0;
-  private final double ARMPIVOT_KS = 0.9;
-  private final double ARMPIVOT_KV = 4;
-  private final double ARMPIVOT_KG = 0.048;
-  private final double ARMPIVOT_KA = 0;
-  public static final double STOWED_POSITION = 0.46;
-  public static final double UP_POSITION =
-      0.27; // untested - should be somewhere in between stowed and ground
-  public static final double GROUND_POSITION = -0.050;
-  public static final double QUICK_INTAKE_POSITION = 0.31;
-  public static final double POS_TOLERANCE = Units.degreesToRotations(5);
-  public static final double GROUND_HOLD_VOLTAGE = -0.40;
-  // ratio from motor rotations to output rotations
-  private static final double ARM_RATIO = 60;
 
   // MotionMagic voltage
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
@@ -45,7 +28,7 @@ public class GroundArm extends SubsystemBase {
   private double targetPos;
 
   public GroundArm() {
-    motor = new TalonFX(Hardware.GROUND_INTAKE_ARM_MOTOR);
+    motor = new TalonFX(groundArmConstants.GROUND_INTAKE_ARM_MOTOR);
     configMotors();
     logTabs();
   }
@@ -55,9 +38,10 @@ public class GroundArm extends SubsystemBase {
     TalonFXConfigurator cfg = motor.getConfigurator();
     var talonFXConfiguration = new TalonFXConfiguration();
 
-    talonFXConfiguration.Feedback.FeedbackRemoteSensorID = Hardware.GROUND_INTAKE_ARM_ENCODER;
+    talonFXConfiguration.Feedback.FeedbackRemoteSensorID =
+        groundArmConstants.GROUND_INTAKE_ARM_ENCODER;
     talonFXConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-    talonFXConfiguration.Feedback.RotorToSensorRatio = ARM_RATIO;
+    talonFXConfiguration.Feedback.RotorToSensorRatio = groundArmConstants.ARM_RATIO;
 
     talonFXConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -70,13 +54,13 @@ public class GroundArm extends SubsystemBase {
 
     // PID
     // set slot 0 gains
-    talonFXConfiguration.Slot0.kS = ARMPIVOT_KS;
-    talonFXConfiguration.Slot0.kV = ARMPIVOT_KV;
-    talonFXConfiguration.Slot0.kA = ARMPIVOT_KA;
-    talonFXConfiguration.Slot0.kP = ARMPIVOT_KP;
-    talonFXConfiguration.Slot0.kI = ARMPIVOT_KI;
-    talonFXConfiguration.Slot0.kD = ARMPIVOT_KD;
-    talonFXConfiguration.Slot0.kG = ARMPIVOT_KG;
+    talonFXConfiguration.Slot0.kS = groundArmConstants.ARMPIVOT_KS;
+    talonFXConfiguration.Slot0.kV = groundArmConstants.ARMPIVOT_KV;
+    talonFXConfiguration.Slot0.kA = groundArmConstants.ARMPIVOT_KA;
+    talonFXConfiguration.Slot0.kP = groundArmConstants.ARMPIVOT_KP;
+    talonFXConfiguration.Slot0.kI = groundArmConstants.ARMPIVOT_KI;
+    talonFXConfiguration.Slot0.kD = groundArmConstants.ARMPIVOT_KD;
+    talonFXConfiguration.Slot0.kG = groundArmConstants.ARMPIVOT_KG;
     talonFXConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
     // set Motion Magic settings in motor rps not mechanism units
@@ -127,7 +111,8 @@ public class GroundArm extends SubsystemBase {
   }
 
   public Trigger atPosition(double position) {
-    return new Trigger(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE);
+    return new Trigger(
+        () -> Math.abs(getCurrentPosition() - position) < groundArmConstants.POS_TOLERANCE);
   }
 
   public Command stop() {

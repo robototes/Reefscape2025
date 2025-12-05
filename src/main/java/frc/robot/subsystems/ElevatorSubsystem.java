@@ -23,48 +23,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Hardware;
+import frc.robot.Constants.elevatorConstants;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  // Maximum is 38.34
-  public static final double CORAL_LEVEL_FOUR_PRE_POS = 37.5;
-  public static final double CORAL_LEVEL_FOUR_POS = 36;
-  public static final double CORAL_LEVEL_THREE_PRE_POS = 18.65;
-  public static final double CORAL_LEVEL_THREE_POS = 14;
-  public static final double CORAL_LEVEL_TWO_PRE_POS = 6.94;
-  public static final double CORAL_LEVEL_TWO_POS = 4.4;
-  public static final double CORAL_LEVEL_ONE_POS = 4.2;
-  public static final double ALGAE_LEVEL_TWO_THREE = 11;
-  public static final double ALGAE_LEVEL_TWO_THREE_FLING = 16;
-  public static final double ALGAE_LEVEL_THREE_FOUR = 21;
-  public static final double ALGAE_LEVEL_THREE_FOUR_FLING = 25;
-  public static final double ALGAE_STOWED = 2;
-  public static final double ALGAE_PROCESSOR_SCORE = 2;
-  public static final double ALGAE_NET_SCORE = 38; // untested
-  public static final double ALGAE_GROUND_INTAKE = 0.05;
-  public static final double CORAL_STOWED = CORAL_LEVEL_TWO_PRE_POS;
-  public static final double CORAL_GROUND_INTAKE_POS = 7.2;
-  public static final double CORAL_INTAKE_POS = 1.55;
-  public static final double CORAL_PRE_INTAKE = 4.7;
-  public static final double CORAL_QUICK_INTAKE = 1.6;
-  public static final double MIN_EMPTY_GROUND_INTAKE = 4.5;
-  public static final double MIN_FULL_GROUND_INTAKE = 8.0;
-  public static final double MANUAL = 0.1;
-  private static final double POS_TOLERANCE = 0.1;
-  private final double ELEVATOR_KP = 7.804;
-  private final double ELEVATOR_KI = 0;
-  private final double ELEVATOR_KD = 0.079221;
-  private final double ELEVATOR_KS = 0.33878;
-  private final double ELEVATOR_KV = 0.12975;
-  private final double ELEVATOR_KA = 0.0070325;
-  private final double REVERSE_SOFT_LIMIT = -0.05;
-  private final double FORWARD_SOFT_LIMIT = 38;
-  public static final double UP_VOLTAGE = 5;
-  private final double DOWN_VOLTAGE = -3;
-  private final double HOLD_VOLTAGE = 0.6;
   // create a Motion Magic request, voltage output
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
 
@@ -100,8 +64,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   /** Subsystem constructor. */
   public ElevatorSubsystem() {
     // m_encoder.setDistancePerPulse(Constants.kElevatorEncoderDistPerPulse);
-    m_motor = new TalonFX(Hardware.ELEVATOR_MOTOR_ONE, "Drivebase");
-    m_motor2 = new TalonFX(Hardware.ELEVATOR_MOTOR_TWO, "Drivebase");
+    m_motor = new TalonFX(elevatorConstants.ELEVATOR_MOTOR_ONE, "Drivebase");
+    m_motor2 = new TalonFX(elevatorConstants.ELEVATOR_MOTOR_TWO, "Drivebase");
     m_motorOneSimState = m_motor.getSimState();
     m_motorTwoSimState = m_motor2.getSimState();
     motorConfigs();
@@ -170,9 +134,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     TalonFXConfiguration configuration = new TalonFXConfiguration();
 
     // enable stator current limit
-    configuration.CurrentLimits.StatorCurrentLimit = 160;
+    configuration.CurrentLimits.StatorCurrentLimit = elevatorConstants.CURRENT_STATOR_LIMIT;
     configuration.CurrentLimits.StatorCurrentLimitEnable = true;
-    configuration.CurrentLimits.SupplyCurrentLimit = 80;
+    configuration.CurrentLimits.SupplyCurrentLimit = elevatorConstants.CURRENT_SUPPLY_LIMIT;
     configuration.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     // create brake mode for motors
@@ -182,12 +146,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     talonFXConfigurator2.apply(configuration);
 
     // set slot 0 gains
-    configuration.Slot0.kS = ELEVATOR_KS;
-    configuration.Slot0.kV = ELEVATOR_KV;
-    configuration.Slot0.kA = ELEVATOR_KA;
-    configuration.Slot0.kP = ELEVATOR_KP;
-    configuration.Slot0.kI = ELEVATOR_KI;
-    configuration.Slot0.kD = ELEVATOR_KD;
+    configuration.Slot0.kS = elevatorConstants.ELEVATOR_KS;
+    configuration.Slot0.kV = elevatorConstants.ELEVATOR_KV;
+    configuration.Slot0.kA = elevatorConstants.ELEVATOR_KA;
+    configuration.Slot0.kP = elevatorConstants.ELEVATOR_KP;
+    configuration.Slot0.kI = elevatorConstants.ELEVATOR_KI;
+    configuration.Slot0.kD = elevatorConstants.ELEVATOR_KD;
 
     // set Motion Magic settings
     // Bottom to full: ~40 rotations
@@ -226,7 +190,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean atPosition(double position) {
-    return MathUtil.isNear(position, getCurrentPosition(), POS_TOLERANCE);
+    return MathUtil.isNear(position, getCurrentPosition(), elevatorConstants.POS_TOLERANCE);
   }
 
   public boolean getHasBeenZeroed() {
@@ -254,7 +218,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public Trigger above(double position) {
-    return new Trigger(() -> getCurrentPosition() >= position - POS_TOLERANCE);
+    return new Trigger(() -> getCurrentPosition() >= position - elevatorConstants.POS_TOLERANCE);
   }
 
   public Command resetPosZero() {
@@ -301,18 +265,18 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public Command goUp() {
-    return defer(() -> setLevel(getCurrentPosition() + MANUAL));
+    return defer(() -> setLevel(getCurrentPosition() + elevatorConstants.MANUAL));
   }
 
   public Command goDown() {
-    return defer(() -> setLevel(getCurrentPosition() - MANUAL));
+    return defer(() -> setLevel(getCurrentPosition() - elevatorConstants.MANUAL));
   }
 
   public Command goUpPower(DoubleSupplier scale) {
     return runEnd(
             () -> {
-              m_motor.setVoltage(scale.getAsDouble() * UP_VOLTAGE);
-              m_motor2.setVoltage(scale.getAsDouble() * -UP_VOLTAGE);
+              m_motor.setVoltage(scale.getAsDouble() * elevatorConstants.UP_VOLTAGE);
+              m_motor2.setVoltage(scale.getAsDouble() * -elevatorConstants.UP_VOLTAGE);
             },
             () -> {
               m_motor.stopMotor();
@@ -326,8 +290,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   public Command goDownPower(DoubleSupplier scale) {
     return startEnd(
             () -> {
-              m_motor.setVoltage(scale.getAsDouble() * DOWN_VOLTAGE);
-              m_motor2.setVoltage(scale.getAsDouble() * -DOWN_VOLTAGE);
+              m_motor.setVoltage(scale.getAsDouble() * elevatorConstants.DOWN_VOLTAGE);
+              m_motor2.setVoltage(scale.getAsDouble() * -elevatorConstants.DOWN_VOLTAGE);
             },
             () -> {
               m_motor.stopMotor();

@@ -1,6 +1,14 @@
 package frc.robot;
 
-import static frc.robot.Subsystems.SubsystemConstants.*;
+import static frc.robot.Subsystems.SubsystemConstants.ARMPIVOT_ENABLED;
+import static frc.robot.Subsystems.SubsystemConstants.CLIMBPIVOT_ENABLED;
+import static frc.robot.Subsystems.SubsystemConstants.DRIVEBASE_ENABLED;
+import static frc.robot.Subsystems.SubsystemConstants.ELEVATOR_ENABLED;
+import static frc.robot.Subsystems.SubsystemConstants.ELEVATOR_LED_ENABLED;
+import static frc.robot.Subsystems.SubsystemConstants.GROUND_ARM_ENABLED;
+import static frc.robot.Subsystems.SubsystemConstants.GROUND_SPINNY_ENABLED;
+import static frc.robot.Subsystems.SubsystemConstants.SPINNYCLAW_ENABLED;
+import static frc.robot.Subsystems.SubsystemConstants.VISION_ENABLED;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generated.BonkTunerConstants;
