@@ -606,7 +606,7 @@ public class Controls {
     // new Trigger(() -> elevatorZeroButton.get())
     //     .debounce(1, DebounceType.kRising)
     //     .and(RobotModeTriggers.disabled())
-    //     .onTrue(s.elevatorConstants.resetPosZero());
+    //     .onTrue(s.elevatorSubsystem.resetPosZero());
   }
 
   private void configureArmPivotBindings() {
