@@ -53,7 +53,7 @@ public class Constants {
     public static final int MAIN_ARM_SENSOR = 35;
   }
 
-  public class climbConstants {
+  public static class ClimbConstants {
     // various position and speed presets
     public static final double STOWED_MAX_PRESET = -0.447;
     public static final double STOWED_MIN_PRESET = -0.450;
