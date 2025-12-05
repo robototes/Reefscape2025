@@ -137,7 +137,7 @@ public class Constants {
     public static final int ELEVATOR_MOTOR_TWO = 21;
   }
 
-  public class groundArmConstants {
+  public static class GroundArmConstants {
     public static final double ARMPIVOT_KP = 40;
     public static final double ARMPIVOT_KI = 0;
     public static final double ARMPIVOT_KD = 0;
