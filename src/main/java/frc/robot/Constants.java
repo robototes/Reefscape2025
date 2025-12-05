@@ -160,7 +160,7 @@ public class Constants {
     public static final int GROUND_INTAKE_SENSOR = 48;
   }
 
-  public class groundSpinnyConstants {
+  public static class GroundSpinnyConstants {
     public static final double GROUND_INTAKE_SPEED = -8;
     public static final double GROUND_INTAKE_JITTER_SPEED = 1;
     public static final double FUNNEL_INTAKE_SPEED = -2;
