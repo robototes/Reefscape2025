@@ -39,6 +39,7 @@ import frc.robot.util.RobotType;
 import frc.robot.util.ScoringMode;
 import frc.robot.util.ScoringType;
 import frc.robot.util.SoloScoringMode;
+import frc.robot.util.WheelRadiusCharacterization;
 import java.util.function.BooleanSupplier;
 
 public class Controls {
@@ -1112,13 +1113,18 @@ public class Controls {
                         : Commands.none())
                 .withName("Manual Coral Intake"));
     // Ground Intake Hold out
+    // soloController
+    //     .povUp()
+    //     .whileTrue(
+    //         s.groundArm
+    //             .moveToPosition(GroundArm.GROUND_POSITION)
+    //             .andThen(Commands.idle())
+    //             .withName("ground up position"));
     soloController
         .povUp()
-        .whileTrue(
-            s.groundArm
-                .moveToPosition(GroundArm.GROUND_POSITION)
-                .andThen(Commands.idle())
-                .withName("ground up position"));
+        .and(soloController.start())
+        .onTrue(
+            WheelRadiusCharacterization.wheelRadiusCharacterizationCommand(s.drivebaseSubsystem));
     // Arm manual
     soloController
         .rightStick()

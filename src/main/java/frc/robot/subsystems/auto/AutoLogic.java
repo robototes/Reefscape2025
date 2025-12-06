@@ -35,6 +35,7 @@ public class AutoLogic {
   public static Robot r = Robot.getInstance();
   public static final Subsystems s = r.subsystems;
   public static final Controls controls = r.controls;
+  public static final boolean RUN_MEASUREMENT_AUTO = false;
 
   public static enum StartPosition {
     FAR_LEFT_CAGE(
