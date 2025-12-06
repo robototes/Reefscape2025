@@ -34,13 +34,13 @@ import java.util.function.Supplier;
 
 public class ArmPivot extends SubsystemBase {
   // Presets
-  private final double ARMPIVOT_KP = 38.5; // previously 50
-  private final double ARMPIVOT_KI = 0;
-  private final double ARMPIVOT_KD = 0;
-  private final double ARMPIVOT_KS = 0.1;
-  private final double ARMPIVOT_KV = 0.69;
-  private final double ARMPIVOT_KG = 0.18;
-  private final double ARMPIVOT_KA = 0.0;
+  private double armPivot_kP = 38.5; // previously 50
+  private double armPivot_kI = 0;
+  private double armPivot_kD = 0;
+  private double armPivot_kS = 0.1;
+  private double armPivot_kV = 0.69;
+  private double armPivot_kG = 0.18;
+  private double armPivot_kA = 0.0;
   // Preset positions for Arm with Coral
   public static final double CORAL_PRESET_L1 = 0;
   public static final double CORAL_PRESET_L2 = 0.13;
@@ -78,17 +78,16 @@ public class ArmPivot extends SubsystemBase {
   private final TalonFX motor;
 
   // Testing tuning entry :P
-  private final boolean TUNING_ENABLED = false;
   private final GainsTuningEntry PIDtuner =
       new GainsTuningEntry(
           "ArmPivot",
-          ARMPIVOT_KP,
-          ARMPIVOT_KI,
-          ARMPIVOT_KD,
-          ARMPIVOT_KA,
-          ARMPIVOT_KV,
-          ARMPIVOT_KS,
-          ARMPIVOT_KG);
+          armPivot_kP,
+          armPivot_kI,
+          armPivot_kD,
+          armPivot_kA,
+          armPivot_kV,
+          armPivot_kS,
+          armPivot_kG);
 
   // alerts if motor is not connected.
   private final Alert NotConnectedError =
@@ -217,13 +216,13 @@ public class ArmPivot extends SubsystemBase {
 
     // PID
     // set slot 0 gains
-    talonFXConfiguration.Slot0.kS = ARMPIVOT_KS;
-    talonFXConfiguration.Slot0.kV = ARMPIVOT_KV;
-    talonFXConfiguration.Slot0.kA = ARMPIVOT_KA;
-    talonFXConfiguration.Slot0.kP = ARMPIVOT_KP;
-    talonFXConfiguration.Slot0.kI = ARMPIVOT_KI;
-    talonFXConfiguration.Slot0.kD = ARMPIVOT_KD;
-    talonFXConfiguration.Slot0.kG = ARMPIVOT_KG;
+    talonFXConfiguration.Slot0.kS = armPivot_kS;
+    talonFXConfiguration.Slot0.kV = armPivot_kV;
+    talonFXConfiguration.Slot0.kA = armPivot_kA;
+    talonFXConfiguration.Slot0.kP = armPivot_kP;
+    talonFXConfiguration.Slot0.kI = armPivot_kI;
+    talonFXConfiguration.Slot0.kD = armPivot_kD;
+    talonFXConfiguration.Slot0.kG = armPivot_kG;
     talonFXConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
     // set Motion Magic settings in rps not mechanism units
@@ -242,15 +241,35 @@ public class ArmPivot extends SubsystemBase {
   public void periodic() {
     // Error that ensures the motor is connected
     NotConnectedError.set(notConnectedDebouncer.calculate(!motor.getMotorVoltage().hasUpdated()));
-    if (TUNING_ENABLED) {
+
+    // checking if any of the PID gains have changed in gains tuner
+    if (PIDtuner.anyGainsChanged(
+        armPivot_kP,
+        armPivot_kI,
+        armPivot_kD,
+        armPivot_kA,
+        armPivot_kV,
+        armPivot_kS,
+        armPivot_kG)) {
+      armPivot_kP = PIDtuner.getP();
+      armPivot_kI = PIDtuner.getI();
+      armPivot_kD = PIDtuner.getD();
+      armPivot_kS = PIDtuner.getS();
+      armPivot_kV = PIDtuner.getV();
+      armPivot_kA = PIDtuner.getA();
+      armPivot_kG = PIDtuner.getG();
+
+      // creating a new Slot0Configs object to apply the new gains
       Slot0Configs pidTunerConfigs = new Slot0Configs();
-      pidTunerConfigs.kP = PIDtuner.getP();
-      pidTunerConfigs.kI = PIDtuner.getI();
-      pidTunerConfigs.kD = PIDtuner.getD();
-      pidTunerConfigs.kS = PIDtuner.getS();
-      pidTunerConfigs.kV = PIDtuner.getV();
-      pidTunerConfigs.kA = PIDtuner.getA();
-      pidTunerConfigs.kG = PIDtuner.getG();
+      pidTunerConfigs.kP = armPivot_kP;
+      pidTunerConfigs.kI = armPivot_kI;
+      pidTunerConfigs.kD = armPivot_kD;
+      pidTunerConfigs.kS = armPivot_kS;
+      pidTunerConfigs.kV = armPivot_kV;
+      pidTunerConfigs.kA = armPivot_kA;
+      pidTunerConfigs.kG = armPivot_kG;
+
+      // applying the new gains to the motor
       motor.getConfigurator().apply(pidTunerConfigs);
     }
   }

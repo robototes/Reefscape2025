@@ -15,7 +15,6 @@ public class GainsTuningEntry {
   private NetworkTableEntry kVEntry;
   private NetworkTableEntry kSEntry;
   private NetworkTableEntry kGEntry;
-  public boolean updated = true;
 
   /* Base PID Feedback entires. Excludes kA, kV, kS, and kG
    *
@@ -76,18 +75,22 @@ public class GainsTuningEntry {
     return kSubsystemName;
   }
 
+  // Get proportional gain (P)
   public double getP() {
     return kPEntry.getDouble(0);
   }
 
+  // Get integral gain (I)
   public double getI() {
     return kIEntry.getDouble(0);
   }
 
+  // Get derivative gain (D)
   public double getD() {
     return kDEntry.getDouble(0);
   }
 
+  // Get acceleration gain (A)
   public double getA() {
     if (kAEntry == null) {
       return 0;
@@ -96,6 +99,7 @@ public class GainsTuningEntry {
     }
   }
 
+  // Get velocity gain (V)
   public double getV() {
     if (kVEntry == null) {
       return 0;
@@ -104,6 +108,7 @@ public class GainsTuningEntry {
     }
   }
 
+  // Get static gain (S)
   public double getS() {
     if (kSEntry == null) {
       return 0;
@@ -112,11 +117,60 @@ public class GainsTuningEntry {
     }
   }
 
+  // Get gravity gain (G)
   public double getG() {
     if (kGEntry == null) {
       return 0;
     } else {
       return kGEntry.getDouble(0);
     }
+  }
+
+  /* Check if any gains have changed using the current values from the subsystem.
+   * Compares all gains: P, I, D, A, V, S, G
+   */
+  public boolean anyGainsChanged(
+      double currentP,
+      double currentI,
+      double currentD,
+      double currentA,
+      double currentV,
+      double currentS,
+      double currentG) {
+
+    return (currentP != getP()
+        || currentI != getI()
+        || currentD != getD()
+        || currentA != getA()
+        || currentV != getV()
+        || currentS != getS()
+        || currentG != getG());
+  }
+
+  /* Check if any gains have changed using the current values from the subsystem.
+   * Compares P, I, D, V, S, G
+   */
+  public boolean pidffGainsChanged(
+      double currentP,
+      double currentI,
+      double currentD,
+      double currentV,
+      double currentS,
+      double currentG) {
+
+    return (currentP != getP()
+        || currentI != getI()
+        || currentD != getD()
+        || currentV != getV()
+        || currentS != getS()
+        || currentG != getG());
+  }
+
+  /* Check if any gains have changed using the current values from the subsystem.
+   * Compares P, I, D only
+   */
+  public boolean pidGainsChanged(double currentP, double currentI, double currentD) {
+
+    return (currentP != getP() || currentI != getI() || currentD != getD());
   }
 }
