@@ -29,6 +29,7 @@ public class WheelRadiusCharacterization {
               Math.hypot(
                   CompTunerConstants.BackRight.LocationX, CompTunerConstants.BackRight.LocationY)));
   private static final NumberFormat FORMATTER = new DecimalFormat("#0.000");
+  private static final int NUM_MODULES = 4;
 
   // get the wheel rotation positions of the swerve modules
   public static double[] getWheelRadiusCharacterizationPositions(CommandSwerveDrivetrain drive) {
@@ -51,8 +52,6 @@ public class WheelRadiusCharacterization {
                 Commands.run(
                     () -> {
                       double speed = limiter.calculate(WHEEL_RADIUS_MAX_VELOCITY);
-                      System.out.println(speed);
-                      // drive.runVelocity(new ChassisSpeeds(0.0, 0.0, speed));
                       SwerveRequest driveRequest =
                           new SwerveRequest.ApplyRobotSpeeds()
                               .withSpeeds(new ChassisSpeeds(0.0, 0.0, speed));
@@ -86,8 +85,8 @@ public class WheelRadiusCharacterization {
                         () -> {
                           double[] positions = getWheelRadiusCharacterizationPositions(drive);
                           double wheelDelta = 0.0;
-                          for (int i = 0; i < 4; i++) {
-                            wheelDelta += Math.abs(positions[i] - state.positions[i]) / 4.0;
+                          for (int i = 0; i < NUM_MODULES; i++) {
+                            wheelDelta += Math.abs(positions[i] - state.positions[i]) /  (double) NUM_MODULES;
                           }
                           wheelDelta *= 2 * Math.PI;
                           double wheelRadius = (state.gyroDelta * DRIVE_BASE_RADIUS) / wheelDelta;
@@ -109,7 +108,7 @@ public class WheelRadiusCharacterization {
   }
 
   private static class WheelRadiusCharacterizationState {
-    double[] positions = new double[4];
+    double[] positions = new double[NUM_MODULES];
     Rotation2d lastAngle = Rotation2d.kZero;
     double gyroDelta = 0.0;
   }
