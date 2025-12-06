@@ -16,7 +16,7 @@ public class GainsTuningEntry {
   private NetworkTableEntry kSEntry;
   private NetworkTableEntry kGEntry;
 
-  /* Base PID Feedback entires. Excludes kA, kV, kS, and kG
+  /** Base PID Feedback entires. Excludes kA, kV, kS, and kG
    *
    */
   public GainsTuningEntry(String subsystemName, double kp, double ki, double kd) {
@@ -34,7 +34,7 @@ public class GainsTuningEntry {
     kDEntry.setDouble(kd);
   }
 
-  /* With ALL Feedback + Feedforward entries, INCLUDING kA
+  /** With ALL Feedback + Feedforward entries, INCLUDING kA
    *
    */
   public GainsTuningEntry(
@@ -57,7 +57,7 @@ public class GainsTuningEntry {
     kGEntry.setDouble(kg);
   }
 
-  /* With Feedback + Feedforward entries, except kA
+  /** With Feedback + Feedforward entries, except kA
    *
    */
   public GainsTuningEntry(
@@ -75,58 +75,56 @@ public class GainsTuningEntry {
     return kSubsystemName;
   }
 
-  // Get proportional gain (P)
+  /** Get proportional gain (P)
+   * 
+   */
   public double getP() {
     return kPEntry.getDouble(0);
   }
 
-  // Get integral gain (I)
+    /** Get integral gain (I)
+     * 
+     */
   public double getI() {
     return kIEntry.getDouble(0);
   }
 
-  // Get derivative gain (D)
+    /** Get derivative gain (D)
+     * 
+     */
   public double getD() {
     return kDEntry.getDouble(0);
   }
 
-  // Get acceleration gain (A)
+    /** Get acceleration gain (A)
+     * 
+     */
   public double getA() {
-    if (kAEntry == null) {
-      return 0;
-    } else {
-      return kAEntry.getDouble(0);
-    }
+    return kAEntry != null ? kAEntry.getDouble(0) : 0;
   }
 
-  // Get velocity gain (V)
+    /** Get velocity gain (V)
+     * 
+     */
   public double getV() {
-    if (kVEntry == null) {
-      return 0;
-    } else {
-      return kVEntry.getDouble(0);
-    }
+    return kVEntry != null ? kVEntry.getDouble(0) : 0;
   }
 
-  // Get static gain (S)
+    /** Get static gain (S)
+     * 
+     */
   public double getS() {
-    if (kSEntry == null) {
-      return 0;
-    } else {
-      return kSEntry.getDouble(0);
-    }
+    return kSEntry != null ? kSEntry.getDouble(0) : 0;
   }
 
-  // Get gravity gain (G)
+    /** Get gravity gain (G)
+     * 
+     */
   public double getG() {
-    if (kGEntry == null) {
-      return 0;
-    } else {
-      return kGEntry.getDouble(0);
-    }
+    return kGEntry != null ? kGEntry.getDouble(0) : 0;
   }
 
-  /* Check if any gains have changed using the current values from the subsystem.
+  /** Check if any gains have changed using the current values from the subsystem.
    * Compares all gains: P, I, D, A, V, S, G
    */
   public boolean anyGainsChanged(
@@ -138,16 +136,11 @@ public class GainsTuningEntry {
       double currentS,
       double currentG) {
 
-    return (currentP != getP()
-        || currentI != getI()
-        || currentD != getD()
-        || currentA != getA()
-        || currentV != getV()
-        || currentS != getS()
-        || currentG != getG());
+    return (pidffGainsChanged(currentP, currentI, currentD, currentV, currentS, currentG)
+        || currentA != getA());
   }
 
-  /* Check if any gains have changed using the current values from the subsystem.
+  /** Check if any gains have changed using the current values from the subsystem.
    * Compares P, I, D, V, S, G
    */
   public boolean pidffGainsChanged(
@@ -158,15 +151,13 @@ public class GainsTuningEntry {
       double currentS,
       double currentG) {
 
-    return (currentP != getP()
-        || currentI != getI()
-        || currentD != getD()
+    return (pidGainsChanged(currentP, currentI, currentD)
         || currentV != getV()
         || currentS != getS()
         || currentG != getG());
   }
 
-  /* Check if any gains have changed using the current values from the subsystem.
+  /** Check if any gains have changed using the current values from the subsystem.
    * Compares P, I, D only
    */
   public boolean pidGainsChanged(double currentP, double currentI, double currentD) {
