@@ -77,7 +77,7 @@ public class ArmPivot extends SubsystemBase {
   // TalonFX
   private final TalonFX motor;
 
-  // Testing tuning entry :P
+  // Testing tuning entry for PID gains
   private final GainsTuningEntry PIDtuner =
       new GainsTuningEntry(
           "ArmPivot",
