@@ -86,7 +86,8 @@ public class WheelRadiusCharacterization {
                           double[] positions = getWheelRadiusCharacterizationPositions(drive);
                           double wheelDelta = 0.0;
                           for (int i = 0; i < NUM_MODULES; i++) {
-                            wheelDelta += Math.abs(positions[i] - state.positions[i]) /  (double) NUM_MODULES;
+                            wheelDelta +=
+                                Math.abs(positions[i] - state.positions[i]) / (double) NUM_MODULES;
                           }
                           wheelDelta *= 2 * Math.PI;
                           double wheelRadius = (state.gyroDelta * DRIVE_BASE_RADIUS) / wheelDelta;
