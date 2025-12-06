@@ -6,6 +6,8 @@ errorproneCore = "2.28.0"
 errorproneAnnotations = "2.28.0"
 junit = "5.10.1"
 junitPlatform = "1.10.1"
+mockito = "5.11.0"
+
 
 [libraries]
 wpilib-java = { module = "edu.wpi.first.gradle:edu.wpi.first.gradle.gradle.plugin", version.ref = "wpilib" }
@@ -17,6 +19,9 @@ errorprone-core = { module = "com.google.errorprone:error_prone_core", version.r
 
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junitPlatform" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+mockito-junit-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
+
 [plugins]
 wpilib = { id = "edu.wpi.first.GradleRIO", version.ref = "wpilib" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
