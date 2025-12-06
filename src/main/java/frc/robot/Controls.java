@@ -1121,7 +1121,7 @@ public class Controls {
     //             .andThen(Commands.idle())
     //             .withName("ground up position"));
     soloController
-        .povUp()
+        .povUp().and(soloController.start())
         .onTrue(
             WheelRadiusCharacterization.wheelRadiusCharacterizationCommand(s.drivebaseSubsystem));
     // Arm manual
