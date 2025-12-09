@@ -10,7 +10,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Hardware;
+import frc.robot.Constants.ArmPivotConstants;
 
 public class ArmSensor {
 
@@ -22,7 +22,7 @@ public class ArmSensor {
   private static final double CLAW_UPPER_LIMIT = 0.13;
 
   public ArmSensor() {
-    mainSensor = new LaserCan(Hardware.MAIN_ARM_SENSOR);
+    mainSensor = new LaserCan(ArmPivotConstants.MAIN_ARM_SENSOR);
     ConfigureSensor(mainSensor);
     ShuffleboardTab tab = Shuffleboard.getTab("ArmSensor");
     tab.addBoolean("inTrough", inTrough());

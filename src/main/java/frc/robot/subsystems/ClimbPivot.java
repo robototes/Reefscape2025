@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Hardware;
+import frc.robot.Constants.ClimbConstants;
 import java.util.function.DoubleSupplier;
 
 public class ClimbPivot extends SubsystemBase {
@@ -41,40 +41,15 @@ public class ClimbPivot extends SubsystemBase {
   // variable for the shuffleboard tab for consistency
   private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Climb");
 
-  // various position and speed presets
-  private final double STOWED_MAX_PRESET = -0.447;
-  private final double STOWED_MIN_PRESET = -0.450;
-  private final double CLIMB_OUT_MAX_PRESET = -0.150;
-  private final double CLIMB_OUT_MIN_PRESET = -0.177;
-  private final double CLIMBED_MAX_PRESET = -0.325;
-  private final double CLIMBED_MIN_PRESET = -0.34;
-  private final double FORWARD_SOFT_STOP = -0.07;
-  private final double REVERSE_SOFT_STOP = -78;
-  private final double CLIMB_OUT_SPEED = 1.0;
-  private final double CLIMB_HOLD_STOWED = -0.001;
-  private final double CLIMB_HOLD_CLIMBOUT = -0.0;
-  private final double CLIMB_HOLD_CLIMBED = -0.0705;
-  private final double CLIMB_IN_SPEED = -0.75;
-
-  private final double climbInKp = 50;
-  private final double climbOutKp = 50;
-
-  // positions for relation between motor encoder and WCP encoder
-  // relative to eachother, likely not accurately zero'ed when obtained.
-  private static final double MIN_ROTOR_POSITION = -50.45;
-  private static final double MAX_ROTOR_POSITION = 14.456;
-  private static final double MIN_ENCODER_POSITION = 0.611;
-  private static final double MAX_ENCODER_POSITION = 0.915;
-
   // two status variables
   public boolean isClimbOut = false;
   private boolean isStowed = true;
 
   // setting the starting target position
   private TargetPositions selectedPos = TargetPositions.STOWED;
-  private double maxTargetPos = STOWED_MAX_PRESET;
-  private double minTargetPos = STOWED_MIN_PRESET;
-  private double holdSpeed = CLIMB_HOLD_STOWED;
+  private double maxTargetPos = ClimbConstants.STOWED_MAX_PRESET;
+  private double minTargetPos = ClimbConstants.STOWED_MIN_PRESET;
+  private double holdSpeed = ClimbConstants.CLIMB_HOLD_STOWED;
 
   // if moveComplete is true it wont move regardless of if its in range. This is to ensure that
   // when disabled, when re-enabled it doesnt start moving.
@@ -99,17 +74,17 @@ public class ClimbPivot extends SubsystemBase {
 
   // here we go
   public ClimbPivot() {
-    motorLeft = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_LEFT_ID);
+    motorLeft = new TalonFX(ClimbConstants.CLIMB_PIVOT_MOTOR_LEFT_ID);
     // checking to instantiate the 2nd motor if two are installed. If only one is installed, the 2nd
     // one is set to null.
     if (DUAL_MOTORS) {
-      motorRight = new TalonFX(Hardware.CLIMB_PIVOT_MOTOR_RIGHT_ID);
+      motorRight = new TalonFX(ClimbConstants.CLIMB_PIVOT_MOTOR_RIGHT_ID);
     } else {
       motorRight = null;
     }
 
     // the failed climb sensor
-    sensor = new DigitalInput(Hardware.CLIMB_SENSOR);
+    sensor = new DigitalInput(ClimbConstants.CLIMB_SENSOR);
 
     // motor configuration and shuffleboard logging methods
     configure();
@@ -136,16 +111,17 @@ public class ClimbPivot extends SubsystemBase {
     TalonFXConfiguration configuration = new TalonFXConfiguration();
 
     // remote sensor values for the WCP encoder
-    configuration.Feedback.FeedbackRemoteSensorID = Hardware.CLIMB_PIVOT_CANCODER_ID;
+    configuration.Feedback.FeedbackRemoteSensorID = ClimbConstants.CLIMB_PIVOT_CANCODER_ID;
     configuration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
     // previously mentioned ratio calculation
     configuration.Feedback.RotorToSensorRatio =
-        (MAX_ROTOR_POSITION - MIN_ROTOR_POSITION) / (MAX_ENCODER_POSITION - MIN_ENCODER_POSITION);
+        (ClimbConstants.MAX_ROTOR_POSITION - ClimbConstants.MIN_ROTOR_POSITION)
+            / (ClimbConstants.MAX_ENCODER_POSITION - ClimbConstants.MIN_ENCODER_POSITION);
     // Set and enable current limit
-    configuration.CurrentLimits.StatorCurrentLimit = 150;
+    configuration.CurrentLimits.StatorCurrentLimit = ClimbConstants.CLIMB_STATOR_CURRENT_LIMIT;
     configuration.CurrentLimits.StatorCurrentLimitEnable = true;
-    configuration.CurrentLimits.SupplyCurrentLimit = 75;
+    configuration.CurrentLimits.SupplyCurrentLimit = ClimbConstants.CLIMB_SUPPLY_CURRENT_LIMIT;
     configuration.CurrentLimits.SupplyCurrentLimitEnable = true;
     // Enable brake mode
     configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -161,8 +137,8 @@ public class ClimbPivot extends SubsystemBase {
     // having softlimits enabled on both motors isnt great
     configuration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     configuration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    configuration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = FORWARD_SOFT_STOP;
-    configuration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_SOFT_STOP;
+    configuration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = ClimbConstants.FORWARD_SOFT_STOP;
+    configuration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = ClimbConstants.REVERSE_SOFT_STOP;
     talonFXConfigurator.apply(configuration);
     // OpposeMasterDirection can be changed based on climb design, not yet sure if 2nd motor will be
     // on opposite side
@@ -180,26 +156,26 @@ public class ClimbPivot extends SubsystemBase {
         // if stowed, it sets the pos its going to as stowed, and sets the target positions
         // also makes move complete false to indicate it will move
         selectedPos = TargetPositions.STOWED;
-        maxTargetPos = STOWED_MAX_PRESET;
-        minTargetPos = STOWED_MIN_PRESET;
+        maxTargetPos = ClimbConstants.STOWED_MAX_PRESET;
+        minTargetPos = ClimbConstants.STOWED_MIN_PRESET;
         moveComplete = false;
       }
       case CLIMB_OUT -> {
         // if climb_out, it sets the pos its going to as climb_out, and sets the target positions
         // also makes move complete false to indicate it will move
         selectedPos = TargetPositions.CLIMB_OUT;
-        maxTargetPos = CLIMB_OUT_MAX_PRESET;
-        minTargetPos = CLIMB_OUT_MIN_PRESET;
-        holdSpeed = CLIMB_HOLD_STOWED;
+        maxTargetPos = ClimbConstants.CLIMB_OUT_MAX_PRESET;
+        minTargetPos = ClimbConstants.CLIMB_OUT_MIN_PRESET;
+        holdSpeed = ClimbConstants.CLIMB_HOLD_STOWED;
         moveComplete = false;
       }
       case CLIMBED -> {
         // if climbed, it sets the pos its going to as climbed, and sets the target positions
         // also makes move complete false to indicate it will move
         selectedPos = TargetPositions.CLIMBED;
-        maxTargetPos = CLIMBED_MAX_PRESET;
-        minTargetPos = CLIMBED_MIN_PRESET;
-        holdSpeed = CLIMB_HOLD_CLIMBOUT;
+        maxTargetPos = ClimbConstants.CLIMBED_MAX_PRESET;
+        minTargetPos = ClimbConstants.CLIMBED_MIN_PRESET;
+        holdSpeed = ClimbConstants.CLIMB_HOLD_CLIMBOUT;
         moveComplete = false;
       }
     }
@@ -331,12 +307,14 @@ public class ClimbPivot extends SubsystemBase {
     double currentPos = getClimbPosition();
 
     // checks what state its in position wise and returns if its in that state
-    if (CLIMB_OUT_MIN_PRESET <= currentPos && currentPos <= CLIMB_OUT_MAX_PRESET) {
+    if (ClimbConstants.CLIMB_OUT_MIN_PRESET <= currentPos
+        && currentPos <= ClimbConstants.CLIMB_OUT_MAX_PRESET) {
       isClimbOut = true;
     } else {
       isClimbOut = false;
     }
-    if (STOWED_MIN_PRESET <= currentPos && currentPos <= STOWED_MAX_PRESET) {
+    if (ClimbConstants.STOWED_MIN_PRESET <= currentPos
+        && currentPos <= ClimbConstants.STOWED_MAX_PRESET) {
       isStowed = true;
     } else {
       isStowed = false;
@@ -397,11 +375,11 @@ public class ClimbPivot extends SubsystemBase {
             if (!moveComplete) {
               pError = minTargetPos - getClimbPosition();
               if (pError > 0) {
-                speedToSet = CLIMB_OUT_SPEED * pError * climbOutKp;
+                speedToSet = ClimbConstants.CLIMB_OUT_SPEED * pError * ClimbConstants.climbOutKp;
                 motorLeft.set(speedToSet);
                 setSpeed = speedToSet;
               } else {
-                speedToSet = CLIMB_IN_SPEED * -pError * climbInKp;
+                speedToSet = ClimbConstants.CLIMB_IN_SPEED * -pError * ClimbConstants.climbInKp;
                 motorLeft.set(speedToSet);
                 setSpeed = speedToSet;
               }

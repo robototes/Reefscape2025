@@ -24,11 +24,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ArmPivotConstants;
+import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.GroundArmConstants;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
-import frc.robot.subsystems.ArmPivot;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.GroundArm;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoAlgaeHeights;
 import frc.robot.subsystems.auto.AutoAlign;
@@ -513,7 +513,7 @@ public class Controls {
         .whileTrue(
             s.elevatorSubsystem
                 .startMovingVoltage(
-                    () -> Volts.of(ElevatorSubsystem.UP_VOLTAGE * -operatorController.getLeftY()))
+                    () -> Volts.of(ElevatorConstants.UP_VOLTAGE * -operatorController.getLeftY()))
                 .withName("Elevator Manual Control"));
     s.elevatorSubsystem.setRumble(
         (rumble) -> {
@@ -524,55 +524,55 @@ public class Controls {
         .and(elevatorTestController.y())
         .onTrue(
             s.elevatorSubsystem
-                .setLevel(ElevatorSubsystem.CORAL_LEVEL_FOUR_POS)
+                .setLevel(ElevatorConstants.CORAL_LEVEL_FOUR_POS)
                 .withName("Elevator L4"));
     connected(elevatorTestController)
         .and(elevatorTestController.x())
         .onTrue(
             s.elevatorSubsystem
-                .setLevel(ElevatorSubsystem.CORAL_LEVEL_THREE_POS)
+                .setLevel(ElevatorConstants.CORAL_LEVEL_THREE_POS)
                 .withName("Elevator L3"));
     connected(elevatorTestController)
         .and(elevatorTestController.b())
         .onTrue(
             s.elevatorSubsystem
-                .setLevel(ElevatorSubsystem.CORAL_LEVEL_TWO_POS)
+                .setLevel(ElevatorConstants.CORAL_LEVEL_TWO_POS)
                 .withName("Elevator L2"));
     connected(elevatorTestController)
         .and(elevatorTestController.a())
         .onTrue(
             s.elevatorSubsystem
-                .setLevel(ElevatorSubsystem.CORAL_LEVEL_ONE_POS)
+                .setLevel(ElevatorConstants.CORAL_LEVEL_ONE_POS)
                 .withName("Elevator L1"));
     connected(elevatorTestController)
         .and(elevatorTestController.rightBumper())
         .onTrue(
             s.elevatorSubsystem
-                .setLevel(ElevatorSubsystem.CORAL_INTAKE_POS)
+                .setLevel(ElevatorConstants.CORAL_INTAKE_POS)
                 .withName("Elevator IntakePos"));
     connected(elevatorTestController)
         .and(elevatorTestController.povUp())
         .onTrue(
             s.elevatorSubsystem
-                .setLevel(ElevatorSubsystem.ALGAE_LEVEL_THREE_FOUR)
+                .setLevel(ElevatorConstants.ALGAE_LEVEL_THREE_FOUR)
                 .withName("Elevator Algae L3-L4"));
     connected(elevatorTestController)
         .and(elevatorTestController.povLeft())
         .onTrue(
             s.elevatorSubsystem
-                .setLevel(ElevatorSubsystem.ALGAE_LEVEL_TWO_THREE)
+                .setLevel(ElevatorConstants.ALGAE_LEVEL_TWO_THREE)
                 .withName("Elevator Algae L2-L3"));
     connected(elevatorTestController)
         .and(elevatorTestController.povRight())
         .onTrue(
             s.elevatorSubsystem
-                .setLevel(ElevatorSubsystem.ALGAE_STOWED)
+                .setLevel(ElevatorConstants.ALGAE_STOWED)
                 .withName("Elevator Algae Stowed"));
     connected(elevatorTestController)
         .and(elevatorTestController.povDown())
         .onTrue(
             s.elevatorSubsystem
-                .setLevel(ElevatorSubsystem.ALGAE_PROCESSOR_SCORE)
+                .setLevel(ElevatorConstants.ALGAE_PROCESSOR_SCORE)
                 .withName("Elevator Processor"));
     connected(elevatorTestController)
         .and(elevatorTestController.leftBumper())
@@ -629,38 +629,44 @@ public class Controls {
     connected(armPivotSpinnyClawController)
         .and(armPivotSpinnyClawController.povRight())
         .onTrue(
-            s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_L4).withName("Arm L4 Preset"));
+            s.armPivotSubsystem
+                .moveToPosition(ArmPivotConstants.ARMPIVOT_CORAL_PRESET_L4)
+                .withName("Arm L4 Preset"));
     connected(armPivotSpinnyClawController)
         .and(armPivotSpinnyClawController.povLeft())
         .onTrue(
-            s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_L3).withName("Arm L3 Preset"));
+            s.armPivotSubsystem
+                .moveToPosition(ArmPivotConstants.ARMPIVOT_CORAL_PRESET_L3)
+                .withName("Arm L3 Preset"));
     connected(armPivotSpinnyClawController)
         .and(armPivotSpinnyClawController.povUp())
         .onTrue(
-            s.armPivotSubsystem.moveToPosition(ArmPivot.CORAL_PRESET_UP).withName("Arm Preset Up"));
+            s.armPivotSubsystem
+                .moveToPosition(ArmPivotConstants.ARMPIVOT_CORAL_PRESET_UP)
+                .withName("Arm Preset Up"));
     connected(armPivotSpinnyClawController)
         .and(armPivotSpinnyClawController.povDown())
         .onTrue(
             s.armPivotSubsystem
-                .moveToPosition(ArmPivot.CORAL_PRESET_DOWN)
+                .moveToPosition(ArmPivotConstants.ARMPIVOT_CORAL_PRESET_DOWN)
                 .withName("Arm Preset Down"));
     connected(armPivotSpinnyClawController)
         .and(armPivotSpinnyClawController.y())
         .onTrue(
             s.armPivotSubsystem
-                .moveToPosition(ArmPivot.ALGAE_REMOVE)
+                .moveToPosition(ArmPivotConstants.ARMPIVOT_ALGAE_REMOVE)
                 .withName("Algae Preset Remove"));
     connected(armPivotSpinnyClawController)
         .and(armPivotSpinnyClawController.b())
         .onTrue(
             s.armPivotSubsystem
-                .moveToPosition(ArmPivot.ALGAE_PROCESSOR_SCORE)
+                .moveToPosition(ArmPivotConstants.ARMPIVOT_ALGAE_PROCESSOR_SCORE)
                 .withName("Algae Preset Score"));
     connected(armPivotSpinnyClawController)
         .and(armPivotSpinnyClawController.a())
         .onTrue(
             s.armPivotSubsystem
-                .moveToPosition(ArmPivot.ALGAE_STOWED)
+                .moveToPosition(ArmPivotConstants.ARMPIVOT_ALGAE_STOWED)
                 .withName("Algae Preset Stowed"));
   }
 
@@ -855,14 +861,14 @@ public class Controls {
     }
     s.groundArm.setDefaultCommand(
         s.groundArm
-            .moveToPosition(GroundArm.STOWED_POSITION)
+            .moveToPosition(GroundArmConstants.STOWED_POSITION)
             .andThen(Commands.idle())
             .withName("Ground stowed position wait"));
     operatorController
         .rightBumper()
         .whileTrue(
             s.groundArm
-                .moveToPosition(GroundArm.GROUND_POSITION)
+                .moveToPosition(GroundArmConstants.GROUND_POSITION)
                 .andThen(Commands.idle())
                 .withName("ground up position"));
   }
@@ -1116,7 +1122,7 @@ public class Controls {
         .povUp()
         .whileTrue(
             s.groundArm
-                .moveToPosition(GroundArm.GROUND_POSITION)
+                .moveToPosition(GroundArmConstants.GROUND_POSITION)
                 .andThen(Commands.idle())
                 .withName("ground up position"));
     // Arm manual
@@ -1132,7 +1138,7 @@ public class Controls {
         .whileTrue(
             s.elevatorSubsystem
                 .startMovingVoltage(
-                    () -> Volts.of(ElevatorSubsystem.UP_VOLTAGE * -soloController.getLeftY()))
+                    () -> Volts.of(ElevatorConstants.UP_VOLTAGE * -soloController.getLeftY()))
                 .withName("Elevator Manual Control"));
   }
 }

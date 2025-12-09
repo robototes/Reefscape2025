@@ -15,21 +15,12 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Hardware;
+import frc.robot.Constants.SpinnyClawConstants;
 import frc.robot.sensors.ArmSensor;
 import frc.robot.util.ScoringMode;
 import java.util.function.Supplier;
 
 public class SpinnyClaw extends SubsystemBase {
-  public static final double CORAL_INTAKE_SPEED = -6;
-  public static final double CORAL_EXTAKE_SPEED = 5;
-  public static final double CORAL_REJECT_SPEED = 1;
-  public static final double CORAL_L1_EXTAKE_SPEED = 1.7;
-  public static final double ALGAE_INTAKE_SPEED = -4; // started at -3.5
-  public static final double ALGAE_GRIP_INTAKE_SPEED = -3; // started at -2.5
-  public static final double ALGAE_EXTAKE_SPEED = 14;
-  public static final double ALGAE_PROCESSOR_EXTAKE_SPEED = 8;
-  public static final double ALGAE_FLING_SPEED = 10;
   // Remove once we implement PID speed
   public static int placeholderPIDSpeed;
 
@@ -46,7 +37,7 @@ public class SpinnyClaw extends SubsystemBase {
   private double lastSetPower;
 
   public SpinnyClaw(ArmSensor armSensor) {
-    motor = new TalonFX(Hardware.SPINNY_CLAW_MOTOR_ID);
+    motor = new TalonFX(SpinnyClawConstants.SPINNY_CLAW_MOTOR_ID);
     this.armSensor = armSensor;
     configMotors();
     logTabs();
@@ -132,53 +123,56 @@ public class SpinnyClaw extends SubsystemBase {
   }
 
   public Command coralIntakePower() {
-    return setPower(CORAL_INTAKE_SPEED).withName("Intake power");
+    return setPower(SpinnyClawConstants.CORAL_INTAKE_SPEED).withName("Intake power");
   }
 
   public Command coralExtakePower() {
-    return setPower(CORAL_EXTAKE_SPEED).withName("Extake power");
+    return setPower(SpinnyClawConstants.CORAL_EXTAKE_SPEED).withName("Extake power");
   }
 
   public Command coralRejectPower() {
-    return setPower(CORAL_REJECT_SPEED).withName("Extake power");
+    return setPower(SpinnyClawConstants.CORAL_REJECT_SPEED).withName("Extake power");
   }
 
   public Command coralHoldIntakePower() {
-    return holdPower(CORAL_INTAKE_SPEED).withName("Hold intake power");
+    return holdPower(SpinnyClawConstants.CORAL_INTAKE_SPEED).withName("Hold intake power");
   }
 
   public Command coralHoldExtakePower() {
-    return holdPower(CORAL_EXTAKE_SPEED).withName("Hold extake power");
+    return holdPower(SpinnyClawConstants.CORAL_EXTAKE_SPEED).withName("Hold extake power");
   }
 
   public Command coralLevelOneHoldExtakePower() {
-    return holdPower(CORAL_L1_EXTAKE_SPEED).withName("Level 1 hold extake power");
+    return holdPower(SpinnyClawConstants.CORAL_L1_EXTAKE_SPEED)
+        .withName("Level 1 hold extake power");
   }
 
   // algae stuff
   public Command algaeIntakePower() {
-    return setPower(ALGAE_INTAKE_SPEED).withName("Algae intake power");
+    return setPower(SpinnyClawConstants.ALGAE_INTAKE_SPEED).withName("Algae intake power");
   }
 
   public Command
       algaeExtakePower() { // can change to net extake maybe? also bound as general extake though
-    return setPower(ALGAE_EXTAKE_SPEED).withName("Algae extake power");
+    return setPower(SpinnyClawConstants.ALGAE_EXTAKE_SPEED).withName("Algae extake power");
   }
 
   public Command algaeGripIntakePower() {
-    return setPower(ALGAE_GRIP_INTAKE_SPEED).withName("Algae grip intake power");
+    return setPower(SpinnyClawConstants.ALGAE_GRIP_INTAKE_SPEED)
+        .withName("Algae grip intake power");
   }
 
   public Command algaeHoldExtakePower() {
-    return holdPower(ALGAE_EXTAKE_SPEED).withName("Algae hold extake power");
+    return holdPower(SpinnyClawConstants.ALGAE_EXTAKE_SPEED).withName("Algae hold extake power");
   }
 
   public Command algaeExtakeProcessorPower() {
-    return setPower(ALGAE_PROCESSOR_EXTAKE_SPEED).withName("Algae processor extake power");
+    return setPower(SpinnyClawConstants.ALGAE_PROCESSOR_EXTAKE_SPEED)
+        .withName("Algae processor extake power");
   }
 
   public Command algaeFlingPower() {
-    return setPower(ALGAE_FLING_SPEED).withName("Algae fling power");
+    return setPower(SpinnyClawConstants.ALGAE_FLING_SPEED).withName("Algae fling power");
   }
 
   public Command stop() {

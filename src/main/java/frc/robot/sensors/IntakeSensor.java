@@ -9,7 +9,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Hardware;
+import frc.robot.Constants.GroundArmConstants;
 
 public class IntakeSensor {
 
@@ -19,7 +19,7 @@ public class IntakeSensor {
   private static final double INTAKE_UPPER_LIMIT = 0.05;
 
   public IntakeSensor() {
-    intakeSensor = new LaserCan(Hardware.GROUND_INTAKE_SENSOR);
+    intakeSensor = new LaserCan(GroundArmConstants.GROUND_INTAKE_SENSOR);
     ConfigureSensor(intakeSensor);
     ShuffleboardTab tab = Shuffleboard.getTab("IntakeSensor");
     tab.addBoolean("In Intake", inIntake());

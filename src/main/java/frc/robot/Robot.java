@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.VisionMiscConstants;
 import frc.robot.Subsystems.SubsystemConstants;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoBuilderConfig;
@@ -49,7 +50,7 @@ public class Robot extends TimedRobot {
     instance = this;
     robotType = RobotType.getCurrent();
     CanBridge.runTCP();
-    PDH = new PowerDistribution(Hardware.PDH_ID, ModuleType.kRev);
+    PDH = new PowerDistribution(VisionMiscConstants.PDH_ID, ModuleType.kRev);
     LiveWindow.disableAllTelemetry();
     LiveWindow.enableTelemetry(PDH);
 

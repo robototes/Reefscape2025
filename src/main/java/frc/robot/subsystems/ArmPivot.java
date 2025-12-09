@@ -15,7 +15,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -27,47 +26,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.Hardware;
+import frc.robot.Constants.ArmPivotConstants;
 import java.util.function.Supplier;
 
 public class ArmPivot extends SubsystemBase {
-  // Presets
-  private final double ARMPIVOT_KP = 38.5; // previously 50
-  private final double ARMPIVOT_KI = 0;
-  private final double ARMPIVOT_KD = 0;
-  private final double ARMPIVOT_KS = 0.1;
-  private final double ARMPIVOT_KV = 0.69;
-  private final double ARMPIVOT_KG = 0.18;
-  private final double ARMPIVOT_KA = 0.0;
-  // Preset positions for Arm with Coral
-  public static final double CORAL_PRESET_L1 = 0;
-  public static final double CORAL_PRESET_L2 = 0.13;
-  public static final double CORAL_PRESET_L3 = 0.13;
-  public static final double CORAL_PRESET_L4 = 0.0;
-  public static final double CORAL_PRESET_PRE_L4 = 1.0 / 16.0;
-  public static final double CORAL_PRESET_STOWED = 0.125;
-  public static final double CORAL_PRESET_OUT = 0;
-  public static final double CORAL_PRESET_UP = 0.25; // Pointing directly upwards
-  public static final double CORAL_PRESET_DOWN = -0.25;
-  // Preset positions for Arm with Algae
-  public static final double CORAL_POST_SCORE = -0.15;
-  public static final double CORAL_QUICK_INTAKE = -0.07;
-  public static final double ALGAE_REMOVE_PREPOS = 0;
-  public static final double ALGAE_REMOVE = 0;
-  public static final double ALGAE_FLING = -0.08;
-  public static final double ALGAE_STOWED = -0.05;
-  public static final double ALGAE_PROCESSOR_SCORE = -0.05;
-  public static final double ALGAE_GROUND_INTAKE = -0.085;
-  public static final double ALGAE_NET_SCORE = 0.175; // untested - old value was 0.18
-
-  // Other Presets
-  public static final double CORAL_PRESET_GROUND_INTAKE = 0;
-  public static final double HARDSTOP_HIGH = 0.32;
-  public static final double HARDSTOP_LOW = -0.26;
-  public static final double POS_TOLERANCE = Units.degreesToRotations(5);
-  public static final double PLACEHOLDER_CORAL_WEIGHT_KG = 0.8;
-  // Constant for gear ratio (the power that one motor gives to gear)
-  private static final double ARM_RATIO = (12.0 / 60.0) * (20.0 / 60.0) * (18.0 / 48.0);
 
   // create a Motion Magic request, voltage output
   private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
@@ -86,7 +48,7 @@ public class ArmPivot extends SubsystemBase {
 
   // Arm Pivot Contructor
   public ArmPivot() {
-    motor = new TalonFX(Hardware.ARM_PIVOT_MOTOR_ID);
+    motor = new TalonFX(ArmPivotConstants.ARM_PIVOT_MOTOR_ID);
     routine =
         new SysIdRoutine(
             new SysIdRoutine.Config(Volts.of(1).div(Seconds.of(1)), Volts.of(1), Seconds.of(2)),
@@ -127,7 +89,8 @@ public class ArmPivot extends SubsystemBase {
 
   // Boolean returning whether or not the arm is at the desired position
   public boolean atPosition(double position) {
-    return MathUtil.isNear(position, getCurrentPosition(), POS_TOLERANCE);
+    return MathUtil.isNear(
+        position, getCurrentPosition(), ArmPivotConstants.ARMPIVOT_POS_TOLERANCE);
   }
 
   // Returns the current target position (position the arm is to move to)
@@ -155,7 +118,8 @@ public class ArmPivot extends SubsystemBase {
   }
 
   public Trigger atAngle(double position) {
-    return new Trigger(() -> Math.abs(getCurrentPosition() - position) < POS_TOLERANCE);
+    return new Trigger(
+        () -> Math.abs(getCurrentPosition() - position) < ArmPivotConstants.ARMPIVOT_POS_TOLERANCE);
   }
 
   // (+) is to move arm up, and (-) is down. sets a voltage to pass to motor to move
@@ -185,9 +149,9 @@ public class ArmPivot extends SubsystemBase {
     var talonFXConfiguration = new TalonFXConfiguration();
     // specifies what the sensor is, what port its on, and what the gearing ratio for the sensor is
     // relative to the motor
-    talonFXConfiguration.Feedback.FeedbackRemoteSensorID = Hardware.ARM_PIVOT_CANDI_ID;
+    talonFXConfiguration.Feedback.FeedbackRemoteSensorID = ArmPivotConstants.ARM_PIVOT_CANDI_ID;
     talonFXConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANdiPWM1;
-    talonFXConfiguration.Feedback.RotorToSensorRatio = 1 / ARM_RATIO;
+    talonFXConfiguration.Feedback.RotorToSensorRatio = 1 / ArmPivotConstants.ARM_RATIO;
 
     // Inverting motor output direction
     talonFXConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -202,13 +166,13 @@ public class ArmPivot extends SubsystemBase {
 
     // PID
     // set slot 0 gains
-    talonFXConfiguration.Slot0.kS = ARMPIVOT_KS;
-    talonFXConfiguration.Slot0.kV = ARMPIVOT_KV;
-    talonFXConfiguration.Slot0.kA = ARMPIVOT_KA;
-    talonFXConfiguration.Slot0.kP = ARMPIVOT_KP;
-    talonFXConfiguration.Slot0.kI = ARMPIVOT_KI;
-    talonFXConfiguration.Slot0.kD = ARMPIVOT_KD;
-    talonFXConfiguration.Slot0.kG = ARMPIVOT_KG;
+    talonFXConfiguration.Slot0.kS = ArmPivotConstants.ARMPIVOT_KS;
+    talonFXConfiguration.Slot0.kV = ArmPivotConstants.ARMPIVOT_KV;
+    talonFXConfiguration.Slot0.kA = ArmPivotConstants.ARMPIVOT_KA;
+    talonFXConfiguration.Slot0.kP = ArmPivotConstants.ARMPIVOT_KP;
+    talonFXConfiguration.Slot0.kI = ArmPivotConstants.ARMPIVOT_KI;
+    talonFXConfiguration.Slot0.kD = ArmPivotConstants.ARMPIVOT_KD;
+    talonFXConfiguration.Slot0.kG = ArmPivotConstants.ARMPIVOT_KG;
     talonFXConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
     // set Motion Magic settings in rps not mechanism units
