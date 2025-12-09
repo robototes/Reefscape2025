@@ -9,7 +9,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.visionConstants_Misc;
+import frc.robot.Constants.VisionMiscConstants;
 
 public class BranchSensors {
 
@@ -23,8 +23,8 @@ public class BranchSensors {
   private static final double LEFT_SENSOR_MAX = 0.35;
 
   public BranchSensors() {
-    leftSensor = new LaserCan(visionConstants_Misc.BRANCH_SENSOR_LEFT);
-    rightSensor = new LaserCan(visionConstants_Misc.BRANCH_SENSOR_RIGHT);
+    leftSensor = new LaserCan(VisionMiscConstants.BRANCH_SENSOR_LEFT);
+    rightSensor = new LaserCan(VisionMiscConstants.BRANCH_SENSOR_RIGHT);
     ConfigureSensor(leftSensor);
     ConfigureSensor(rightSensor);
     ShuffleboardTab tab = Shuffleboard.getTab("BranchSensor");

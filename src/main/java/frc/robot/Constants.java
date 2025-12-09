@@ -8,6 +8,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 
 public class Constants {
+  private Constants() {}
+
   public static class ArmPivotConstants {
     // Presets
     public static final double ARMPIVOT_KP = 38.5; // previously 50

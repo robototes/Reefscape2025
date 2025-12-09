@@ -26,7 +26,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.Constants.armPivotConstants;
+import frc.robot.Constants.ArmPivotConstants;
 import java.util.function.Supplier;
 
 public class ArmPivot extends SubsystemBase {
@@ -48,7 +48,7 @@ public class ArmPivot extends SubsystemBase {
 
   // Arm Pivot Contructor
   public ArmPivot() {
-    motor = new TalonFX(armPivotConstants.ARM_PIVOT_MOTOR_ID);
+    motor = new TalonFX(ArmPivotConstants.ARM_PIVOT_MOTOR_ID);
     routine =
         new SysIdRoutine(
             new SysIdRoutine.Config(Volts.of(1).div(Seconds.of(1)), Volts.of(1), Seconds.of(2)),
@@ -90,7 +90,7 @@ public class ArmPivot extends SubsystemBase {
   // Boolean returning whether or not the arm is at the desired position
   public boolean atPosition(double position) {
     return MathUtil.isNear(
-        position, getCurrentPosition(), armPivotConstants.ARMPIVOT_POS_TOLERANCE);
+        position, getCurrentPosition(), ArmPivotConstants.ARMPIVOT_POS_TOLERANCE);
   }
 
   // Returns the current target position (position the arm is to move to)
@@ -119,7 +119,7 @@ public class ArmPivot extends SubsystemBase {
 
   public Trigger atAngle(double position) {
     return new Trigger(
-        () -> Math.abs(getCurrentPosition() - position) < armPivotConstants.ARMPIVOT_POS_TOLERANCE);
+        () -> Math.abs(getCurrentPosition() - position) < ArmPivotConstants.ARMPIVOT_POS_TOLERANCE);
   }
 
   // (+) is to move arm up, and (-) is down. sets a voltage to pass to motor to move
@@ -149,9 +149,9 @@ public class ArmPivot extends SubsystemBase {
     var talonFXConfiguration = new TalonFXConfiguration();
     // specifies what the sensor is, what port its on, and what the gearing ratio for the sensor is
     // relative to the motor
-    talonFXConfiguration.Feedback.FeedbackRemoteSensorID = armPivotConstants.ARM_PIVOT_CANDI_ID;
+    talonFXConfiguration.Feedback.FeedbackRemoteSensorID = ArmPivotConstants.ARM_PIVOT_CANDI_ID;
     talonFXConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANdiPWM1;
-    talonFXConfiguration.Feedback.RotorToSensorRatio = 1 / armPivotConstants.ARM_RATIO;
+    talonFXConfiguration.Feedback.RotorToSensorRatio = 1 / ArmPivotConstants.ARM_RATIO;
 
     // Inverting motor output direction
     talonFXConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -166,13 +166,13 @@ public class ArmPivot extends SubsystemBase {
 
     // PID
     // set slot 0 gains
-    talonFXConfiguration.Slot0.kS = armPivotConstants.ARMPIVOT_KS;
-    talonFXConfiguration.Slot0.kV = armPivotConstants.ARMPIVOT_KV;
-    talonFXConfiguration.Slot0.kA = armPivotConstants.ARMPIVOT_KA;
-    talonFXConfiguration.Slot0.kP = armPivotConstants.ARMPIVOT_KP;
-    talonFXConfiguration.Slot0.kI = armPivotConstants.ARMPIVOT_KI;
-    talonFXConfiguration.Slot0.kD = armPivotConstants.ARMPIVOT_KD;
-    talonFXConfiguration.Slot0.kG = armPivotConstants.ARMPIVOT_KG;
+    talonFXConfiguration.Slot0.kS = ArmPivotConstants.ARMPIVOT_KS;
+    talonFXConfiguration.Slot0.kV = ArmPivotConstants.ARMPIVOT_KV;
+    talonFXConfiguration.Slot0.kA = ArmPivotConstants.ARMPIVOT_KA;
+    talonFXConfiguration.Slot0.kP = ArmPivotConstants.ARMPIVOT_KP;
+    talonFXConfiguration.Slot0.kI = ArmPivotConstants.ARMPIVOT_KI;
+    talonFXConfiguration.Slot0.kD = ArmPivotConstants.ARMPIVOT_KD;
+    talonFXConfiguration.Slot0.kG = ArmPivotConstants.ARMPIVOT_KG;
     talonFXConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
     // set Motion Magic settings in rps not mechanism units

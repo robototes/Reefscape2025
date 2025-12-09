@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.visionConstants_Misc;
+import frc.robot.Constants.VisionMiscConstants;
 import java.util.Optional;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -84,8 +84,8 @@ public class VisionSubsystem extends SubsystemBase {
     this.aprilTagsHelper = aprilTagsHelper;
     rawVisionFieldObject = robotField.getObject("RawVision");
     // cameras init hardware wise
-    leftCamera = new PhotonCamera(visionConstants_Misc.LEFT_CAM);
-    rightCamera = new PhotonCamera(visionConstants_Misc.RIGHT_CAM);
+    leftCamera = new PhotonCamera(VisionMiscConstants.LEFT_CAM);
+    rightCamera = new PhotonCamera(VisionMiscConstants.RIGHT_CAM);
     // pose estimator inits for cameras with full field, multi-tag april tag detection and camera
     // differences from center robot
     // pose estimator is used to estimate the robot's position on the field based on the cameras
@@ -93,12 +93,12 @@ public class VisionSubsystem extends SubsystemBase {
         new PhotonPoseEstimator(
             fieldLayout,
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-            visionConstants_Misc.ROBOT_TO_CAM_LEFT);
+            VisionMiscConstants.ROBOT_TO_CAM_LEFT);
     photonPoseEstimatorRightCamera =
         new PhotonPoseEstimator(
             fieldLayout,
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-            visionConstants_Misc.ROBOT_TO_CAM_RIGHT);
+            VisionMiscConstants.ROBOT_TO_CAM_RIGHT);
     // vision shuffle board tab creation
     ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("AprilTags");
 
@@ -196,10 +196,9 @@ public class VisionSubsystem extends SubsystemBase {
           TimestampSeconds,
           // start with STANDARD_DEVS, and for every meter of distance past 1 meter, add another
           // DISTANCE_SC_STANDARD_DEVS to the standard devs
-          visionConstants_Misc
-              .DISTANCE_SC_STANDARD_DEVS
+          VisionMiscConstants.DISTANCE_SC_STANDARD_DEVS
               .times(Math.max(0, Distance - 1))
-              .plus(visionConstants_Misc.STANDARD_DEVS));
+              .plus(VisionMiscConstants.STANDARD_DEVS));
       // sets estimated current pose to estimated vision pose
       robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
       // updates shuffleboard values

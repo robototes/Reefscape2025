@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.groundArmConstants;
+import frc.robot.Constants.GroundArmConstants;
 
 public class GroundArm extends SubsystemBase {
 
@@ -28,7 +28,7 @@ public class GroundArm extends SubsystemBase {
   private double targetPos;
 
   public GroundArm() {
-    motor = new TalonFX(groundArmConstants.GROUND_INTAKE_ARM_MOTOR);
+    motor = new TalonFX(GroundArmConstants.GROUND_INTAKE_ARM_MOTOR);
     configMotors();
     logTabs();
   }
@@ -39,9 +39,9 @@ public class GroundArm extends SubsystemBase {
     var talonFXConfiguration = new TalonFXConfiguration();
 
     talonFXConfiguration.Feedback.FeedbackRemoteSensorID =
-        groundArmConstants.GROUND_INTAKE_ARM_ENCODER;
+        GroundArmConstants.GROUND_INTAKE_ARM_ENCODER;
     talonFXConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-    talonFXConfiguration.Feedback.RotorToSensorRatio = groundArmConstants.ARM_RATIO;
+    talonFXConfiguration.Feedback.RotorToSensorRatio = GroundArmConstants.ARM_RATIO;
 
     talonFXConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -54,13 +54,13 @@ public class GroundArm extends SubsystemBase {
 
     // PID
     // set slot 0 gains
-    talonFXConfiguration.Slot0.kS = groundArmConstants.ARMPIVOT_KS;
-    talonFXConfiguration.Slot0.kV = groundArmConstants.ARMPIVOT_KV;
-    talonFXConfiguration.Slot0.kA = groundArmConstants.ARMPIVOT_KA;
-    talonFXConfiguration.Slot0.kP = groundArmConstants.ARMPIVOT_KP;
-    talonFXConfiguration.Slot0.kI = groundArmConstants.ARMPIVOT_KI;
-    talonFXConfiguration.Slot0.kD = groundArmConstants.ARMPIVOT_KD;
-    talonFXConfiguration.Slot0.kG = groundArmConstants.ARMPIVOT_KG;
+    talonFXConfiguration.Slot0.kS = GroundArmConstants.ARMPIVOT_KS;
+    talonFXConfiguration.Slot0.kV = GroundArmConstants.ARMPIVOT_KV;
+    talonFXConfiguration.Slot0.kA = GroundArmConstants.ARMPIVOT_KA;
+    talonFXConfiguration.Slot0.kP = GroundArmConstants.ARMPIVOT_KP;
+    talonFXConfiguration.Slot0.kI = GroundArmConstants.ARMPIVOT_KI;
+    talonFXConfiguration.Slot0.kD = GroundArmConstants.ARMPIVOT_KD;
+    talonFXConfiguration.Slot0.kG = GroundArmConstants.ARMPIVOT_KG;
     talonFXConfiguration.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
     // set Motion Magic settings in motor rps not mechanism units
@@ -112,7 +112,7 @@ public class GroundArm extends SubsystemBase {
 
   public Trigger atPosition(double position) {
     return new Trigger(
-        () -> Math.abs(getCurrentPosition() - position) < groundArmConstants.POS_TOLERANCE);
+        () -> Math.abs(getCurrentPosition() - position) < GroundArmConstants.POS_TOLERANCE);
   }
 
   public Command stop() {
