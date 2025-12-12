@@ -1,13 +1,14 @@
 plugins {
     id "java"
-    id "com.diffplug.spotless" version "6.20.0"
-    id "net.ltgt.errorprone" version "4.0.1"
-    id "edu.wpi.first.GradleRIO" version "2025.3.2"
+    alias(libs.plugins.spotless)
+    alias(libs.plugins.errorprone)
+    alias(libs.plugins.wpilib)
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 def getProjectBooleanProperty(String name, boolean defaultValue = false) {
@@ -65,7 +66,8 @@ def includeDesktopSupport = true
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 5.
 dependencies {
-    compileOnly group: "com.google.errorprone", name: "error_prone_annotations", version: "2.28.0"
+    errorprone libs.errorprone.core
+    compileOnly libs.errorprone.annotations
 
     annotationProcessor wpi.java.deps.wpilibAnnotations()
     implementation wpi.java.deps.wpilib()
@@ -85,10 +87,8 @@ dependencies {
     nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
     simulationRelease wpi.sim.enableRelease()
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    errorprone group: "com.google.errorprone", name: "error_prone_core", version: "2.28.0"
+    testImplementation libs.junit.jupiter
+    testRuntimeOnly libs.junit.platform.launcher
 }
 
 test {

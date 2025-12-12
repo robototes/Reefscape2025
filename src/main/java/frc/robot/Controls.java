@@ -84,8 +84,7 @@ public class Controls {
       new SwerveRequest.FieldCentric()
           .withDeadband(0.0001)
           .withRotationalDeadband(0.0001)
-          .withDriveRequestType(
-              DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+          .withDriveRequestType(DriveRequestType.Velocity);
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
