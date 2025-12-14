@@ -39,7 +39,7 @@ import frc.robot.util.RobotType;
 import frc.robot.util.ScoringMode;
 import frc.robot.util.ScoringType;
 import frc.robot.util.SoloScoringMode;
-import java.util.function.BooleanSupplier;
+import frc.robot.util.slowMode;
 
 public class Controls {
   private static final int SOLO_CONTROLLER_PORT = 0;
@@ -79,6 +79,7 @@ public class Controls {
       RotationsPerSecond.of(0.75)
           .in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
+  private slowMode slowMode = new slowMode();
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
@@ -87,8 +88,6 @@ public class Controls {
           .withDriveRequestType(DriveRequestType.Velocity);
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
-
-  private final BooleanSupplier driveSlowMode;
 
   public Controls(Subsystems s, Sensors sensors, SuperStructure superStructure) {
     driverController = new CommandXboxController(DRIVER_CONTROLLER_PORT);
@@ -100,7 +99,6 @@ public class Controls {
     this.s = s;
     this.sensors = sensors;
     this.superStructure = superStructure;
-    driveSlowMode = driverController.start();
     configureDrivebaseBindings();
     configureSuperStructureBindings();
     configureElevatorBindings();
@@ -131,7 +129,7 @@ public class Controls {
     // Joystick +Y is back
     // Robot +X is forward
     double input = MathUtil.applyDeadband(-driverController.getLeftY(), 0.1);
-    double inputScale = driveSlowMode.getAsBoolean() ? 0.5 : 1;
+    double inputScale = slowMode.slowFactor();
     return input * MaxSpeed * inputScale;
   }
 
@@ -140,7 +138,7 @@ public class Controls {
     // Joystick +X is right
     // Robot +Y is left
     double input = MathUtil.applyDeadband(-driverController.getLeftX(), 0.1);
-    double inputScale = driveSlowMode.getAsBoolean() ? 0.5 : 1;
+    double inputScale = slowMode.slowFactor();
     return input * MaxSpeed * inputScale;
   }
 
@@ -149,7 +147,7 @@ public class Controls {
     // Joystick +X is right
     // Robot +angle is CCW (left)
     double input = MathUtil.applyDeadband(-driverController.getRightX(), 0.1);
-    double inputScale = driveSlowMode.getAsBoolean() ? 0.5 : 1;
+    double inputScale = slowMode.slowFactor();
     return input * MaxSpeed * inputScale;
   }
 
