@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
@@ -25,17 +27,12 @@ import frc.robot.Hardware;
 import frc.robot.util.BetterPoseEstimate;
 import frc.robot.util.LLCamera;
 import frc.robot.util.LimelightHelpers.RawFiducial;
-import java.util.Optional;
 
 public class VisionSubsystem extends SubsystemBase {
   // Limelight names must match your NT names
 
   private static final String LIMELIGHT_LEFT = Hardware.LEFT_LIMELIGHT;
   private static final String LIMELIGHT_RIGHT = Hardware.RIGHT_LIMELIGHT;
-  private static final double LINEAR_STD_DEV_FACTOR = 0.02;
-  private static final double STD_DEV_EXPONENT = 1.2;
-  private static final double ANGULAR_STD_DEV_FACTOR = 1.6;
-
   // Deviations
   private static final Vector<N3> STANDARD_DEVS =
       VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(20));
@@ -46,7 +43,7 @@ public class VisionSubsystem extends SubsystemBase {
   private static final AprilTagFieldLayout fieldLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
-  private final DrivebaseWrapper aprilTagsHelper;
+  private final DrivebaseWrapper drivebaseWrapper;
 
   private final Field2d robotField;
   private final FieldObject2d rawVisionFieldObject;
@@ -75,8 +72,8 @@ public class VisionSubsystem extends SubsystemBase {
   private double tagAmbiguity = 0;
   private RawFiducial closestRawFiducial;
 
-  public VisionSubsystem(DrivebaseWrapper aprilTagsHelper) {
-    this.aprilTagsHelper = aprilTagsHelper;
+  public VisionSubsystem(DrivebaseWrapper drivebaseWrapper) {
+    this.drivebaseWrapper = drivebaseWrapper;
 
     robotField = new Field2d();
     SmartDashboard.putData(robotField);
@@ -157,20 +154,15 @@ public class VisionSubsystem extends SubsystemBase {
       // return;
       // }
       if (!pose_bad) {
-        double stdDevFactor = Math.pow(estimate.avgTagDist, STD_DEV_EXPONENT);
-        double linearStdDev = LINEAR_STD_DEV_FACTOR * stdDevFactor;
-        double angularStdDev = ANGULAR_STD_DEV_FACTOR * stdDevFactor;
-        aprilTagsHelper.addVisionMeasurement(
+       
+        drivebaseWrapper.addVisionMeasurement(
             fieldPose3d.toPose2d(),
             timestampSeconds,
-            //// Use one of these, first one is current(start with STANDARD_DEVS, and for every
+            //start with STANDARD_DEVS, and for every
             // meter of distance past 1 meter,
-            /// add another DISTANCE_SC_STANDARD_DEVS to the standard devs) second is what advantage
-            // kit example is.
-            // DISTANCE_SC_STANDARD_DEVS.times(Math.max(0, distanceMeters -
-            // 1)).plus(STANDARD_DEVS));
-            VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
-        robotField.setRobotPose(aprilTagsHelper.getEstimatedPosition());
+            DISTANCE_SC_STANDARD_DEVS.times(Math.max(0, this.closestRawFiducial.distToRobot -
+            1)).plus(STANDARD_DEVS));
+        robotField.setRobotPose(drivebaseWrapper.getEstimatedPosition());
       }
       if (timestampSeconds > lastTimestampSeconds) {
         if (!pose_bad) {

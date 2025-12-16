@@ -4,8 +4,9 @@
 
 package frc.robot;
 
-import au.grapplerobotics.CanBridge;
 import com.pathplanner.lib.commands.FollowPathCommand;
+
+import au.grapplerobotics.CanBridge;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -121,8 +122,9 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     if (subsystems.visionSubsystem != null) {
-      LimelightHelpers.setPipelineIndex(Hardware.LEFT_LIMELIGHT, 0);
-      LimelightHelpers.setPipelineIndex(Hardware.RIGHT_LIMELIGHT, 0);
+      // ViewFinder Pipeline Switch to reduce Limelight heat
+      LimelightHelpers.setPipelineIndex(Hardware.LEFT_LIMELIGHT, 1);
+      LimelightHelpers.setPipelineIndex(Hardware.RIGHT_LIMELIGHT, 1);
     }
   }
 
@@ -143,6 +145,10 @@ public class Robot extends TimedRobot {
     if (subsystems.elevatorSubsystem != null) {
       subsystems.elevatorSubsystem.brakeMotors();
     }
+    if (subsystems.visionSubsystem != null) {
+      LimelightHelpers.setPipelineIndex(Hardware.LEFT_LIMELIGHT, 0);
+      LimelightHelpers.setPipelineIndex(Hardware.RIGHT_LIMELIGHT, 0);
+    }
   }
 
   @Override
@@ -154,6 +160,7 @@ public class Robot extends TimedRobot {
     if (subsystems.climbPivotSubsystem != null) {
       subsystems.climbPivotSubsystem.moveCompleteFalse();
     }
+    
   }
 
   @Override
