@@ -8,6 +8,8 @@ import au.grapplerobotics.CanBridge;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.therekrab.autopilot.APTarget;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -154,13 +156,13 @@ public class Robot extends TimedRobot {
 
       // AutoLogic.getSelectedAuto().schedule();
       subsystems.drivebaseSubsystem.resetPose(new Pose2d());
-      Commands.sequence(
+      //Commands.sequence(
               AutoPilotFinder.createAutopilotCommand(
                   new APTarget(
-                      new Pose2d(
-                          10, 5, subsystems.drivebaseSubsystem.getState().Pose.getRotation())),
-                  subsystems.drivebaseSubsystem),
-              AutoAlign.autoAlign(subsystems.drivebaseSubsystem, controls, AlignType.ALLB))
+                     
+                          new Pose2d(7.187, 0.811, subsystems.drivebaseSubsystem.getState().Pose.getRotation()
+                          .minus(Rotation2d.fromDegrees(54)))), subsystems.drivebaseSubsystem)
+              //AutoAlign.autoAlign(subsystems.drivebaseSubsystem, controls, AlignType.ALLB))
           .schedule();
     }
     if (subsystems.climbPivotSubsystem != null) {

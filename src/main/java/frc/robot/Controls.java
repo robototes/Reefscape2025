@@ -451,6 +451,7 @@ public class Controls {
     };
   }
 
+
   private Command getCoralBranchHeightCommand(ScoringType version) {
     if (version == ScoringType.SOLOC_LEFT) {
       return switch (branchHeight) {

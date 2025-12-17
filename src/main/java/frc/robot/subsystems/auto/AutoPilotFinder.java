@@ -48,9 +48,9 @@ public class AutoPilotFinder extends SubsystemBase {
   private static double kD = CompTunerConstants.FrontRight.DriveMotorGains.kD;
   private static final APProfile profile =
       new APProfile(constraints)
-          .withErrorXY(Units.Centimeters.of(5))
-          .withErrorTheta(Units.Degrees.of(30))
-          .withBeelineRadius(Units.Centimeters.of(1));
+          .withErrorXY(Units.Centimeters.of(2.2))
+          .withErrorTheta(Units.Degrees.of(38))
+          .withBeelineRadius(Units.Centimeters.of(4));
 
   public static final Autopilot autoPilot =
       new Autopilot(
