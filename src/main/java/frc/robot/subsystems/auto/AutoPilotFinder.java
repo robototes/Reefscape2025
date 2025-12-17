@@ -1,9 +1,7 @@
 package frc.robot.subsystems.auto;
 
-import java.io.IOException;
-import org.json.simple.parser.ParseException;
-import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.pathplanner.lib.config.RobotConfig;
 import com.therekrab.autopilot.APConstraints;
@@ -18,85 +16,80 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
+import java.io.IOException;
+import org.json.simple.parser.ParseException;
 
 public class AutoPilotFinder extends SubsystemBase {
 
-
-  //Huge thanks to 1458(Red Tie Robotics) for providing example code
-
-
+  // Huge thanks to 1458(Red Tie Robotics) for providing example code
 
   private static APConstraints constraints;
 
-static {
+  static {
     try {
-        var config = RobotConfig.fromGUISettings();
-        constraints = new APConstraints()
-            .withVelocity(config.moduleConfig.maxDriveVelocityMPS)
-            .withAcceleration(config.moduleConfig.driveCurrentLimit)
-            .withJerk(3.0);
+      var config = RobotConfig.fromGUISettings();
+      constraints =
+          new APConstraints()
+              .withVelocity(config.moduleConfig.maxDriveVelocityMPS)
+              .withAcceleration(config.moduleConfig.driveCurrentLimit)
+              .withJerk(3.0);
     } catch (IOException | ParseException e) {
-        e.printStackTrace();  // log the error
-        // fallback values if GUI config fails
-        constraints = new APConstraints()
-            .withVelocity(6)   // m/s
-            .withAcceleration(4) // m/s²
-            .withJerk(3.0);
+      e.printStackTrace(); // log the error
+      // fallback values if GUI config fails
+      constraints =
+          new APConstraints()
+              .withVelocity(6) // m/s
+              .withAcceleration(4) // m/s²
+              .withJerk(3.0);
     }
-}
+  }
 
-		
   private static double kP = CompTunerConstants.FrontRight.SteerMotorGains.kP;
   private static double kI = CompTunerConstants.FrontRight.SteerMotorGains.kI;
   private static double kD = CompTunerConstants.FrontRight.SteerMotorGains.kD;
-  private static final APProfile profile = new APProfile(constraints)
-    .withErrorXY(Units.Centimeters.of(5))
-    .withErrorTheta(Units.Degrees.of(0.5))
-    .withBeelineRadius(Units.Centimeters.of(3));
- 
-  public static final Autopilot autoPilot = new Autopilot(profile); // autopilot insance with the desired profile based on the constraints from pathplanner maybe
- 
+  private static final APProfile profile =
+      new APProfile(constraints)
+          .withErrorXY(Units.Centimeters.of(5))
+          .withErrorTheta(Units.Degrees.of(0.5))
+          .withBeelineRadius(Units.Centimeters.of(3));
 
- 
- 
- 
- public static Command createAutopilotCommand(APTarget target, CommandSwerveDrivetrain drive) {
-     return drive.run(() -> {
-         // Current robot speeds & pose
-         ChassisSpeeds robotRelativeSpeeds =   // Converted from field relative to robot relative 
-     ChassisSpeeds.fromFieldRelativeSpeeds(
-         drive.getState().Speeds.vxMetersPerSecond,
-         drive.getState().Speeds.vyMetersPerSecond,
-         drive.getState().Speeds.omegaRadiansPerSecond,
-         drive.getState().Pose.getRotation()
-     );
-         Pose2d pose = drive.getState().Pose;
- 
-         // Autopilot calculation
-         APResult out = autoPilot.calculate(pose, robotRelativeSpeeds, target);  // Handles calculations for going to the set point
- 
-         // SwerveRequest to drive the robot to the designated point
-         drive.setControl(
-             new SwerveRequest.FieldCentricFacingAngle()
-                 .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
-                 .withDriveRequestType(DriveRequestType.Velocity)
-                 .withHeadingPID(kP,kI,kD
-                    )
-                .withVelocityX(out.vx())
-                .withVelocityY(out.vy())
-                .withTargetDirection(out.targetAngle())
-        );
-    }).withName("AutopilotCommand").until(() -> autoPilot.atTarget(drive.getState().Pose, target));
+  public static final Autopilot autoPilot =
+      new Autopilot(
+          profile); // autopilot insance with the desired profile based on the constraints from
 
+  // pathplanner maybe
 
+  public static Command createAutopilotCommand(APTarget target, CommandSwerveDrivetrain drive) {
+    return drive
+        .run(
+            () -> {
+              // Current robot speeds & pose
+              ChassisSpeeds robotRelativeSpeeds = // Converted from field relative to robot relative
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      drive.getState().Speeds.vxMetersPerSecond,
+                      drive.getState().Speeds.vyMetersPerSecond,
+                      drive.getState().Speeds.omegaRadiansPerSecond,
+                      drive.getState().Pose.getRotation());
+              Pose2d pose = drive.getState().Pose;
 
+              // Autopilot calculation
+              APResult out =
+                  autoPilot.calculate(
+                      pose,
+                      robotRelativeSpeeds,
+                      target); // Handles calculations for going to the set point
 
-    
+              // SwerveRequest to drive the robot to the designated point
+              drive.setControl(
+                  new SwerveRequest.FieldCentricFacingAngle()
+                      .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
+                      .withDriveRequestType(DriveRequestType.Velocity)
+                      .withHeadingPID(kP, kI, kD)
+                      .withVelocityX(out.vx())
+                      .withVelocityY(out.vy())
+                      .withTargetDirection(out.targetAngle()));
+            })
+        .withName("AutopilotCommand")
+        .until(() -> autoPilot.atTarget(drive.getState().Pose, target));
+  }
 }
-
-
-}
-  
-
-
-

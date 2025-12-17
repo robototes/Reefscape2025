@@ -7,9 +7,7 @@ package frc.robot;
 import au.grapplerobotics.CanBridge;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.therekrab.autopilot.APTarget;
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -26,11 +24,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Subsystems.SubsystemConstants;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoAlign;
+import frc.robot.subsystems.auto.AutoAlign.AlignType;
 import frc.robot.subsystems.auto.AutoBuilderConfig;
 import frc.robot.subsystems.auto.AutoLogic;
 import frc.robot.subsystems.auto.AutoPilotFinder;
 import frc.robot.subsystems.auto.AutonomousField;
-import frc.robot.subsystems.auto.AutoAlign.AlignType;
 import frc.robot.util.BuildInfo;
 import frc.robot.util.MatchTab;
 import frc.robot.util.RobotType;
@@ -154,11 +152,16 @@ public class Robot extends TimedRobot {
     Shuffleboard.startRecording();
     if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.getSelectedAuto() != null) {
 
-      //AutoLogic.getSelectedAuto().schedule();
+      // AutoLogic.getSelectedAuto().schedule();
       subsystems.drivebaseSubsystem.resetPose(new Pose2d());
       Commands.sequence(
-      AutoPilotFinder.createAutopilotCommand(new APTarget(new Pose2d(10,5,subsystems.drivebaseSubsystem.getState().Pose.getRotation())), subsystems.drivebaseSubsystem),
-      AutoAlign.autoAlign(subsystems.drivebaseSubsystem, controls, AlignType.ALLB)).schedule();
+              AutoPilotFinder.createAutopilotCommand(
+                  new APTarget(
+                      new Pose2d(
+                          10, 5, subsystems.drivebaseSubsystem.getState().Pose.getRotation())),
+                  subsystems.drivebaseSubsystem),
+              AutoAlign.autoAlign(subsystems.drivebaseSubsystem, controls, AlignType.ALLB))
+          .schedule();
     }
     if (subsystems.climbPivotSubsystem != null) {
       subsystems.climbPivotSubsystem.moveCompleteFalse();
