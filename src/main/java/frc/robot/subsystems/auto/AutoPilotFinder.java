@@ -34,7 +34,7 @@ public class AutoPilotFinder extends SubsystemBase {
               .withAcceleration(config.moduleConfig.driveCurrentLimit)
               .withJerk(3.0);
     } catch (IOException | ParseException e) {
-      e.printStackTrace(); 
+      e.printStackTrace();
       constraints =
           new APConstraints()
               .withVelocity(6) // m/s
