@@ -155,7 +155,7 @@ public class Robot extends TimedRobot {
     if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.getSelectedAuto() != null) {
 
       //AutoLogic.getSelectedAuto().schedule();
-      subsystems.drivebaseSubsystem.resetPose(subsystems.drivebaseSubsystem.getState().Pose);
+      subsystems.drivebaseSubsystem.resetPose(new Pose2d());
       Commands.sequence(
       AutoPilotFinder.createAutopilotCommand(new APTarget(new Pose2d(10,5,subsystems.drivebaseSubsystem.getState().Pose.getRotation())), subsystems.drivebaseSubsystem),
       AutoAlign.autoAlign(subsystems.drivebaseSubsystem, controls, AlignType.ALLB)).schedule();
