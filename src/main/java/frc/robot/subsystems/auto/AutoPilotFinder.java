@@ -21,7 +21,7 @@ import org.json.simple.parser.ParseException;
 
 public class AutoPilotFinder extends SubsystemBase {
 
-  // Huge thanks to 1458(Red Tie Robotics) for providing example code
+  // Huge thanks to 1458(Red Tie Robotics) for providing example code and help
 
   private static APConstraints constraints;
 
@@ -34,8 +34,7 @@ public class AutoPilotFinder extends SubsystemBase {
               .withAcceleration(config.moduleConfig.driveCurrentLimit)
               .withJerk(3.0);
     } catch (IOException | ParseException e) {
-      e.printStackTrace(); // log the error
-      // fallback values if GUI config fails
+      e.printStackTrace(); 
       constraints =
           new APConstraints()
               .withVelocity(6) // m/s
@@ -44,14 +43,14 @@ public class AutoPilotFinder extends SubsystemBase {
     }
   }
 
-  private static double kP = CompTunerConstants.FrontRight.SteerMotorGains.kP;
-  private static double kI = CompTunerConstants.FrontRight.SteerMotorGains.kI;
-  private static double kD = CompTunerConstants.FrontRight.SteerMotorGains.kD;
+  private static double kP = CompTunerConstants.FrontRight.DriveMotorGains.kP;
+  private static double kI = CompTunerConstants.FrontRight.DriveMotorGains.kI;
+  private static double kD = CompTunerConstants.FrontRight.DriveMotorGains.kD;
   private static final APProfile profile =
       new APProfile(constraints)
           .withErrorXY(Units.Centimeters.of(5))
-          .withErrorTheta(Units.Degrees.of(0.5))
-          .withBeelineRadius(Units.Centimeters.of(3));
+          .withErrorTheta(Units.Degrees.of(30))
+          .withBeelineRadius(Units.Centimeters.of(1));
 
   public static final Autopilot autoPilot =
       new Autopilot(
