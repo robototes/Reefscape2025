@@ -28,8 +28,8 @@ public class AutoAlign {
   }
 
   public static Command autoAlign(
-      CommandSwerveDrivetrain drivebaseSubsystem, Controls controls, AlignType type) {
-    return new AutoAlignCommand(drivebaseSubsystem, controls, type).withName("Auto Align");
+      CommandSwerveDrivetrain drivebaseSubsystem, Controls controls, AlignType alignType) {
+    return new AutoAlignCommand(drivebaseSubsystem, controls, alignType).withName("Auto Align");
   }
 
   public static boolean readyToScore() {
@@ -49,14 +49,14 @@ public class AutoAlign {
         && MathUtil.isNear(0, rotation.getY(), Units.degreesToRadians(2));
   }
 
-  public static boolean isCloseEnough(AlignType type) {
+  public static boolean isCloseEnough(AlignType alignType) {
     var currentPose = AutoLogic.s.drivebaseSubsystem.getState().Pose;
-    var branchPose = AutoAlignCommand.getTargetPose(currentPose, type);
+    var branchPose = AutoAlignCommand.getTargetPose(currentPose, alignType);
     return currentPose.getTranslation().getDistance(branchPose.getTranslation()) < 0.05;
   }
 
-  public static boolean poseInPlace(AlignType type) {
-    return isStationary() && isCloseEnough(type);
+  public static boolean poseInPlace(AlignType alignType) {
+    return isStationary() && isCloseEnough(alignType);
   }
 
   public static boolean
@@ -260,25 +260,25 @@ public class AutoAlign {
     protected final CommandSwerveDrivetrain drive;
     protected final Controls controls;
     protected Pose2d branchPose;
-    protected AlignType type;
+    protected AlignType alignType;
 
     private final SwerveRequest.FieldCentric driveRequest =
         new SwerveRequest.FieldCentric() // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
             .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
-    public AutoAlignCommand(CommandSwerveDrivetrain drive, Controls controls, AlignType type) {
+    public AutoAlignCommand(CommandSwerveDrivetrain drive, Controls controls, AlignType alignType) {
       this.drive = drive;
       pidRotate.enableContinuousInput(-Math.PI, Math.PI);
       this.controls = controls;
-      this.type = type;
+      this.alignType = alignType;
       setName("Auto Align");
     }
 
     @Override
     public void initialize() {
       Pose2d robotPose = drive.getState().Pose;
-      branchPose = getTargetPose(robotPose, type);
+      branchPose = getTargetPose(robotPose, alignType);
       pidX.setSetpoint(branchPose.getX());
       pidY.setSetpoint(branchPose.getY());
       pidRotate.setSetpoint(branchPose.getRotation().getRadians());
@@ -323,8 +323,8 @@ public class AutoAlign {
       controls.vibrateDriveController(0);
     }
 
-    public static Pose2d getTargetPose(Pose2d pose, AlignType type) {
-      return switch (type) {
+    public static Pose2d getTargetPose(Pose2d pose, AlignType alignType) {
+      return switch (alignType) {
         case LEFTB -> getNearestBranch(pose, leftBlueBranches, leftRedBranches);
         case RIGHTB -> getNearestBranch(pose, rightBlueBranches, rightRedBranches);
         case L1LB -> getNearestBranch(pose, leftL1BluePoses, leftL1RedPoses);
