@@ -170,12 +170,16 @@ public class Controls {
         // applying the request to drive with the inputs
         s.drivebaseSubsystem
             .applyRequest(
-                () ->
-                    drive
-                        .withVelocityX(soloController.isConnected() ? getSoloDriveX() : getDriveX())
-                        .withVelocityY(soloController.isConnected() ? getSoloDriveY() : getDriveY())
-                        .withRotationalRate(
-                            soloController.isConnected() ? getSoloDriveRotate() : getDriveRotate()))
+                () -> {
+                  boolean soloConnected = soloController.isConnected();
+                  SwerveRequest.FieldCentric request =
+                      drive
+                          .withVelocityX(soloConnected ? getSoloDriveX() : getDriveX())
+                          .withVelocityY(soloConnected ? getSoloDriveY() : getDriveY())
+                          .withRotationalRate(
+                              soloConnected ? getSoloDriveRotate() : getDriveRotate());
+                  return request;
+                })
             .withName("Drive"));
 
     // various former controls that were previously used and could be referenced in the future
