@@ -499,9 +499,12 @@ public class Controls {
     } else {
       return switch (branchHeight) {
         case CORAL_LEVEL_FOUR -> superStructure.coralLevelFour(driverController.rightBumper());
-        case CORAL_LEVEL_THREE -> superStructure.coralLevelThree(driverController.rightBumper());
-        case CORAL_LEVEL_TWO -> superStructure.coralLevelTwo(driverController.rightBumper());
-        case CORAL_LEVEL_ONE -> superStructure.coralLevelOne(driverController.rightBumper());
+        case CORAL_LEVEL_THREE -> superStructure.coralLevelThree(
+            driverController.rightBumper(), () -> false);
+        case CORAL_LEVEL_TWO -> superStructure.coralLevelTwo(
+            driverController.rightBumper(), () -> false);
+        case CORAL_LEVEL_ONE -> superStructure.coralLevelOne(
+            driverController.rightBumper(), () -> false);
       };
     }
   }
