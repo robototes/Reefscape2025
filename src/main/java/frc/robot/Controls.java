@@ -170,12 +170,16 @@ public class Controls {
         // applying the request to drive with the inputs
         s.drivebaseSubsystem
             .applyRequest(
-                () ->
-                    drive
-                        .withVelocityX(soloController.isConnected() ? getSoloDriveX() : getDriveX())
-                        .withVelocityY(soloController.isConnected() ? getSoloDriveY() : getDriveY())
-                        .withRotationalRate(
-                            soloController.isConnected() ? getSoloDriveRotate() : getDriveRotate()))
+                () -> {
+                  boolean soloConnected = soloController.isConnected();
+                  SwerveRequest.FieldCentric request =
+                      drive
+                          .withVelocityX(soloConnected ? getSoloDriveX() : getDriveX())
+                          .withVelocityY(soloConnected ? getSoloDriveY() : getDriveY())
+                          .withRotationalRate(
+                              soloConnected ? getSoloDriveRotate() : getDriveRotate());
+                  return request;
+                })
             .withName("Drive"));
 
     // various former controls that were previously used and could be referenced in the future
@@ -495,9 +499,12 @@ public class Controls {
     } else {
       return switch (branchHeight) {
         case CORAL_LEVEL_FOUR -> superStructure.coralLevelFour(driverController.rightBumper());
-        case CORAL_LEVEL_THREE -> superStructure.coralLevelThree(driverController.rightBumper());
-        case CORAL_LEVEL_TWO -> superStructure.coralLevelTwo(driverController.rightBumper());
-        case CORAL_LEVEL_ONE -> superStructure.coralLevelOne(driverController.rightBumper());
+        case CORAL_LEVEL_THREE -> superStructure.coralLevelThree(
+            driverController.rightBumper(), () -> false);
+        case CORAL_LEVEL_TWO -> superStructure.coralLevelTwo(
+            driverController.rightBumper(), () -> false);
+        case CORAL_LEVEL_ONE -> superStructure.coralLevelOne(
+            driverController.rightBumper(), () -> false);
       };
     }
   }
