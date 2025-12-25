@@ -5,7 +5,11 @@
 package frc.robot;
 
 import au.grapplerobotics.CanBridge;
+
+import static edu.wpi.first.units.Units.Centimeters;
+
 import com.pathplanner.lib.commands.FollowPathCommand;
+
 import com.therekrab.autopilot.APTarget;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -160,8 +164,7 @@ public class Robot extends TimedRobot {
               AutoPilotFinder.createAutopilotCommand(
                   new APTarget(
                      
-                          new Pose2d(7.187, 0.811, subsystems.drivebaseSubsystem.getState().Pose.getRotation()
-                          .minus(Rotation2d.fromDegrees(54)))), subsystems.drivebaseSubsystem)
+                          new Pose2d(7.187, 0.811, Rotation2d.fromDegrees(45))), subsystems.drivebaseSubsystem)
               //AutoAlign.autoAlign(subsystems.drivebaseSubsystem, controls, AlignType.ALLB))
           .schedule();
     }

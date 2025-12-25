@@ -43,14 +43,14 @@ public class AutoPilotFinder extends SubsystemBase {
     }
   }
 
-  private static double kP = CompTunerConstants.FrontRight.DriveMotorGains.kP;
-  private static double kI = CompTunerConstants.FrontRight.DriveMotorGains.kI;
-  private static double kD = CompTunerConstants.FrontRight.DriveMotorGains.kD;
+  private static double kP = 2;
+  private static double kI = 0;
+  private static double kD = 0.2;
   private static final APProfile profile =
       new APProfile(constraints)
-          .withErrorXY(Units.Centimeters.of(2.2))
-          .withErrorTheta(Units.Degrees.of(38))
-          .withBeelineRadius(Units.Centimeters.of(4));
+          .withErrorXY(Units.Centimeters.of(1))
+          .withErrorTheta(Units.Degrees.of(3))
+          .withBeelineRadius(Units.Centimeters.of(1));
 
   public static final Autopilot autoPilot =
       new Autopilot(
@@ -72,11 +72,13 @@ public class AutoPilotFinder extends SubsystemBase {
               Pose2d pose = drive.getState().Pose;
 
               // Autopilot calculation
+              
               APResult out =
                   autoPilot.calculate(
                       pose,
                       robotRelativeSpeeds,
                       target); // Handles calculations for going to the set point
+                    
 
               // SwerveRequest to drive the robot to the designated point
               drive.setControl(
