@@ -26,6 +26,7 @@ import frc.robot.subsystems.auto.AutonomousField;
 import frc.robot.util.BuildInfo;
 import frc.robot.util.MatchTab;
 import frc.robot.util.RobotType;
+import frc.robot.util.WheelRadiusCharacterization;
 
 public class Robot extends TimedRobot {
   /** Singleton Stuff */
@@ -144,11 +145,17 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     Shuffleboard.startRecording();
-    if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.getSelectedAuto() != null) {
+    if (SubsystemConstants.DRIVEBASE_ENABLED
+        && AutoLogic.getSelectedAuto() != null
+        && !AutoLogic.RUN_MEASUREMENT_AUTO) {
       AutoLogic.getSelectedAuto().schedule();
     }
     if (subsystems.climbPivotSubsystem != null) {
       subsystems.climbPivotSubsystem.moveCompleteFalse();
+    }
+    if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.RUN_MEASUREMENT_AUTO) {
+      WheelRadiusCharacterization.wheelRadiusCharacterizationCommand(subsystems.drivebaseSubsystem)
+          .schedule();
     }
   }
 
