@@ -27,12 +27,13 @@ public class AutoPilotFinder extends SubsystemBase {
 
   static {
     try {
-      var config = RobotConfig.fromGUISettings();
+      var config = RobotConfig.fromGUISettings(); 
+      
       constraints =
           new APConstraints()
               .withVelocity(config.moduleConfig.maxDriveVelocityMPS)
               .withAcceleration(config.moduleConfig.driveCurrentLimit)
-              .withJerk(3.0);
+              .withJerk(2.0);
     } catch (IOException | ParseException e) {
       e.printStackTrace();
       constraints =
@@ -43,13 +44,13 @@ public class AutoPilotFinder extends SubsystemBase {
     }
   }
 
-  private static double kP = 2;
+  private static double kP = 1.56;
   private static double kI = 0;
   private static double kD = 0.2;
   private static final APProfile profile =
       new APProfile(constraints)
           .withErrorXY(Units.Centimeters.of(1))
-          .withErrorTheta(Units.Degrees.of(3))
+          .withErrorTheta(Units.Degrees.of(2))
           .withBeelineRadius(Units.Centimeters.of(1));
 
   public static final Autopilot autoPilot =

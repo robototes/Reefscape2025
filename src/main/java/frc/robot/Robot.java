@@ -164,7 +164,7 @@ public class Robot extends TimedRobot {
               AutoPilotFinder.createAutopilotCommand(
                   new APTarget(
                      
-                          new Pose2d(7.187, 0.811, Rotation2d.fromDegrees(45))), subsystems.drivebaseSubsystem)
+                          new Pose2d(7.187, 0.811, Rotation2d.fromDegrees(27))), subsystems.drivebaseSubsystem)
               //AutoAlign.autoAlign(subsystems.drivebaseSubsystem, controls, AlignType.ALLB))
           .schedule();
     }
