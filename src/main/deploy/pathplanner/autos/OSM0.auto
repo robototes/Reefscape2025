@@ -9,6 +9,18 @@
           "data": {
             "pathName": "OSM0"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "align"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autopilot"
+          }
         }
       ]
     }

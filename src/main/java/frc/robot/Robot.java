@@ -7,6 +7,7 @@ package frc.robot;
 import au.grapplerobotics.CanBridge;
 
 import static edu.wpi.first.units.Units.Centimeters;
+import static edu.wpi.first.units.Units.Rotation;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
 
@@ -31,6 +32,7 @@ import frc.robot.Subsystems.SubsystemConstants;
 import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoAlign;
 import frc.robot.subsystems.auto.AutoAlign.AlignType;
+import frc.robot.subsystems.auto.AutoAlign.AutoAlignCommand;
 import frc.robot.subsystems.auto.AutoBuilderConfig;
 import frc.robot.subsystems.auto.AutoLogic;
 import frc.robot.subsystems.auto.AutoPilotFinder;
@@ -157,15 +159,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     Shuffleboard.startRecording();
     if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.getSelectedAuto() != null) {
-
-      // AutoLogic.getSelectedAuto().schedule();
-      subsystems.drivebaseSubsystem.resetPose(new Pose2d());
-      //Commands.sequence(
-              AutoPilotFinder.createAutopilotCommand(
-                  new APTarget(
-                     
-                          new Pose2d(7.187, 0.811, Rotation2d.fromDegrees(27))), subsystems.drivebaseSubsystem)
-              //AutoAlign.autoAlign(subsystems.drivebaseSubsystem, controls, AlignType.ALLB))
+AutoLogic.getSelectedAuto()
           .schedule();
     }
     if (subsystems.climbPivotSubsystem != null) {

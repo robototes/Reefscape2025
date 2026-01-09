@@ -14,9 +14,11 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Controls;
+import frc.robot.Robot;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import frc.robot.util.AllianceUtils;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class AutoAlign {
   public enum AlignType {
@@ -182,7 +184,7 @@ public class AutoAlign {
   private static final Pose2d rRedReefFaceKL =
       aprilTagFieldLayout.getTagPose(6).get().toPose2d().plus(l1RightOfReef);
 
-  private static class AutoAlignCommand extends Command {
+  public static class AutoAlignCommand extends Command {
 
     protected final PIDController pidX = new PIDController(4, 0, 0);
     protected final PIDController pidY = new PIDController(4, 0, 0);
@@ -264,7 +266,7 @@ public class AutoAlign {
       };
     }
 
-    private static Pose2d getNearestBranch(Pose2d p) {
+    public static Pose2d getNearestBranch(Pose2d p) {
       List<Pose2d> branchPose2ds =
           AllianceUtils.isBlue()
               ? List.of(
@@ -295,6 +297,37 @@ public class AutoAlign {
                   redBranchL);
       return p.nearest(branchPose2ds);
     }
+    public static Pose2d supplyNearestBranch(Supplier<Pose2d>p) {
+        List<Pose2d> branchPose2ds =
+            AllianceUtils.isBlue()
+                ? List.of(
+                    blueBranchA,
+                    blueBranchB,
+                    blueBranchC,
+                    blueBranchD,
+                    blueBranchE,
+                    blueBranchF,
+                    blueBranchG,
+                    blueBranchH,
+                    blueBranchI,
+                    blueBranchJ,
+                    blueBranchK,
+                    blueBranchL)
+                : List.of(
+                    redBranchA,
+                    redBranchB,
+                    redBranchC,
+                    redBranchD,
+                    redBranchE,
+                    redBranchF,
+                    redBranchG,
+                    redBranchH,
+                    redBranchI,
+                    redBranchJ,
+                    redBranchK,
+                    redBranchL);
+        return p.get().nearest(branchPose2ds).relativeTo(Robot.getInstance().subsystems.drivebaseSubsystem.getState().Pose);
+      }
 
     private static Pose2d getNearestLeftBranch(Pose2d p) {
       List<Pose2d> branchPose2ds =
