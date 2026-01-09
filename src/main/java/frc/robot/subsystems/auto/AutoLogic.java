@@ -4,6 +4,7 @@ import static frc.robot.Sensors.SensorConstants.ARMSENSOR_ENABLED;
 import static frc.robot.Sensors.SensorConstants.INTAKE_SENSOR_ENABLED;
 import static frc.robot.Subsystems.SubsystemConstants.*;
 
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -222,6 +223,7 @@ public class AutoLogic {
     }
   
     public static void initShuffleBoard() {
+      System.out.println(supplier.get().toString());
       startPositionChooser.setDefaultOption(StartPosition.MISC.title, StartPosition.MISC);
       for (StartPosition startPosition : StartPosition.values()) {
         startPositionChooser.addOption(startPosition.title, startPosition);
@@ -334,10 +336,11 @@ public class AutoLogic {
     }
     public static Command autoPilotCommand() {
       
+
+     Supplier<Pose2d> target =    () -> AutoAlignCommand.getTargetPose(s.drivebaseSubsystem.getState().Pose, AlignType.LEFTB);
      
-     
-       return Commands.print("the branch should be: " + AutoAlignCommand.supplyNearestBranch(supplier).toString()).andThen(AutoPilotFinder.createAutopilotCommand(new APTarget(AutoAlignCommand.supplyNearestBranch(supplier)),
-     s.drivebaseSubsystem));
+       return AutoPilotFinder.createAutopilotCommand(new APTarget(target.get()),
+     s.drivebaseSubsystem);
                   //
                  // new APTarget(new Pose2d(12.275, 2.990, Rotation2d.fromDegrees(60))), s.drivebaseSubsystem;
                 

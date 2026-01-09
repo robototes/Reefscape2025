@@ -299,24 +299,8 @@ public class AutoAlign {
     }
     public static Pose2d supplyNearestBranch(Supplier<Pose2d>p) {
         List<Pose2d> branchPose2ds =
-            AllianceUtils.isBlue()
-                ? List.of(
-                    blueBranchA,
-                    blueBranchB,
-                    blueBranchC,
-                    blueBranchD,
-                    blueBranchE,
-                    blueBranchF,
-                    blueBranchG,
-                    blueBranchH,
-                    blueBranchI,
-                    blueBranchJ,
-                    blueBranchK,
-                    blueBranchL)
-                : List.of(
-                    redBranchA,
-                    redBranchB,
-                    redBranchC,
+             List.of(
+                    redBranchA, redBranchC,
                     redBranchD,
                     redBranchE,
                     redBranchF,
@@ -326,7 +310,8 @@ public class AutoAlign {
                     redBranchJ,
                     redBranchK,
                     redBranchL);
-        return p.get().nearest(branchPose2ds).relativeTo(Robot.getInstance().subsystems.drivebaseSubsystem.getState().Pose);
+                 
+        return p.get().nearest(branchPose2ds);
       }
 
     private static Pose2d getNearestLeftBranch(Pose2d p) {

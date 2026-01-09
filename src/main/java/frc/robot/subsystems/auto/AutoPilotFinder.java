@@ -4,6 +4,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.therekrab.autopilot.APConstraints;
 import com.therekrab.autopilot.APProfile;
 import com.therekrab.autopilot.APTarget;
@@ -13,7 +14,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.generated.CompTunerConstants;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import java.io.IOException;
@@ -44,9 +47,9 @@ public class AutoPilotFinder extends SubsystemBase {
     }
   }
 
-  private static double kP = 1.56;
+  private static double kP = 1;
   private static double kI = 0;
-  private static double kD = 0.2;
+  private static double kD = 0;
   private static final APProfile profile =
       new APProfile(constraints)
           .withErrorXY(Units.Centimeters.of(1))
@@ -60,8 +63,8 @@ public class AutoPilotFinder extends SubsystemBase {
   // pathplanner maybe
 
   public static Command createAutopilotCommand(APTarget target, CommandSwerveDrivetrain drive) {
-    return drive
-        .run(
+
+return Commands.run(
             () -> {
               // Current robot speeds & pose
               ChassisSpeeds robotRelativeSpeeds = // Converted from field relative to robot relative
@@ -85,7 +88,7 @@ public class AutoPilotFinder extends SubsystemBase {
               drive.setControl(
                   new SwerveRequest.FieldCentricFacingAngle()
                       .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
-                      .withDriveRequestType(DriveRequestType.Velocity)
+                      .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
                       .withHeadingPID(kP, kI, kD)
                       .withVelocityX(out.vx())
                       .withVelocityY(out.vy())

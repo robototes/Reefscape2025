@@ -7,19 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "YSW to J"
+            "pathName": "OSM to F"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "scoreCommand"
+            "name": "autopilot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "F to RSF"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "readyIntake"
+            "name": "autopilot"
           }
         }
       ]
