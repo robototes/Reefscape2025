@@ -108,10 +108,7 @@ public class Robot extends TimedRobot {
     if (subsystems.drivebaseSubsystem != null) {
       subsystems.drivebaseSubsystem.brakeMotors();
     }
-    if (subsystems.climbPivotSubsystem != null) {
-      subsystems.climbPivotSubsystem.brakeMotors();
-      subsystems.climbPivotSubsystem.moveCompleteTrue();
-    }
+ 
   
   }
 
@@ -121,9 +118,7 @@ public class Robot extends TimedRobot {
     if (SubsystemConstants.DRIVEBASE_ENABLED && AutoLogic.getSelectedAuto() != null) {
       AutoLogic.getSelectedAuto().schedule();
     }
-    if (subsystems.climbPivotSubsystem != null) {
-      subsystems.climbPivotSubsystem.moveCompleteFalse();
-    }
+    
   }
 
   @Override

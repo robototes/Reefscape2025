@@ -1,6 +1,5 @@
+
 package frc.robot;
-
-
 
 import static frc.robot.Subsystems.SubsystemConstants.*;
 
@@ -8,12 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
 import frc.robot.generated.TestBaseTunerConstants;
-import frc.robot.sensors.ElevatorLight;
-
-import frc.robot.subsystems.ClimbPivot;
 import frc.robot.subsystems.DrivebaseWrapper;
-import frc.robot.subsystems.ElevatorSubsystem;
-
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import frc.robot.util.RobotType;
@@ -43,11 +37,7 @@ public class Subsystems {
   // Subsystems go here
   public final DrivebaseWrapper drivebaseWrapper;
   public final CommandSwerveDrivetrain drivebaseSubsystem;
-
-  
-  public final ClimbPivot climbPivotSubsystem;
-
-  public final ElevatorLight elevatorLEDSubsystem;
+  public final VisionSubsystem visionSubsystem;
 
 
   public Subsystems() {
@@ -67,23 +57,14 @@ public class Subsystems {
       drivebaseWrapper = new DrivebaseWrapper();
     }
 
+    if (VISION_ENABLED) {
+      visionSubsystem = new VisionSubsystem(drivebaseWrapper);
+      SmartDashboard.putData(visionSubsystem);
+    } else {
+      visionSubsystem = null;
+    }
+
+
     
-
-    if (CLIMBPIVOT_ENABLED) {
-      climbPivotSubsystem = new ClimbPivot();
-      SmartDashboard.putData(climbPivotSubsystem);
-    } else {
-      climbPivotSubsystem = null;
-    }
-
-   
-   
-
-    if (ELEVATOR_LED_ENABLED) {
-      elevatorLEDSubsystem = new ElevatorLight();
-      SmartDashboard.putData(elevatorLEDSubsystem);
-    } else {
-      elevatorLEDSubsystem = null;
-    }
-  }
+}
 }
