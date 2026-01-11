@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-
-
+import frc.robot.Robot;
+import frc.robot.Subsystems;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -27,7 +27,9 @@ import org.json.simple.parser.ParseException;
 
 public class AutoLogic {
 
-
+  public static Robot r = Robot.getInstance();
+  public static final Subsystems s = r.subsystems;
+ 
 
   public static enum StartPosition {
     FAR_LEFT_CAGE(

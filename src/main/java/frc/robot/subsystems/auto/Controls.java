@@ -28,7 +28,10 @@ import frc.robot.Subsystems;
 import frc.robot.Telemetry;
 import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
+
+import frc.robot.subsystems.auto.AutoAlign;
 import frc.robot.util.RobotType;
+
 import java.util.function.BooleanSupplier;
 
 public class Controls {
@@ -47,9 +50,10 @@ public class Controls {
   private final CommandXboxController soloController;
 
   private final Subsystems s;
-
-
  
+ 
+
+  
 
   // Swerve stuff
   // setting the max speed nad other similar variables depending on which drivebase it is
@@ -83,14 +87,18 @@ public class Controls {
     climbTestController = new CommandXboxController(CLIMB_TEST_CONTROLLER_PORT);
     soloController = new CommandXboxController(SOLO_CONTROLLER_PORT);
     this.s = s;
-    
+   
+  
     driveSlowMode = driverController.start();
     configureDrivebaseBindings();
-  
+
+    configureAutoAlignBindings();
+
+
     
   }
 
-  
+ 
 
   private Trigger connected(CommandXboxController controller) {
     return new Trigger(() -> controller.isConnected());
@@ -138,8 +146,10 @@ public class Controls {
         // s.drivebaseSubsystem will execute this command periodically
 
         // applying the request to drive with the inputs
-        Commands.none()
-            .withName("Drive"));
+       
+                  Commands.none().
+              
+            withName("Drive"));
 
     // various former controls that were previously used and could be referenced in the future
 
@@ -194,5 +204,109 @@ public class Controls {
         .whileTrue(s.drivebaseSubsystem.coastMotors());
   }
 
+
+  
+  
+   
+    // Controls binding goes here
+
+
+    // operatorController.rightBumper().whileTrue(s.elevatorSubsystem.holdCoastMode());
+  
+    // var elevatorZeroButton = new DigitalInput(Hardware.ELEVATOR_ZERO_BUTTON);
+    // new Trigger(() -> elevatorZeroButton.get())
+    //     .debounce(1, DebounceType.kRising)
+    //     .and(RobotModeTriggers.disabled())
+    //     .onTrue(s.elevatorSubsystem.resetPosZero());
+  
+
  
+
+    
+
+  
+
+   
+
+    // regularly run the advanced climb check
+  
+
+    // check if the climb controller is connected, and whne start is pressed move to the next climb
+    // position
+  
+
+  
+
+   
+
+    
+
+  private void configureAutoAlignBindings() {
+    if (s.drivebaseSubsystem == null) {
+      return;
+    }
+    if (s.visionSubsystem != null) {
+      new Trigger(() -> s.visionSubsystem.getTimeSinceLastReading() >= 5)
+          .and(RobotModeTriggers.teleop())
+          .whileTrue(rumble(operatorController, 0.1, Seconds.of(10)));
+    }
+    
+
+  }
+
+   private Command rumble(CommandXboxController controller, double vibration, Time duration) {
+    return Commands.startEnd(
+            () -> controller.getHID().setRumble(RumbleType.kBothRumble, vibration),
+            () -> controller.getHID().setRumble(RumbleType.kBothRumble, 0))
+        .withTimeout(duration)
+        .withName("Rumble Port " + controller.getHID().getPort());
+  } 
+
+  
+
+  public void vibrateDriveController(double vibration) {
+    if (!DriverStation.isAutonomous()) {
+      driverController.getHID().setRumble(RumbleType.kBothRumble, vibration);
+    }
+  }
+
+  public void vibrateCoDriveController(double vibration) {
+    if (!DriverStation.isAutonomous()) {
+      operatorController.getHID().setRumble(RumbleType.kBothRumble, vibration);
+    }
+  }
+
+  private double getJoystickInput(double input) {
+    if (soloController.leftStick().getAsBoolean() || soloController.rightStick().getAsBoolean()) {
+      return 0; // stop driving if either stick is pressed
+    }
+    // Apply a deadband to the joystick input
+    double deadbandedInput = MathUtil.applyDeadband(input, 0.1);
+    return deadbandedInput;
+  }
+
+  // Drive for Solo controller
+  // takes the X value from the joystick, and applies a deadband and input scaling
+  private double getSoloDriveX() {
+    // Joystick +Y is back
+    // Robot +X is forward
+    return getJoystickInput(-soloController.getLeftY()) * MaxSpeed;
+  }
+
+  // takes the Y value from the joystick, and applies a deadband and input scaling
+  private double getSoloDriveY() {
+    // Joystick +X is right
+    // Robot +Y is left
+    return getJoystickInput(-soloController.getLeftX()) * MaxSpeed;
+  }
+
+  // takes the rotation value from the joystick, and applies a deadband and input scaling
+  private double getSoloDriveRotate() {
+    // Joystick +X is right
+    // Robot +angle is CCW (left)
+    return getJoystickInput(-soloController.getRightX()) * MaxSpeed;
+  }
+
+  
+
 }
