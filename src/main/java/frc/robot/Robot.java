@@ -19,12 +19,11 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Subsystems.SubsystemConstants;
-import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.auto.AutoBuilderConfig;
 import frc.robot.subsystems.auto.AutoLogic;
 import frc.robot.subsystems.auto.AutonomousField;
 import frc.robot.util.BuildInfo;
-import frc.robot.util.MatchTab;
+
 import frc.robot.util.RobotType;
 
 public class Robot extends TimedRobot {
@@ -37,46 +36,25 @@ public class Robot extends TimedRobot {
   }
 
   private final RobotType robotType;
-  public final Controls controls;
   public final Subsystems subsystems;
-  public final Sensors sensors;
-  public final SuperStructure superStructure;
   private final PowerDistribution PDH;
 
   protected Robot() {
     // non public for singleton. Protected so test class can subclass
 
     instance = this;
+    subsystems = new Subsystems();
     robotType = RobotType.getCurrent();
     CanBridge.runTCP();
     PDH = new PowerDistribution(Hardware.PDH_ID, ModuleType.kRev);
     LiveWindow.disableAllTelemetry();
     LiveWindow.enableTelemetry(PDH);
 
-    sensors = new Sensors();
-    subsystems = new Subsystems(sensors);
-    if (SubsystemConstants.DRIVEBASE_ENABLED) {
-      AutoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
-    }
-    if (SubsystemConstants.ELEVATOR_ENABLED
-        && SubsystemConstants.ARMPIVOT_ENABLED
-        && SubsystemConstants.SPINNYCLAW_ENABLED) {
-      superStructure =
-          new SuperStructure(
-              subsystems.elevatorSubsystem,
-              subsystems.armPivotSubsystem,
-              subsystems.spinnyClawSubsytem,
-              subsystems.groundArm,
-              subsystems.groundSpinny,
-              subsystems.elevatorLEDSubsystem,
-              sensors.armSensor,
-              sensors.branchSensors,
-              sensors.intakeSensor);
-    } else {
-      superStructure = null;
-    }
-    controls = new Controls(subsystems, sensors, superStructure);
+   
 
+      AutoBuilderConfig.buildAuto(subsystems.drivebaseSubsystem);
+    
+    
     SmartDashboard.putString("current bot", robotType.toString());
 
     if (RobotBase.isReal()) {
@@ -102,21 +80,19 @@ public class Robot extends TimedRobot {
     BuildInfo.logBuildInfo();
 
     if (SubsystemConstants.DRIVEBASE_ENABLED) {
-      AutoLogic.registerCommands();
+
       AutonomousField.initShuffleBoard("Field", 0, 0, this::addPeriodic);
       AutoLogic.initShuffleBoard();
       FollowPathCommand.warmupCommand().schedule();
     }
-    MatchTab.create(sensors, subsystems);
+    
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    if (subsystems.visionSubsystem != null) {
-      subsystems.visionSubsystem.update();
-    }
+    
   }
 
   @Override
@@ -136,9 +112,7 @@ public class Robot extends TimedRobot {
       subsystems.climbPivotSubsystem.brakeMotors();
       subsystems.climbPivotSubsystem.moveCompleteTrue();
     }
-    if (subsystems.elevatorSubsystem != null) {
-      subsystems.elevatorSubsystem.brakeMotors();
-    }
+  
   }
 
   @Override

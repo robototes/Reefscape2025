@@ -1,5 +1,7 @@
 package frc.robot;
 
+
+
 import static frc.robot.Subsystems.SubsystemConstants.*;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -7,13 +9,11 @@ import frc.robot.generated.BonkTunerConstants;
 import frc.robot.generated.CompTunerConstants;
 import frc.robot.generated.TestBaseTunerConstants;
 import frc.robot.sensors.ElevatorLight;
-import frc.robot.subsystems.ArmPivot;
+
 import frc.robot.subsystems.ClimbPivot;
 import frc.robot.subsystems.DrivebaseWrapper;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.GroundArm;
-import frc.robot.subsystems.GroundSpinny;
-import frc.robot.subsystems.SpinnyClaw;
+
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import frc.robot.util.RobotType;
@@ -43,16 +43,14 @@ public class Subsystems {
   // Subsystems go here
   public final DrivebaseWrapper drivebaseWrapper;
   public final CommandSwerveDrivetrain drivebaseSubsystem;
-  public final VisionSubsystem visionSubsystem;
-  public final ElevatorSubsystem elevatorSubsystem;
-  public final ArmPivot armPivotSubsystem;
-  public final ClimbPivot climbPivotSubsystem;
-  public final SpinnyClaw spinnyClawSubsytem;
-  public final ElevatorLight elevatorLEDSubsystem;
-  public final GroundSpinny groundSpinny;
-  public final GroundArm groundArm;
 
-  public Subsystems(Sensors sensors) {
+  
+  public final ClimbPivot climbPivotSubsystem;
+
+  public final ElevatorLight elevatorLEDSubsystem;
+
+
+  public Subsystems() {
     // Initialize subsystems here (don't forget to check if they're enabled!)
     // Add specification for bonk, Enum? get team number?
     if (DRIVEBASE_ENABLED) {
@@ -69,26 +67,7 @@ public class Subsystems {
       drivebaseWrapper = new DrivebaseWrapper();
     }
 
-    if (VISION_ENABLED) {
-      visionSubsystem = new VisionSubsystem(drivebaseWrapper);
-      SmartDashboard.putData(visionSubsystem);
-    } else {
-      visionSubsystem = null;
-    }
-
-    if (ELEVATOR_ENABLED) {
-      elevatorSubsystem = new ElevatorSubsystem();
-      SmartDashboard.putData(elevatorSubsystem);
-    } else {
-      elevatorSubsystem = null;
-    }
-
-    if (ARMPIVOT_ENABLED) {
-      armPivotSubsystem = new ArmPivot();
-      SmartDashboard.putData(armPivotSubsystem);
-    } else {
-      armPivotSubsystem = null;
-    }
+    
 
     if (CLIMBPIVOT_ENABLED) {
       climbPivotSubsystem = new ClimbPivot();
@@ -97,25 +76,8 @@ public class Subsystems {
       climbPivotSubsystem = null;
     }
 
-    if (SPINNYCLAW_ENABLED) {
-      spinnyClawSubsytem = new SpinnyClaw(sensors.armSensor);
-      SmartDashboard.putData(spinnyClawSubsytem);
-    } else {
-      spinnyClawSubsytem = null;
-    }
-    if (GROUND_SPINNY_ENABLED) {
-      groundSpinny = new GroundSpinny();
-      SmartDashboard.putData(groundSpinny);
-    } else {
-      groundSpinny = null;
-    }
-
-    if (GROUND_ARM_ENABLED) {
-      groundArm = new GroundArm();
-      SmartDashboard.putData(groundArm);
-    } else {
-      groundArm = null;
-    }
+   
+   
 
     if (ELEVATOR_LED_ENABLED) {
       elevatorLEDSubsystem = new ElevatorLight();

@@ -1,8 +1,6 @@
 package frc.robot.subsystems.auto;
 
-import static frc.robot.Sensors.SensorConstants.ARMSENSOR_ENABLED;
-import static frc.robot.Sensors.SensorConstants.INTAKE_SENSOR_ENABLED;
-import static frc.robot.Subsystems.SubsystemConstants.*;
+
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -22,9 +20,8 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Controls;
-import frc.robot.Robot;
-import frc.robot.Subsystems;
+
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -32,9 +29,8 @@ import java.util.Map;
 import org.json.simple.parser.ParseException;
 
 public class AutoLogic {
-  public static Robot r = Robot.getInstance();
-  public static final Subsystems s = r.subsystems;
-  public static final Controls controls = r.controls;
+
+
 
   public static enum StartPosition {
     FAR_LEFT_CAGE(
@@ -59,11 +55,6 @@ public class AutoLogic {
   };
 
   // TODO: might be a duplicate, keep until after comp
-  static {
-    if (DRIVEBASE_ENABLED) {
-      registerCommands();
-    }
-  }
 
   // paths lists
 
@@ -156,14 +147,7 @@ public class AutoLogic {
     }
   }
 
-  // vars
 
-  // in place of launching command cause launcher doesnt exist
-  public static SequentialCommandGroup vibrateControllerCommand =
-      new SequentialCommandGroup(
-          new InstantCommand(() -> controls.vibrateDriveController(0.5)),
-          new WaitCommand(1.5),
-          new InstantCommand(() -> controls.vibrateDriveController(0.0)));
 
   // shuffleboard
   private static ShuffleboardTab tab = Shuffleboard.getTab("Autos");
@@ -178,19 +162,7 @@ public class AutoLogic {
   private static GenericEntry autoDelayEntry;
 
   /** Registers commands in PathPlanner */
-  public static void registerCommands() {
-    // param: String commandName, Command command
-
-    // Intake
-    NamedCommands.registerCommand("scoreCommand", scoreCommand());
-    NamedCommands.registerCommand("intake", intakeCommand());
-    NamedCommands.registerCommand("isCollected", isCollected());
-    NamedCommands.registerCommand("readyIntake", readyIntakeCommand());
-    NamedCommands.registerCommand("algaeAlign23", algaeCommand23());
-    NamedCommands.registerCommand("algaeAlign34", algaeCommand34());
-    NamedCommands.registerCommand("net", netCommand());
-  }
-
+  
   // public Command getConditionalCommand(){}
 
   /**
@@ -227,11 +199,7 @@ public class AutoLogic {
     tab.add("Launch Type", isVision).withPosition(4, 1);
     tab.add("Game Objects", gameObjects).withPosition(5, 1);
     tab.add("Available Auto Variants", availableAutos).withPosition(4, 2).withSize(2, 1);
-    tab.addBoolean("readyToScore?", () -> AutoAlign.readyToScore());
-    tab.addBoolean("Level?", () -> AutoAlign.isLevel());
-    tab.addBoolean("Close Enough?", () -> AutoAlign.isCloseEnough(AutoAlign.AlignType.ALLB));
-    tab.addBoolean("Stationary?", () -> AutoAlign.isStationary());
-    tab.addBoolean("Low on time?", () -> AutoAlign.oneSecondLeft());
+
     tab.addDouble("MATCH TIME(TIMER FOR AUTO)", () -> DriverStation.getMatchTime());
     autoDelayEntry = tab.add("Auto Delay", 0).withPosition(4, 3).withSize(1, 1).getEntry();
 
@@ -286,78 +254,5 @@ public class AutoLogic {
   }
 
   // commands util
-  public static Command scoreCommand() {
-    if (r.superStructure != null) {
-      return new ConditionalCommand(
-          // If true:
-          AutoAlign.autoAlign(s.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB)
-              .repeatedly()
-              .withDeadline(r.superStructure.coralLevelFour(() -> AutoAlign.readyToScore()))
-              .withName("scoreCommand"),
-          // If false:
-          Commands.none().withName("scoreCommand-empty"),
-          // Condition:
-          () -> ARMSENSOR_ENABLED && r.sensors.armSensor.booleanInClaw());
-    }
-    return AutoAlign.autoAlign(s.drivebaseSubsystem, controls, AutoAlign.AlignType.ALLB)
-        .withName("scoreCommand-noSuperstructure");
-  }
-
-  public static Command algaeCommand23() {
-    if (r.superStructure != null) {
-      return AlgaeAlign.algaeAlign(s.drivebaseSubsystem, controls)
-          .repeatedly()
-          .withDeadline(r.superStructure.algaeLevelTwoThreeIntake())
-          .withName("algaeCommand23");
-    }
-    return Commands.none().withName("algaeCommand23");
-  }
-
-  public static Command algaeCommand34() {
-    if (r.superStructure != null) {
-      return AlgaeAlign.algaeAlign(s.drivebaseSubsystem, controls)
-          .repeatedly()
-          .withDeadline(r.superStructure.algaeLevelThreeFourIntake())
-          .withName("algaeCommand34");
-    }
-    return Commands.none().withName("algaeCommand34");
-  }
-
-  public static Command netCommand() {
-    if (r.superStructure != null) {
-      return BargeAlign.bargeScore(
-              s.drivebaseSubsystem, r.superStructure, () -> 0, () -> 0, () -> 0, () -> false)
-          .withName("net");
-    }
-    return Commands.none().withName("net");
-  }
-
-  public static Command intakeCommand() {
-    if (r.superStructure != null) {
-      if (ARMSENSOR_ENABLED && INTAKE_SENSOR_ENABLED) {
-        return Commands.waitUntil(r.sensors.intakeSensor.inIntake())
-            .withTimeout(0.5)
-            .andThen(r.superStructure.autoCoralIntake())
-            .withName("intake");
-      }
-    }
-    return Commands.none().withName("intake");
-  }
-
-  public static Command isCollected() {
-    if (ARMSENSOR_ENABLED && r.sensors.armSensor != null) {
-      return Commands.waitUntil(r.sensors.armSensor.inTrough())
-          .withTimeout(1.5)
-          .withName("isCollected");
-    }
-    return Commands.none().withName("isCollected");
-  }
-
-  public static Command readyIntakeCommand() {
-    if (r.superStructure != null) {
-
-      return r.superStructure.coralPreIntake().withName("readyIntake");
-    }
-    return Commands.none().withName("readyIntake");
-  }
+ 
 }
