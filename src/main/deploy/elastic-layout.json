@@ -498,7 +498,7 @@
             "properties": {
               "topic": "/Shuffleboard/Field/Selected auto",
               "period": 0.06,
-              "field_game": "Reefscape",
+              "field_game": "Rebuilt",
               "robot_width": 0.85,
               "robot_length": 0.85,
               "show_other_objects": true,
